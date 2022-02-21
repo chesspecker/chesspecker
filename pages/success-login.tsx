@@ -1,8 +1,8 @@
 import type {ReactElement} from 'react';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
-import useConffeti from '@/hooks/use-conffeti.jsx';
-import useUserName from '@/hooks/use-username.jsx';
+import useConffeti from '@/hooks/use-conffeti';
+import useUserName from '@/hooks/use-username';
 
 const IndexPage = () => (
 	<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>

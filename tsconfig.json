@@ -35,6 +35,6 @@
 		},
 		"incremental": true
 	},
-	"include": ["next-env.d.ts", "additional.d.ts", "**/*.ts", "**/*.tsx"],
+	"include": ["next-env.d.ts", "additional.d.ts", "**/*.ts", "**/*.tsx", "hooks/use-sets.jsx"],
 	"exclude": ["node_modules", ".next"]
 }

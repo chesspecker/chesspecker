@@ -3,7 +3,7 @@ export type Category = {
 	id: string;
 };
 
-const categories = [
+const categories: Category[] = [
 	{name: 'Recommended', id: '1'},
 	{name: 'Phases', id: '2'},
 	{name: 'Motifs', id: '3'},

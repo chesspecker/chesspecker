@@ -7,7 +7,7 @@ export type Theme = {
 	category: Category;
 };
 
-const themes = [
+const themes: Theme[] = [
 	{
 		title: 'Advanced pawn',
 		id: 'advancedPawn',
