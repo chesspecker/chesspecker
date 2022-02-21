@@ -22,14 +22,9 @@ export const config = {
 	status: env.NODE_ENV,
 };
 
-export const siteUrl =
+export const origin =
 	env.NODE_ENV === 'production'
-		? `https://api.chesspecker.com`
-		: `http://localhost:3000/api`;
-
-export const siteRedirectUrl =
-	env.NODE_ENV === 'production'
-		? 'https://www.chesspecker.com'
+		? 'https://beta.chesspecker.com'
 		: `http://localhost:3000`;
 
 export const SECRET_COOKIE_PASSWORD = env.SECRET_COOKIE_PASSWORD;

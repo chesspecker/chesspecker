@@ -1,7 +1,7 @@
 import {createHash, randomBytes} from 'crypto';
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import {lichess, siteUrl} from '@/config';
+import {lichess, origin} from '@/config';
 import {withSessionRoute} from '@/lib/session';
 
 const base64URLEncode = (buffer_: Buffer): string =>
@@ -33,7 +33,7 @@ const loginRoute = async (
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',
 		client_id: lichess.clientId,
-		redirect_uri: `${siteUrl}/auth/callback`,
+		redirect_uri: `${origin}/api/auth/callback`,
 		scope: 'preference:read',
 		code_challenge_method: 'S256',
 		code_challenge: challenge,

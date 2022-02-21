@@ -5,7 +5,6 @@
 	"scripts": {
 		"dev": "next",
 		"build": "next build",
-		"vercel-build": "prisma generate && next build",
 		"start": "next start",
 		"lint": "xo",
 		"lint:fix": "xo --fix",
@@ -30,10 +29,12 @@
 		}
 	},
 	"dependencies": {
+		"@heroicons/react": "^1.0.5",
 		"@react-chess/chessground": "^1.2.2",
 		"@tailwindcss/forms": "^0.4.0",
 		"chess.js": "^0.12.1",
 		"iron-session": "^6.0.5",
+		"jotai": "^1.6.0",
 		"mongoose": "^6.2.1",
 		"next": "latest",
 		"next-transpile-modules": "^9.0.0",

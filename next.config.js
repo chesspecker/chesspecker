@@ -23,4 +23,5 @@ const nextConfig = {
 };
 
 const withTM = require('next-transpile-modules')(['@react-chess/chessground']);
+
 module.exports = withTM(nextConfig);

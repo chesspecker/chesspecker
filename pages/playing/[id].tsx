@@ -4,8 +4,9 @@ import type {Square} from 'chess.js';
 
 import useSound from 'use-sound';
 import {useState, useEffect, useCallback} from 'react';
-
 import Router from 'next/router.js';
+import {fetcher} from '@/lib/fetcher';
+
 import SOUND_MOVE from '@/sounds/Move.mp3';
 import SOUND_CAPTURE from '@/sounds/Capture.mp3';
 import SOUND_ERROR from '@/sounds/Error.mp3';
@@ -192,8 +193,7 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		const puzzleToGet = puzzleList[actualPuzzle];
 		const getCurrentPuzzle = async () => {
 			try {
-				const response = await fetch(`/api/puzzle/${puzzleToGet._id}`);
-				const data = await response.json();
+				const data = await fetcher.get(`/api/puzzle/${puzzleToGet._id}`);
 				setGameLink(() => `https://lichess.org/training/${data.PuzzleId}`);
 				setCurrentPuzzle(() => data as PuzzleInterface);
 			} catch (error) {
@@ -231,12 +231,9 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		const timeTaken = counter - timerBeforeCurrentPuzzle;
 		const mistakes = mistakesNumber;
 		try {
-			await fetch(`/api/puzzle/${currentSetProps._id}`, {
-				method: 'PUT',
-				body: JSON.stringify({
-					puzzleId: actualPuzzleId._id,
-					options: {mistakes, timeTaken},
-				}),
+			await fetcher.put(`/api/puzzle/${currentSetProps._id}`, {
+				puzzleId: actualPuzzleId._id,
+				options: {mistakes, timeTaken},
 			});
 		} catch (error) {
 			console.log(error);
@@ -267,9 +264,9 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	 */
 	const updateFinishedSet = useCallback(async () => {
 		try {
-			await fetch(`/api/set/complete/${currentSetProps._id}`, {
-				method: 'PUT',
-				body: JSON.stringify({cycles: true, bestTime: counter + 1}),
+			await fetcher.put(`/api/set/complete/${currentSetProps._id}`, {
+				cycles: true,
+				bestTime: counter + 1,
 			});
 		} catch (error) {
 			console.log(error);
@@ -362,7 +359,10 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	 */
 	useEffect(() => {
 		if (!history) return;
-		if (moveNumber === 0) setTimeout(() => computerMove(moveNumber), 500);
+		if (moveNumber === 0)
+			setTimeout(() => {
+				computerMove(moveNumber);
+			}, 500);
 	}, [history, moveNumber, computerMove]);
 
 	/**
@@ -406,7 +406,9 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		setTimeout(() => {
 			setRightMoveVisible(() => false);
 		}, 600);
-		setTimeout(() => computerMove(moveNumber + 1), 800);
+		setTimeout(() => {
+			computerMove(moveNumber + 1);
+		}, 800);
 	};
 
 	const onWrongMove = () => {
@@ -560,17 +562,17 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		100;
 
 	const getChessgroundConfig = () => ({
-		fen: fen,
-		orientation: orientation,
+		fen,
+		orientation,
 		turnColor: turnColor(chess.turn()),
 		check: chess.in_check(),
-		lastMove: lastMove,
+		lastMove,
 		movable: calcMovable(),
 		background: BOARD_LIST[boardColor],
-		wrongMoveVisible: wrongMoveVisible,
-		rightMoveVisible: rightMoveVisible,
-		finishMoveVisible: finishMoveVisible,
-		onMove: onMove,
+		wrongMoveVisible,
+		rightMoveVisible,
+		finishMoveVisible,
+		onMove,
 	});
 
 	return (
@@ -584,8 +586,7 @@ export default PlayingPage;
 
 export const getServerSideProps = async ({params}) => {
 	const {id} = params;
-	const response = await fetch(`/api/set/${id}`);
-	const data = await response.json();
+	const data = await fetcher.get(`/api/set/${id}`);
 	if (!data) return {notFound: true};
 	return {props: {currentSetProps: data}};
 };

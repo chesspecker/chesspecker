@@ -1,10 +1,9 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import PuzzleSet from '@/models/puzzle-set-model';
-import Puzzle from '@/models/puzzle-model';
 
 const get_ = async (request: NextApiRequest, response: NextApiResponse) => {
-	const puzzleId = request.query.id;
-	const result = await Puzzle.findById(puzzleId).exec();
+	const puzzleSetId = request.query.id;
+	const result = await PuzzleSet.findById(puzzleSetId).exec();
 	if (result === null) throw new Error('puzzleSet not found');
 	response.send(result);
 };

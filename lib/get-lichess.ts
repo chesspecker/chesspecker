@@ -1,4 +1,4 @@
-import {lichess, siteUrl} from '@/config';
+import {lichess, origin} from '@/config';
 
 const getLichessData = async (accessToken: string, url = '') =>
 	fetch(`https://lichess.org/api/account${url}`, {
@@ -18,7 +18,7 @@ const getLichessToken = async (
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
 			grant_type: 'authorization_code',
-			redirect_uri: `${siteUrl}/auth/callback`,
+			redirect_uri: `${origin}/api/auth/callback`,
 			client_id: lichess.clientId,
 			code: authCode,
 			code_verifier: verifier,

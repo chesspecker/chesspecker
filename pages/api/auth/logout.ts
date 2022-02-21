@@ -1,6 +1,6 @@
 import {withSessionRoute} from 'lib/session';
 import {NextApiRequest, NextApiResponse} from 'next';
-import {siteRedirectUrl} from '@/config';
+import {origin} from '@/config';
 
 export type ResponseData = {success: boolean; message?: string};
 
@@ -21,7 +21,7 @@ const logoutRoute = (
 		return;
 	}
 
-	response.redirect(302, siteRedirectUrl);
+	response.redirect(302, origin);
 };
 
 export default withSessionRoute(logoutRoute);

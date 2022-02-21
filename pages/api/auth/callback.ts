@@ -1,7 +1,7 @@
 import {withSessionRoute} from 'lib/session';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import {siteRedirectUrl} from '@/config';
+import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
 import User from '@/models/user-model';
 import userGenerator from '@/controllers/user-generator';
@@ -61,7 +61,7 @@ const callback = async (
 		user.save();
 	}
 
-	response.redirect(302, `${siteRedirectUrl}/success-login`);
+	response.redirect(302, `${origin}/success-login`);
 };
 
 export default withMongoRoute(withSessionRoute(callback));
