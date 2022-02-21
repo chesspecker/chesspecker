@@ -1,0 +1,65 @@
+{
+	"name": "chesspecker",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next",
+		"build": "next build",
+		"vercel-build": "prisma generate && next build",
+		"start": "next start",
+		"lint": "xo",
+		"lint:fix": "xo --fix",
+		"type-check": "tsc"
+	},
+	"prettier": "prettier-config-xo",
+	"xo": {
+		"ignores": [
+			".github"
+		],
+		"extends": [
+			"xo-nextjs",
+			"plugin:@next/next/recommended"
+		],
+		"prettier": true,
+		"env": "browser",
+		"rules": {
+			"react/prop-types": "warn",
+			"@typescript-eslint/naming-convention": "warn",
+			"unicorn/prefer-node-protocol": "off",
+			"import/extensions": "off"
+		}
+	},
+	"dependencies": {
+		"@react-chess/chessground": "^1.2.2",
+		"@tailwindcss/forms": "^0.4.0",
+		"chess.js": "^0.12.1",
+		"iron-session": "^6.0.5",
+		"mongoose": "^6.2.1",
+		"next": "latest",
+		"next-transpile-modules": "^9.0.0",
+		"react": "^17.0.2",
+		"react-confetti": "^6.0.1",
+		"react-dom": "^17.0.2",
+		"swr": "^1.2.1",
+		"url-loader": "^4.1.1",
+		"use-sound": "^4.0.1"
+	},
+	"devDependencies": {
+		"@types/chess.js": "^0.11.2",
+		"@types/node": "^12.20.45",
+		"@types/react": "^17.0.39",
+		"@types/react-dom": "^17.0.11",
+		"@types/uuid": "^8.3.4",
+		"autoprefixer": "^10.4.2",
+		"eslint": "^8.8.0",
+		"eslint-config-xo-nextjs": "^4.1.0",
+		"postcss": "^8.4.6",
+		"prettier": "^2.5.1",
+		"prettier-config-xo": "^2.0.0",
+		"prettier-plugin-tailwindcss": "^0.1.7",
+		"tailwindcss": "^3.0.22",
+		"typescript": "^4.5.5",
+		"webpack": "^5.68.0",
+		"xo": "^0.47.0"
+	}
+}
