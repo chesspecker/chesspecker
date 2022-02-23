@@ -1,10 +1,11 @@
 import Chessground from '@react-chess/chessground';
-import {Chess} from 'chess.js';
+import {Chess, ChessInstance} from 'chess.js';
 import type {Square} from 'chess.js';
 
 import useSound from 'use-sound';
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback, ReactElement} from 'react';
 import Router from 'next/router.js';
+import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 
 import SOUND_MOVE from '@/sounds/Move.mp3';
@@ -59,7 +60,7 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	const [fen, setFen] = useState('');
 	const [turn, setTurn] = useState('w');
 	const [malus, setMalus] = useState(0);
-	const [chess, setChess] = useState(new Chess());
+	const [chess, setChess] = useState<ChessInstance>();
 	const [counter, setCounter] = useState(0);
 
 	const [history, setHistory] = useState([]);
@@ -146,6 +147,11 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		set_(['autoMove', autoMove]);
 	}, [autoMove]);
 
+	useEffect(() => {
+		if (!Chess) return;
+		setChess(() => new Chess());
+	}, [Chess]);
+
 	/**
 	 * Retrieve the set.
 	 * Extract the list of puzzles.
@@ -208,7 +214,7 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	 * Setup the board.
 	 */
 	useEffect(() => {
-		if (!currentPuzzle.Moves) return;
+		if (!currentPuzzle?.Moves) return;
 		const chessJs = new Chess(currentPuzzle.FEN);
 		const history = currentPuzzle.Moves.split(' ');
 
@@ -337,6 +343,7 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	 */
 	const computerMove = useCallback(
 		(index: number) => {
+			if (!chess) return;
 			const move = chess.move(history[index], {sloppy: true});
 			if (move && move.from) setLastMove(() => [move.from, move.to]);
 			setFen(chess.fen());
@@ -561,27 +568,33 @@ const PlayingPage = ({currentSetProps}: Props) => {
 			(puzzleList.length - puzzleCompleteInSession) / currentSetProps.length) *
 		100;
 
-	const getChessgroundConfig = () => ({
-		fen,
-		orientation,
-		turnColor: turnColor(chess.turn()),
-		check: chess.in_check(),
-		lastMove,
-		movable: calcMovable(),
-		background: BOARD_LIST[boardColor],
-		wrongMoveVisible,
-		rightMoveVisible,
-		finishMoveVisible,
-		onMove,
-	});
+	const getChessgroundConfig = () => {
+		if (!chess) return;
+		const config = {
+			fen,
+			orientation,
+			turnColor: turnColor(chess.turn()),
+			check: chess.in_check(),
+			lastMove,
+			movable: calcMovable(),
+			background: BOARD_LIST[boardColor],
+			wrongMoveVisible,
+			rightMoveVisible,
+			finishMoveVisible,
+			onMove,
+		};
+		console.log('config', config);
+		return config;
+	};
 
 	return (
-		<div>
+		<div className=''>
 			<Chessground config={getChessgroundConfig()} />
 		</div>
 	);
 };
 
+PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
 export const getServerSideProps = async ({params}) => {

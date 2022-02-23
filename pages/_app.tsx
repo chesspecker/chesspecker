@@ -13,7 +13,10 @@ type AppPropsWithLayout = AppProps & {
 	Component: NextPageWithLayout;
 };
 
-const customApp = ({Component, pageProps: {session, ...pageProps}}) => {
+const customApp = ({
+	Component,
+	pageProps: {session, ...pageProps},
+}: AppPropsWithLayout) => {
 	const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
 
 	return getLayout(

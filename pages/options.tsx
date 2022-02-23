@@ -1,7 +1,7 @@
 import {useAtom} from 'jotai';
-import {useState} from 'react';
-import Router from 'next/router';
+import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
+import {useRouter} from 'next/router';
 import {optsTitleAtom, optsSizeAtom, optsLevelAtom} from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
@@ -13,26 +13,34 @@ import OptionSize from '@/components/options/size';
 import OptionDifficulty from '@/components/options/level';
 
 const OptionsPage = () => {
+	const router = useRouter();
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [title] = useAtom<string>(optsTitleAtom);
 	const [size] = useAtom<number>(optsSizeAtom);
 	const [level] = useAtom<string>(optsLevelAtom);
+	const [choices, setChoices] = useState<string[]>(['healthyMix']);
 
-	// TODO: add context newSet
+	useEffect(() => {
+		if (router.query.category) {
+			const categories = JSON.parse(router.query.category as string);
+			setChoices(categories);
+		}
+	}, []);
 
 	const validate = async () => {
 		if (isDisabled) return;
+		if (title === '') return;
 		// If (title === '') return setToggleError(() => true);
 		setIsDisabled(() => true);
 		return fetcher
 			.post(`${origin}/api/set`, {
 				title,
-				//	ThemeArray: newSet.themeArray,
+				themeArray: choices,
 				size,
 				level,
 			})
 			.then(() => {
-				Router.push('/dashboard');
+				router.push('/dashboard');
 			})
 			.catch(error => {
 				console.error(error);
@@ -44,7 +52,6 @@ const OptionsPage = () => {
 			<h2 className='text-5xl text-white'>One last thing...</h2>
 			<div className='flex flex-col items-center justify-center overflow-hidden'>
 				<OptionTextInput>Give your set a name</OptionTextInput>
-
 				<OptionDifficulty />
 				<OptionSize />
 

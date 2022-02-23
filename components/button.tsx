@@ -12,7 +12,7 @@ declare type ButtonProps = {
 
 export const Button = ({children, ...props}: ButtonProps) => (
 	<button
-		className='block w-full cursor-pointer self-center rounded-2xl border-none bg-white pt-2 pb-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700'
+		className='block w-full cursor-pointer self-center rounded-2xl border-none bg-white pt-2 pb-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700 hover:bg-sky-800 hover:text-white'
 		type='button'
 		{...props}
 	>

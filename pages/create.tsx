@@ -1,8 +1,9 @@
 import {useState} from 'react';
 import {useAtom} from 'jotai';
 import type {ReactElement} from 'react';
+import {useRouter} from 'next/router';
 import Layout from '@/layouts/main';
-import {ButtonLink as Button} from '@/components/button';
+import {Button} from '@/components/button';
 import CATEGORIES from '@/data/categories';
 import THEMES from '@/data/themes';
 import Choice from '@/components/choice';
@@ -12,9 +13,16 @@ import type {Category} from '@/data/categories';
 import type {Theme} from '@/data/themes';
 
 const CreatePage = () => {
+	const router = useRouter();
 	const [choicesSelected, setChoicesSelected] = useAtom(selectedAtom);
+
 	const handleClick = () => {
 		if (choicesSelected.length === 0) setChoicesSelected(() => ['healthyMix']);
+		router.push(
+			`/options?category=${encodeURIComponent(
+				JSON.stringify(choicesSelected),
+			)}`,
+		);
 	};
 
 	return (
@@ -39,9 +47,7 @@ const CreatePage = () => {
 				))}
 			</div>
 			<div className='sticky bottom-0 right-0 w-6/12'>
-				<Button href='/options' onClick={handleClick}>
-					NEXT
-				</Button>
+				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>
 	);
