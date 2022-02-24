@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import useSWR from 'swr';
 
-const fetcher = (...args) => fetch(...args).then(res => res.json());
+const fetcher = (...args) => fetch(...args).then(response => response.json());
 const useSets = () => {
 	const {data, mutate, error} = useSWR('/api/sets', fetcher);
 	console.log('data', data, 'error', error);

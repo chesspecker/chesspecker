@@ -1,9 +1,13 @@
 import {useAtom} from 'jotai';
 import type {ChangeEvent} from 'react';
-import {optsTitleAtom} from '@/lib/atoms';
+import {optionsTitleAtom} from '@/lib/atoms';
 
-export default function OptionTextInput({children}) {
-	const [title, setTitle] = useAtom(optsTitleAtom);
+declare type Props = {
+	children: React.ReactNode;
+};
+
+const OptionTextInput = ({children}: Props) => {
+	const [title, setTitle] = useAtom(optionsTitleAtom);
 	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setTitle(() => event.target.value);
 	};
@@ -26,4 +30,6 @@ export default function OptionTextInput({children}) {
 			/>
 		</div>
 	);
-}
+};
+
+export default OptionTextInput;

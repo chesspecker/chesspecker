@@ -4,7 +4,7 @@ import Link from 'next/link';
 declare type ButtonProps = {
 	children: React.ReactNode;
 	className?: string;
-	disabled?: boolean;
+	isDisabled?: boolean;
 	type?: 'submit' | 'reset' | 'button';
 	href?: string | UrlObject;
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;

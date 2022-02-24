@@ -1,9 +1,9 @@
 import {useAtom} from 'jotai';
 import type {ChangeEvent} from 'react';
-import {optsLevelAtom} from '@/lib/atoms';
+import {optionsLevelAtom} from '@/lib/atoms';
 
 const OptionLevel = () => {
-	const [level, setLevel] = useAtom(optsLevelAtom);
+	const [level, setLevel] = useAtom(optionsLevelAtom);
 	const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		setLevel(() => event.target.value);
 	};

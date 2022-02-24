@@ -15,14 +15,14 @@ const delete_ = async (request: NextApiRequest, response: NextApiResponse) => {
 	response.send('success');
 };
 
-const handler = (request: NextApiRequest, response: NextApiResponse) => {
+const handler = async (request: NextApiRequest, response: NextApiResponse) => {
 	switch (request.method) {
 		case 'GET':
-			get_(request, response);
+			await get_(request, response);
 			break;
 
 		case 'POST':
-			delete_(request, response);
+			await delete_(request, response);
 			break;
 
 		default:

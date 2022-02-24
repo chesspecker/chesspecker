@@ -1,7 +1,18 @@
 import {Schema, model, models} from 'mongoose';
+import type {Document} from 'mongoose';
 import {UserInterface} from './user-model';
 
-export interface PuzzleSetInterface {
+type difficulty =
+	| 'easiest'
+	| 'easier'
+	| 'easy'
+	| 'normal'
+	| 'intermediate'
+	| 'hard'
+	| 'harder'
+	| 'hardest';
+
+export interface PuzzleSetInterface extends Document {
 	_id: string;
 	user: UserInterface;
 	puzzles: Array<{
@@ -27,15 +38,7 @@ export interface PuzzleSetInterface {
 	totalMistakes: number;
 	totalPuzzlesPlayed: number;
 	accuracy: number;
-	level:
-		| 'easiest'
-		| 'easier'
-		| 'easy'
-		| 'normal'
-		| 'intermediate'
-		| 'hard'
-		| 'harder'
-		| 'hardest';
+	level: difficulty;
 }
 
 const schema = new Schema<PuzzleSetInterface>({

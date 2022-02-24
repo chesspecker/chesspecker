@@ -2,7 +2,7 @@ import {useAtom} from 'jotai';
 import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
-import {optsTitleAtom, optsSizeAtom, optsLevelAtom} from '@/lib/atoms';
+import {optionsTitleAtom, optionsSizeAtom, optionsLevelAtom} from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import {origin} from '@/config';
@@ -15,17 +15,17 @@ import OptionDifficulty from '@/components/options/level';
 const OptionsPage = () => {
 	const router = useRouter();
 	const [isDisabled, setIsDisabled] = useState(false);
-	const [title] = useAtom<string>(optsTitleAtom);
-	const [size] = useAtom<number>(optsSizeAtom);
-	const [level] = useAtom<string>(optsLevelAtom);
+	const [title] = useAtom<string>(optionsTitleAtom);
+	const [size] = useAtom<number>(optionsSizeAtom);
+	const [level] = useAtom<string>(optionsLevelAtom);
 	const [choices, setChoices] = useState<string[]>(['healthyMix']);
 
 	useEffect(() => {
 		if (router.query.category) {
-			const categories = JSON.parse(router.query.category as string);
+			const categories: string[] = JSON.parse(router.query.category as string);
 			setChoices(categories);
 		}
-	}, []);
+	}, [router.query.category]);
 
 	const validate = async () => {
 		if (isDisabled) return;
@@ -39,9 +39,7 @@ const OptionsPage = () => {
 				size,
 				level,
 			})
-			.then(() => {
-				router.push('/dashboard');
-			})
+			.then(async () => router.push('/dashboard'))
 			.catch(error => {
 				console.error(error);
 			});

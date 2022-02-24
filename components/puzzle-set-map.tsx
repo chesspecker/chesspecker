@@ -16,16 +16,16 @@ type PropsComponent = {
 
 const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const router = useRouter();
-	const onPlayClick = (event: MouseEvent) => {
+	const onPlayClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
-		router.push(`/play/${set._id}`);
+		await router.push(`/play/${set._id}`);
 	};
 
-	const onViewClick = (event: MouseEvent) => {
+	const onViewClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
-		router.push(`/view/${set._id}`);
+		await router.push(`/view/${set._id}`);
 	};
 
 	return (
@@ -47,7 +47,7 @@ const PuzzleSetMap = () => {
 	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
 	useEffectAsync(async () => {
 		const response = await fetch('/api/sets');
-		const data = await response.json();
+		const data = (await response.json()) as PuzzleSetInterface[];
 		setSets(data);
 	}, []);
 

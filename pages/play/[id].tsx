@@ -1,10 +1,9 @@
 import Chessground from '@react-chess/chessground';
-import {Chess, ChessInstance} from 'chess.js';
-import type {Square} from 'chess.js';
-
-import useSound from 'use-sound';
+import type {ChessInstance, Square} from 'chess.js';
+import {useSound} from 'use-sound';
 import {useState, useEffect, useCallback, ReactElement} from 'react';
 import Router from 'next/router.js';
+import * as ChessJS from 'chess.js';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 
@@ -13,8 +12,8 @@ import SOUND_CAPTURE from '@/sounds/Capture.mp3';
 import SOUND_ERROR from '@/sounds/Error.mp3';
 import SOUND_GENERIC from '@/sounds/GenericNotify.mp3';
 import SOUND_VICTORY from '@/sounds/Victory.mp3';
-import {PuzzleSetInterface} from '@/models/puzzle-set-model';
-import {PuzzleInterface} from '@/models/puzzle-model';
+import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
+import type {PuzzleInterface} from '@/models/puzzle-model';
 
 type Props = {currentSetProps: PuzzleSetInterface};
 
@@ -46,8 +45,11 @@ const set_ = (value: [string, any]) => {
 	localStorage.setItem(value[0], JSON.stringify(value[1]));
 };
 
+const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
+
 const PlayingPage = ({currentSetProps}: Props) => {
 	console.log('currentSetProps', currentSetProps);
+	console.log('ChessReq', Chess);
 
 	const [moveSound] = useSound(SOUND_MOVE);
 	const [captureSound] = useSound(SOUND_CAPTURE);
@@ -60,8 +62,9 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	const [fen, setFen] = useState('');
 	const [turn, setTurn] = useState('w');
 	const [malus, setMalus] = useState(0);
-	const [chess, setChess] = useState<ChessInstance>();
+	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [counter, setCounter] = useState(0);
+	const [config, setCgConfig] = useState<any>();
 
 	const [history, setHistory] = useState([]);
 
@@ -146,11 +149,6 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	useEffect(() => {
 		set_(['autoMove', autoMove]);
 	}, [autoMove]);
-
-	useEffect(() => {
-		if (!Chess) return;
-		setChess(() => new Chess());
-	}, [Chess]);
 
 	/**
 	 * Retrieve the set.
@@ -568,8 +566,9 @@ const PlayingPage = ({currentSetProps}: Props) => {
 			(puzzleList.length - puzzleCompleteInSession) / currentSetProps.length) *
 		100;
 
-	const getChessgroundConfig = () => {
+	useEffect(() => {
 		if (!chess) return;
+		console.log('chess', chess);
 		const config = {
 			fen,
 			orientation,
@@ -583,13 +582,22 @@ const PlayingPage = ({currentSetProps}: Props) => {
 			finishMoveVisible,
 			onMove,
 		};
-		console.log('config', config);
-		return config;
-	};
+		setCgConfig(config);
+	}, [
+		chess,
+		fen,
+		orientation,
+		turnColor,
+		lastMove,
+		wrongMoveVisible,
+		rightMoveVisible,
+		finishMoveVisible,
+		onMove,
+	]);
 
 	return (
 		<div className=''>
-			<Chessground config={getChessgroundConfig()} />
+			<Chessground config={config} />
 		</div>
 	);
 };

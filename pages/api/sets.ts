@@ -21,21 +21,27 @@ const get_ = async (request: NextApiRequest, response: NextApiResponse) => {
 		return;
 	}
 
-	const puzzleSets: PuzzleSetInterface[] = await PuzzleSet.find({
-		user: user._id,
-	}).exec();
-	if (puzzleSets.length === 0) {
-		response.status(404).send('puzzleSets not found');
-		return;
-	}
+	try {
+		const puzzleSets: PuzzleSetInterface[] = await PuzzleSet.find({
+			user: user._id,
+		}).exec();
+		if (puzzleSets.length === 0) {
+			response.status(404).send('puzzleSets not found');
+			return;
+		}
 
-	response.send(puzzleSets);
+		response.send(puzzleSets);
+		return;
+	} catch (error) {
+		console.log(error);
+		response.status(404).send('puzzleSets not found');
+	}
 };
 
-const handler = (request: NextApiRequest, response: NextApiResponse) => {
+const handler = async (request: NextApiRequest, response: NextApiResponse) => {
 	switch (request.method) {
 		case 'GET':
-			get_(request, response);
+			await get_(request, response);
 			break;
 
 		default:

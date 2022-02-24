@@ -1,6 +1,6 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import PuzzleSet from '@/models/puzzle-set-model';
+import PuzzleSet, {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import User, {UserInterface} from '@/models/user-model';
 import setGenerator from '@/controllers/set-generator';
 import {withSessionRoute} from '@/lib/session';
@@ -20,13 +20,18 @@ const get_ = async (request: NextApiRequest, response: NextApiResponse) => {
 		return;
 	}
 
-	const puzzleSets = await PuzzleSet.find({user: user._id}).exec();
-	if (puzzleSets.length === 0) {
-		response.status(404).send('puzzleSets not found');
-		return;
-	}
+	try {
+		const puzzleSets = await PuzzleSet.find({user: user._id}).exec();
+		if (puzzleSets.length === 0) {
+			response.status(404).send('puzzleSets not found');
+			return;
+		}
 
-	response.send(puzzleSets);
+		response.send(puzzleSets);
+	} catch (error) {
+		console.log(error);
+		response.status(404).send('puzzleSets not found');
+	}
 };
 
 const post_ = async (request: NextApiRequest, response: NextApiResponse) => {

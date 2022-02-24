@@ -1,4 +1,4 @@
-const {fontFamily} = require('tailwindcss/defaultTheme');
+/* eslint-disable @typescript-eslint/naming-convention */
 
 module.exports = {
 	content: [

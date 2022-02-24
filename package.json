@@ -24,6 +24,7 @@
 		"rules": {
 			"react/prop-types": "warn",
 			"@typescript-eslint/naming-convention": "warn",
+			"@typescript-eslint/triple-slash-reference": "warn",
 			"unicorn/prefer-node-protocol": "off",
 			"import/extensions": "off"
 		}

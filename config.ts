@@ -27,4 +27,4 @@ export const origin =
 		? 'https://beta.chesspecker.com'
 		: `http://localhost:3000`;
 
-export const SECRET_COOKIE_PASSWORD = env.SECRET_COOKIE_PASSWORD;
+export const cookiePassword = env.SECRET_COOKIE_PASSWORD;
