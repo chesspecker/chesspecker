@@ -8,10 +8,11 @@ export interface PuzzleSetInterface {
 		_id: string;
 		PuzzleId: string;
 		played: boolean;
+		count: number;
 		order: number;
-		mistakes: number;
-		timeTaken: number;
-		grade: number;
+		mistakes: Array<number>;
+		timeTaken: Array<number>;
+		grade: Array<number>;
 		interval: number;
 		repetition: number;
 		easinessFactor: number;
