@@ -32,6 +32,7 @@
 		"@heroicons/react": "^1.0.5",
 		"@react-chess/chessground": "^1.2.2",
 		"@tailwindcss/forms": "^0.4.0",
+		"chart.js": "^3.7.1",
 		"chess.js": "^0.12.1",
 		"iron-session": "^6.0.5",
 		"jotai": "^1.6.0",
@@ -39,6 +40,7 @@
 		"next": "latest",
 		"next-transpile-modules": "^9.0.0",
 		"react": "^17.0.2",
+		"react-chartjs-2": "^4.0.1",
 		"react-confetti": "^6.0.1",
 		"react-dom": "^17.0.2",
 		"react-input-slider": "^6.0.1",
@@ -47,6 +49,7 @@
 		"use-sound": "^4.0.1"
 	},
 	"devDependencies": {
+		"@faker-js/faker": "^6.0.0-alpha.7",
 		"@types/chess.js": "^0.11.2",
 		"@types/node": "^12.20.45",
 		"@types/react": "^17.0.39",
