@@ -10,6 +10,9 @@ import ChartOneLine from '../../components/chartOneLine';
 import ChartMultipleLine from '@/components/chartMultipleLine';
 import {provPuzle} from '../../components/provisoire';
 import ChartInfinitLine from '@/components/chartInfinitLine';
+import {Button} from '@/components/button';
+import {loadStripe} from '@stripe/stripe-js';
+import axios from 'axios';
 
 const getCyclesColor = (set: PuzzleSetInterface) =>
 	set.cycles < 1
@@ -78,6 +81,24 @@ const difficulty = (set: PuzzleSetInterface) => (
 	</p>
 );
 
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = loadStripe(publishableKey);
+
+const item = {name: 'test', price: 100, description: 'test', quantity: 43};
+
+const createCheckOutSession = async () => {
+	const stripe = await stripePromise;
+	const checkoutSession = await axios.post('/api/checkout-sessions', {
+		item: item,
+	});
+	const result = await stripe.redirectToCheckout({
+		sessionId: checkoutSession.data.id,
+	});
+	if (result.error) {
+		alert(result.error.message);
+	}
+};
+
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	const provSet = provPuzle;
@@ -87,6 +108,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
 				{provSet.title}
 			</h1>
+			<Button onClick={createCheckOutSession}>Bonsoir</Button>
 			<div className='flex w-full'>
 				<Donnuts
 					played={provSet.totalPuzzlesPlayed}
