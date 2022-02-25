@@ -7,6 +7,7 @@ export interface UserInterface {
 	url: string;
 	permissionLevel: number;
 	lastUpdatedAt: number;
+	isSponsor: boolean;
 	perfs: {
 		ultraBullet: {games: number; rating: number};
 		bullet: {games: number; rating: number};
@@ -25,6 +26,7 @@ const schema = new Schema<UserInterface>({
 	url: String,
 	permissionLevel: Number,
 	lastUpdatedAt: Date,
+	isSponsor: Boolean,
 	perfs: {
 		ultraBullet: {games: Number, rating: Number},
 		bullet: {games: Number, rating: Number},

@@ -1,38 +1,41 @@
+import Stripe from 'stripe';
+import {NextApiRequest, NextApiResponse} from 'next';
+import {origin} from '@/config';
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-async function CreateStripeSession(req, res) {
-	const {item} = req.body;
-
-	const redirectURL =
-		process.env.NODE_ENV === 'development'
-			? 'http://localhost:3000'
-			: 'https://stripe-checkout-next-js-demo.vercel.app';
-
-	const transformedItem = {
-		price_data: {
-			currency: 'usd',
-			product_data: {
-				images: [item.image],
-				name: item.name,
-			},
-			unit_amount: item.price * 100,
-		},
-		description: item.description,
-		quantity: item.quantity,
+const createStripeSession = async (
+	_request: NextApiRequest,
+	response: NextApiResponse,
+) => {
+	const params: Stripe.Checkout.SessionCreateParams = {
+		line_items: [{price: 'price_1KX6VVJJnC3eZxpZBQ3QZ76Q', quantity: 1}],
+		payment_method_types: ['card'],
+		mode: 'subscription',
+		success_url: `${origin}/success-stripe?session_id={CHECKOUT_SESSION_ID}`,
+		cancel_url: `${origin}/cancel`,
 	};
 
-	const session = await stripe.checkout.sessions.create({
-		payment_method_types: ['card'],
-		line_items: [transformedItem],
-		mode: 'payment',
-		success_url: redirectURL + '?status=success',
-		cancel_url: redirectURL + '?status=cancel',
-		metadata: {
-			images: item.image,
-		},
-	});
+	try {
+		console.log('params', params);
+		const session = await stripe.checkout.sessions.create(params);
+		console.log('session', session);
+		response.status(200).json(session);
+		return;
+	} catch (error) {
+		console.log('error', error);
+		response.status(500).end('Internal Server Error');
+		return;
+	}
+};
 
-	res.json({id: session.id});
-}
+const handler = async (request: NextApiRequest, response: NextApiResponse) => {
+	switch (request.method) {
+		case 'POST':
+			return createStripeSession(request, response);
+		default:
+			response.status(405).end(`Method ${request.method} Not Allowed`);
+	}
+};
 
-export default CreateStripeSession;
+export default handler;

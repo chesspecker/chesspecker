@@ -78,8 +78,6 @@ function ChartInfinitLine({set}) {
 		return r + ', ' + g + ', ' + b;
 	};
 
-	function getRandomRgb() {}
-
 	const getData = () => {
 		let datasets = [];
 		for (let i = 0; i < getMaxTimePlayed(); i++) {
