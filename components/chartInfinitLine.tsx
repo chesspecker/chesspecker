@@ -54,19 +54,16 @@ function ChartInfinitLine({set}) {
 		puzzle => puzzle.played === true,
 	);
 
-	console.log('puzzle played', arrayOfPuzzlePlayed);
-
 	const array = arrayOfPuzzlePlayed.map(puzzle => ({
 		mistakes: puzzle.mistakes,
 		timeTaken: puzzle.timeTaken,
 		grade: puzzle.grade,
 		count: puzzle.count,
 	}));
-	console.log('array', array);
 
 	const getMaxTimePlayed = () => {
 		let counter = 0;
-		console.log(array.length);
+
 		for (let i = 0; i < array.length; i++) {
 			if (array[i].count > counter) counter = array[i].count;
 		}
@@ -84,14 +81,10 @@ function ChartInfinitLine({set}) {
 	function getRandomRgb() {}
 
 	const getData = () => {
-		console.log('max time played', getMaxTimePlayed());
 		let datasets = [];
 		for (let i = 0; i < getMaxTimePlayed(); i++) {
 			const color = getRandomColor();
-			console.log(
-				'the color',
-				`rgba(${color}, ${1 / (getMaxTimePlayed() - i)})`,
-			);
+
 			datasets.push(
 				{
 					label: `Mistake ${i + 1}`,
@@ -109,7 +102,7 @@ function ChartInfinitLine({set}) {
 				},
 			);
 		}
-		console.log(datasets);
+
 		return datasets;
 	};
 
