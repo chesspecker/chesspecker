@@ -50,17 +50,22 @@ const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface) => {
 	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
 	const arrayOfData = arrayFiltered.map(puzzle => {
 		const length = puzzle.timeTaken.length;
-		return puzzle.timeTaken[length - 1];
+		//TODO: this function work for old set structure, replace puzzle.timeTaken by puzzle.timeTaken[length] to get the last element of the aray of timeTaken
+		return puzzle.timeTaken;
 	});
 	return arrayOfData;
 };
 
 const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface) => {
+	console.log('set', set.puzzles);
 	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
+	console.log('filtered', arrayFiltered);
 	const arrayOfData = arrayFiltered.map(puzzle => {
 		const length = puzzle.timeTaken.length;
-		return puzzle.mistakes[length - 1];
+		//TODO: this function work for old set structure, replace puzzle.mistakes by puzzle.mistakes[length] to get the last element of the aray of mistakes
+		return puzzle.mistakes;
 	});
+	console.log(arrayOfData);
 	return arrayOfData;
 };
 
