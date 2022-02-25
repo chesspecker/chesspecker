@@ -570,11 +570,8 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		if (!chess) return;
 		console.log('chess', chess);
 		const config = {
-			fen,
-			orientation,
 			turnColor: turnColor(chess.turn()),
 			check: chess.in_check(),
-			lastMove,
 			movable: calcMovable(),
 			background: BOARD_LIST[boardColor],
 			wrongMoveVisible,
@@ -585,7 +582,6 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		setCgConfig(config);
 	}, [
 		chess,
-		fen,
 		orientation,
 		turnColor,
 		lastMove,
@@ -594,6 +590,24 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		finishMoveVisible,
 		onMove,
 	]);
+
+	useEffect(() => {
+		if (!lastMove) return;
+		config.lastMove = lastMove;
+		setCgConfig(config);
+	}, [lastMove]);
+
+	useEffect(() => {
+		if (!orientation) return;
+		config.orientation = orientation;
+		setCgConfig(config);
+	}, [orientation]);
+
+	useEffect(() => {
+		if (!fen) return;
+		config.fen = fen;
+		setCgConfig(config);
+	}, [fen]);
 
 	return (
 		<div className=''>
