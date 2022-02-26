@@ -25,6 +25,7 @@
 			"@/interfaces/*": ["interfaces/*"],
 			"@/styles/*": ["styles/*"],
 			"@/data/*": ["data/*"],
+			"@/types/*": ["types/*"],
 			"@/services/*": ["services/*"],
 			"@/context/*": ["context/*"],
 			"@/middlewares/*": ["middlewares/*"],

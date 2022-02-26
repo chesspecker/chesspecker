@@ -11,8 +11,8 @@ export const retrieve = async (
 
 export const retrieveByUser = async (
 	user: UserInterface['id'],
-): Promise<PuzzleSetInterface> =>
-	PuzzleSet.findOne({user}).exec() as Promise<PuzzleSetInterface>;
+): Promise<PuzzleSetInterface[]> =>
+	PuzzleSet.find({user}).exec() as Promise<PuzzleSetInterface[]>;
 
 export const remove = async (
 	id: PuzzleSetInterface['id'],

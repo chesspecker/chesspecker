@@ -1,7 +1,6 @@
 import type {ReactElement} from 'react';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/puzzle-set-map';
-import useSets from '@/hooks/use-sets';
 
 const DashbaordPage = () => (
 	<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>

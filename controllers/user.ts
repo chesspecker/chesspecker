@@ -1,4 +1,4 @@
-import {LichessUser} from 'types';
+import {LichessUser} from '@/types/lichess';
 import User, {UserInterface} from '@/models/user-model';
 
 export const create = async (liUser: LichessUser): Promise<UserInterface> => {

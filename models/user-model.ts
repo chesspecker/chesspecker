@@ -4,6 +4,7 @@ import type {Document} from 'mongoose';
 export interface UserInterface extends Document {
 	_id: Types.ObjectId;
 	id: string;
+	lichessId: string;
 	username: string;
 	url: string;
 	averageRating: number;

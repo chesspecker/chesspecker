@@ -14,7 +14,7 @@ type ErrorData = {
 	error: string;
 };
 
-type Data = SuccessData | ErrorData;
+export type Data = SuccessData | ErrorData;
 
 const get_ = async (
 	request: NextApiRequest,
@@ -24,7 +24,7 @@ const get_ = async (
 	const user = await retrieve(userID);
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
-		return;
+		throw new Error('User not found');
 	}
 
 	response.json({success: true, user});
@@ -37,7 +37,7 @@ const post_ = async (
 	const user = await create(request.body);
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
-		return;
+		throw new Error('User not found');
 	}
 
 	response.json({success: true, user});

@@ -3,7 +3,7 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
-import User from '@/models/user-model';
+import User, {UserInterface} from '@/models/user-model';
 import {create} from '@/controllers/user';
 
 type ErrorData = {
@@ -23,17 +23,16 @@ const callback = async (
 	try {
 		const {verifier} = request.session;
 		const lichessToken = await getLichess.token(request.query.code, verifier);
-		const {access_token: oauthToken} = lichessToken;
+		const oauthToken = lichessToken.access_token;
 		const lichessUser = await getLichess.account(oauthToken);
 		if (!lichessUser) throw new Error('user login failed');
 
+		let user: UserInterface = await User.findOne({id: lichessUser.id});
+		if (!user) user = await create(lichessUser);
 		request.session.token = oauthToken;
-		request.session.userID = lichessUser.id;
-		request.session.username = lichessUser.username;
+		request.session.userID = user._id.toString();
+		request.session.username = user.username;
 		await request.session.save();
-
-		const isAlreadyUsedId = await User.exists({id: lichessUser.id});
-		if (!isAlreadyUsedId) await create(lichessUser);
 		response.redirect(302, `${origin}/success-login`);
 		return;
 	} catch (error_: unknown) {

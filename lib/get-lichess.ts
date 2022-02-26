@@ -1,4 +1,4 @@
-import {LichessToken, LichessUser} from 'types';
+import {LichessToken, LichessUser} from '@/types/lichess';
 import {lichess, origin} from '@/config';
 
 const getAccount = async (

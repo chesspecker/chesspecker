@@ -4,6 +4,7 @@ import {useSound} from 'use-sound';
 import {useState, useEffect, useCallback, ReactElement} from 'react';
 import Router from 'next/router.js';
 import * as ChessJS from 'chess.js';
+import {Config} from 'types/chessground-config';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 
@@ -64,7 +65,7 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	const [malus, setMalus] = useState(0);
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [counter, setCounter] = useState(0);
-	const [config, setCgConfig] = useState<any>();
+	const [config, setCgConfig] = useState<Partial<Config>>();
 
 	const [history, setHistory] = useState([]);
 
@@ -574,40 +575,37 @@ const PlayingPage = ({currentSetProps}: Props) => {
 			check: chess.in_check(),
 			movable: calcMovable(),
 			background: BOARD_LIST[boardColor],
-			wrongMoveVisible,
-			rightMoveVisible,
-			finishMoveVisible,
-			onMove,
 		};
 		setCgConfig(config);
-	}, [
-		chess,
-		orientation,
-		turnColor,
-		lastMove,
-		wrongMoveVisible,
-		rightMoveVisible,
-		finishMoveVisible,
-		onMove,
-	]);
+	}, [chess, orientation, turnColor, lastMove]);
 
 	useEffect(() => {
-		if (!lastMove) return;
-		config.lastMove = lastMove;
-		setCgConfig(config);
+		setCgConfig(c => ({...c, fen}));
+	}, [fen]);
+
+	useEffect(() => {
+		setCgConfig(c => ({...c, lastMove}));
 	}, [lastMove]);
 
 	useEffect(() => {
-		if (!orientation) return;
-		config.orientation = orientation;
-		setCgConfig(config);
+		setCgConfig(c => ({...c, orientation}));
 	}, [orientation]);
 
 	useEffect(() => {
-		if (!fen) return;
-		config.fen = fen;
-		setCgConfig(config);
-	}, [fen]);
+		setCgConfig(c => ({...c, wrongMoveVisible}));
+	}, [wrongMoveVisible]);
+
+	useEffect(() => {
+		setCgConfig(c => ({...c, rightMoveVisible}));
+	}, [rightMoveVisible]);
+
+	useEffect(() => {
+		setCgConfig(c => ({...c, finishMoveVisible}));
+	}, [finishMoveVisible]);
+
+	useEffect(() => {
+		setCgConfig(c => ({...c, onMove}));
+	}, [onMove]);
 
 	return (
 		<div className=''>

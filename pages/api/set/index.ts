@@ -4,6 +4,11 @@ import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import {withSessionRoute} from '@/lib/session';
 import {create, retrieveByUser} from '@/controllers/set';
 
+type SuccessDataMany = {
+	success: true;
+	sets: PuzzleSetInterface[];
+};
+
 type SuccessData = {
 	success: true;
 	set: PuzzleSetInterface;
@@ -14,20 +19,21 @@ type ErrorData = {
 	error: string;
 };
 
-type Data = SuccessData | ErrorData;
+export type Data = SuccessData | ErrorData;
+export type DataMany = SuccessDataMany | ErrorData;
 
 const get_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<DataMany>,
 ) => {
 	const {userID} = request.session;
-	const set = await retrieveByUser(userID);
-	if (set === null) {
+	const sets = await retrieveByUser(userID);
+	if (sets === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
-		return;
+		throw new Error('Set not found');
 	}
 
-	response.json({success: true, set});
+	response.json({success: true, sets});
 };
 
 const post_ = async (
@@ -38,7 +44,7 @@ const post_ = async (
 	const set = await create(userID, request.body);
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
-		return;
+		throw new Error('Set not found');
 	}
 
 	response.json({success: true, set});
@@ -46,20 +52,19 @@ const post_ = async (
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<Data | DataMany>,
 ) => {
 	switch (request.method) {
 		case 'GET':
 			await get_(request, response);
-			break;
+			return;
 
 		case 'POST':
 			await post_(request, response);
-			break;
+			return;
 
 		default:
 			response.status(405).json({success: false, error: 'Method not allowed'});
-			break;
 	}
 };
 

@@ -5,10 +5,9 @@ import Image from 'next/image';
 import {useRouter} from 'next/router';
 import {Button} from './button';
 import plus from '@/public/images/plus.svg';
-import useSets from '@/hooks/use-sets';
 import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import useEffectAsync from '@/hooks/use-effect-async';
-import useClock from '@/hooks/use-clock';
+import {DataMany} from '@/pages/api/set';
 
 type PropsComponent = {
 	set: PuzzleSetInterface;
@@ -46,9 +45,11 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 const PuzzleSetMap = () => {
 	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
 	useEffectAsync(async () => {
-		const response = await fetch('/api/sets');
-		const data = (await response.json()) as PuzzleSetInterface[];
-		setSets(data);
+		const response = await fetch('/api/set');
+		const data = (await response.json()) as DataMany;
+		if (data.success) {
+			setSets(data.sets);
+		}
 	}, []);
 
 	return (
