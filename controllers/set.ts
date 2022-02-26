@@ -1,38 +1,20 @@
 import PuzzleSet, {PuzzleSetInterface} from '@/models/puzzle-set-model';
-import setGenerator from '@/controllers/set-generator';
-import User, {UserInterface} from '@/models/user-model';
-import {Theme} from '@/data/themes';
+import {UserInterface} from '@/models/user-model';
 
-type options = {
-	title: PuzzleSetInterface['title'];
-	themeArray: Array<Theme['id']>;
-	size: PuzzleSetInterface['length'];
-	level: PuzzleSetInterface['level'];
-};
-
-export const create = async (
-	userID: UserInterface['id'],
-	body: options,
-): Promise<PuzzleSetInterface> => {
-	const user: UserInterface = await User.findById(userID).exec();
-	const puzzleSet: PuzzleSetInterface = await setGenerator(user, body);
-	return puzzleSet.save();
-};
+export {create} from '@/controllers/set-create';
+export {update} from '@/controllers/set-update';
 
 export const retrieve = async (
 	id: PuzzleSetInterface['id'],
-): Promise<PuzzleSetInterface> => PuzzleSet.findById(id).exec();
+): Promise<PuzzleSetInterface> =>
+	PuzzleSet.findById(id).exec() as Promise<PuzzleSetInterface>;
 
 export const retrieveByUser = async (
-	id: PuzzleSetInterface['id'],
-): Promise<PuzzleSetInterface> => PuzzleSet.findOne({user: id}).exec();
-
-export const update = async (
-	id: PuzzleSetInterface['id'],
-	body: Partial<PuzzleSetInterface>,
+	user: UserInterface['id'],
 ): Promise<PuzzleSetInterface> =>
-	PuzzleSet.findByIdAndUpdate(id, body, {new: true}).exec();
+	PuzzleSet.findOne({user}).exec() as Promise<PuzzleSetInterface>;
 
 export const remove = async (
 	id: PuzzleSetInterface['id'],
-): Promise<PuzzleSetInterface> => PuzzleSet.findByIdAndDelete(id).exec();
+): Promise<PuzzleSetInterface> =>
+	PuzzleSet.findByIdAndDelete(id).exec() as Promise<PuzzleSetInterface>;

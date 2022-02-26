@@ -52,9 +52,6 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				<div className=' text-4xl font-light'>
 					⏲: {useClock(set.currentTime)}
 				</div>
-				<div className=' text-4xl font-light'>
-					🎯: {Math.round(set.accuracy * 100)} %
-				</div>
 				<div className='text-2xl'>
 					<div>Best time: {set.bestTime}</div>
 					{cycles(set)}

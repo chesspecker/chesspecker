@@ -1,6 +1,6 @@
-export const shuffle = (array: any[]) => {
+export const shuffle = <T>(array: T[]): T[] => {
 	let currentIndex = array.length;
-	let temporary: any;
+	let temporary: T;
 	let rnd: number;
 
 	while (currentIndex !== 0) {

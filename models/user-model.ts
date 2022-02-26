@@ -1,13 +1,13 @@
-import {Schema, model, models} from 'mongoose';
+import {Schema, model, models, Types} from 'mongoose';
 import type {Document} from 'mongoose';
 
 export interface UserInterface extends Document {
-	_id: string;
+	_id: Types.ObjectId;
 	id: string;
 	username: string;
 	url: string;
 	averageRating: number;
-	puzzleSet: any[];
+	puzzleSet: Types.ObjectId[];
 }
 
 const schema = new Schema<UserInterface>({
@@ -15,7 +15,7 @@ const schema = new Schema<UserInterface>({
 	username: String,
 	url: String,
 	averageRating: Number,
-	puzzleSet: [{type: Schema.Types.ObjectId, ref: 'PuzzleSet'}],
+	puzzleSet: [{type: 'ObjectId', ref: 'PuzzleSet'}],
 });
 
 export default models.User || model<UserInterface>('User', schema);

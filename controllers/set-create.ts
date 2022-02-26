@@ -1,8 +1,11 @@
 /* eslint-disable unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument */
 import {shuffle} from '@/lib/help-array';
-import PuzzleSet, {PuzzleSetInterface} from '@/models/puzzle-set-model';
-import Puzzle from '@/models/puzzle-model';
-import {UserInterface} from '@/models/user-model';
+import Puzzle, {PuzzleInterface} from '@/models/puzzle-model';
+import PuzzleSet, {
+	PuzzleItemInterface,
+	PuzzleSetInterface,
+} from '@/models/puzzle-set-model';
+import User, {UserInterface} from '@/models/user-model';
 import {Theme} from '@/data/themes';
 
 const rating = (
@@ -29,7 +32,7 @@ const rating = (
 };
 
 const getQuery = (
-	themeArray: any,
+	themeArray: string[],
 	minRating: number,
 	maxRating: number,
 	spread: number,
@@ -43,18 +46,21 @@ const getQuery = (
 				],
 		  };
 
-type options = {
+type Options = {
 	title: PuzzleSetInterface['title'];
 	themeArray: Array<Theme['id']>;
 	size: PuzzleSetInterface['length'];
 	level: PuzzleSetInterface['level'];
 };
 
-export default async function setGenerator(
-	user: UserInterface,
-	options: options,
-): Promise<PuzzleSetInterface> {
-	const puzzleSet = new PuzzleSet();
+export const create = async (
+	userID: UserInterface['id'],
+	options: Options,
+): Promise<PuzzleSetInterface> => {
+	const user: UserInterface = (await User.findById(
+		userID,
+	).exec()) as UserInterface;
+	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
 	const setLevel = options.level || 'normal';
 	const [minRating, maxRating] = rating(user.averageRating, setLevel);
 	puzzleSet.user = user._id;
@@ -62,21 +68,22 @@ export default async function setGenerator(
 	let puzzlesCount = 0;
 
 	const iterateCursor = async query => {
-		const cursor = await Puzzle.find(query, {_id: 1, PuzzleId: 1}).exec();
+		const cursor = (await Puzzle.find(query, {
+			_id: 1,
+			PuzzleId: 1,
+		}).exec()) as PuzzleInterface[];
 		const docArray = shuffle(cursor);
 		for (const doc of docArray) {
 			if (puzzlesCount >= options.size) break;
-			const puzzleToInsert = {
+			const puzzleToInsert: PuzzleItemInterface = {
 				_id: doc._id,
 				PuzzleId: doc.PuzzleId,
 				played: false,
+				count: 0,
 				order: puzzlesCount,
-				mistakes: 0,
-				timeTaken: 0,
-				grade: 0,
-				repetition: 0,
-				interval: 0,
-				easinessFactor: 2.5,
+				mistakes: [0],
+				timeTaken: [0],
+				grades: [0],
 			};
 			puzzleSet.puzzles.push(puzzleToInsert);
 			puzzlesCount++;
@@ -87,25 +94,24 @@ export default async function setGenerator(
 	do {
 		const query = getQuery(options.themeArray, minRating, maxRating, spread);
 		try {
+			// eslint-disable-next-line no-await-in-loop
 			await iterateCursor(query);
-		} catch (error) {
-			throw error;
+		} catch (error: unknown) {
+			const error_ = error as Error;
+			throw error_;
 		}
 
 		spread += 25;
 	} while (puzzlesCount < options.size);
 
 	puzzleSet.length = puzzlesCount;
-	puzzleSet.chunkLength = Math.round(puzzlesCount / 6);
 	puzzleSet.title = options.title;
-	puzzleSet.cycles = 0;
 	puzzleSet.spacedRepetition = false;
 	puzzleSet.currentTime = 0;
 	puzzleSet.bestTime = 0;
 	puzzleSet.rating = user.averageRating;
 	puzzleSet.totalMistakes = 0;
 	puzzleSet.totalPuzzlesPlayed = 0;
-	puzzleSet.accuracy = 1;
 	puzzleSet.level = setLevel;
-	return puzzleSet;
-}
+	return puzzleSet.save();
+};
