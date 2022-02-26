@@ -1,12 +1,12 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {PuzzleInterface} from '@/models/puzzle-model';
+import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import {withSessionRoute} from '@/lib/session';
-import {retrieve, remove, update} from '@/controllers/puzzle';
+import {retrieve, remove, update} from '@/controllers/set';
 
 type SuccessData = {
 	success: true;
-	puzzle: PuzzleInterface;
+	user: PuzzleSetInterface;
 };
 
 type ErrorData = {
@@ -21,13 +21,13 @@ const get_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	const puzzle = await retrieve(id as string);
-	if (puzzle === null) {
-		response.status(404).json({success: false, error: 'Puzzle not found'});
+	const user = await retrieve(id as string);
+	if (user === null) {
+		response.status(404).json({success: false, error: 'User not found'});
 		return;
 	}
 
-	response.json({success: true, puzzle});
+	response.json({success: true, user});
 };
 
 const delete_ = async (
@@ -35,13 +35,13 @@ const delete_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	const puzzle = await remove(id as string);
-	if (puzzle === null) {
-		response.status(404).json({success: false, error: 'Puzzle not found'});
+	const user = await remove(id as string);
+	if (user === null) {
+		response.status(404).json({success: false, error: 'User not found'});
 		return;
 	}
 
-	response.json({success: true, puzzle});
+	response.json({success: true, user});
 };
 
 const put_ = async (
@@ -49,13 +49,13 @@ const put_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	const puzzle = await update(id as string, request.body);
-	if (puzzle === null) {
-		response.status(404).json({success: false, error: 'Puzzle not found'});
+	const user = await update(id as string, request.body);
+	if (user === null) {
+		response.status(404).json({success: false, error: 'User not found'});
 		return;
 	}
 
-	response.json({success: true, puzzle});
+	response.json({success: true, user});
 };
 
 const handler = async (
