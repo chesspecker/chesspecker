@@ -1,12 +1,12 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {UserInterface} from '@/models/user-model';
+import type {PuzzleInterface} from '@/models/puzzle-model';
 import {withSessionRoute} from '@/lib/session';
-import {retrieve, create} from '@/controllers/user';
+import {create} from '@/controllers/puzzle';
 
 type SuccessData = {
 	success: true;
-	user: UserInterface;
+	puzzle: PuzzleInterface;
 };
 
 type ErrorData = {
@@ -16,31 +16,17 @@ type ErrorData = {
 
 type Data = SuccessData | ErrorData;
 
-const get_ = async (
-	request: NextApiRequest,
-	response: NextApiResponse<Data>,
-) => {
-	const {userID} = request.session;
-	const user = await retrieve(userID);
-	if (user === null) {
-		response.status(404).json({success: false, error: 'User not found'});
-		return;
-	}
-
-	response.json({success: true, user});
-};
-
 const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
-	const user = await create(request.body);
-	if (user === null) {
-		response.status(404).json({success: false, error: 'User not found'});
+	const puzzle = await create(request.body);
+	if (puzzle === null) {
+		response.status(404).json({success: false, error: 'Puzzle not found'});
 		return;
 	}
 
-	response.json({success: true, user});
+	response.json({success: true, puzzle});
 };
 
 const handler = async (
@@ -48,10 +34,6 @@ const handler = async (
 	response: NextApiResponse<Data>,
 ) => {
 	switch (request.method) {
-		case 'GET':
-			await get_(request, response);
-			break;
-
 		case 'POST':
 			await post_(request, response);
 			break;

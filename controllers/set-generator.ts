@@ -1,94 +1,62 @@
 /* eslint-disable unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument */
 import {shuffle} from '@/lib/help-array';
-import PuzzleSet from '@/models/puzzle-set-model';
+import PuzzleSet, {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import Puzzle from '@/models/puzzle-model';
+import {UserInterface} from '@/models/user-model';
+import {Theme} from '@/data/themes';
 
-const rating = (user, level) => {
-	if (!user.perfs) return;
-	const perf = user.perfs;
-	let totalGameNumber = 1;
-	const averageRating = [1500];
-
-	if (perf.ultraBullet && perf.ultraBullet?.games > 0) {
-		const ultraBulletAverage = perf.ultraBullet.rating * perf.ultraBullet.games;
-		totalGameNumber += perf.ultraBullet.games;
-		averageRating.push(ultraBulletAverage);
-	}
-
-	if (perf.bullet && perf.bullet?.games > 0) {
-		const bulletAverage = perf.bullet.rating * perf.bullet.games;
-		totalGameNumber += perf.bullet.games;
-		averageRating.push(bulletAverage);
-	}
-
-	if (perf.blitz && perf.blitz?.games > 0) {
-		const blitzAverage = perf.blitz.rating * perf.blitz.games;
-		totalGameNumber += perf.blitz.games;
-		averageRating.push(blitzAverage);
-	}
-
-	if (perf.rapid && perf.rapid?.games > 0) {
-		const rapidAverage = perf.rapid.rating * perf.rapid.games;
-		totalGameNumber += perf.rapid.games;
-		averageRating.push(rapidAverage);
-	}
-
-	if (perf.classical && perf.classical?.games > 0) {
-		const classicalAverage = perf.classical.rating * perf.classical.games;
-		totalGameNumber += perf.classical.games;
-		averageRating.push(classicalAverage);
-	}
-
-	if (perf.correspondance && perf.correspondance?.games > 0) {
-		const correspondanceAverage =
-			perf.correspondance.rating * perf.correspondance.games;
-		totalGameNumber += perf.correspondance.games;
-		averageRating.push(correspondanceAverage);
-	}
-
-	if (perf.puzzle && perf.puzzle?.games > 0) {
-		const puzzleAverage = perf.puzzle.rating * perf.puzzle.games;
-		totalGameNumber += perf.puzzle.games;
-		averageRating.push(puzzleAverage);
-	}
-
-	const sum = averageRating.reduce((partialSum, a) => partialSum + a, 0);
-	const ratingTier = sum / totalGameNumber;
-	let minRating;
-	let maxRating;
+const rating = (
+	averageRating: UserInterface['averageRating'],
+	level: PuzzleSetInterface['level'],
+): [number, number] => {
 	switch (level) {
 		case 'easiest':
-			minRating = ratingTier - 600;
-			maxRating = ratingTier - 500;
-			break;
+			return [averageRating - 600, averageRating - 500];
+
 		case 'easier':
-			minRating = ratingTier - 300;
-			maxRating = ratingTier - 200;
-			break;
+			return [averageRating - 300, averageRating - 200];
 
 		case 'harder':
-			minRating = ratingTier + 200;
-			maxRating = ratingTier + 300;
-			break;
+			return [averageRating + 200, averageRating + 300];
+
 		case 'hardest':
-			minRating = ratingTier + 500;
-			maxRating = ratingTier + 600;
-			break;
+			return [averageRating + 500, averageRating + 600];
 
 		case 'normal':
 		default:
-			minRating = ratingTier - 50;
-			maxRating = ratingTier + 50;
-			break;
+			return [averageRating - 50, averageRating + 50];
 	}
-
-	return [minRating, maxRating, ratingTier];
 };
 
-export default async function setGenerator(user, options) {
+const getQuery = (
+	themeArray: any,
+	minRating: number,
+	maxRating: number,
+	spread: number,
+) =>
+	themeArray.includes('healthyMix')
+		? {Rating: {$gt: minRating - spread, $lt: maxRating + spread}}
+		: {
+				$and: [
+					{Rating: {$gt: minRating - spread, $lt: maxRating + spread}},
+					{Themes: {$in: [...themeArray]}},
+				],
+		  };
+
+type options = {
+	title: PuzzleSetInterface['title'];
+	themeArray: Array<Theme['id']>;
+	size: PuzzleSetInterface['length'];
+	level: PuzzleSetInterface['level'];
+};
+
+export default async function setGenerator(
+	user: UserInterface,
+	options: options,
+): Promise<PuzzleSetInterface> {
 	const puzzleSet = new PuzzleSet();
 	const setLevel = options.level || 'normal';
-	const [minRating, maxRating, ratingTier] = rating(user, setLevel);
+	const [minRating, maxRating] = rating(user.averageRating, setLevel);
 	puzzleSet.user = user._id;
 	puzzleSet.puzzles = [];
 	let puzzlesCount = 0;
@@ -115,77 +83,17 @@ export default async function setGenerator(user, options) {
 		}
 	};
 
-	let query;
-	if (options.themeArray.includes('healthyMix')) {
-		query = {Rating: {$gt: minRating, $lt: maxRating}};
-	} else {
-		query = {
-			$and: [
-				{Rating: {$gt: minRating, $lt: maxRating}},
-				{Themes: {$in: [...options.themeArray]}},
-			],
-		};
-	}
-
-	try {
-		await iterateCursor(query);
-	} catch (error) {
-		throw error;
-	}
-
-	if (puzzlesCount < options.size) {
-		if (options.themeArray.includes('healthyMix')) {
-			query = {Rating: {$gt: minRating - 25, $lt: maxRating + 25}};
-		} else {
-			query = {
-				$and: [
-					{Rating: {$gt: minRating - 25, $lt: maxRating + 25}},
-					{Themes: {$in: [...options.themeArray]}},
-				],
-			};
-			try {
-				await iterateCursor(query);
-			} catch (error) {
-				throw error;
-			}
+	let spread = 0;
+	do {
+		const query = getQuery(options.themeArray, minRating, maxRating, spread);
+		try {
+			await iterateCursor(query);
+		} catch (error) {
+			throw error;
 		}
-	}
 
-	if (puzzlesCount < options.size) {
-		if (options.themeArray.includes('healthyMix')) {
-			query = {Rating: {$gt: minRating - 50, $lt: maxRating + 50}};
-		} else {
-			query = {
-				$and: [
-					{Rating: {$gt: minRating - 50, $lt: maxRating + 50}},
-					{Themes: {$in: [...options.themeArray]}},
-				],
-			};
-			try {
-				await iterateCursor(query);
-			} catch (error) {
-				throw error;
-			}
-		}
-	}
-
-	if (puzzlesCount < options.size) {
-		if (options.themeArray.includes('healthyMix')) {
-			query = {Rating: {$gt: minRating - 100, $lt: maxRating + 100}};
-		} else {
-			query = {
-				$and: [
-					{Rating: {$gt: minRating - 100, $lt: maxRating + 100}},
-					{Themes: {$in: [...options.themeArray]}},
-				],
-			};
-			try {
-				await iterateCursor(query);
-			} catch (error) {
-				throw error;
-			}
-		}
-	}
+		spread += 25;
+	} while (puzzlesCount < options.size);
 
 	puzzleSet.length = puzzlesCount;
 	puzzleSet.chunkLength = Math.round(puzzlesCount / 6);
@@ -194,7 +102,7 @@ export default async function setGenerator(user, options) {
 	puzzleSet.spacedRepetition = false;
 	puzzleSet.currentTime = 0;
 	puzzleSet.bestTime = 0;
-	puzzleSet.rating = ratingTier;
+	puzzleSet.rating = user.averageRating;
 	puzzleSet.totalMistakes = 0;
 	puzzleSet.totalPuzzlesPlayed = 0;
 	puzzleSet.accuracy = 1;
