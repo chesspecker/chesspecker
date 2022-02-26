@@ -1,0 +1,155 @@
+.next-chessground .chessground {
+	grid-area: board;
+	position: relative;
+	display: block;
+	height: 0;
+	padding-bottom: 100%;
+	padding-right: 100%;
+	width: 100%;
+	border-radius: 0.25rem;
+	overflow: hidden;
+}
+
+.next-chessground .cg-wrap {
+	display: table;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.next-chessground cg-helper {
+	position: absolute;
+	width: 12.5%;
+	padding-bottom: 12.5%;
+	display: table;
+	bottom: 0;
+}
+
+.next-chessground cg-container {
+	position: absolute;
+	width: 800%;
+	height: 800%;
+	display: block;
+	bottom: 0;
+}
+
+.next-chessground cg-board {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	line-height: 0;
+	background-size: cover;
+	cursor: pointer;
+}
+
+.next-chessground cg-board square {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 12.5%;
+	height: 12.5%;
+	pointer-events: none;
+}
+
+.next-chessground .highlight cg-board square.last-move {
+	will-change: transform;
+	background-color: rgba(246, 246, 130, 0.5);
+}
+
+.next-chessground .highlight .correct cg-board square.last-move {
+	background-color: rgba(155, 240, 0, 0.4);
+}
+
+.next-chessground .highlight .incorrect cg-board square.last-move {
+	background-color: rgba(240, 0, 0, 0.4);
+}
+
+.next-chessground cg-board square.check {
+	background: radial-gradient(
+		ellipse at center,
+		rgba(255, 0, 0, 1) 0%,
+		rgba(231, 0, 0, 1) 25%,
+		rgba(169, 0, 0, 0) 89%,
+		rgba(158, 0, 0, 0) 100%
+	);
+}
+
+.next-chessground cg-board square.current-premove {
+	background-color: rgba(20, 30, 85, 0.5);
+}
+
+.next-chessground cg-board piece {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 12.5%;
+	height: 12.5%;
+	background-size: cover;
+	z-index: 2;
+	will-change: transform;
+	pointer-events: none;
+}
+
+.next-chessground cg-board piece.dragging {
+	cursor: move;
+	z-index: 9;
+}
+
+.next-chessground cg-board piece.anim {
+	z-index: 8;
+}
+
+.next-chessground cg-board piece.fading {
+	z-index: 1;
+	opacity: 0.5;
+}
+
+.next-chessground cg-board piece.ghost {
+	opacity: 0.3;
+}
+
+.next-chessground .cg-wrap svg {
+	overflow: hidden;
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 2;
+	opacity: 0.6;
+}
+
+.next-chessground .cg-wrap svg image {
+	opacity: 0.5;
+}
+
+.edit-square {
+	display: table;
+	position: relative;
+	width: 14.285%;
+	padding-bottom: 13.285%;
+}
+
+.promote .edit-square {
+	width: 20%;
+	padding-bottom: 20%;
+  cursor: pointer;
+}
+
+.promotion-piece {
+	top: 0;
+	left: 0;
+	padding-bottom: 100%;
+	padding-left: 100%;
+	position: absolute;
+	background-size: contain;
+	background-position: 0% -100%;
+	cursor: pointer;
+}

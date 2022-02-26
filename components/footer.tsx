@@ -17,6 +17,7 @@ const Footer = () => (
 					<p className='order-white cursor-pointer border-b-2 border-solid border-white pb-6 text-xl text-white'>
 						Bug report or ideas? 💡
 					</p>
+					{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 					<Image src={github} width={50} height={50} />
 				</div>
 			</Link>

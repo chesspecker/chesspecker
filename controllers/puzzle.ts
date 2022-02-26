@@ -1,5 +1,7 @@
 import Puzzle, {PuzzleInterface} from '@/models/puzzle-model';
 
+export {update} from '@/controllers/puzzle-update';
+
 export const create = async (
 	body: PuzzleInterface,
 ): Promise<PuzzleInterface> => {
@@ -11,14 +13,6 @@ export const retrieve = async (
 	id: PuzzleInterface['id'],
 ): Promise<PuzzleInterface> =>
 	Puzzle.findById(id).exec() as Promise<PuzzleInterface>;
-
-export const update = async (
-	id: PuzzleInterface['id'],
-	body: Partial<PuzzleInterface>,
-): Promise<PuzzleInterface> =>
-	Puzzle.findByIdAndUpdate(id, body, {
-		new: true,
-	}).exec() as Promise<PuzzleInterface>;
 
 export const remove = async (
 	id: PuzzleInterface['id'],

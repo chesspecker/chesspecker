@@ -13,3 +13,6 @@ export const shuffle = <T>(array: T[]): T[] => {
 
 	return array;
 };
+
+export const sortBy = <T>(array: T[], p: string): T[] =>
+	[...array].sort((a, b) => (a[p] > b[p] ? 1 : a[p] < b[p] ? -1 : 0));

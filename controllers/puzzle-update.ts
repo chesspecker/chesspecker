@@ -4,7 +4,7 @@ import PuzzleSet, {
 } from '@/models/puzzle-set-model';
 
 type BodyData = {
-	PuzzleId: PuzzleItemInterface['PuzzleId'];
+	_id: PuzzleSetInterface['id'];
 	didCheat: boolean;
 	mistakes: number;
 	timeTaken: number;
@@ -21,10 +21,11 @@ const getGrade = ({didCheat, mistakes, timeTaken, perfect}: BodyData) => {
 };
 
 export const update = async (
-	_id: PuzzleSetInterface['id'],
+	puzzleId: PuzzleItemInterface['_id'],
 	body: BodyData,
 ): Promise<PuzzleSetInterface> => {
-	const {PuzzleId: puzzleId, mistakes, timeTaken} = body;
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const {_id, mistakes, timeTaken} = body;
 	return PuzzleSet.findOneAndUpdate(
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		{_id, 'puzzles._id': puzzleId},

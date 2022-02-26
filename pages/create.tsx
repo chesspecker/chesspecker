@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import {useAtom} from 'jotai';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';

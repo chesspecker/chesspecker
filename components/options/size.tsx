@@ -9,7 +9,7 @@ const OptionSize = () => {
 	};
 
 	return (
-		<div className='mt-8 flex w-full flex-col items-stretch justify-between border-2 border-white text-left'>
+		<div className='mt-8 flex w-full flex-col items-stretch justify-between text-left'>
 			<div className='flex justify-between'>
 				<label
 					htmlFor='number_game'

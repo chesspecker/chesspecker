@@ -1,388 +1,257 @@
-import Chessground from '@react-chess/chessground';
-import type {ChessInstance, Square} from 'chess.js';
-import {useSound} from 'use-sound';
 import {useState, useEffect, useCallback, ReactElement} from 'react';
-import Router from 'next/router.js';
 import * as ChessJS from 'chess.js';
-import {Config} from 'types/chessground-config';
+import {ChessInstance, Square} from 'chess.js';
+import type {Config} from 'chessground/config';
+import type {Dests} from 'chessground/types';
+import {useAtom} from 'jotai';
+import type {Data} from '../api/puzzle/[id]';
+import {
+	PuzzleItemInterface,
+	PuzzleSetInterface,
+} from '@/models/puzzle-set-model';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
-
-import SOUND_MOVE from '@/sounds/Move.mp3';
-import SOUND_CAPTURE from '@/sounds/Capture.mp3';
-import SOUND_ERROR from '@/sounds/Error.mp3';
-import SOUND_GENERIC from '@/sounds/GenericNotify.mp3';
-import SOUND_VICTORY from '@/sounds/Victory.mp3';
-import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
-import type {PuzzleInterface} from '@/models/puzzle-model';
-
-type Props = {currentSetProps: PuzzleSetInterface};
-
-declare const files: readonly ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-declare const ranks: readonly ['1', '2', '3', '4', '5', '6', '7', '8'];
-declare type File = typeof files[number];
-declare type Rank = typeof ranks[number];
-declare type Key = 'a0' | `${File}${Rank}`;
-declare type Dests = Map<Key, Key[]>;
-
-const BOARD_LIST = [
-	'blue.svg',
-	'brown.svg',
-	'gray.jpg',
-	'green.svg',
-	'leather.jpg',
-	'marble.jpg',
-	'purple.svg',
-	'wood1.jpg',
-	'wood2.jpg',
-	'wood3.jpg',
-];
-
-const sortBy = (array: any[], p) =>
-	[...array].sort((a, b) => (a[p] > b[p] ? 1 : a[p] < b[p] ? -1 : 0));
-
-const get_ = (value: string) => JSON.parse(localStorage.getItem(value) || '{}');
-const set_ = (value: [string, any]) => {
-	localStorage.setItem(value[0], JSON.stringify(value[1]));
-};
+import Chessboard from '@/components/play/chessboard';
+import {sortBy} from '@/lib/help-array';
+import useEffectAsync from '@/hooks/use-effect-async';
+import {PuzzleInterface} from '@/models/puzzle-model';
+import audio from '@/lib/sound';
+import {soundAtom, orientationAtom} from '@/lib/atoms';
+import useModal from '@/hooks/use-modal';
+import Flip from '@/components/play/flip';
+import Settings from '@/components/play/settings';
+import Promotion from '@/components/play/promotion';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
+const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 
-const PlayingPage = ({currentSetProps}: Props) => {
-	console.log('currentSetProps', currentSetProps);
-	console.log('ChessReq', Chess);
-
-	const [moveSound] = useSound(SOUND_MOVE);
-	const [captureSound] = useSound(SOUND_CAPTURE);
-	const [errorSound] = useSound(SOUND_ERROR);
-	const [genericSound] = useSound(SOUND_GENERIC);
-	const [victorySound] = useSound(SOUND_VICTORY);
-
-	const [isSoundDisabled, setIsSoundDisabled] = useState(false);
-
-	const [fen, setFen] = useState('');
-	const [turn, setTurn] = useState('w');
-	const [malus, setMalus] = useState(0);
+type Props = {set: PuzzleSetInterface};
+const PlayingPage = ({set}: Props) => {
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
-	const [counter, setCounter] = useState(0);
-	const [config, setCgConfig] = useState<Partial<Config>>();
-
-	const [history, setHistory] = useState([]);
-
-	const [lastMove, setLastMove] = useState<Square[]>();
+	const [config, setConfig] = useState<Partial<Config>>();
+	const [puzzleList, setPuzzleList] = useState<PuzzleItemInterface[]>([]);
+	const [puzzleIndex, setPuzzleIndex] = useState<number>(0);
+	const [puzzle, setPuzzle] = useState<PuzzleInterface>();
 	const [moveNumber, setMoveNumber] = useState(0);
-	const [gameLink, setGameLink] = useState('');
-	const [mistakesNumber, setMistakesNumber] = useState(0);
-
-	const [puzzleList, setPuzzleList] = useState([]);
-	const [puzzleListLength, setPuzzleListLength] = useState(0);
-
-	const [currentPuzzle, setCurrentPuzzle] = useState<PuzzleInterface>();
-	const [actualPuzzle, setActualPuzzle] = useState(0);
-	const [puzzleCompleteInSession, setPuzzleCompleteInSession] = useState(0);
-
-	const [pendingMove, setPendingMove] = useState<Square[]>();
-	const [orientation, setOrientation] = useState<'white' | 'black'>();
-
-	const [timerRunning, setTimerRunning] = useState(false);
-	const [timerBeforeCurrentPuzzle, setTimerBeforeCurrentPuzzle] = useState(0);
-
+	const [moveHistory, setMoveHistory] = useState([]);
+	const [lastMove, setLastMove] = useState<Square[]>([]);
+	const [malus, setMalus] = useState(0);
+	const [mistakes, setMistakes] = useState(0);
+	const [hasAutoMove, setHasAutoMove] = useState(true);
+	const [hasSound, setHasSound] = useAtom(soundAtom);
+	const [solution, setSolution] = useState({clicked: false, clickable: false});
+	const [timer, setTimer] = useState(0);
+	const [isTimerOn, setIsTimerOn] = useState(false);
+	const [initialTimer, setInitialTimer] = useState(0);
 	const [isComplete, setIsComplete] = useState(false);
-	const [autoMove, setAutoMove] = useState(true);
-
-	const [sucessVisible, setSucessVisible] = useState(false);
-	const [selectVisible, setSelectVisible] = useState(false);
-	const [solutionVisible, setSolutionVisible] = useState(false);
-	const [startPopupVisible, setStartPopupVisible] = useState(true);
-
-	const [wrongMoveVisible, setWrongMoveVisible] = useState(false);
-	const [rightMoveVisible, setRightMoveVisible] = useState(false);
-
-	const [finishMoveVisible, setFinishMoveVisible] = useState(false);
-
-	const [boardColor, setBoardColor] = useState(0);
-
-	const [text, setText] = useState({
-		title: 'Your turn',
-		subtitle: `Find the best move.`,
-	});
+	const [completedPuzzles, setCompletedPuzzles] = useState(0);
+	const [pendingMove, setPendingMove] = useState<Square[]>([]);
+	const {isOpen, show, hide} = useModal();
+	const [orientation, setOrientation] = useAtom(orientationAtom);
 
 	/**
 	 * Setup timer.
 	 */
 	useEffect(() => {
-		if (timerRunning)
+		if (isTimerOn)
 			setTimeout(() => {
-				setCounter(lastCount => lastCount + 1);
+				setTimer(lastCount => lastCount + 1);
 			}, 1000);
-	}, [timerRunning, counter]);
+	}, [isTimerOn, timer]);
 
 	/**
-	 * Get last value setIsSoundDisabled
-	 */
-	useEffect(() => {
-		let soundDisabled = get_('isSoundDisabled');
-		if (soundDisabled === 'true') soundDisabled = true;
-		if (soundDisabled === 'false') soundDisabled = false;
-		setIsSoundDisabled(soundDisabled);
-	}, []);
-
-	/**
-	 * Save setIsSoundDisabled to local storage
-	 */
-	useEffect(() => {
-		set_(['isSoundDisabled', isSoundDisabled]);
-	}, [isSoundDisabled]);
-
-	/**
-	 * Get last value autoMove
-	 */
-	useEffect(() => {
-		let newAutoMove = get_('autoMove');
-		if (newAutoMove === 'true') newAutoMove = true;
-		if (newAutoMove === 'false') newAutoMove = false;
-		setAutoMove(newAutoMove);
-	}, []);
-
-	/**
-	 * Save autoMove to local storage
-	 */
-	useEffect(() => {
-		set_(['autoMove', autoMove]);
-	}, [autoMove]);
-
-	/**
-	 * Retrieve the set.
 	 * Extract the list of puzzles.
 	 */
 	useEffect(() => {
-		setCounter(currentSetProps.currentTime);
-		setTimerBeforeCurrentPuzzle(currentSetProps.currentTime);
-		const puzzleList = currentSetProps.puzzles.filter(p => !p.played);
-		const sortedPuzzleList = sortBy(puzzleList, 'order');
-		setPuzzleList(() => sortedPuzzleList);
-	}, [currentSetProps.currentTime, currentSetProps.puzzles]);
-
-	/**
-	 * Set the number of puzzles remaining.
-	 */
-	useEffect(() => {
-		if (puzzleList.length === 0) return;
-		setPuzzleListLength(() => puzzleList.length);
-	}, [puzzleList]);
+		setTimer(() => set.currentTime);
+		setInitialTimer(set.currentTime);
+		const puzzleList = set.puzzles.filter(p => !p.played);
+		setPuzzleList(() => sortBy(puzzleList, 'order'));
+	}, [set.puzzles, set.currentTime]);
 
 	/**
 	 * Wait to show solution button.
 	 */
 	useEffect(() => {
-		const timeTaken = counter - timerBeforeCurrentPuzzle;
-		if (timeTaken < 6) setSolutionVisible(() => false);
-		if (timeTaken > 6) setSolutionVisible(() => true);
-	}, [counter, timerBeforeCurrentPuzzle]);
-
-	/**
-	 * RightBar title.
-	 */
-	useEffect(() => {
-		const title = 'Your turn';
-		const subtitle = `Find the best move for ${orientation}.`;
-		const text = {title, subtitle};
-		setText(() => text);
-	}, [orientation, actualPuzzle]);
+		const past = timer - initialTimer;
+		if (past < 6) setSolution(solution => ({...solution, clickable: false}));
+		if (past > 6) setSolution(solution => ({...solution, clickable: true}));
+	}, [timer, initialTimer]);
 
 	/**
 	 * Retrieve current puzzle.
 	 */
-	useEffect(() => {
-		if (!puzzleList[actualPuzzle] || puzzleList.length === 0) return;
-		const puzzleToGet = puzzleList[actualPuzzle];
-		const getCurrentPuzzle = async () => {
-			try {
-				const data = await fetcher.get(`/api/puzzle/${puzzleToGet._id}`);
-				setGameLink(() => `https://lichess.org/training/${data.PuzzleId}`);
-				setCurrentPuzzle(() => data as PuzzleInterface);
-			} catch (error) {
-				console.log(error);
-			}
-		};
-
-		getCurrentPuzzle();
-	}, [puzzleList, actualPuzzle]);
+	useEffectAsync(async () => {
+		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
+		const nextPuzzle = puzzleList[puzzleIndex];
+		const data = (await fetcher.get(
+			`/api/puzzle/${nextPuzzle._id.toString()}`,
+		)) as Data;
+		if (data.success) {
+			setPuzzle(() => data.puzzle);
+			// TODO: setGameLink(`https://lichess.org/training/${data.puzzle.PuzzleId}`);
+		}
+	}, [puzzleList, puzzleIndex]);
 
 	/**
 	 * Setup the board.
 	 */
 	useEffect(() => {
-		if (!currentPuzzle?.Moves) return;
-		const chessJs = new Chess(currentPuzzle.FEN);
-		const history = currentPuzzle.Moves.split(' ');
-
-		setIsComplete(() => false);
-		setPendingMove(() => undefined);
-		setLastMove(() => undefined);
+		if (!puzzle?.Moves) return;
+		const chess = new Chess(puzzle.FEN);
+		setChess(() => chess);
+		setMoveHistory(() => puzzle.Moves.split(' '));
 		setMoveNumber(() => 0);
-		setHistory(() => history);
-		setChess(() => chessJs);
-		setFen(() => chessJs.fen());
-		setTurn(() => chessJs.turn());
-		setOrientation(() => (chessJs.turn() === 'b' ? 'white' : 'black'));
-	}, [currentPuzzle]);
+		setLastMove(() => []);
+		// SetIsComplete(() => false);
+		// setPendingMove(() => undefined);
+		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
+
+		const config: Partial<Config> = {
+			fen: chess.fen(),
+			animation: {enabled: true, duration: 50},
+			premovable: {enabled: false},
+			movable: calcMovable(),
+			coordinates: true,
+		};
+
+		setConfig(previousConfig => ({...previousConfig, ...config}));
+	}, [puzzle]);
+
+	type BodyData = {
+		_id: PuzzleSetInterface['id'];
+		didCheat: boolean;
+		mistakes: number;
+		timeTaken: number;
+		perfect: number;
+	};
 
 	/**
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
-		const actualPuzzleId = puzzleList[actualPuzzle];
-		const timeTaken = counter - timerBeforeCurrentPuzzle;
-		const mistakes = mistakesNumber;
+		const puzzle = puzzleList[puzzleIndex];
+		const timeTaken = timer - initialTimer;
+		const body: BodyData = {
+			_id: set._id,
+			didCheat: false,
+			mistakes,
+			timeTaken,
+			perfect: 0,
+		};
+
 		try {
-			await fetcher.put(`/api/puzzle/${currentSetProps._id}`, {
-				puzzleId: actualPuzzleId._id,
-				options: {mistakes, timeTaken},
-			});
+			await fetcher.put(`/api/puzzle/${puzzle._id.toString()}`, body);
 		} catch (error) {
 			console.log(error);
 		}
-	}, [
-		actualPuzzle,
-		counter,
-		mistakesNumber,
-		puzzleList,
-		timerBeforeCurrentPuzzle,
-		currentSetProps._id,
-	]);
+	}, [puzzleIndex, timer, mistakes, puzzleList, initialTimer, set._id]);
 
 	/**
 	 * Called when puzzle is completed, switch to the next one.
 	 */
 	const changePuzzle = useCallback(async () => {
 		await updateFinishedPuzzle();
-		setPuzzleCompleteInSession(previous => previous + 1);
-		setMistakesNumber(() => 0);
-		setSolutionVisible(() => false);
-		setTimerBeforeCurrentPuzzle(() => counter);
-		setActualPuzzle(previousPuzzle => previousPuzzle + 1);
-	}, [counter, updateFinishedPuzzle]);
+		setCompletedPuzzles(previous => previous + 1);
+		setMistakes(() => 0);
+		setSolution(solution => ({...solution, clickable: false}));
+		setInitialTimer(() => timer);
+		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
+	}, [timer, updateFinishedPuzzle]);
 
 	/**
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
 		try {
-			await fetcher.put(`/api/set/complete/${currentSetProps._id}`, {
+			await fetcher.put(`/api/set/${set._id.toString()}`, {
 				cycles: true,
-				bestTime: counter + 1,
+				bestTime: timer + 1,
 			});
 		} catch (error) {
 			console.log(error);
 		}
-	}, [counter, currentSetProps]);
+	}, [timer, set]);
 
 	/**
 	 * Called after each correct move.
 	 */
 	const checkSetComplete = useCallback(async () => {
-		if (actualPuzzle + 1 === puzzleListLength) {
-			setTimerRunning(() => false);
-			setSucessVisible(() => true);
-			if (!isSoundDisabled) victorySound();
-			/**
-			 * Not working properly yet
-			 * 
-			setFinishMoveVisible(() => true);
-			setTimeout(() => setFinishMoveVisible(() => false), 600);
-			 */
+		if (puzzleIndex + 1 === puzzleList.length) {
+			setIsTimerOn(() => false);
+			await audio('VICTORY', hasSound);
 			await updateFinishedSet();
 			return true;
 		}
 
 		return false;
-	}, [
-		actualPuzzle,
-		isSoundDisabled,
-		puzzleListLength,
-		updateFinishedSet,
-		victorySound,
-	]);
+	}, [puzzleIndex, hasSound, puzzleList.length, updateFinishedSet]);
 
 	/**
 	 * Called after each correct move.
 	 */
 	const checkPuzzleComplete = useCallback(
 		async moveNumber => {
-			if (moveNumber === history.length) {
+			if (moveNumber === moveHistory.length) {
 				const isSetComplete = await checkSetComplete();
 				if (isSetComplete) return true;
-				if (!isSoundDisabled) genericSound();
-				/**
-			 * Not working properly yet
-			 * 
-			setFinishMoveVisible(() => true);
-			setTimeout(() => setFinishMoveVisible(() => false), 600);
-			 */
+				await audio('GENERIC', hasSound);
 				setIsComplete(() => true);
-				if (autoMove) changePuzzle();
+				if (hasAutoMove) await changePuzzle();
 				return true;
 			}
 
 			return false;
 		},
-		[
-			autoMove,
-			changePuzzle,
-			checkSetComplete,
-			genericSound,
-			history.length,
-			isSoundDisabled,
-		],
+		[hasAutoMove, hasSound, changePuzzle, checkSetComplete, moveHistory.length],
 	);
 
 	/**
 	 * Function making the computer play the next move.
 	 */
 	const computerMove = useCallback(
-		(index: number) => {
+		async (index: number) => {
 			if (!chess) return;
-			const move = chess.move(history[index], {sloppy: true});
-			if (move && move.from) setLastMove(() => [move.from, move.to]);
-			setFen(chess.fen());
-			checkPuzzleComplete(moveNumber + 1);
+			const move = chess.move(moveHistory[index], {sloppy: true});
+			if (!move) return;
+			setConfig(config => ({
+				...config,
+				fen: chess.fen(),
+				movable: calcMovable(),
+				lastMove: [move.from, move.to],
+			}));
 			setMoveNumber(previousMove => previousMove + 1);
-			if (!isSoundDisabled) moveSound();
+			if (move.captured) {
+				await audio('CAPTURE', hasSound);
+				return;
+			}
+
+			await audio('MOVE', hasSound);
 		},
-		[
-			checkPuzzleComplete,
-			chess,
-			history,
-			isSoundDisabled,
-			moveNumber,
-			moveSound,
-		],
+		[chess, moveHistory],
 	);
 
 	/**
 	 * When the board is setup, make the first move.
 	 */
 	useEffect(() => {
-		if (!history) return;
-		if (moveNumber === 0)
-			setTimeout(() => {
-				computerMove(moveNumber);
-			}, 500);
-	}, [history, moveNumber, computerMove]);
+		if (!moveHistory) return;
+		setTimeout(async () => {
+			await computerMove(0);
+		}, 300);
+	}, [moveHistory, computerMove]);
+
+	useEffect(() => {
+		setConfig(config => ({...config, lastMove}));
+	}, [lastMove]);
 
 	/**
 	 * Allow only legal moves.
 	 */
-	const calcMovable = (): {
-		free: boolean;
-		dests: Dests;
-		color: 'white' | 'black' | 'both';
-		draggable: {
-			showGhost: boolean;
-		};
-	} => {
+	const calcMovable = (): Partial<Config['movable']> => {
 		const dests = new Map();
+		// FIXME: not working
+		const color = getColor(chess.turn());
 		for (const s of chess.SQUARES) {
 			const ms = chess.moves({square: s, verbose: true});
 			if (ms.length > 0)
@@ -395,42 +264,32 @@ const PlayingPage = ({currentSetProps}: Props) => {
 		return {
 			free: false,
 			dests,
-			color: turn === 'b' ? 'white' : 'black',
-			draggable: {
-				showGhost: true,
-			},
+			showDests: true,
+			color: 'both',
 		};
 	};
 
-	const onRightMove = async (from, to) => {
-		setFen(() => chess.fen());
+	const onRightMove = async (from: Square, to: Square) => {
+		setConfig(config => ({
+			...config,
+			fen: chess.fen(),
+			movable: calcMovable(),
+			lastMove: [from, to],
+		}));
+		const currentMoveNumber = moveNumber + 1;
 		setMoveNumber(previousMove => previousMove + 1);
-		setLastMove(() => [from, to]);
-		const isPuzzleComplete = await checkPuzzleComplete(moveNumber);
+		const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
 		if (isPuzzleComplete) return;
-		setRightMoveVisible(() => true);
-		setTimeout(() => {
-			setRightMoveVisible(() => false);
-		}, 600);
-		setTimeout(() => {
-			computerMove(moveNumber + 1);
-		}, 800);
+		setTimeout(async () => {
+			await computerMove(moveNumber + 1);
+		}, 300);
 	};
 
-	const onWrongMove = () => {
+	const onWrongMove = async () => {
 		chess.undo();
-		setFen(() => chess.fen());
-		setMalus(lastCount => lastCount + 3);
-		setMistakesNumber(previous => previous + 1);
-		if (!isSoundDisabled) errorSound();
-		setWrongMoveVisible(() => true);
-		setTimeout(() => {
-			setWrongMoveVisible(() => false);
-		}, 600);
-		setText(() => ({
-			title: `That's not the move!`,
-			subtitle: `Try something else.`,
-		}));
+		setMistakes(previous => previous + 1);
+		setMalus(previous => previous + 3);
+		await audio('ERROR', hasSound);
 	};
 
 	/**
@@ -438,178 +297,65 @@ const PlayingPage = ({currentSetProps}: Props) => {
 	 */
 	const onMove = async (from: Square, to: Square) => {
 		const moves = chess.moves({verbose: true});
-		for (let i = 0, length_ = moves.length; i < length_; i++) {
-			if (moves[i].flags.includes('p') && moves[i].from === from) {
-				setPendingMove(() => [from, to]);
-				setSelectVisible(true);
+		for (const move_ of moves) {
+			if (move_.from === from && move_.to === to && move_.flags.includes('p')) {
+				setPendingMove([from, to]);
+				show();
 				return;
 			}
 		}
 
 		const move = chess.move({from, to});
 		if (move === null) return;
-		if (move.captured && !isSoundDisabled) {
-			captureSound();
-		} else if (!isSoundDisabled) {
-			moveSound();
-		}
 
-		const isCorrectMove = validateMove(move);
+		await (move.captured
+			? audio('CAPTURE', hasSound)
+			: audio('MOVE', hasSound));
+
+		const isCorrectMove = `${move.from}${move.to}` === moveHistory[moveNumber];
 		if (isCorrectMove || chess.in_checkmate()) {
 			await onRightMove(from, to);
-		} else {
-			onWrongMove();
+			return;
 		}
-	};
 
-	/**
-	 * Check if the move is valid.
-	 */
-	const validateMove = ({from, to}: {from: Square; to: Square}) =>
-		`${from}${to}` === history[moveNumber];
+		await onWrongMove();
+	};
 
 	/**
 	 * Handle promotions via chessground.
 	 */
 	const promotion = async piece => {
-		setSelectVisible(false);
 		const from = pendingMove[0];
 		const to = pendingMove[1];
-		const isCorrectMove = piece === history[moveNumber].slice(-1);
-		chess.move({from, to, promotion: piece});
+		const isCorrectMove = piece === moveHistory[moveNumber].slice(-1);
+		const move = chess.move({from, to, promotion: piece});
+		if (move === null) return;
+
+		await (move.captured
+			? audio('CAPTURE', hasSound)
+			: audio('MOVE', hasSound));
 
 		if (isCorrectMove || chess.in_checkmate()) {
-			onRightMove(from, to);
+			await onRightMove(from, to);
 			return;
 		}
 
-		onWrongMove();
+		await onWrongMove();
 	};
-
-	/**
-	 * Return the correct turn color as a string.
-	 */
-	const turnColor = (string_: string): 'white' | 'black' =>
-		string_ === 'w' ? 'white' : 'black';
-
-	/**
-	 * Switch board orientation
-	 */
-	const switchOrientation = () => {
-		setOrientation(orientation =>
-			orientation === 'white' ? 'black' : 'white',
-		);
-	};
-
-	/**
-	 * Toggle autoMove
-	 */
-	const toggleAutoMove = () => {
-		setAutoMove(previous => !previous);
-	};
-
-	const toggleSound = () => {
-		setIsSoundDisabled(previous => !previous);
-	};
-
-	const moveToNext = async () => changePuzzle();
-
-	const handleKeyPress = useCallback(
-		event => {
-			switch (event.key) {
-				case 'Q':
-				case 'q':
-				case 'Escape':
-					Router.push('/dashboard');
-					break;
-				case 's':
-				case 'S':
-				case 'n':
-				case 'N':
-					if (!isComplete) break;
-					changePuzzle();
-					break;
-				default:
-					break;
-			}
-		},
-		[changePuzzle, isComplete],
-	);
-
-	useEffect(() => {
-		document.addEventListener('keydown', handleKeyPress);
-		return () => {
-			document.removeEventListener('keydown', handleKeyPress);
-		};
-	}, [handleKeyPress]);
-
-	const handleRestart = () => {
-		setPuzzleCompleteInSession(() => 0);
-		setActualPuzzle(() => 0);
-		setCounter(() => 0);
-		setMalus(() => 0);
-		setTimerRunning(() => true);
-		setSucessVisible(() => false);
-	};
-
-	const handleStart = () => {
-		setMalus(() => 0);
-		setStartPopupVisible(() => false);
-		setTimerRunning(true);
-	};
-
-	const handleLeaveGame = () => {
-		Router.push('/dashboard');
-	};
-
-	const getPercentage = () =>
-		(1 -
-			(puzzleList.length - puzzleCompleteInSession) / currentSetProps.length) *
-		100;
-
-	useEffect(() => {
-		if (!chess) return;
-		console.log('chess', chess);
-		const config = {
-			turnColor: turnColor(chess.turn()),
-			check: chess.in_check(),
-			movable: calcMovable(),
-			background: BOARD_LIST[boardColor],
-		};
-		setCgConfig(config);
-	}, [chess, orientation, turnColor, lastMove]);
-
-	useEffect(() => {
-		setCgConfig(c => ({...c, fen}));
-	}, [fen]);
-
-	useEffect(() => {
-		setCgConfig(c => ({...c, lastMove}));
-	}, [lastMove]);
-
-	useEffect(() => {
-		setCgConfig(c => ({...c, orientation}));
-	}, [orientation]);
-
-	useEffect(() => {
-		setCgConfig(c => ({...c, wrongMoveVisible}));
-	}, [wrongMoveVisible]);
-
-	useEffect(() => {
-		setCgConfig(c => ({...c, rightMoveVisible}));
-	}, [rightMoveVisible]);
-
-	useEffect(() => {
-		setCgConfig(c => ({...c, finishMoveVisible}));
-	}, [finishMoveVisible]);
-
-	useEffect(() => {
-		setCgConfig(c => ({...c, onMove}));
-	}, [onMove]);
 
 	return (
-		<div className=''>
-			<Chessground config={config} />
+		<div>
+			<Chessboard config={{...config, orientation, events: {move: onMove}}} />
+			<Promotion
+				isOpen={isOpen}
+				hide={hide}
+				color={getColor(chess.turn())}
+				onPromote={promotion}
+			/>
+			<div className='flex flex-row-reverse gap-2 py-1.5 text-gray-400'>
+				<Settings />
+				<Flip />
+			</div>
 		</div>
 	);
 };
@@ -618,8 +364,8 @@ PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
 export const getServerSideProps = async ({params}) => {
-	const {id} = params;
+	const id: string = params.id;
 	const data = await fetcher.get(`/api/set/${id}`);
 	if (!data) return {notFound: true};
-	return {props: {currentSetProps: data}};
+	return {props: {set: data.set}};
 };

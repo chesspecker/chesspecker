@@ -10,6 +10,7 @@ const Navbar = () => (
 			<Link href='/dashboard'>
 				<div className='flex'>
 					<div className='m-2 max-w-[3.5rem]'>
+						{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 						<Image src={logo} />
 					</div>
 					<p className='mr-4 self-center text-lg text-white'> — Chesspecker</p>

@@ -2,7 +2,7 @@ import {Schema, model, models, Types} from 'mongoose';
 import type {Document} from 'mongoose';
 import {PuzzleInterface} from './puzzle-model';
 
-type difficulty =
+export type Difficulty =
 	| 'easiest'
 	| 'easier'
 	| 'easy'
@@ -24,7 +24,7 @@ export interface PuzzleItemInterface {
 }
 
 export interface PuzzleSetInterface extends Document {
-	_id: string;
+	_id: Types.ObjectId;
 	user: Types.ObjectId;
 	puzzles: PuzzleItemInterface[];
 	title: string;
@@ -36,7 +36,7 @@ export interface PuzzleSetInterface extends Document {
 	rating: number;
 	totalMistakes: number;
 	totalPuzzlesPlayed: number;
-	level: difficulty;
+	level: Difficulty;
 }
 
 const schema = new Schema<PuzzleSetInterface>({
