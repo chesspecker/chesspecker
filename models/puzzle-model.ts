@@ -1,8 +1,8 @@
-import {Schema, model, models} from 'mongoose';
+import {Schema, model, models, Types} from 'mongoose';
 import type {Document} from 'mongoose';
 
 export interface PuzzleInterface extends Document {
-	_id: string;
+	_id: Types.ObjectId;
 	PuzzleId: string;
 	FEN: string;
 	Moves: string;

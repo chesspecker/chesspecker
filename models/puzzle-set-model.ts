@@ -1,6 +1,6 @@
-import {Schema, model, models} from 'mongoose';
+import {Schema, model, models, Types} from 'mongoose';
 import type {Document} from 'mongoose';
-import {UserInterface} from './user-model';
+import {PuzzleInterface} from './puzzle-model';
 
 type difficulty =
 	| 'easiest'
@@ -12,24 +12,23 @@ type difficulty =
 	| 'harder'
 	| 'hardest';
 
+export interface PuzzleItemInterface {
+	_id: Types.ObjectId;
+	PuzzleId: PuzzleInterface['PuzzleId'];
+	played: boolean;
+	count: number;
+	order: number;
+	mistakes: number[];
+	timeTaken: number[];
+	grades: number[];
+}
+
 export interface PuzzleSetInterface extends Document {
 	_id: string;
-	user: UserInterface;
-	puzzles: Array<{
-		_id: string;
-		PuzzleId: string;
-		played: boolean;
-		order: number;
-		mistakes: number;
-		timeTaken: number;
-		grade: number;
-		interval: number;
-		repetition: number;
-		easinessFactor: number;
-	}>;
+	user: Types.ObjectId;
+	puzzles: PuzzleItemInterface[];
 	title: string;
 	length: number;
-	chunkLength: number;
 	cycles: number;
 	spacedRepetition: boolean;
 	currentTime: number;
@@ -37,29 +36,24 @@ export interface PuzzleSetInterface extends Document {
 	rating: number;
 	totalMistakes: number;
 	totalPuzzlesPlayed: number;
-	accuracy: number;
 	level: difficulty;
 }
 
 const schema = new Schema<PuzzleSetInterface>({
-	user: {type: Schema.Types.ObjectId, ref: 'User'},
+	user: {type: 'ObjectId', ref: 'User'},
 	puzzles: [
 		{
-			_id: {type: Schema.Types.ObjectId, ref: 'Puzzle'},
+			_id: {type: 'ObjectId', ref: 'Puzzle'},
 			PuzzleId: {type: String},
-			played: {type: Boolean},
+			count: {type: Number},
 			order: {type: Number},
-			mistakes: {type: Number},
-			timeTaken: {type: Number},
-			grade: {type: Number},
-			interval: {type: Number},
-			repetition: {type: Number},
-			easinessFactor: {type: Number},
+			mistakes: {type: [Number]},
+			timeTaken: {type: [Number]},
+			grades: {type: [Number]},
 		},
 	],
 	title: {type: String},
 	length: {type: Number},
-	chunkLength: {type: Number},
 	cycles: {type: Number},
 	spacedRepetition: {type: Boolean},
 	currentTime: {type: Number},
@@ -67,7 +61,6 @@ const schema = new Schema<PuzzleSetInterface>({
 	rating: {type: Number},
 	totalMistakes: {type: Number},
 	totalPuzzlesPlayed: {type: Number},
-	accuracy: {type: Number},
 	level: {
 		type: String,
 		enum: [

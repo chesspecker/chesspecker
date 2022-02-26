@@ -1,46 +1,44 @@
+import {LichessUser} from 'types';
 import User, {UserInterface} from '@/models/user-model';
 
-export const createFromLichess = async (body: any): Promise<UserInterface> => {
-	const parameters = {
-		id: body.id,
-		username: body.username,
-		url: body.url,
+export const create = async (liUser: LichessUser): Promise<UserInterface> => {
+	const parameters: Partial<UserInterface> = {
+		id: liUser.id,
+		username: liUser.username,
+		url: liUser.url,
 		averageRating: 1500,
 	};
 
-	if (!body.perfs) {
-		const user: UserInterface = new User(parameters);
+	if (!liUser.perfs) {
+		const user: UserInterface = new User(parameters) as UserInterface;
 		return user.save();
 	}
 
 	const perfs: number[] = [];
-	for (const key in body.perfs) {
-		if (body.perfs[key]) {
-			for (let i = 0; i < body.perfs[key].games; i++) {
-				perfs.push(body.perfs[key].rating);
+	for (const key in liUser.perfs) {
+		if (liUser.perfs[key]) {
+			for (let i = 0; i < liUser.perfs[key].games; i++) {
+				perfs.push(liUser.perfs[key].rating);
 			}
 		}
 	}
 
 	parameters.averageRating = perfs.reduce((a, b) => a + b, 0) / perfs.length;
-	const user: UserInterface = new User(parameters);
-	return user.save();
-};
-
-export const create = async (body: UserInterface): Promise<UserInterface> => {
-	const user: UserInterface = new User(body);
+	const user: UserInterface = new User(parameters) as UserInterface;
 	return user.save();
 };
 
 export const retrieve = async (
 	id: UserInterface['id'],
-): Promise<UserInterface> => User.findById(id).exec();
+): Promise<UserInterface> => User.findById(id).exec() as Promise<UserInterface>;
 
 export const update = async (
 	id: UserInterface['id'],
 	body: Partial<UserInterface>,
 ): Promise<UserInterface> =>
-	User.findByIdAndUpdate(id, body, {new: true}).exec();
+	User.findByIdAndUpdate(id, body, {
+		new: true,
+	}).exec() as Promise<UserInterface>;
 
 export const remove = async (id: UserInterface['id']): Promise<UserInterface> =>
-	User.findByIdAndDelete(id).exec();
+	User.findByIdAndDelete(id).exec() as Promise<UserInterface>;

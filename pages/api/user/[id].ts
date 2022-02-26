@@ -1,12 +1,12 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
+import type {UserInterface} from '@/models/user-model';
 import {withSessionRoute} from '@/lib/session';
-import {retrieve, remove, update} from '@/controllers/set';
+import {retrieve, remove, update} from '@/controllers/user';
 
 type SuccessData = {
 	success: true;
-	user: PuzzleSetInterface;
+	user: UserInterface;
 };
 
 type ErrorData = {

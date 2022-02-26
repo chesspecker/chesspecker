@@ -4,7 +4,7 @@ import withMongoRoute from 'providers/mongoose';
 import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
 import User from '@/models/user-model';
-import {createFromLichess} from '@/controllers/user';
+import {create} from '@/controllers/user';
 
 type ErrorData = {
 	success: false;
@@ -20,12 +20,11 @@ const callback = async (
 		return;
 	}
 
-	const {verifier} = request.session;
-
 	try {
+		const {verifier} = request.session;
 		const lichessToken = await getLichess.token(request.query.code, verifier);
 		const {access_token: oauthToken} = lichessToken;
-		const lichessUser = await getLichess.data(oauthToken);
+		const lichessUser = await getLichess.account(oauthToken);
 		if (!lichessUser) throw new Error('user login failed');
 
 		request.session.token = oauthToken;
@@ -34,11 +33,7 @@ const callback = async (
 		await request.session.save();
 
 		const isAlreadyUsedId = await User.exists({id: lichessUser.id});
-
-		if (!isAlreadyUsedId) {
-			await createFromLichess(lichessUser);
-		}
-
+		if (!isAlreadyUsedId) await create(lichessUser);
 		response.redirect(302, `${origin}/success-login`);
 		return;
 	} catch (error_: unknown) {

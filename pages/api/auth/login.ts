@@ -4,6 +4,7 @@ import withMongoRoute from 'providers/mongoose';
 import {lichess, origin} from '@/config';
 import {withSessionRoute} from '@/lib/session';
 
+// eslint-disable-next-line node/prefer-global/buffer
 const base64URLEncode = (buffer_: Buffer): string =>
 	buffer_
 		.toString('base64')
@@ -11,6 +12,7 @@ const base64URLEncode = (buffer_: Buffer): string =>
 		.replace(/\//g, '_')
 		.replace(/=/g, '');
 
+// eslint-disable-next-line node/prefer-global/buffer
 const sha256 = (string_: string): Buffer =>
 	createHash('sha256').update(string_).digest();
 const createVerifier = (): string => base64URLEncode(randomBytes(32));
@@ -38,7 +40,10 @@ const loginRoute = async (
 		code_challenge_method: 'S256',
 		code_challenge: challenge,
 	});
-	response.redirect(302, `https://lichess.org/oauth?${linkParameters}`);
+	response.redirect(
+		302,
+		`https://lichess.org/oauth?${linkParameters.toString()}`,
+	);
 };
 
 export default withMongoRoute(withSessionRoute(loginRoute));
