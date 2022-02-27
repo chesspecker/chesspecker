@@ -104,47 +104,106 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	const provSet = provPuzle;
 	console.log(set);
 	return (
-		<div className='m-0 mt-8 flex min-h-screen flex-col '>
+		<div className='m-0 mt-8 flex min-h-screen w-screen flex-col px-12 '>
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
 				{provSet.title}
 			</h1>
-			<Button onClick={createCheckOutSession}>Bonsoir</Button>
-			<div className='flex w-full'>
-				<Donnuts
-					played={provSet.totalPuzzlesPlayed}
-					totalSet={provSet.length}
-				/>
-				<div className='min-h-full w-1/3 '>
-					<ChartOneLine rapidity={getRapidity(set)} />
-				</div>
-				<div className='flex flex-col  text-white'>
-					<div className=' text-xl font-light'>
-						Time played: {useClock(provSet.currentTime)}
+
+			<div className='mt-4 w-full'>
+				<h2 className='h2'>Puzzle set state</h2>
+				<div className='mt-4 flex w-full'>
+					<div className=' mx-3 flex min-h-full w-1/3 flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>Time you complete this set</h3>
+						<div className='flex h-full w-full items-center justify-center'>
+							<p className='justify-self-center text-5xl font-bold text-white'>
+								{set.cycles}
+							</p>
+						</div>
 					</div>
-					<div className=' text-xl font-light'>
-						Accuracy: {Math.round(provSet.accuracy * 100)} %
+					<div className=' mx-3 flex min-h-full w-1/3 flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>Total average grade</h3>
+						<div className='flex h-full w-full items-center justify-center'>
+							<p className=' justify-self-center text-5xl font-bold text-white'>
+								C
+							</p>
+						</div>
 					</div>
-					<div className='text-xl'>
-						<div>Best time: {provSet.bestTime}</div>
-						{cycles(set)}
-						{difficulty(set)}
+					<div className=' mx-3 flex min-h-full w-1/3 flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>Total time spent on this puzzle</h3>
+						<div className='flex h-full w-full items-center justify-center'>
+							<p className='align-self-center text-5xl font-bold text-white'>
+								{set.bestTime === 0
+									? useClock(set.currentTime)
+									: useClock(set.bestTime)}
+							</p>
+						</div>
 					</div>
-					<div className='text-xl font-light'>
-						totalPuzzlesPlayed: {provSet.totalPuzzlesPlayed}
-					</div>
-					<div className='text-xl font-light'>
-						totalMistakes: {provSet.totalMistakes}
-					</div>
-					<div className='text-xl font-light'>length: {provSet.length}</div>
-					<div className='text-xl font-light'>rating: {provSet.rating}</div>
 				</div>
 			</div>
-			<ChartMultipleLine
-				array1={getArrayOfTimeByPuzzle(set)}
-				array2={getArrayOfMistakeByPuzzle(set)}
-				name1={'time evolution'}
-				name2={'mistake evolution'}
-			/>
+			<div className='mt-4 w-full'>
+				<h2 className='h2'>Global Progression</h2>
+				<div className='mt-4 flex w-full'>
+					<div className=' mx-3 flex min-h-full w-1/2 flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>
+							Actual time / Average previous time
+						</h3>
+						<div className='flex h-full w-full items-center justify-center'>
+							<p className=' justify-self-center text-5xl font-bold text-white'>
+								C
+							</p>
+						</div>
+					</div>
+					<div className=' mx-3 flex min-h-full w-1/2 flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>
+							Actual grade / Average previous grade
+						</h3>
+						<div className='flex h-full w-full items-center justify-center'>
+							<p className='align-self-center text-5xl font-bold text-white'>
+								{set.bestTime === 0
+									? useClock(set.currentTime)
+									: useClock(set.bestTime)}
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div className='mt-4 w-full'>
+				<h2 className='h2'>Actual Progression</h2>
+				<div className='mt-4 flex w-full flex-wrap justify-around'>
+					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>Progress</h3>
+						<div className='flex h-full items-center justify-center'>
+							<Donnuts
+								played={provSet.totalPuzzlesPlayed}
+								totalSet={provSet.length}
+							/>
+						</div>
+					</div>
+					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>Actual time</h3>
+						<div className='flex h-full w-full items-center justify-center'>
+							<p className='align-self-center text-5xl font-bold text-white'>
+								{useClock(set.currentTime)}
+							</p>
+						</div>
+					</div>
+					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
+						<h3 className='h3 text-center'>Average Grade</h3>
+						<div className='flex h-52 w-36 items-center justify-center'>
+							<ChartOneLine rapidity={getRapidity(set)} />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className='mt-10 pt-10'>
+				<ChartMultipleLine
+					array1={getArrayOfTimeByPuzzle(set)}
+					array2={getArrayOfMistakeByPuzzle(set)}
+					name1={'time evolution'}
+					name2={'mistake evolution'}
+				/>
+			</div>
 			<ChartInfinitLine set={provSet} />
 		</div>
 	);

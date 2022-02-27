@@ -1,8 +1,10 @@
 import React from 'react';
 import {Chart as ChartJS, ArcElement, Tooltip, Legend} from 'chart.js';
-import {Doughnut} from 'react-chartjs-2';
+import {Doughnut} from 'react-chartjs-3';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.overrides.doughnut.plugins.legend.labels.color =
+	'rgba(54, 162, 235, 1)';
 
 function Donnuts({totalSet, played}) {
 	const data = {
@@ -11,16 +13,22 @@ function Donnuts({totalSet, played}) {
 			{
 				label: '# of Votes',
 				data: [totalSet, played],
-				backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+				backgroundColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
 				borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-				borderWidth: 1,
+				borderWidth: 4,
 			},
 		],
 	};
 	return (
 		<div>
-			<h2>Total played</h2>
-			<Doughnut data={data} />
+			<Doughnut
+				data={data}
+				legend={{
+					labels: {
+						color: 'red',
+					},
+				}}
+			/>
 		</div>
 	);
 }
