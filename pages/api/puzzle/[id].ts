@@ -1,12 +1,13 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
+import {Types} from 'mongoose';
 import type {PuzzleInterface} from '@/models/puzzle-model';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/puzzle';
 
 type SuccessData = {
 	success: true;
-	puzzle: PuzzleInterface;
+	puzzle?: PuzzleInterface;
 };
 
 type ErrorData = {
@@ -14,7 +15,7 @@ type ErrorData = {
 	error: string;
 };
 
-type Data = SuccessData | ErrorData;
+export type Data = SuccessData | ErrorData;
 
 const get_ = async (
 	request: NextApiRequest,
@@ -48,14 +49,14 @@ const put_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
-	const {id} = request.query;
-	const puzzle = await update(id as string, request.body);
-	if (puzzle === null) {
+	const {id}: {id?: Types.ObjectId} = request.query;
+	const result = await update(id, JSON.parse(request.body));
+	if (result === null) {
 		response.status(404).json({success: false, error: 'Puzzle not found'});
 		return;
 	}
 
-	response.json({success: true, puzzle});
+	response.json({success: true});
 };
 
 const handler = async (

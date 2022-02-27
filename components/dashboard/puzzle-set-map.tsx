@@ -3,7 +3,7 @@ import type {MouseEvent} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {useRouter} from 'next/router';
-import {Button} from './button';
+import {Button} from '../button';
 import plus from '@/public/images/plus.svg';
 import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import useEffectAsync from '@/hooks/use-effect-async';
@@ -18,13 +18,13 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const onPlayClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
-		await router.push(`/play/${set._id}`);
+		await router.push(`/play/${set._id.toString()}`);
 	};
 
 	const onViewClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
-		await router.push(`/view/${set._id}`);
+		await router.push(`/view/${set._id.toString()}`);
 	};
 
 	return (
@@ -55,11 +55,12 @@ const PuzzleSetMap = () => {
 	return (
 		<div className='flex flex-wrap items-center justify-center'>
 			{sets.map(set => (
-				<PuzzleSetComponent key={set._id} set={set} />
+				<PuzzleSetComponent key={set._id.toString()} set={set} />
 			))}
 			<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
 				<Link href='./create'>
 					<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center bg-gray-300 text-3xl font-medium text-sky-800'>
+						{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 						<Image src={plus} />
 						<p>Create a set</p>
 					</div>

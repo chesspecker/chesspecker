@@ -46,7 +46,7 @@ const getQuery = (
 				],
 		  };
 
-type Options = {
+export type Options = {
 	title: PuzzleSetInterface['title'];
 	themeArray: Array<Theme['id']>;
 	size: PuzzleSetInterface['length'];

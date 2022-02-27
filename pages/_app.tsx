@@ -1,4 +1,9 @@
 import '@/styles/globals.css';
+import '@/styles/modal.css';
+import '@/styles/cg-base.css';
+import '@/styles/cg-chess.css';
+import '@/styles/cg-board.css';
+import '@/styles/cg-pieces.css';
 import Head from 'next/head';
 import type {ReactElement, ReactNode} from 'react';
 import type {NextPage} from 'next';

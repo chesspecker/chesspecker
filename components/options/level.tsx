@@ -1,15 +1,16 @@
 import {useAtom} from 'jotai';
 import type {ChangeEvent} from 'react';
 import {optionsLevelAtom} from '@/lib/atoms';
+import {Difficulty} from '@/models/puzzle-set-model';
 
 const OptionLevel = () => {
-	const [level, setLevel] = useAtom(optionsLevelAtom);
+	const [, setLevel] = useAtom(optionsLevelAtom);
 	const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-		setLevel(() => event.target.value);
+		setLevel(() => event.target.value as Difficulty);
 	};
 
 	return (
-		<div className='mt-8 flex w-full flex-col items-stretch justify-between border-2 border-white text-left'>
+		<div className='mt-8 flex w-full flex-col items-stretch justify-between text-left'>
 			<div className='flex justify-between'>
 				<label
 					htmlFor='number_game'

@@ -1,0 +1,96 @@
+.pure-modal {
+	box-shadow: rgba(0, 0, 0, 0.5) 0px 5px 15px 0px;
+	color: rgba(55, 65, 81);
+}
+.pure-modal-backdrop {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1040;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.backdrop-overflow-hidden {
+	overflow: hidden !important;
+}
+.pure-modal-backdrop .pure-modal {
+	width: 300px;
+	max-width: 100%;
+	box-sizing: border-box;
+	transition: all 0.2s ease-in-out;
+	max-height: 100%;
+}
+.pure-modal.auto-height {
+	position: static;
+}
+.pure-modal-backdrop.scrollable {
+	overflow-y: auto;
+}
+.pure-modal-backdrop .panel {
+	display: grid;
+	grid-template-rows: repeat(3, min-content);
+}
+.pure-modal-backdrop:not(.scrollable) .panel {
+	grid-template-rows: min-content minmax(0, 1fr) min-content;
+	max-height: -moz-available;
+	max-height: -webkit-stretch;
+	max-height: stretch;
+	height: 100%;
+}
+.pure-modal > * > * {
+	flex: 0 0 auto;
+}
+.pure-modal > * > .scrollable {
+	overflow-x: hidden;
+}
+@media (max-width: 480px) {
+	.pure-modal-backdrop .pure-modal {
+		width: 100%;
+	}
+}
+.pure-modal .panel-body {
+	background-color: #fff;
+}
+.pure-modal .panel-heading {
+	background: #f0f0f0;
+}
+.pure-modal .panel-title {
+	padding: 12px 45px 12px 15px;
+	margin: 0;
+}
+.pure-modal .close {
+	right: 6px;
+	top: 6px;
+	z-index: 1;
+	width: 30px;
+	height: 30px;
+	border-radius: 15px;
+	text-align: center;
+	line-height: 30px;
+	cursor: pointer;
+	font-size: 1.85rem;
+}
+.pure-modal .panel-heading .close:hover {
+	color: #000;
+}
+.pure-modal .panel-body {
+	padding: 15px;
+}
+.pure-modal .panel-footer {
+	padding: 12px 45px 12px 15px;
+	background: #f0f0f0;
+}
+.pure-modal .panel-body,
+.pure-modal .panel-footer,
+.pure-modal .panel-title {
+	word-break: break-all;
+}
+.pure-modal-backdrop .additional-row,
+.pure-modal-backdrop:not(.scrollable) .additional-row {
+	display: grid;
+	grid-template-rows: min-content minmax(0, 1fr) min-content min-content;
+}
