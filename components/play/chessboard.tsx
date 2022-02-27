@@ -5,7 +5,7 @@ import {Config} from 'chessground/config';
 import {Api} from 'chessground/api';
 
 import {useAtom} from 'jotai';
-import {boardAtom, piecesAtom} from '@/lib/atoms';
+import {animationAtom, boardAtom, piecesAtom} from '@/lib/atoms';
 
 interface Props {
 	width?: number;
@@ -22,6 +22,7 @@ const Chessground = ({
 }: Props) => {
 	const [board] = useAtom(boardAtom);
 	const [pieces] = useAtom(piecesAtom);
+	const [animation] = useAtom(animationAtom);
 
 	const [api, setApi] = useState<Api | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
@@ -40,7 +41,7 @@ const Chessground = ({
 	}, [api, config]);
 
 	return (
-		<div className='next-chessground'>
+		<div className={`next-chessground ${animation}`}>
 			<div
 				className={`chessground ${board} ${pieces}`}
 				style={{

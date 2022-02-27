@@ -16,7 +16,7 @@ import {sortBy} from '@/lib/help-array';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {PuzzleInterface} from '@/models/puzzle-model';
 import audio from '@/lib/sound';
-import {soundAtom, orientationAtom} from '@/lib/atoms';
+import {soundAtom, orientationAtom, animationAtom} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import Flip from '@/components/play/flip';
 import Settings from '@/components/play/settings';
@@ -47,6 +47,7 @@ const PlayingPage = ({set}: Props) => {
 	const [completedPuzzles, setCompletedPuzzles] = useState(0);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const {isOpen, show, hide} = useModal();
+	const [animation, setAnimation] = useAtom(animationAtom);
 	const [orientation, setOrientation] = useAtom(orientationAtom);
 
 	/**
@@ -241,10 +242,11 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	useEffect(() => {
 		if (!moveHistory) return;
+		if (moveNumber !== 0) return;
 		setTimeout(async () => {
 			await computerMove(0);
 		}, 300);
-	}, [moveHistory, computerMove]);
+	}, [moveHistory, computerMove, moveNumber]);
 
 	useEffect(() => {
 		setConfig(config => ({...config, lastMove}));
@@ -285,17 +287,26 @@ const PlayingPage = ({set}: Props) => {
 		}));
 		const currentMoveNumber = moveNumber + 1;
 		setMoveNumber(previousMove => previousMove + 1);
+		setAnimation(() => 'animate-rightMove');
 		const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
 		if (isPuzzleComplete) return;
 		setTimeout(async () => {
 			await computerMove(moveNumber + 1);
 		}, 300);
+
+		setTimeout(() => {
+			setAnimation(() => '');
+		}, 600);
 	};
 
 	const onWrongMove = async () => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
 		setMalus(previous => previous + 3);
+		setAnimation('animate-wrongMove');
+		setTimeout(() => {
+			setAnimation(() => '');
+		}, 600);
 		await audio('ERROR', hasSound);
 	};
 

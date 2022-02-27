@@ -17,3 +17,10 @@ export const soundAtom = atom<boolean>(true);
 export const autoMoveAtom = atom<boolean>(true);
 
 export const orientationAtom = atom<'white' | 'black'>('white');
+
+export type Animation =
+	| ''
+	| 'animate-rightMove'
+	| 'animate-wrongMove'
+	| 'animate-finishMove';
+export const animationAtom = atom<Animation>('');
