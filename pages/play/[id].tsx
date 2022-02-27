@@ -104,12 +104,18 @@ const PlayingPage = ({set}: Props) => {
 		setMoveNumber(() => 0);
 		setLastMove(() => []);
 		// SetIsComplete(() => false);
-		// setPendingMove(() => undefined);
+		setPendingMove(() => undefined);
 		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
 
 		const config: Partial<Config> = {
 			fen: chess.fen(),
+			check: chess.in_check(),
 			animation: {enabled: true, duration: 50},
+			turnColor: getColor(chess.turn()),
+			highlight: {
+				lastMove: true,
+				check: true,
+			},
 			premovable: {enabled: false},
 			movable: calcMovable(),
 			coordinates: true,
@@ -217,16 +223,15 @@ const PlayingPage = ({set}: Props) => {
 			setConfig(config => ({
 				...config,
 				fen: chess.fen(),
+				check: chess.in_check(),
 				movable: calcMovable(),
+				turnColor: getColor(chess.turn()),
 				lastMove: [move.from, move.to],
 			}));
 			setMoveNumber(previousMove => previousMove + 1);
-			if (move.captured) {
-				await audio('CAPTURE', hasSound);
-				return;
-			}
-
-			await audio('MOVE', hasSound);
+			await (move.captured
+				? audio('CAPTURE', hasSound)
+				: audio('MOVE', hasSound));
 		},
 		[chess, moveHistory],
 	);
@@ -273,6 +278,8 @@ const PlayingPage = ({set}: Props) => {
 		setConfig(config => ({
 			...config,
 			fen: chess.fen(),
+			check: chess.in_check(),
+			turnColor: getColor(chess.turn()),
 			movable: calcMovable(),
 			lastMove: [from, to],
 		}));
