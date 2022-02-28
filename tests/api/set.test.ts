@@ -1,4 +1,5 @@
-import handler from '@/api/user/index';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import handler from '@/api/set/index';
 
 describe('api/set', () => {
 	describe('get', () => {

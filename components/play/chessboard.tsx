@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, memo, useMemo} from 'react';
 
 import {Chessground as nativeChessground} from 'chessground';
 import {Config} from 'chessground/config';
@@ -20,10 +20,10 @@ const Chessground = ({
 	config = {},
 	contained = false,
 }: Props) => {
+	console.log('cg', {config});
 	const [board] = useAtom(boardAtom);
 	const [pieces] = useAtom(piecesAtom);
 	const [animation] = useAtom(animationAtom);
-
 	const [api, setApi] = useState<Api | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -40,22 +40,26 @@ const Chessground = ({
 		api?.set(config);
 	}, [api, config]);
 
+	const mainStyle = useMemo(() => `next-chessground ${animation}`, [animation]);
+	const themeStyle = useMemo(
+		() => `chessground ${board} ${pieces}`,
+		[board, pieces],
+	);
+	const boardSize = useMemo(
+		() => ({
+			height: contained ? '100%' : height,
+			width: contained ? '100%' : width,
+		}),
+		[width, height],
+	);
+
 	return (
-		<div className={`next-chessground ${animation}`}>
-			<div
-				className={`chessground ${board} ${pieces}`}
-				style={{
-					height: contained ? '100%' : height,
-					width: contained ? '100%' : width,
-				}}
-			>
-				<div
-					ref={ref}
-					style={{height: '100%', width: '100%', display: 'table'}}
-				/>
+		<div className={mainStyle}>
+			<div className={themeStyle} style={boardSize}>
+				<div ref={ref} className='table h-full w-full' />
 			</div>
 		</div>
 	);
 };
 
-export default Chessground;
+export default memo(Chessground);

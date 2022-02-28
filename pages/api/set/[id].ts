@@ -14,7 +14,7 @@ type ErrorData = {
 	error: string;
 };
 
-type Data = SuccessData | ErrorData;
+export type Data = SuccessData | ErrorData;
 
 const get_ = async (
 	request: NextApiRequest,

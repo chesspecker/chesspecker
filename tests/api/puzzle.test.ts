@@ -1,17 +1,14 @@
-import mockingoose from 'mockingoose';
-import handler from '@/api/user/index';
-import puzzleController from '@/controllers/puzzle';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import handler from '@/api/puzzle/index';
 
 describe('api/puzzle', () => {
-	describe('post', () => {
+	describe('get', () => {
 		it('should be true', () => {
-			puzzleController.create();
 			expect(true).toBe(true);
 		});
 	});
-	describe('get', () => {
+	describe('post', () => {
 		it('should be true', () => {
-			puzzleController.retrieve();
 			expect(true).toBe(true);
 		});
 	});

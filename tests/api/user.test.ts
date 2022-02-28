@@ -1,8 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import handler from '@/api/user/index';
-
-beforeAll(async () => await mockDb.connect());
-afterEach(async () => await mockDb.clear());
-afterAll(async () => await mockDb.close());
 
 describe('api/user', () => {
 	describe('get', () => {

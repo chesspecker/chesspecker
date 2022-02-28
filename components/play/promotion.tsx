@@ -1,4 +1,4 @@
-import {PieceType} from 'chess.js';
+import {ShortMove} from 'chess.js';
 import {Color} from 'chessground/types';
 import {useAtom} from 'jotai';
 import Modal from 'react-pure-modal';
@@ -25,11 +25,11 @@ const SelectPiece = ({color, handleClick, role}: PieceProps) => {
 type Props = {
 	isOpen: boolean;
 	hide: () => void;
-	onPromote: (piece: PieceType) => void | Promise<void>;
+	onPromote: (piece: ShortMove['promotion']) => void | Promise<void>;
 	color: Color;
 };
 const Promotion = ({isOpen, hide, onPromote, color = 'white'}: Props) => {
-	const promoteTo = async (piece: PieceType) => {
+	const promoteTo = async (piece: ShortMove['promotion']) => {
 		await onPromote(piece);
 		hide();
 	};

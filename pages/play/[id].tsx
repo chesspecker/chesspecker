@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {useState, useEffect, useCallback, ReactElement} from 'react';
 import * as ChessJS from 'chess.js';
-import {ChessInstance, Square} from 'chess.js';
+import {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
-import type {Dests} from 'chessground/types';
 import {useAtom} from 'jotai';
-import type {Data} from '../api/puzzle/[id]';
+import type {Data as PuzzleData} from '../api/puzzle/[id]';
+import type {Data as SetData} from '../api/set/[id]';
 import {
 	PuzzleItemInterface,
 	PuzzleSetInterface,
@@ -16,55 +17,52 @@ import {sortBy} from '@/lib/help-array';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {PuzzleInterface} from '@/models/puzzle-model';
 import audio from '@/lib/sound';
-import {soundAtom, orientationAtom, animationAtom} from '@/lib/atoms';
+import {
+	soundAtom,
+	orientationAtom,
+	animationAtom,
+	autoMoveAtom,
+} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import Flip from '@/components/play/flip';
 import Settings from '@/components/play/settings';
 import Promotion from '@/components/play/promotion';
+import Timer from '@/components/play/timer';
+import useTimer from '@/hooks/use-timer';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 
 type Props = {set: PuzzleSetInterface};
 const PlayingPage = ({set}: Props) => {
+	console.log('PlayingPage');
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
 	const [puzzleList, setPuzzleList] = useState<PuzzleItemInterface[]>([]);
 	const [puzzleIndex, setPuzzleIndex] = useState<number>(0);
 	const [puzzle, setPuzzle] = useState<PuzzleInterface>();
 	const [moveNumber, setMoveNumber] = useState(0);
-	const [moveHistory, setMoveHistory] = useState([]);
+	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
 	const [malus, setMalus] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
-	const [hasAutoMove, setHasAutoMove] = useState(true);
-	const [hasSound, setHasSound] = useAtom(soundAtom);
+	const [hasAutoMove] = useAtom(autoMoveAtom);
+	const [hasSound] = useAtom(soundAtom);
 	const [solution, setSolution] = useState({clicked: false, clickable: false});
-	const [timer, setTimer] = useState(0);
-	const [isTimerOn, setIsTimerOn] = useState(false);
+	const {timer, updateTimer, isTimerOn, toggleTimer} = useTimer(0);
 	const [initialTimer, setInitialTimer] = useState(0);
 	const [isComplete, setIsComplete] = useState(false);
 	const [completedPuzzles, setCompletedPuzzles] = useState(0);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const {isOpen, show, hide} = useModal();
-	const [animation, setAnimation] = useAtom(animationAtom);
+	const [, setAnimation] = useAtom(animationAtom);
 	const [orientation, setOrientation] = useAtom(orientationAtom);
-
-	/**
-	 * Setup timer.
-	 */
-	useEffect(() => {
-		if (isTimerOn)
-			setTimeout(() => {
-				setTimer(lastCount => lastCount + 1);
-			}, 1000);
-	}, [isTimerOn, timer]);
 
 	/**
 	 * Extract the list of puzzles.
 	 */
 	useEffect(() => {
-		setTimer(() => set.currentTime);
+		updateTimer(set.currentTime);
 		setInitialTimer(set.currentTime);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
@@ -87,7 +85,7 @@ const PlayingPage = ({set}: Props) => {
 		const nextPuzzle = puzzleList[puzzleIndex];
 		const data = (await fetcher.get(
 			`/api/puzzle/${nextPuzzle._id.toString()}`,
-		)) as Data;
+		)) as PuzzleData;
 		if (data.success) {
 			setPuzzle(() => data.puzzle);
 			// TODO: setGameLink(`https://lichess.org/training/${data.puzzle.PuzzleId}`);
@@ -149,10 +147,10 @@ const PlayingPage = ({set}: Props) => {
 
 		try {
 			await fetcher.put(`/api/puzzle/${puzzle._id.toString()}`, body);
-		} catch (error) {
+		} catch (error: unknown) {
 			console.log(error);
 		}
-	}, [puzzleIndex, timer, mistakes, puzzleList, initialTimer, set._id]);
+	}, [puzzleIndex, mistakes, puzzleList, initialTimer, set._id, timer]);
 
 	/**
 	 * Called when puzzle is completed, switch to the next one.
@@ -175,7 +173,7 @@ const PlayingPage = ({set}: Props) => {
 				cycles: true,
 				bestTime: timer + 1,
 			});
-		} catch (error) {
+		} catch (error: unknown) {
 			console.log(error);
 		}
 	}, [timer, set]);
@@ -185,7 +183,7 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	const checkSetComplete = useCallback(async () => {
 		if (puzzleIndex + 1 === puzzleList.length) {
-			setIsTimerOn(() => false);
+			toggleTimer(false);
 			await audio('VICTORY', hasSound);
 			await updateFinishedSet();
 			return true;
@@ -345,7 +343,7 @@ const PlayingPage = ({set}: Props) => {
 	/**
 	 * Handle promotions via chessground.
 	 */
-	const promotion = async piece => {
+	const promotion = async (piece: ShortMove['promotion']) => {
 		const from = pendingMove[0];
 		const to = pendingMove[1];
 		const isCorrectMove = piece === moveHistory[moveNumber].slice(-1);
@@ -366,6 +364,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<div>
+			<Timer value={timer} />
 			<Chessboard config={{...config, orientation, events: {move: onMove}}} />
 			<Promotion
 				isOpen={isOpen}
@@ -384,9 +383,13 @@ const PlayingPage = ({set}: Props) => {
 PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
-export const getServerSideProps = async ({params}) => {
+interface SSRProps {
+	params: {id: string | undefined};
+}
+
+export const getServerSideProps = async ({params}: SSRProps) => {
 	const id: string = params.id;
-	const data = await fetcher.get(`/api/set/${id}`);
-	if (!data) return {notFound: true};
+	const data = (await fetcher.get(`/api/set/${id}`)) as SetData;
+	if (!data.success) return {notFound: true};
 	return {props: {set: data.set}};
 };

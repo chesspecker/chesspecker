@@ -1,6 +1,6 @@
-const ONE_MINUTE = 60;
 const ONE_DAY = 86_400;
 const ONE_HOUR = 3600;
+const ONE_MINUTE = 60;
 
 const getDays = (count: number) =>
 	count < ONE_DAY
