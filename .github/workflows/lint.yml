@@ -1,4 +1,4 @@
-name: Lint
+name: LINTER
 on:
   - push
   - pull_request
