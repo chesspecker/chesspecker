@@ -49,26 +49,46 @@ const getRapidity = (set: PuzzleSetInterface) => {
 	return rapidity < 0 ? 0 : rapidity;
 };
 
+const armonizedData = (packBy: number, array: Array<number>) => {
+	const length = array.length;
+	const iterator = Math.ceil(length / packBy);
+	console.log(iterator);
+	let newArray = [];
+	for (let i = 0; i < iterator; i++) {
+		const _oldArray = [...array];
+
+		const _array = _oldArray.splice(i * packBy, packBy);
+		console.log(iterator, packBy * i, packBy, _array);
+		const sum = _array.reduce((a, b) => a + b);
+
+		newArray.push(sum / _array.length);
+	}
+	return newArray;
+};
+
 const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface) => {
 	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
 	const arrayOfData = arrayFiltered.map(puzzle => {
 		const length = puzzle.timeTaken.length;
 		//TODO: this function work for old set structure, replace puzzle.timeTaken by puzzle.timeTaken[length] to get the last element of the aray of timeTaken
-		return puzzle.timeTaken;
+		return puzzle.timeTaken[length - 1];
 	});
-	return arrayOfData;
+
+	return armonizedData(40, arrayOfData);
 };
 
 const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface) => {
 	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
+	console.log(arrayFiltered);
 
 	const arrayOfData = arrayFiltered.map(puzzle => {
-		const length = puzzle.timeTaken.length;
+		const length = puzzle.mistakes.length;
+		console.log(length);
 		//TODO: this function work for old set structure, replace puzzle.mistakes by puzzle.mistakes[length] to get the last element of the aray of mistakes
-		return puzzle.mistakes;
+		return puzzle.mistakes[length - 1];
 	});
-	console.log(arrayOfData);
-	return arrayOfData;
+	console.log('array of data', armonizedData(40, arrayOfData));
+	return armonizedData(40, arrayOfData);
 };
 
 const getArrayActualTimePreviousTime = (set: PuzzleSetInterface) => {
@@ -204,8 +224,8 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 
 			<div className='mt-10 pt-10'>
 				<ChartMultipleLine
-					array1={getArrayOfTimeByPuzzle(set)}
-					array2={getArrayOfMistakeByPuzzle(set)}
+					array1={getArrayOfTimeByPuzzle(provSet)}
+					array2={getArrayOfMistakeByPuzzle(provSet)}
 					name1={'time evolution'}
 					name2={'mistake evolution'}
 				/>
