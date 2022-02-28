@@ -1,14 +1,12 @@
-name: 'coverage'
+name: coverage
 on:
-  pull_request:
-    branches:
-      - master
-      - main
+  - pull_request
+  - push
 jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: ArtiomTr/jest-coverage-report-action@v2
         with:
           package-manager: yarn
