@@ -3,8 +3,7 @@ on:
   - push
   - pull_request
 jobs:
-  run-linters:
-    name: Run linters
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
