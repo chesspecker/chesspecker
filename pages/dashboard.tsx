@@ -3,7 +3,7 @@ import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 
 const DashbaordPage = () => (
-	<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
+	<div className='m-0 -mb-24 flex min-h-screen flex-col items-center justify-center text-slate-800'>
 		<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white md:text-5xl'>
 			Here are your sets!
 		</h1>
