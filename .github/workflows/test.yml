@@ -3,17 +3,11 @@ on:
   - push
   - pull_request
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version:
-          - 16
-
     steps:
-        uses: actions/checkout@v2
-      - name: Install dependencies
-        run: yarn install
-      - name: Run tests
-        run: yarn test
+    - uses: actions/checkout@v2
+    - name: Install modules
+      run: yarn
+    - name: Run tests
+      run: yarn test
