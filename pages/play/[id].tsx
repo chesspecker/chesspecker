@@ -200,6 +200,10 @@ const PlayingPage = ({set}: Props) => {
 	const checkPuzzleComplete = useCallback(
 		async moveNumber => {
 			if (moveNumber === moveHistory.length) {
+				setAnimation(() => 'animate-finishMove');
+				setTimeout(() => {
+					setAnimation(() => '');
+				}, 600);
 				const isSetComplete = await checkSetComplete();
 				if (isSetComplete) return true;
 				await audio('GENERIC', hasSound);
@@ -287,16 +291,15 @@ const PlayingPage = ({set}: Props) => {
 		}));
 		const currentMoveNumber = moveNumber + 1;
 		setMoveNumber(previousMove => previousMove + 1);
-		setAnimation(() => 'animate-rightMove');
 		const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
 		if (isPuzzleComplete) return;
-		setTimeout(async () => {
-			await computerMove(moveNumber + 1);
-		}, 300);
-
+		setAnimation(() => 'animate-rightMove');
 		setTimeout(() => {
 			setAnimation(() => '');
 		}, 600);
+		setTimeout(async () => {
+			await computerMove(moveNumber + 1);
+		}, 300);
 	};
 
 	const onWrongMove = async () => {
