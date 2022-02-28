@@ -1,10 +1,8 @@
 import React from 'react';
 import {Chart as ChartJS, ArcElement, Tooltip, Legend} from 'chart.js';
-import {Doughnut} from 'react-chartjs-3';
+import {Doughnut} from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-ChartJS.overrides.doughnut.plugins.legend.labels.color =
-	'rgba(54, 162, 235, 1)';
 
 function Donnuts({totalSet, played}) {
 	const data = {

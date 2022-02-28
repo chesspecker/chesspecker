@@ -96,7 +96,7 @@ function ChartInfinitLine({set}) {
 					data: array.map(puzzle => puzzle.timeTaken[i]),
 					borderColor: `rgba(${color}, ${1 / (getMaxTimePlayed() - i)})`,
 					backgroundColor: `rgba(${color}, ${1 / (getMaxTimePlayed() - i)})`,
-					yAxisID: 'y',
+					yAxisID: 'y1',
 				},
 			);
 		}

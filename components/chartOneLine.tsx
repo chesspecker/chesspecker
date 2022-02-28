@@ -20,18 +20,17 @@ ChartJS.register(
 	Legend,
 );
 
-export const options = {
+const options = {
 	responsive: true,
 	plugins: {
 		title: {
 			display: true,
 			text: 'Rapidity average',
 		},
-	},
-	scales: {
-		y: {
-			suggestedMin: 50,
-			suggestedMax: 100,
+		legend: {
+			labels: {
+				color: 'rgba(255, 99, 132, 0.5)',
+			},
 		},
 	},
 };

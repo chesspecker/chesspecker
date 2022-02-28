@@ -60,9 +60,8 @@ const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface) => {
 };
 
 const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface) => {
-	console.log('set', set.puzzles);
 	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
-	console.log('filtered', arrayFiltered);
+
 	const arrayOfData = arrayFiltered.map(puzzle => {
 		const length = puzzle.timeTaken.length;
 		//TODO: this function work for old set structure, replace puzzle.mistakes by puzzle.mistakes[length] to get the last element of the aray of mistakes
@@ -70,6 +69,13 @@ const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface) => {
 	});
 	console.log(arrayOfData);
 	return arrayOfData;
+};
+
+const getArrayActualTimePreviousTime = (set: PuzzleSetInterface) => {
+	const timePlayed = set.cycles + 1;
+	const array = set.puzzles
+		.filter(puzzle => puzzle.played === true)
+		.map(puzzle => puzzle.timeTaken[puzzle.timeTaken.length - 1]);
 };
 
 const difficulty = (set: PuzzleSetInterface) => (
@@ -189,7 +195,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					</div>
 					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Average Grade</h3>
-						<div className='flex h-52 w-36 items-center justify-center'>
+						<div className='flex h-full items-center justify-center'>
 							<ChartOneLine rapidity={getRapidity(set)} />
 						</div>
 					</div>
