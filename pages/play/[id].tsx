@@ -346,24 +346,27 @@ const PlayingPage = ({set}: Props) => {
 	/**
 	 * Handle promotions via chessground.
 	 */
-	const promotion = async (piece: ShortMove['promotion']) => {
-		const from = pendingMove[0];
-		const to = pendingMove[1];
-		const isCorrectMove = piece === moveHistory[moveNumber].slice(-1);
-		const move = chess.move({from, to, promotion: piece});
-		if (move === null) return;
+	const promotion = useCallback(
+		async (piece: ShortMove['promotion']) => {
+			const from = pendingMove[0];
+			const to = pendingMove[1];
+			const isCorrectMove = piece === moveHistory[moveNumber].slice(-1);
+			const move = chess.move({from, to, promotion: piece});
+			if (move === null) return;
 
-		await (move.captured
-			? audio('CAPTURE', hasSound)
-			: audio('MOVE', hasSound));
+			await (move.captured
+				? audio('CAPTURE', hasSound)
+				: audio('MOVE', hasSound));
 
-		if (isCorrectMove || chess.in_checkmate()) {
-			await onRightMove(from, to);
-			return;
-		}
+			if (isCorrectMove || chess.in_checkmate()) {
+				await onRightMove(from, to);
+				return;
+			}
 
-		await onWrongMove();
-	};
+			await onWrongMove();
+		},
+		[pendingMove, moveHistory, moveNumber, chess, hasSound],
+	);
 
 	const fn = useCallback(async () => {
 		if (!isComplete) return;

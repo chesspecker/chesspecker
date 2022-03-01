@@ -1,5 +1,6 @@
 import {RefreshIcon} from '@heroicons/react/solid';
 import {useAtom} from 'jotai';
+import {memo} from 'react';
 import {orientationAtom} from '@/lib/atoms';
 
 const Flip = () => {
@@ -19,4 +20,4 @@ const Flip = () => {
 	);
 };
 
-export default Flip;
+export default memo(Flip);
