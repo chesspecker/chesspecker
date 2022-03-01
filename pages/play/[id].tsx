@@ -4,6 +4,7 @@ import * as ChessJS from 'chess.js';
 import {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
+import {useRouter} from 'next/router';
 import type {Data as PuzzleData} from '../api/puzzle/[id]';
 import type {Data as SetData} from '../api/set/[id]';
 import {
@@ -29,6 +30,7 @@ import Settings from '@/components/play/settings';
 import Promotion from '@/components/play/promotion';
 import Timer from '@/components/play/timer';
 import useTimer from '@/hooks/use-timer';
+import useKeyPress from '@/hooks/use-key-press';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -57,6 +59,7 @@ const PlayingPage = ({set}: Props) => {
 	const {isOpen, show, hide} = useModal();
 	const [, setAnimation] = useAtom(animationAtom);
 	const [orientation, setOrientation] = useAtom(orientationAtom);
+	const router = useRouter();
 
 	/**
 	 * Extract the list of puzzles.
@@ -102,7 +105,7 @@ const PlayingPage = ({set}: Props) => {
 		setMoveHistory(() => puzzle.Moves.split(' '));
 		setMoveNumber(() => 0);
 		setLastMove(() => []);
-		// SetIsComplete(() => false);
+		setIsComplete(() => false);
 		setPendingMove(() => undefined);
 		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
 
@@ -156,13 +159,14 @@ const PlayingPage = ({set}: Props) => {
 	 * Called when puzzle is completed, switch to the next one.
 	 */
 	const changePuzzle = useCallback(async () => {
+		if (!isComplete) return;
 		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
 		setSolution(solution => ({...solution, clickable: false}));
 		setInitialTimer(() => timer);
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
-	}, [timer, updateFinishedPuzzle]);
+	}, [timer, updateFinishedPuzzle, isComplete]);
 
 	/**
 	 * Push the data of the current set when complete.
@@ -204,8 +208,8 @@ const PlayingPage = ({set}: Props) => {
 				}, 600);
 				const isSetComplete = await checkSetComplete();
 				if (isSetComplete) return true;
-				await audio('GENERIC', hasSound);
 				setIsComplete(() => true);
+				await audio('GENERIC', hasSound);
 				if (hasAutoMove) await changePuzzle();
 				return true;
 			}
@@ -361,6 +365,14 @@ const PlayingPage = ({set}: Props) => {
 
 		await onWrongMove();
 	};
+
+	useKeyPress({targetKey: 'Q', fn: async () => router.push('/dashboard')});
+	useKeyPress({targetKey: 'q', fn: async () => router.push('/dashboard')});
+	useKeyPress({targetKey: 'Escape', fn: async () => router.push('/dashboard')});
+	useKeyPress({targetKey: 's', fn: async () => changePuzzle()});
+	useKeyPress({targetKey: 'S', fn: async () => changePuzzle()});
+	useKeyPress({targetKey: 'n', fn: async () => changePuzzle()});
+	useKeyPress({targetKey: 'N', fn: async () => changePuzzle()});
 
 	return (
 		<div>
