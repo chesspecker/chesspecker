@@ -209,7 +209,7 @@ const PlayingPage = ({set}: Props) => {
 				const isSetComplete = await checkSetComplete();
 				if (isSetComplete) return true;
 				setIsComplete(() => true);
-				await audio('GENERIC', hasSound);
+				await audio('GENERIC', hasSound, 0.3);
 				if (hasAutoMove) await changePuzzle();
 				return true;
 			}
