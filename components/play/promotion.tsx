@@ -2,6 +2,7 @@ import {ShortMove} from 'chess.js';
 import {Color} from 'chessground/types';
 import {useAtom} from 'jotai';
 import Modal from 'react-pure-modal';
+import {memo} from 'react';
 import {piecesAtom} from '@/lib/atoms';
 
 type PieceProps = {
@@ -70,4 +71,4 @@ const Promotion = ({isOpen, hide, onPromote, color = 'white'}: Props) => {
 	);
 };
 
-export default Promotion;
+export default memo(Promotion);
