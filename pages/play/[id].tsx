@@ -159,14 +159,13 @@ const PlayingPage = ({set}: Props) => {
 	 * Called when puzzle is completed, switch to the next one.
 	 */
 	const changePuzzle = useCallback(async () => {
-		if (!isComplete) return;
 		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
 		setSolution(solution => ({...solution, clickable: false}));
 		setInitialTimer(() => timer);
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
-	}, [timer, updateFinishedPuzzle, isComplete]);
+	}, [timer, updateFinishedPuzzle]);
 
 	/**
 	 * Push the data of the current set when complete.
@@ -366,13 +365,18 @@ const PlayingPage = ({set}: Props) => {
 		await onWrongMove();
 	};
 
+	const fn = useCallback(async () => {
+		if (!isComplete) return;
+		await changePuzzle();
+	}, [isComplete, changePuzzle]);
+
 	useKeyPress({targetKey: 'Q', fn: async () => router.push('/dashboard')});
 	useKeyPress({targetKey: 'q', fn: async () => router.push('/dashboard')});
 	useKeyPress({targetKey: 'Escape', fn: async () => router.push('/dashboard')});
-	useKeyPress({targetKey: 's', fn: async () => changePuzzle()});
-	useKeyPress({targetKey: 'S', fn: async () => changePuzzle()});
-	useKeyPress({targetKey: 'n', fn: async () => changePuzzle()});
-	useKeyPress({targetKey: 'N', fn: async () => changePuzzle()});
+	useKeyPress({targetKey: 's', fn});
+	useKeyPress({targetKey: 'S', fn});
+	useKeyPress({targetKey: 'n', fn});
+	useKeyPress({targetKey: 'N', fn});
 
 	return (
 		<div>
