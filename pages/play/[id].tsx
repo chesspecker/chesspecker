@@ -105,7 +105,7 @@ const PlayingPage = ({set}: Props) => {
 		setMoveHistory(() => puzzle.Moves.split(' '));
 		setMoveNumber(() => 0);
 		setLastMove(() => []);
-		// SetIsComplete(() => false);
+		setIsComplete(() => false);
 		setPendingMove(() => undefined);
 		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
 
@@ -159,13 +159,14 @@ const PlayingPage = ({set}: Props) => {
 	 * Called when puzzle is completed, switch to the next one.
 	 */
 	const changePuzzle = useCallback(async () => {
+		if (!isComplete) return;
 		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
 		setSolution(solution => ({...solution, clickable: false}));
 		setInitialTimer(() => timer);
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
-	}, [timer, updateFinishedPuzzle]);
+	}, [timer, updateFinishedPuzzle, isComplete]);
 
 	/**
 	 * Push the data of the current set when complete.
@@ -207,8 +208,8 @@ const PlayingPage = ({set}: Props) => {
 				}, 600);
 				const isSetComplete = await checkSetComplete();
 				if (isSetComplete) return true;
-				await audio('GENERIC', hasSound);
 				setIsComplete(() => true);
+				await audio('GENERIC', hasSound);
 				if (hasAutoMove) await changePuzzle();
 				return true;
 			}
