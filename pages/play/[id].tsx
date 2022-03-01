@@ -30,6 +30,7 @@ import Settings from '@/components/play/settings';
 import Promotion from '@/components/play/promotion';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
+import WithoutSsr from '@/components/without-ssr';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -141,7 +142,6 @@ const PlayingPage = ({set}: Props) => {
 	const updateFinishedPuzzle = useCallback(async () => {
 		const puzzle = puzzleList[puzzleIndex];
 		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
-		console.log('timeTaken', timeTaken);
 		const body: BodyData = {
 			_id: set._id,
 			didCheat: false,
@@ -407,7 +407,9 @@ const PlayingPage = ({set}: Props) => {
 	return (
 		<div>
 			<Timer value={initialSetTimer} />
-			<Chessboard config={{...config, orientation, events: {move: onMove}}} />
+			<WithoutSsr>
+				<Chessboard config={{...config, orientation, events: {move: onMove}}} />
+			</WithoutSsr>
 			<Promotion
 				isOpen={isOpen}
 				hide={hide}

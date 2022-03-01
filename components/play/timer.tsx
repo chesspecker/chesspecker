@@ -9,7 +9,6 @@ const Timer = ({value}) => {
 	useEffect(() => {
 		updateTimer(timer);
 	}, [value]);
-	console.log(seconds);
 
 	return (
 		<div className='text-white'>
