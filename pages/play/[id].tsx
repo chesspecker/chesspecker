@@ -405,7 +405,7 @@ const PlayingPage = ({set}: Props) => {
 	useKeyPress({targetKey: 'N', fn});
 
 	return (
-		<div>
+		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
 			<Timer value={initialSetTimer} />
 			<WithoutSsr>
 				<Chessboard config={{...config, orientation, events: {move: onMove}}} />
@@ -416,7 +416,7 @@ const PlayingPage = ({set}: Props) => {
 				color={getColor(chess.turn())}
 				onPromote={promotion}
 			/>
-			<div className='flex flex-row-reverse gap-2 py-1.5 text-gray-400'>
+			<div className='flex w-2/5 mx-auto flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
 				<Settings />
 				<Flip />
 			</div>

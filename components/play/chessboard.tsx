@@ -6,18 +6,10 @@ import {useAtom} from 'jotai';
 import {animationAtom, boardAtom, piecesAtom, get_} from '@/lib/atoms';
 
 interface Props {
-	width?: number;
-	height?: number;
-	contained?: boolean;
 	config?: Partial<Config>;
 }
 
-const Chessground = ({
-	width = 800,
-	height = 800,
-	config = {},
-	contained = false,
-}: Props) => {
+const Chessground = ({config = {}}: Props) => {
 	const [board, setBoard] = useAtom(boardAtom);
 	const [pieces, setPieces] = useAtom(piecesAtom);
 	const [animation] = useAtom(animationAtom);
@@ -47,18 +39,13 @@ const Chessground = ({
 		() => `chessground ${board} ${pieces}`,
 		[board, pieces],
 	);
-	const boardSize = useMemo(
-		() => ({
-			height: contained ? '100%' : height,
-			width: contained ? '100%' : width,
-		}),
-		[width, height],
-	);
 
 	return (
-		<div className={mainStyle}>
-			<div className={themeStyle} style={boardSize}>
-				<div ref={ref} className='table h-full w-full' />
+		<div className='mx-auto aspect-square w-2/5'>
+			<div className={mainStyle}>
+				<div className={themeStyle}>
+					<div ref={ref} className='table h-full w-full' />
+				</div>
 			</div>
 		</div>
 	);
