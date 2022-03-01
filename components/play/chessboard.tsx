@@ -3,7 +3,7 @@ import {Chessground as nativeChessground} from 'chessground';
 import {Config} from 'chessground/config';
 import {Api} from 'chessground/api';
 import {useAtom} from 'jotai';
-import {animationAtom, boardAtom, piecesAtom} from '@/lib/atoms';
+import {animationAtom, boardAtom, piecesAtom, get_} from '@/lib/atoms';
 
 interface Props {
 	width?: number;
@@ -18,8 +18,8 @@ const Chessground = ({
 	config = {},
 	contained = false,
 }: Props) => {
-	const [board] = useAtom(boardAtom);
-	const [pieces] = useAtom(piecesAtom);
+	const [board, setBoard] = useAtom(boardAtom);
+	const [pieces, setPieces] = useAtom(piecesAtom);
 	const [animation] = useAtom(animationAtom);
 	const [api, setApi] = useState<Api | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
@@ -36,6 +36,11 @@ const Chessground = ({
 	useEffect(() => {
 		api?.set(config);
 	}, [api, config]);
+
+	useEffect(() => {
+		setBoard(get_('cp-board'));
+		setPieces(get_('cp-pieces'));
+	}, []);
 
 	const mainStyle = useMemo(() => `next-chessground ${animation}`, [animation]);
 	const themeStyle = useMemo(

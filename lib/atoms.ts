@@ -25,3 +25,9 @@ export type Animation =
 	| 'animate-wrongMove'
 	| 'animate-finishMove';
 export const animationAtom = atom<Animation>('');
+
+export const get_ = (value: string): any =>
+	JSON.parse(localStorage.getItem(value) || '{}');
+export const set_ = (key: string, value: any) => {
+	localStorage.setItem(key, JSON.stringify(value));
+};
