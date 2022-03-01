@@ -41,7 +41,7 @@ const post_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {userID} = request.session;
-	const set = await create(userID, request.body);
+	const set = await create(userID, JSON.parse(request.body));
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
 		throw new Error('Set not found');

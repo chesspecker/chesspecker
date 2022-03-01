@@ -5,7 +5,6 @@ import {useRouter} from 'next/router';
 import {optionsTitleAtom, optionsSizeAtom, optionsLevelAtom} from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
-import {origin} from '@/config';
 import {fetcher} from '@/lib/fetcher';
 
 import OptionTextInput from '@/components/options/text-input';
@@ -49,7 +48,7 @@ const OptionsPage = () => {
 			themeArray,
 		};
 		return fetcher
-			.post(`${origin}/api/set`, body)
+			.post(`/api/set`, body)
 			.then(async () => router.push('/dashboard'))
 			.catch(error => {
 				console.error(error);

@@ -9,8 +9,8 @@ import User, {UserInterface} from '@/models/user-model';
 import {Theme} from '@/data/themes';
 
 const rating = (
-	averageRating: UserInterface['averageRating'],
 	level: PuzzleSetInterface['level'],
+	averageRating: UserInterface['averageRating'] = 1500,
 ): [number, number] => {
 	switch (level) {
 		case 'easiest':
@@ -62,7 +62,7 @@ export const create = async (
 	).exec()) as UserInterface;
 	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
 	const setLevel = options.level || 'normal';
-	const [minRating, maxRating] = rating(user.averageRating, setLevel);
+	const [minRating, maxRating] = rating(setLevel, user.averageRating);
 	puzzleSet.user = user._id;
 	puzzleSet.puzzles = [];
 	let puzzlesCount = 0;
