@@ -1,5 +1,6 @@
 import {CogIcon} from '@heroicons/react/solid';
 import Modal from 'react-pure-modal';
+import {memo} from 'react';
 import AutoMoveSettings from './auto-move';
 import BoardSettings from './board';
 import PiecesSettings from './pieces';
@@ -30,4 +31,4 @@ const Settings = () => {
 	);
 };
 
-export default Settings;
+export default memo(Settings);

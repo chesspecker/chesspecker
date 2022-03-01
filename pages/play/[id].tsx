@@ -29,7 +29,6 @@ import Flip from '@/components/play/flip';
 import Settings from '@/components/play/settings';
 import Promotion from '@/components/play/promotion';
 import Timer from '@/components/play/timer';
-import useTimer from '@/hooks/use-timer';
 import useKeyPress from '@/hooks/use-key-press';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
@@ -37,7 +36,6 @@ const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 
 type Props = {set: PuzzleSetInterface};
 const PlayingPage = ({set}: Props) => {
-	console.log('PlayingPage');
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
 	const [puzzleList, setPuzzleList] = useState<PuzzleItemInterface[]>([]);
@@ -51,8 +49,10 @@ const PlayingPage = ({set}: Props) => {
 	const [hasAutoMove] = useAtom(autoMoveAtom);
 	const [hasSound] = useAtom(soundAtom);
 	const [solution, setSolution] = useState({clicked: false, clickable: false});
-	const {timer, updateTimer, isTimerOn, toggleTimer} = useTimer(0);
-	const [initialTimer, setInitialTimer] = useState(0);
+	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
+	const [initialPuzzleTimer, setInitialPuzzleTimer] = useState<number>(
+		Date.now(),
+	);
 	const [isComplete, setIsComplete] = useState(false);
 	const [completedPuzzles, setCompletedPuzzles] = useState(0);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
@@ -65,8 +65,7 @@ const PlayingPage = ({set}: Props) => {
 	 * Extract the list of puzzles.
 	 */
 	useEffect(() => {
-		updateTimer(set.currentTime);
-		setInitialTimer(set.currentTime);
+		setInitialSetTimer(set.currentTime);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
 	}, [set.puzzles, set.currentTime]);
@@ -75,10 +74,10 @@ const PlayingPage = ({set}: Props) => {
 	 * Wait to show solution button.
 	 */
 	useEffect(() => {
-		const past = timer - initialTimer;
+		const past = (Date.now() - initialPuzzleTimer) / 1000;
 		if (past < 6) setSolution(solution => ({...solution, clickable: false}));
 		if (past > 6) setSolution(solution => ({...solution, clickable: true}));
-	}, [timer, initialTimer]);
+	}, [initialPuzzleTimer]);
 
 	/**
 	 * Retrieve current puzzle.
@@ -108,6 +107,7 @@ const PlayingPage = ({set}: Props) => {
 		setIsComplete(() => false);
 		setPendingMove(() => undefined);
 		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
+		setInitialPuzzleTimer(() => Date.now());
 
 		const config: Partial<Config> = {
 			fen: chess.fen(),
@@ -124,6 +124,7 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		setConfig(previousConfig => ({...previousConfig, ...config}));
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [puzzle]);
 
 	type BodyData = {
@@ -139,7 +140,8 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
 		const puzzle = puzzleList[puzzleIndex];
-		const timeTaken = timer - initialTimer;
+		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		console.log('timeTaken', timeTaken);
 		const body: BodyData = {
 			_id: set._id,
 			didCheat: false,
@@ -153,7 +155,7 @@ const PlayingPage = ({set}: Props) => {
 		} catch (error: unknown) {
 			console.log(error);
 		}
-	}, [puzzleIndex, mistakes, puzzleList, initialTimer, set._id, timer]);
+	}, [puzzleIndex, mistakes, puzzleList, initialPuzzleTimer, set._id]);
 
 	/**
 	 * Called when puzzle is completed, switch to the next one.
@@ -163,30 +165,30 @@ const PlayingPage = ({set}: Props) => {
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
 		setSolution(solution => ({...solution, clickable: false}));
-		setInitialTimer(() => timer);
+		setInitialPuzzleTimer(() => Date.now());
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
-	}, [timer, updateFinishedPuzzle]);
+	}, [updateFinishedPuzzle]);
 
 	/**
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
+		const timeTaken = (Date.now() - initialSetTimer) / 1000;
 		try {
 			await fetcher.put(`/api/set/${set._id.toString()}`, {
 				cycles: true,
-				bestTime: timer + 1,
+				bestTime: timeTaken + 1,
 			});
 		} catch (error: unknown) {
 			console.log(error);
 		}
-	}, [timer, set]);
+	}, [initialSetTimer, set]);
 
 	/**
 	 * Called after each correct move.
 	 */
 	const checkSetComplete = useCallback(async () => {
 		if (puzzleIndex + 1 === puzzleList.length) {
-			toggleTimer(false);
 			await audio('VICTORY', hasSound);
 			await updateFinishedSet();
 			return true;
@@ -215,8 +217,33 @@ const PlayingPage = ({set}: Props) => {
 
 			return false;
 		},
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[hasAutoMove, hasSound, changePuzzle, checkSetComplete, moveHistory.length],
 	);
+
+	/**
+	 * Allow only legal moves.
+	 */
+	const calcMovable = useCallback((): Partial<Config['movable']> => {
+		const dests = new Map();
+		// FIXME: not working
+		const color = getColor(chess.turn());
+		for (const s of chess.SQUARES) {
+			const ms = chess.moves({square: s, verbose: true});
+			if (ms.length > 0)
+				dests.set(
+					s,
+					ms.map(m => m.to),
+				);
+		}
+
+		return {
+			free: false,
+			dests,
+			showDests: true,
+			color: 'both',
+		};
+	}, [chess]);
 
 	/**
 	 * Function making the computer play the next move.
@@ -239,7 +266,7 @@ const PlayingPage = ({set}: Props) => {
 				? audio('CAPTURE', hasSound)
 				: audio('MOVE', hasSound));
 		},
-		[chess, moveHistory],
+		[chess, moveHistory, calcMovable, hasSound],
 	);
 
 	/**
@@ -257,53 +284,33 @@ const PlayingPage = ({set}: Props) => {
 		setConfig(config => ({...config, lastMove}));
 	}, [lastMove]);
 
-	/**
-	 * Allow only legal moves.
-	 */
-	const calcMovable = (): Partial<Config['movable']> => {
-		const dests = new Map();
-		// FIXME: not working
-		const color = getColor(chess.turn());
-		for (const s of chess.SQUARES) {
-			const ms = chess.moves({square: s, verbose: true});
-			if (ms.length > 0)
-				dests.set(
-					s,
-					ms.map(m => m.to),
-				);
-		}
+	const onRightMove = useCallback(
+		async (from: Square, to: Square) => {
+			setConfig(config => ({
+				...config,
+				fen: chess.fen(),
+				check: chess.in_check(),
+				turnColor: getColor(chess.turn()),
+				movable: calcMovable(),
+				lastMove: [from, to],
+			}));
+			const currentMoveNumber = moveNumber + 1;
+			setMoveNumber(previousMove => previousMove + 1);
+			const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
+			if (isPuzzleComplete) return;
+			setAnimation(() => 'animate-rightMove');
+			setTimeout(() => {
+				setAnimation(() => '');
+			}, 600);
+			setTimeout(async () => {
+				await computerMove(moveNumber + 1);
+			}, 300);
+		},
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
+		[chess, moveNumber, checkPuzzleComplete, calcMovable, computerMove],
+	);
 
-		return {
-			free: false,
-			dests,
-			showDests: true,
-			color: 'both',
-		};
-	};
-
-	const onRightMove = async (from: Square, to: Square) => {
-		setConfig(config => ({
-			...config,
-			fen: chess.fen(),
-			check: chess.in_check(),
-			turnColor: getColor(chess.turn()),
-			movable: calcMovable(),
-			lastMove: [from, to],
-		}));
-		const currentMoveNumber = moveNumber + 1;
-		setMoveNumber(previousMove => previousMove + 1);
-		const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
-		if (isPuzzleComplete) return;
-		setAnimation(() => 'animate-rightMove');
-		setTimeout(() => {
-			setAnimation(() => '');
-		}, 600);
-		setTimeout(async () => {
-			await computerMove(moveNumber + 1);
-		}, 300);
-	};
-
-	const onWrongMove = async () => {
+	const onWrongMove = useCallback(async () => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
 		setMalus(previous => previous + 3);
@@ -312,58 +319,77 @@ const PlayingPage = ({set}: Props) => {
 			setAnimation(() => '');
 		}, 600);
 		await audio('ERROR', hasSound);
-	};
+	}, [chess, hasSound]);
 
 	/**
 	 * Function called when the user plays.
 	 */
-	const onMove = async (from: Square, to: Square) => {
-		const moves = chess.moves({verbose: true});
-		for (const move_ of moves) {
-			if (move_.from === from && move_.to === to && move_.flags.includes('p')) {
-				setPendingMove([from, to]);
-				show();
+	const onMove = useCallback(
+		async (from: Square, to: Square) => {
+			const moves = chess.moves({verbose: true});
+			for (const move_ of moves) {
+				if (
+					move_.from === from &&
+					move_.to === to &&
+					move_.flags.includes('p')
+				) {
+					setPendingMove([from, to]);
+					show();
+					return;
+				}
+			}
+
+			const move = chess.move({from, to});
+			if (move === null) return;
+
+			await (move.captured
+				? audio('CAPTURE', hasSound)
+				: audio('MOVE', hasSound));
+
+			const isCorrectMove =
+				`${move.from}${move.to}` === moveHistory[moveNumber];
+			if (isCorrectMove || chess.in_checkmate()) {
+				await onRightMove(from, to);
 				return;
 			}
-		}
 
-		const move = chess.move({from, to});
-		if (move === null) return;
-
-		await (move.captured
-			? audio('CAPTURE', hasSound)
-			: audio('MOVE', hasSound));
-
-		const isCorrectMove = `${move.from}${move.to}` === moveHistory[moveNumber];
-		if (isCorrectMove || chess.in_checkmate()) {
-			await onRightMove(from, to);
-			return;
-		}
-
-		await onWrongMove();
-	};
+			await onWrongMove();
+		},
+		[chess, moveHistory, moveNumber, onRightMove, onWrongMove, hasSound, show],
+	);
 
 	/**
 	 * Handle promotions via chessground.
 	 */
-	const promotion = async (piece: ShortMove['promotion']) => {
-		const from = pendingMove[0];
-		const to = pendingMove[1];
-		const isCorrectMove = piece === moveHistory[moveNumber].slice(-1);
-		const move = chess.move({from, to, promotion: piece});
-		if (move === null) return;
+	const promotion = useCallback(
+		async (piece: ShortMove['promotion']) => {
+			const from = pendingMove[0];
+			const to = pendingMove[1];
+			const isCorrectMove = piece === moveHistory[moveNumber].slice(-1);
+			const move = chess.move({from, to, promotion: piece});
+			if (move === null) return;
 
-		await (move.captured
-			? audio('CAPTURE', hasSound)
-			: audio('MOVE', hasSound));
+			await (move.captured
+				? audio('CAPTURE', hasSound)
+				: audio('MOVE', hasSound));
 
-		if (isCorrectMove || chess.in_checkmate()) {
-			await onRightMove(from, to);
-			return;
-		}
+			if (isCorrectMove || chess.in_checkmate()) {
+				await onRightMove(from, to);
+				return;
+			}
 
-		await onWrongMove();
-	};
+			await onWrongMove();
+		},
+		[
+			pendingMove,
+			moveHistory,
+			moveNumber,
+			chess,
+			hasSound,
+			onRightMove,
+			onWrongMove,
+		],
+	);
 
 	const fn = useCallback(async () => {
 		if (!isComplete) return;
@@ -380,7 +406,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<div>
-			<Timer value={timer} />
+			<Timer value={initialSetTimer} />
 			<Chessboard config={{...config, orientation, events: {move: onMove}}} />
 			<Promotion
 				isOpen={isOpen}
