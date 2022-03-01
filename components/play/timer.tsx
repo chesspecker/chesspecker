@@ -1,8 +1,14 @@
-import {memo} from 'react';
+import {memo, useEffect} from 'react';
 import useClock from '@/hooks/use-clock';
+import useTimer from '@/hooks/use-timer';
 
 const Timer = ({value}) => {
-	const [days, hours, minutes, seconds] = useClock(value);
+	const {timer, updateTimer} = useTimer(0);
+	const [days, hours, minutes, seconds] = useClock(timer);
+
+	useEffect(() => {
+		updateTimer(timer);
+	}, [value]);
 	console.log(seconds);
 
 	return (
