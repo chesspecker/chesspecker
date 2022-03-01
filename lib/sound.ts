@@ -6,27 +6,31 @@ import VICTORY from '@/sounds/Victory.mp3';
 
 type Sound = 'MOVE' | 'CAPTURE' | 'ERROR' | 'GENERIC' | 'VICTORY';
 
-const play = async (src: string) => new Audio(src).play();
+const play = async (src: string, volume: HTMLMediaElement['volume']) => {
+	const audio = new Audio(src);
+	audio.volume = volume;
+	return audio.play();
+};
 
-const audio = async (sound: Sound, hasSound = true) => {
+const audio = async (sound: Sound, hasSound = true, volume = 0.6) => {
 	if (!hasSound) return;
 
 	switch (sound) {
 		case 'MOVE':
-			return play(MOVE);
+			return play(MOVE, volume);
 
 		case 'CAPTURE':
-			return play(CAPTURE);
+			return play(CAPTURE, volume);
 
 		case 'ERROR':
-			return play(ERROR);
+			return play(ERROR, volume);
 
 		case 'VICTORY':
-			return play(VICTORY);
+			return play(VICTORY, volume);
 
 		case 'GENERIC':
 		default:
-			return play(GENERIC);
+			return play(GENERIC, volume);
 	}
 };
 

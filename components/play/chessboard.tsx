@@ -1,9 +1,7 @@
 import React, {useEffect, useRef, useState, memo, useMemo} from 'react';
-
 import {Chessground as nativeChessground} from 'chessground';
 import {Config} from 'chessground/config';
 import {Api} from 'chessground/api';
-
 import {useAtom} from 'jotai';
 import {animationAtom, boardAtom, piecesAtom} from '@/lib/atoms';
 
@@ -20,7 +18,6 @@ const Chessground = ({
 	config = {},
 	contained = false,
 }: Props) => {
-	console.log('cg', {config});
 	const [board] = useAtom(boardAtom);
 	const [pieces] = useAtom(piecesAtom);
 	const [animation] = useAtom(animationAtom);
