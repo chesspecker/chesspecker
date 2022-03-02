@@ -23,10 +23,10 @@ const getGrade = ({didCheat, mistakes, timeTaken, perfect}: BodyData) => {
 export const update = async (
 	puzzleId: PuzzleItemInterface['_id'],
 	body: BodyData,
-): Promise<PuzzleSetInterface> => {
+): Promise<PuzzleItemInterface> => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const {_id, mistakes, timeTaken} = body;
-	return PuzzleSet.findOneAndUpdate(
+	const puzzleSet = (await PuzzleSet.findOneAndUpdate(
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		{_id, 'puzzles._id': puzzleId},
 		{
@@ -43,5 +43,8 @@ export const update = async (
 			},
 		},
 		{new: true},
-	).exec() as Promise<PuzzleSetInterface>;
+	).exec()) as PuzzleSetInterface;
+
+	const puzzle = puzzleSet.puzzles.find(item => item._id === puzzleId);
+	return puzzle;
 };

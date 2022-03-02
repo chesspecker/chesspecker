@@ -31,10 +31,12 @@ import Promotion from '@/components/play/promotion';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import WithoutSsr from '@/components/without-ssr';
+import History from '@/components/play/history';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 
+type HistoryProps = {grade: number; PuzzleId: string}[];
 type Props = {set: PuzzleSetInterface};
 const PlayingPage = ({set}: Props) => {
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
@@ -45,6 +47,7 @@ const PlayingPage = ({set}: Props) => {
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
+	const [previousPuzzle, setPreviousPuzzle] = useState<HistoryProps>([]);
 	const [malus, setMalus] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [hasAutoMove] = useAtom(autoMoveAtom);
@@ -91,7 +94,6 @@ const PlayingPage = ({set}: Props) => {
 		)) as PuzzleData;
 		if (data.success) {
 			setPuzzle(() => data.puzzle);
-			// TODO: setGameLink(`https://lichess.org/training/${data.puzzle.PuzzleId}`);
 		}
 	}, [puzzleList, puzzleIndex]);
 
@@ -151,7 +153,17 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		try {
-			await fetcher.put(`/api/puzzle/${puzzle._id.toString()}`, body);
+			const result = await fetcher.put(
+				`/api/puzzle/${puzzle._id.toString()}`,
+				body,
+			);
+			setPreviousPuzzle(previous => [
+				...previous,
+				{
+					grade: result.grades[result.grades.length - 1],
+					PuzzleId: result._id.toString(),
+				},
+			]);
 		} catch (error: unknown) {
 			console.log(error);
 		}
@@ -416,9 +428,10 @@ const PlayingPage = ({set}: Props) => {
 				color={getColor(chess.turn())}
 				onPromote={promotion}
 			/>
-			<div className='flex w-2/5 mx-auto flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
+			<div className='mx-auto flex w-2/5 flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
 				<Settings />
 				<Flip />
+				<History puzzles={previousPuzzle} />
 			</div>
 		</div>
 	);

@@ -4,10 +4,11 @@ import {Types} from 'mongoose';
 import type {PuzzleInterface} from '@/models/puzzle-model';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/puzzle';
+import { PuzzleItemInterface } from '@/models/puzzle-set-model';
 
 type SuccessData = {
 	success: true;
-	puzzle?: PuzzleInterface;
+	puzzle: PuzzleInterface;
 };
 
 type ErrorData = {
@@ -45,23 +46,30 @@ const delete_ = async (
 	response.json({success: true, puzzle});
 };
 
+type SuccessUpdateData = {
+	success: true;
+	puzzle: PuzzleItemInterface;
+};
+
+export type UpdateData = SuccessUpdateData | ErrorData;
+
 const put_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<UpdateData>,
 ) => {
 	const {id}: {id?: Types.ObjectId} = request.query;
-	const result = await update(id, JSON.parse(request.body));
-	if (result === null) {
+	const puzzle = await update(id, JSON.parse(request.body));
+	if (puzzle === null) {
 		response.status(404).json({success: false, error: 'Puzzle not found'});
 		return;
 	}
 
-	response.json({success: true});
+	response.json({success: true, puzzle});
 };
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<Data | UpdateData>,
 ) => {
 	switch (request.method) {
 		case 'GET':
