@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {useCallback, useEffect, useState} from 'react';
 
 const useTimer = (initialTime = 0) => {
@@ -42,10 +41,6 @@ const useTimer = (initialTime = 0) => {
 
 	const updateTimer = useCallback((value: number) => {
 		setTimer(() => value);
-	}, []);
-
-	const malusTimer = useCallback((value: number) => {
-		setTimer(timer => timer + value);
 	}, []);
 
 	return {timer, updateTimer, isTimerOn, toggleTimer};

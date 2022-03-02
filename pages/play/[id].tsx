@@ -32,7 +32,10 @@ import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import WithoutSsr from '@/components/without-ssr';
 import History from '@/components/play/history';
-import {ButtonLink as Button} from '@/components/button';
+import {LeaveButton} from '@/components/button';
+import Progress from '@/components/play/progress';
+import Solution from '@/components/play/solution';
+import MoveToNext from '@/components/play/move-to-next';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -53,7 +56,7 @@ const PlayingPage = ({set}: Props) => {
 	const [mistakes, setMistakes] = useState(0);
 	const [hasAutoMove] = useAtom(autoMoveAtom);
 	const [hasSound] = useAtom(soundAtom);
-	const [solution, setSolution] = useState({clicked: false, clickable: false});
+	const [isSolutionClicked, setIsSolutionClicked] = useState(false);
 	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useState<number>(
 		Date.now(),
@@ -71,18 +74,10 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	useEffect(() => {
 		setInitialSetTimer(set.currentTime);
+		setCompletedPuzzles(set.puzzles.filter(p => p.played).length);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
 	}, [set.puzzles, set.currentTime]);
-
-	/**
-	 * Wait to show solution button.
-	 */
-	useEffect(() => {
-		const past = (Date.now() - initialPuzzleTimer) / 1000;
-		if (past < 6) setSolution(solution => ({...solution, clickable: false}));
-		if (past > 6) setSolution(solution => ({...solution, clickable: true}));
-	}, [initialPuzzleTimer]);
 
 	/**
 	 * Retrieve current puzzle.
@@ -112,6 +107,7 @@ const PlayingPage = ({set}: Props) => {
 		setPendingMove(() => undefined);
 		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
 		setInitialPuzzleTimer(() => Date.now());
+		setIsSolutionClicked(() => false);
 
 		const config: Partial<Config> = {
 			fen: chess.fen(),
@@ -147,7 +143,7 @@ const PlayingPage = ({set}: Props) => {
 		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		const body: BodyData = {
 			_id: set._id,
-			didCheat: false,
+			didCheat: isSolutionClicked,
 			mistakes,
 			timeTaken,
 			perfect: 0,
@@ -171,7 +167,14 @@ const PlayingPage = ({set}: Props) => {
 		} catch (error: unknown) {
 			console.log(error);
 		}
-	}, [puzzleIndex, mistakes, puzzleList, initialPuzzleTimer, set._id]);
+	}, [
+		puzzleIndex,
+		mistakes,
+		puzzleList,
+		initialPuzzleTimer,
+		set._id,
+		isSolutionClicked,
+	]);
 
 	/**
 	 * Called when puzzle is completed, switch to the next one.
@@ -180,8 +183,8 @@ const PlayingPage = ({set}: Props) => {
 		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
-		setSolution(solution => ({...solution, clickable: false}));
 		setInitialPuzzleTimer(() => Date.now());
+		setIsSolutionClicked(() => false);
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
 	}, [updateFinishedPuzzle]);
 
@@ -190,10 +193,11 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	const updateFinishedSet = useCallback(async () => {
 		let timeTaken = (Date.now() - initialSetTimer) / 1000;
-		timeTaken += mistakes * 3; // add 3sec malus for each mistake
+		timeTaken += mistakes * 3; // Add 3sec malus for each mistake
 		try {
 			await fetcher.put(`/api/set/${set._id.toString()}`, {
-				cycles: true,
+				cycles: set.cycles + 1,
+				currentTime: 0,
 				bestTime: timeTaken + 1,
 			});
 		} catch (error: unknown) {
@@ -426,12 +430,7 @@ const PlayingPage = ({set}: Props) => {
 		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
 			<div className='flex flex-row justify-center gap-2'>
 				<Timer value={initialSetTimer} mistakes={totalMistakes} />
-				<Button
-					href='/dashboard'
-					className='block w-36 cursor-pointer self-center rounded-md border-none bg-gray-500 py-2 text-center font-merriweather text-lg font-bold leading-8 text-white'
-				>
-					LEAVE 🧨
-				</Button>
+				<LeaveButton />
 			</div>
 			<WithoutSsr>
 				<Chessboard config={{...config, orientation, events: {move: onMove}}} />
@@ -442,6 +441,20 @@ const PlayingPage = ({set}: Props) => {
 				color={getColor(chess.turn())}
 				onPromote={promotion}
 			/>
+			<div className=''>
+				<Solution
+					time={initialPuzzleTimer}
+					solution={isSolutionClicked}
+					setSolution={setIsSolutionClicked}
+					isComplete={isComplete}
+					answer={moveHistory[moveNumber]}
+				/>
+				<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
+				<Progress
+					totalPuzzles={set.length}
+					completedPuzzles={completedPuzzles}
+				/>
+			</div>
 			<div className='mx-auto flex w-2/5 flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
 				<Settings />
 				<Flip />
