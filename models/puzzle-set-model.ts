@@ -45,6 +45,7 @@ const schema = new Schema<PuzzleSetInterface>({
 		{
 			_id: {type: 'ObjectId', ref: 'Puzzle'},
 			PuzzleId: {type: String},
+			played: {type: Boolean, default: false},
 			count: {type: Number},
 			order: {type: Number},
 			mistakes: {type: [Number]},

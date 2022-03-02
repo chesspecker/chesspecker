@@ -26,6 +26,7 @@ export const update = async (
 ): Promise<PuzzleItemInterface> => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const {_id, mistakes, timeTaken} = body;
+	const newGrade = getGrade(body);
 	const puzzleSet = (await PuzzleSet.findOneAndUpdate(
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		{_id, 'puzzles._id': puzzleId},
@@ -39,14 +40,16 @@ export const update = async (
 			$push: {
 				'puzzles.$.mistakes': mistakes,
 				'puzzles.$.timeTaken': timeTaken,
-				'puzzles.$.grades': getGrade(body),
+				'puzzles.$.grades': newGrade,
+			},
+			$set: {
+				'puzzles.$.played': true,
 			},
 		},
 		{new: true},
 	).exec()) as PuzzleSetInterface;
 
-	const puzzle = puzzleSet.puzzles.find(
+	return puzzleSet.puzzles.find(
 		item => item._id.toString() === puzzleId.toString(),
 	);
-	return puzzle;
 };

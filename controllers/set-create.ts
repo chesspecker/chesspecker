@@ -81,9 +81,9 @@ export const create = async (
 				played: false,
 				count: 0,
 				order: puzzlesCount,
-				mistakes: [0],
-				timeTaken: [0],
-				grades: [0],
+				mistakes: [],
+				timeTaken: [],
+				grades: [],
 			};
 			puzzleSet.puzzles.push(puzzleToInsert);
 			puzzlesCount++;
