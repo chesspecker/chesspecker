@@ -48,7 +48,7 @@ const PlayingPage = ({set}: Props) => {
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
 	const [previousPuzzle, setPreviousPuzzle] = useState<HistoryProps>([]);
-	const [malus, setMalus] = useState(0);
+	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [hasAutoMove] = useAtom(autoMoveAtom);
 	const [hasSound] = useAtom(soundAtom);
@@ -188,7 +188,8 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
-		const timeTaken = (Date.now() - initialSetTimer) / 1000;
+		let timeTaken = (Date.now() - initialSetTimer) / 1000;
+		timeTaken += mistakes * 3; // add 3sec malus for each mistake
 		try {
 			await fetcher.put(`/api/set/${set._id.toString()}`, {
 				cycles: true,
@@ -197,7 +198,7 @@ const PlayingPage = ({set}: Props) => {
 		} catch (error: unknown) {
 			console.log(error);
 		}
-	}, [initialSetTimer, set]);
+	}, [initialSetTimer, mistakes, set]);
 
 	/**
 	 * Called after each correct move.
@@ -328,7 +329,7 @@ const PlayingPage = ({set}: Props) => {
 	const onWrongMove = useCallback(async () => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
-		setMalus(previous => previous + 3);
+		setTotalMistakes(previous => previous + 1);
 		setAnimation('animate-wrongMove');
 		setTimeout(() => {
 			setAnimation(() => '');
@@ -422,7 +423,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
-			<Timer value={initialSetTimer} />
+			<Timer value={initialSetTimer} mistakes={totalMistakes} />
 			<WithoutSsr>
 				<Chessboard config={{...config, orientation, events: {move: onMove}}} />
 			</WithoutSsr>

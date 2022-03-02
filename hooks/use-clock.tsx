@@ -22,7 +22,7 @@ const useClock = (count: number) => {
 	const [days, hoursLeft] = getDays(count);
 	const [hours, minutesLeft] = getHours(hoursLeft);
 	const [minutes, seconds] = getMinutes(minutesLeft);
-	return [days, hours, minutes, seconds];
+	return [days, hours, minutes, Math.round(seconds)];
 };
 
 export default useClock;

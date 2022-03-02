@@ -2,12 +2,12 @@ import {memo, useEffect} from 'react';
 import useClock from '@/hooks/use-clock';
 import useTimer from '@/hooks/use-timer';
 
-const Timer = ({value}) => {
-	const {timer, updateTimer} = useTimer(0);
-	const [days, hours, minutes, seconds] = useClock(timer);
+const Timer = ({value, mistakes}) => {
+	const {timer, updateTimer} = useTimer(value);
+	const [days, hours, minutes, seconds] = useClock(timer + mistakes * 3);
 
 	useEffect(() => {
-		updateTimer(timer);
+		updateTimer(value);
 	}, [value]);
 
 	return (
