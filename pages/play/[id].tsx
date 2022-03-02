@@ -5,7 +5,7 @@ import {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
-import type {Data as PuzzleData} from '../api/puzzle/[id]';
+import type {Data as PuzzleData, UpdateData} from '../api/puzzle/[id]';
 import type {Data as SetData} from '../api/set/[id]';
 import {
 	PuzzleItemInterface,
@@ -36,7 +36,7 @@ import History from '@/components/play/history';
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 
-type HistoryProps = {grade: number; PuzzleId: string}[];
+type HistoryProps = Array<{grade: number; PuzzleId: string}>;
 type Props = {set: PuzzleSetInterface};
 const PlayingPage = ({set}: Props) => {
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
@@ -153,17 +153,20 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		try {
-			const result = await fetcher.put(
+			const result = (await fetcher.put(
 				`/api/puzzle/${puzzle._id.toString()}`,
 				body,
-			);
-			setPreviousPuzzle(previous => [
-				...previous,
-				{
-					grade: result.grades[result.grades.length - 1],
-					PuzzleId: result._id.toString(),
-				},
-			]);
+			)) as UpdateData;
+			if (result.success) {
+				const grades = result.puzzle.grades;
+				setPreviousPuzzle(previous => [
+					...previous,
+					{
+						grade: grades[grades.length - 1],
+						PuzzleId: result.puzzle._id.toString(),
+					},
+				]);
+			}
 		} catch (error: unknown) {
 			console.log(error);
 		}
@@ -331,6 +334,7 @@ const PlayingPage = ({set}: Props) => {
 			setAnimation(() => '');
 		}, 600);
 		await audio('ERROR', hasSound);
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound]);
 
 	/**

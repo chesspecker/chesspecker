@@ -4,7 +4,7 @@ import {Types} from 'mongoose';
 import type {PuzzleInterface} from '@/models/puzzle-model';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/puzzle';
-import { PuzzleItemInterface } from '@/models/puzzle-set-model';
+import {PuzzleItemInterface} from '@/models/puzzle-set-model';
 
 type SuccessData = {
 	success: true;

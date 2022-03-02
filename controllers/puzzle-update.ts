@@ -45,6 +45,8 @@ export const update = async (
 		{new: true},
 	).exec()) as PuzzleSetInterface;
 
-	const puzzle = puzzleSet.puzzles.find(item => item._id === puzzleId);
+	const puzzle = puzzleSet.puzzles.find(
+		item => item._id.toString() === puzzleId.toString(),
+	);
 	return puzzle;
 };
