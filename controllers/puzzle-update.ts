@@ -34,8 +34,7 @@ export const update = async (
 			$inc: {
 				'puzzles.$.count': 1,
 				currentTime: timeTaken + 3 * mistakes,
-				totalMistakes: mistakes,
-				totalPuzzlesPlayed: 1,
+				progression: 1,
 			},
 			$push: {
 				'puzzles.$.mistakes': mistakes,

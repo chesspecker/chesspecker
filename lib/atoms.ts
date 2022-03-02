@@ -9,6 +9,7 @@ export const selectedAtom = atom<Array<Category['id']>>([]);
 export const optionsTitleAtom = atom<string>('');
 export const optionsLevelAtom = atom<Difficulty>('normal');
 export const optionsSizeAtom = atom<number>(500);
+export const ratingAtom = atom<number>(1500);
 
 export type Board = 'brown' | 'green' | 'ruby' | 'purple' | 'teal';
 export const boardAtom = atomWithStorage<Board>('cp-board', 'green');

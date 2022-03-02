@@ -2,11 +2,16 @@ import {useAtom} from 'jotai';
 import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
-import {optionsTitleAtom, optionsSizeAtom, optionsLevelAtom} from '@/lib/atoms';
+import {RefreshIcon} from '@heroicons/react/solid';
+import {
+	optionsTitleAtom,
+	optionsSizeAtom,
+	optionsLevelAtom,
+	ratingAtom,
+} from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import {fetcher} from '@/lib/fetcher';
-
 import OptionTextInput from '@/components/options/text-input';
 import OptionSize from '@/components/options/size';
 import OptionDifficulty from '@/components/options/level';
@@ -20,6 +25,7 @@ const OptionsPage = () => {
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [title] = useAtom<string>(optionsTitleAtom);
 	const [size] = useAtom<number>(optionsSizeAtom);
+	const [rating] = useAtom(ratingAtom);
 	const [level] = useAtom<Difficulty>(optionsLevelAtom);
 	const [themeArray, setThemeArray] = useState<string[]>(['healthyMix']);
 	const {isOpen, show} = useModal(false);
@@ -46,6 +52,7 @@ const OptionsPage = () => {
 			size,
 			level,
 			themeArray,
+			averageRating: rating,
 		};
 		return fetcher
 			.post(`/api/set`, body)
@@ -65,7 +72,19 @@ const OptionsPage = () => {
 				<OptionSize />
 
 				<div className='mt-20 w-4/5'>
-					<Button onClick={validate}>
+					<Button
+						className={`flex flex-row items-center justify-center ${
+							isDisabled
+								? 'font-sky-700 cursor-default hover:bg-white'
+								: 'cursor-pointer'
+						}`}
+						onClick={validate}
+					>
+						<RefreshIcon
+							className={`mr-2 h-5 w-5 animate-spin ${
+								isDisabled ? 'visible' : 'invisible'
+							}`}
+						/>
 						{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
 					</Button>
 				</div>

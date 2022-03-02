@@ -32,7 +32,7 @@ import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import WithoutSsr from '@/components/without-ssr';
 import History from '@/components/play/history';
-import {LeaveButton} from '@/components/button';
+import {ButtonLink as Button} from '@/components/button';
 import Progress from '@/components/play/progress';
 import Solution from '@/components/play/solution';
 import MoveToNext from '@/components/play/move-to-next';
@@ -73,8 +73,8 @@ const PlayingPage = ({set}: Props) => {
 	 * Extract the list of puzzles.
 	 */
 	useEffect(() => {
-		setInitialSetTimer(set.currentTime);
-		setCompletedPuzzles(set.puzzles.filter(p => p.played).length);
+		setInitialSetTimer(() => set.currentTime);
+		setCompletedPuzzles(() => set.progression);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
 	}, [set.puzzles, set.currentTime]);
@@ -140,7 +140,8 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
 		const puzzle = puzzleList[puzzleIndex];
-		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
 		const body: BodyData = {
 			_id: set._id,
 			didCheat: isSolutionClicked,
@@ -430,7 +431,12 @@ const PlayingPage = ({set}: Props) => {
 		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
 			<div className='flex flex-row justify-center gap-2'>
 				<Timer value={initialSetTimer} mistakes={totalMistakes} />
-				<LeaveButton />
+				<Button
+					className='w-36 rounded-md bg-gray-500 leading-8 text-white'
+					href='/dashboard'
+				>
+					LEAVE 🧨
+				</Button>
 			</div>
 			<WithoutSsr>
 				<Chessboard config={{...config, orientation, events: {move: onMove}}} />

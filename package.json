@@ -23,10 +23,9 @@
 		"prettier": true,
 		"env": "browser",
 		"rules": {
-			"react/prop-types": "warn",
-			"@typescript-eslint/naming-convention": "warn",
+			"@typescript-eslint/naming-convention": "off",
 			"@typescript-eslint/triple-slash-reference": "warn",
-			"unicorn/no-abusive-eslint-disable": "warn",
+			"unicorn/no-abusive-eslint-disable": "off",
 			"unicorn/prefer-node-protocol": "off",
 			"import/extensions": "off"
 		}
@@ -47,6 +46,7 @@
 		"react-input-slider": "^6.0.1",
 		"react-pure-modal": "^2.1.0",
 		"swr": "^1.2.1",
+		"tailwind-override": "^0.6.1",
 		"ts-node": "^10.5.0",
 		"url-loader": "^4.1.1"
 	},

@@ -32,11 +32,11 @@ export interface PuzzleSetInterface extends Document {
 	cycles: number;
 	spacedRepetition: boolean;
 	currentTime: number;
-	bestTime: number;
+	times: number[];
 	rating: number;
-	totalMistakes: number;
-	totalPuzzlesPlayed: number;
+	progression: number;
 	level: Difficulty;
+	getAverage(): number;
 }
 
 const schema = new Schema<PuzzleSetInterface>({
@@ -58,10 +58,9 @@ const schema = new Schema<PuzzleSetInterface>({
 	cycles: {type: Number},
 	spacedRepetition: {type: Boolean},
 	currentTime: {type: Number},
-	bestTime: {type: Number},
+	times: {type: [Number]},
 	rating: {type: Number},
-	totalMistakes: {type: Number},
-	totalPuzzlesPlayed: {type: Number},
+	progression: {type: Number},
 	level: {
 		type: String,
 		enum: [

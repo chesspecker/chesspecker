@@ -1,10 +1,22 @@
 import {useAtom} from 'jotai';
-import type {ChangeEvent} from 'react';
-import {optionsLevelAtom} from '@/lib/atoms';
+import {ChangeEvent} from 'react';
+import {optionsLevelAtom, ratingAtom} from '@/lib/atoms';
 import {Difficulty} from '@/models/puzzle-set-model';
+import useEffectAsync from '@/hooks/use-effect-async';
+import {fetcher} from '@/lib/fetcher';
+import {Data} from '@/pages/api/rating';
+
+const safe = (value: number) => Math.max(value, 0);
 
 const OptionLevel = () => {
 	const [, setLevel] = useAtom(optionsLevelAtom);
+	const [rating, setRating] = useAtom(ratingAtom);
+	useEffectAsync(async () => {
+		const response: Data = (await fetcher.get('/api/rating')) as Data;
+		if (!response.success) return;
+		setRating(response.rating);
+	}, []);
+
 	const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		setLevel(() => event.target.value as Difficulty);
 	};
@@ -27,17 +39,17 @@ const OptionLevel = () => {
 						onChange={handleChange}
 					>
 						<option value='easiest' title='600 points below your puzzle rating'>
-							Easiest (-600)
+							Easiest (&#8776;{safe(rating - 600)})
 						</option>
 						<option value='easier' title='300 points below your puzzle rating'>
-							Easier (-300)
+							Easier (&#8776;{safe(rating - 300)})
 						</option>
-						<option value='normal'>Normal</option>
+						<option value='normal'>Normal (&#8776;{rating})</option>
 						<option value='harder' title='300 points above your puzzle rating'>
-							Harder (+300)
+							Harder (&#8776;{rating + 300})
 						</option>
 						<option value='hardest' title='600 points above your puzzle rating'>
-							Hardest (+600)
+							Hardest (&#8776;{rating + 600})
 						</option>
 					</select>
 				</div>
