@@ -2,7 +2,12 @@ import {memo, useEffect} from 'react';
 import useClock from '@/hooks/use-clock';
 import useTimer from '@/hooks/use-timer';
 
-const Timer = ({value, mistakes}) => {
+type Props = {
+	value: number;
+	mistakes: number;
+};
+
+const Timer = ({value, mistakes}: Props) => {
 	const {timer, updateTimer} = useTimer(value);
 	const [days, hours, minutes, seconds] = useClock(timer + mistakes * 3);
 

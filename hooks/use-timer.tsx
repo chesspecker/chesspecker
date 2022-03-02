@@ -44,10 +44,6 @@ const useTimer = (initialTime = 0) => {
 		setTimer(() => value);
 	}, []);
 
-	const malusTimer = useCallback((value: number) => {
-		setTimer(timer => timer + value);
-	}, []);
-
 	return {timer, updateTimer, isTimerOn, toggleTimer};
 };
 

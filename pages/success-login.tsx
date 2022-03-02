@@ -9,7 +9,7 @@ import audio from '@/lib/sound';
 const IndexPage = () => {
 	const router = useRouter();
 	const handleClick = async () => {
-		await audio('VICTORY', true, 0.1);
+		await audio('VICTORY', true, 0);
 		await router.push('/dashboard');
 	};
 

@@ -1,5 +1,6 @@
 import {UrlObject} from 'url';
 import Link from 'next/link';
+import { memo } from 'react';
 
 declare type ButtonProps = {
 	children: React.ReactNode;
@@ -39,3 +40,14 @@ export const ButtonLink = ({children, href, ...props}: ButtonLinkProps) => (
 		</Link>
 	</button>
 );
+
+export const LeaveButton = memo(() => (
+	<button
+		type='button'
+		className='block w-36 cursor-pointer self-center rounded-md border-none bg-gray-500 py-2 text-center font-merriweather text-lg font-bold leading-8 text-white'
+	>
+		<Link href='/dashboard'>
+			<a>LEAVE 🧨</a>
+		</Link>
+	</button>
+));
