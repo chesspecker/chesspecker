@@ -195,7 +195,7 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	const updateFinishedSet = useCallback(async () => {
 		let timeTaken = (Date.now() - initialSetTimer) / 1000;
-		timeTaken += mistakes * 3; // add 3sec malus for each mistake
+		timeTaken += mistakes * 3; // Add 3sec malus for each mistake
 		try {
 			await fetcher.put(`/api/set/${set._id.toString()}`, {
 				cycles: set.cycles + 1,

@@ -1,6 +1,6 @@
 import {UrlObject} from 'url';
 import Link from 'next/link';
-import { memo } from 'react';
+import {memo} from 'react';
 
 declare type ButtonProps = {
 	children: React.ReactNode;

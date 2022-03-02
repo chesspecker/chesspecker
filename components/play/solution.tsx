@@ -1,6 +1,6 @@
-import useTimer from '@/hooks/use-timer';
 import {Dispatch, memo, SetStateAction, useEffect, useState} from 'react';
 import {Button} from '../button';
+import useTimer from '@/hooks/use-timer';
 
 type Props = {
 	time: number;
