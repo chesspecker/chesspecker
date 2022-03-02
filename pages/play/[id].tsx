@@ -99,7 +99,6 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		if (!puzzle?.Moves) return;
 		const chess = new Chess(puzzle.FEN);
-		const currentMs = Date.now();
 		setChess(() => chess);
 		setMoveHistory(() => puzzle.Moves.split(' '));
 		setMoveNumber(() => 0);
@@ -107,7 +106,7 @@ const PlayingPage = ({set}: Props) => {
 		setIsComplete(() => false);
 		setPendingMove(() => undefined);
 		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
-		setInitialPuzzleTimer(() => currentMs);
+		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
 
 		const config: Partial<Config> = {
@@ -182,10 +181,9 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	const changePuzzle = useCallback(async () => {
 		await updateFinishedPuzzle();
-		const currentMs = Date.now();
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
-		setInitialPuzzleTimer(() => currentMs);
+		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
 	}, [updateFinishedPuzzle]);
