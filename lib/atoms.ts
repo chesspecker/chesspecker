@@ -27,7 +27,7 @@ export type Animation =
 export const animationAtom = atom<Animation>('');
 
 export const get_ = (value: string): any =>
-	JSON.parse(localStorage.getItem(value) || '{}');
+	JSON.parse(localStorage.getItem(value) || 'null');
 export const set_ = (key: string, value: any) => {
 	localStorage.setItem(key, JSON.stringify(value));
 };

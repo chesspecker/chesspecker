@@ -30,8 +30,8 @@ const Chessground = ({config = {}}: Props) => {
 	}, [api, config]);
 
 	useEffect(() => {
-		setBoard(get_('cp-board'));
-		setPieces(get_('cp-pieces'));
+		setBoard(get_('cp-board') ?? 'green');
+		setPieces(get_('cp-pieces') ?? 'neo');
 	}, []);
 
 	const mainStyle = useMemo(() => `next-chessground ${animation}`, [animation]);
