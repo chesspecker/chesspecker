@@ -6,7 +6,7 @@ type Props = {
 };
 
 const getClasses = (grade: number) => {
-	const result = 'h-3 w-5 cursor-pointer rounded-sm mx-1 mb-2 ';
+	const result = 'h-3 w-5 cursor-pointer rounded-sm mb-1 ';
 
 	if (grade < 3) {
 		return result + 'bg-red-500';
@@ -23,7 +23,7 @@ const getClasses = (grade: number) => {
 
 const History = ({puzzles}: Props) => {
 	return (
-		<div className='flex w-full flex-row flex-wrap'>
+		<div className='flex w-full flex-row flex-wrap gap-1'>
 			{puzzles.map(puzzle => (
 				<a
 					key={puzzle.PuzzleId}

@@ -11,7 +11,7 @@ const Timer = ({value, mistakes}) => {
 	}, [value]);
 
 	return (
-		<div className='my-2 w-fit self-center border-2 border-white px-4 py-2 text-lg font-bold text-white'>
+		<div className='my-2 w-fit self-center rounded-md border-2  border-white px-4 py-2 text-lg font-bold text-white'>
 			{days > 0 && <span>{days}&space;:&space;</span>}
 			{hours > 0 && <span>{hours}&space;:&space;</span>}
 			<span>{`0${minutes}`.slice(-2)} : </span>

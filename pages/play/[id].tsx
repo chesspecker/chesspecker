@@ -32,6 +32,7 @@ import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import WithoutSsr from '@/components/without-ssr';
 import History from '@/components/play/history';
+import {ButtonLink as Button} from '@/components/button';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -423,7 +424,15 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
-			<Timer value={initialSetTimer} mistakes={totalMistakes} />
+			<div className='flex flex-row justify-center gap-2'>
+				<Timer value={initialSetTimer} mistakes={totalMistakes} />
+				<Button
+					href='/dashboard'
+					className='block w-36 cursor-pointer self-center rounded-md border-none bg-gray-500 py-2 text-center font-merriweather text-lg font-bold leading-8 text-white'
+				>
+					LEAVE 🧨
+				</Button>
+			</div>
 			<WithoutSsr>
 				<Chessboard config={{...config, orientation, events: {move: onMove}}} />
 			</WithoutSsr>
