@@ -195,12 +195,22 @@ const PlayingPage = ({set}: Props) => {
 	const updateFinishedSet = useCallback(async () => {
 		let timeTaken = (Date.now() - initialSetTimer) / 1000;
 		timeTaken += mistakes * 3; // Add 3sec malus for each mistake
-		try {
-			await fetcher.put(`/api/set/${set._id.toString()}`, {
-				cycles: set.cycles + 1,
+		const update = {
+			$inc: {
+				cycles: 1,
+			},
+			$push: {
+				times: timeTaken+1,
+			},
+			$set: {
+				'puzzles.$[].played': false,
 				currentTime: 0,
-				bestTime: timeTaken + 1,
-			});
+				progression: 0,
+			},
+		};
+		try {
+			await fetcher.put(`/api/set/${set._id.toString()}`, update);
+			await router.push(`/view/${set._id.toString()}`);
 		} catch (error: unknown) {
 			console.log(error);
 		}

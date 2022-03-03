@@ -15,26 +15,11 @@ export const retrieveByUser = async (
 
 export const update = async (
 	id: PuzzleSetInterface['id'],
-	timeTaken: number,
-): Promise<PuzzleSetInterface> => {
-	const update = {
-		$inc: {
-			cycles: 1,
-		},
-		$push: {
-			times: timeTaken,
-		},
-		$set: {
-			'puzzles.$[].played': false,
-			currentTime: 0,
-			progression: 0,
-		},
-	};
-
-	return PuzzleSet.findByIdAndUpdate(id, update, {
+	body: Partial<PuzzleSetInterface>,
+): Promise<PuzzleSetInterface> =>
+	PuzzleSet.findByIdAndUpdate(id, body, {
 		new: true,
 	}).exec() as Promise<PuzzleSetInterface>;
-};
 
 export const remove = async (
 	id: PuzzleSetInterface['id'],
