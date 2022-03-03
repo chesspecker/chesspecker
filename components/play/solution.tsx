@@ -10,6 +10,10 @@ type Props = {
 	setSolution: Dispatch<SetStateAction<boolean>>;
 };
 
+const defaultClasses =
+	'mx-auto md:mx-2 w-36 rounded-md bg-gray-800 text-white leading-8';
+const disabledClasses = `block cursor-default self-center border border-none border-transparent bg-opacity-70 px-2.5 py-2 text-center font-merriweather text-lg font-bold shadow-sm ${defaultClasses}`;
+
 const Solution = ({
 	time,
 	answer,
@@ -28,27 +32,17 @@ const Solution = ({
 	}, [time, updateTimer]);
 
 	if (timer.value < 6)
-		return (
-			<div>
-				<div className='block w-36 cursor-pointer self-center rounded-md border-none bg-gray-500 py-2 text-center font-merriweather text-lg font-bold leading-8 text-white'>
-					NO CHEATING
-				</div>
-			</div>
-		);
+		return <div className={disabledClasses}>NO CHEATING</div>;
 
 	if (isComplete) return null;
 
 	if (isSolutionClicked)
-		return <span className='text-lg font-bold text-white'>{answer}</span>;
+		return <span className={disabledClasses}>{answer}</span>;
+
 	return (
-		<div>
-			<Button
-				className='block w-36 cursor-pointer self-center rounded-md border-none bg-gray-500 py-2 text-center font-merriweather text-lg font-bold leading-8 text-white'
-				onClick={handleClick}
-			>
-				VIEW SOLUTION
-			</Button>
-		</div>
+		<Button className={defaultClasses} onClick={handleClick}>
+			VIEW SOLUTION
+		</Button>
 	);
 };
 

@@ -16,7 +16,7 @@ const Timer = ({value, mistakes}: Props) => {
 	}, [value, updateTimer]);
 
 	return (
-		<div className='my-2 w-fit self-center rounded-md border-2  border-white px-4 py-2 text-lg font-bold text-white'>
+		<div className='my-2 block w-fit min-w-[90px] cursor-default self-center rounded-md border border-transparent bg-white bg-opacity-90 py-2 px-2.5 text-center font-merriweather text-lg font-bold leading-8 text-sky-700 shadow-sm backdrop-blur-lg backdrop-filter'>
 			{days > 0 && <span>{days}&space;:&space;</span>}
 			{hours > 0 && <span>{hours}&space;:&space;</span>}
 			<span>{`0${minutes}`.slice(-2)} : </span>

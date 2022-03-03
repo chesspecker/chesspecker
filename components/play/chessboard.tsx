@@ -42,7 +42,7 @@ const Chessground = ({config = {}}: Props) => {
 	);
 
 	return (
-		<div className='mx-auto aspect-square w-2/5'>
+		<div className='w-full'>
 			<div className={mainStyle}>
 				<div className={themeStyle}>
 					<div ref={ref} className='table h-full w-full' />

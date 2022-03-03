@@ -9,11 +9,12 @@ declare type ButtonProps = {
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
+const defaultClasses =
+	'block cursor-pointer w-full rounded-2xl font-merriweather text-lg font-bold leading-10 bg-white self-center py-2 px-2.5 text-center text-sky-800 bg-opacity-70 hover:bg-white hover:bg-opacity-90 backdrop-filter backdrop-blur-lg hover:text-sky-600 border border-transparent shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500';
+
 export const Button = ({children, onClick, type, className}: ButtonProps) => (
 	<button
-		className={overrideTailwindClasses(
-			`block w-full cursor-pointer self-center rounded-2xl border-none bg-white pt-2 pb-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700 hover:bg-sky-800 hover:text-white ${className}`,
-		)}
+		className={overrideTailwindClasses(`${defaultClasses} ${className}`)}
 		/* eslint-disable-next-line react/button-has-type */
 		type={type ? type : 'button'}
 		onClick={onClick}
@@ -38,9 +39,7 @@ export const ButtonLink = ({
 	<Link href={href}>
 		<a>
 			<button
-				className={overrideTailwindClasses(
-					`block w-full cursor-pointer self-center rounded-2xl border-none bg-white py-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700 ${className}`,
-				)}
+				className={overrideTailwindClasses(`${defaultClasses} ${className}`)}
 				/* eslint-disable-next-line react/button-has-type */
 				type={type ? type : 'button'}
 			>

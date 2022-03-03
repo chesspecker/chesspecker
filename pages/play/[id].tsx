@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {useState, useEffect, useCallback, ReactElement} from 'react';
 import * as ChessJS from 'chess.js';
 import {ChessInstance, Square, ShortMove} from 'chess.js';
@@ -290,6 +289,7 @@ const PlayingPage = ({set}: Props) => {
 	const calcMovable = useCallback((): Partial<Config['movable']> => {
 		const dests = new Map();
 		// FIXME: not working
+		/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 		const color = getColor(chess.turn());
 		for (const s of chess.SQUARES) {
 			const ms = chess.moves({square: s, verbose: true});
@@ -473,36 +473,46 @@ const PlayingPage = ({set}: Props) => {
 			<div className='flex flex-row justify-center gap-2'>
 				<Timer value={initialSetTimer} mistakes={totalMistakes} />
 				<Button
-					className='w-36 rounded-md bg-gray-500 leading-8 text-white'
+					className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
 					href='/dashboard'
 				>
 					LEAVE 🧨
 				</Button>
 			</div>
-			<WithoutSsr>
-				<Chessboard config={{...config, orientation, events: {move: onMove}}} />
-			</WithoutSsr>
-			<Promotion
-				isOpen={isOpen}
-				hide={hide}
-				color={getColor(chess.turn())}
-				onPromote={promotion}
-			/>
-			<div className=''>
-				<Solution
-					time={initialPuzzleTimer}
-					isSolutionClicked={isSolutionClicked}
-					setSolution={setIsSolutionClicked}
-					isComplete={isComplete}
-					answer={moveHistory[moveNumber]}
+			<div className='flex w-full flex-col flex-wrap items-center justify-end md:flex-row md:self-center'>
+				<div className='mx-auto aspect-square w-5/6 items-center md:mx-2 md:mr-36 md:inline-block md:w-4/6 md:justify-center lg:w-3/6'>
+					<WithoutSsr>
+						<Chessboard
+							config={{...config, orientation, events: {move: onMove}}}
+						/>
+					</WithoutSsr>
+				</div>
+				<Promotion
+					isOpen={isOpen}
+					hide={hide}
+					color={getColor(chess.turn())}
+					onPromote={promotion}
 				/>
-				<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
-				<Progress
-					totalPuzzles={set.length}
-					completedPuzzles={completedPuzzles}
-				/>
+				<div className='md:flex-end w-5/6 flex-row md:inline-block md:w-fit md:flex-col'>
+					<div className='mt-2 w-1/2 md:w-full'>
+						<Progress
+							totalPuzzles={set.length}
+							completedPuzzles={completedPuzzles}
+						/>
+					</div>
+					<div className='mt-2 w-1/2 md:w-full'>
+						<Solution
+							time={initialPuzzleTimer}
+							isSolutionClicked={isSolutionClicked}
+							setSolution={setIsSolutionClicked}
+							isComplete={isComplete}
+							answer={moveHistory[moveNumber]}
+						/>
+						<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
+					</div>
+				</div>
 			</div>
-			<div className='mx-auto flex w-2/5 flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
+			<div className='mx-auto flex w-5/6 flex-row-reverse items-end gap-2 py-1.5 text-gray-400 md:w-4/6 lg:w-3/6'>
 				<Settings />
 				<Flip />
 				<History puzzles={previousPuzzle} />
