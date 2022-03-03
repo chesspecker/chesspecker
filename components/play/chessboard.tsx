@@ -23,6 +23,7 @@ const Chessground = ({config = {}}: Props) => {
 		} else if (ref?.current && api) {
 			api.set(config);
 		}
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [ref]);
 
 	useEffect(() => {
@@ -32,7 +33,7 @@ const Chessground = ({config = {}}: Props) => {
 	useEffect(() => {
 		setBoard(get_('cp-board') ?? 'green');
 		setPieces(get_('cp-pieces') ?? 'neo');
-	}, []);
+	}, [setBoard, setPieces]);
 
 	const mainStyle = useMemo(() => `next-chessground ${animation}`, [animation]);
 	const themeStyle = useMemo(

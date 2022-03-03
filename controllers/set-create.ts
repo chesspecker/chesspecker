@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument */
 import {FilterQuery} from 'mongoose';
-import {shuffle} from '@/lib/help-array';
+import {safeZero, shuffle} from '@/lib/utils';
 import Puzzle, {PuzzleInterface} from '@/models/puzzle-model';
 import PuzzleSet, {
 	PuzzleItemInterface,
@@ -9,18 +9,16 @@ import PuzzleSet, {
 import User, {UserInterface} from '@/models/user-model';
 import {Theme} from '@/data/themes';
 
-const safe = (value: number) => Math.max(value, 0);
-
 const rating = (
 	level: PuzzleSetInterface['level'],
 	averageRating = 1500,
 ): [number, number] => {
 	switch (level) {
 		case 'easiest':
-			return [safe(averageRating - 600), safe(averageRating - 500)];
+			return [safeZero(averageRating - 600), safeZero(averageRating - 500)];
 
 		case 'easier':
-			return [safe(averageRating - 300), safe(averageRating - 200)];
+			return [safeZero(averageRating - 300), safeZero(averageRating - 200)];
 
 		case 'harder':
 			return [averageRating + 200, averageRating + 300];

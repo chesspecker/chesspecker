@@ -59,11 +59,13 @@ const PuzzleSetMap = () => {
 			))}
 			<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
 				<Link href='./create'>
-					<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center bg-gray-300 text-3xl font-medium text-sky-800'>
-						{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
-						<Image src={plus} />
-						<p>Create a set</p>
-					</div>
+					<a>
+						<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center bg-gray-300 text-3xl font-medium text-sky-800'>
+							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
+							<Image src={plus} />
+							<p>Create a set</p>
+						</div>
+					</a>
 				</Link>
 			</div>
 		</div>

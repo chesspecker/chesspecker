@@ -9,11 +9,11 @@ type Props = {
 
 const Timer = ({value, mistakes}: Props) => {
 	const {timer, updateTimer} = useTimer(value);
-	const [days, hours, minutes, seconds] = useClock(timer + mistakes * 3);
+	const [days, hours, minutes, seconds] = useClock(timer.value + mistakes * 3);
 
 	useEffect(() => {
 		updateTimer(value);
-	}, [value]);
+	}, [value, updateTimer]);
 
 	return (
 		<div className='my-2 w-fit self-center rounded-md border-2  border-white px-4 py-2 text-lg font-bold text-white'>

@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 /**
  * @type {import('next').NextConfig}
  **/

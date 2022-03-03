@@ -5,8 +5,7 @@ import {Difficulty} from '@/models/puzzle-set-model';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {fetcher} from '@/lib/fetcher';
 import {Data} from '@/pages/api/rating';
-
-const safe = (value: number) => Math.max(value, 0);
+import {safeZero} from '@/lib/utils';
 
 const OptionLevel = () => {
 	const [, setLevel] = useAtom(optionsLevelAtom);
@@ -39,10 +38,10 @@ const OptionLevel = () => {
 						onChange={handleChange}
 					>
 						<option value='easiest' title='600 points below your puzzle rating'>
-							Easiest (&#8776;{safe(rating - 600)})
+							Easiest (&#8776;{safeZero(rating - 600)})
 						</option>
 						<option value='easier' title='300 points below your puzzle rating'>
-							Easier (&#8776;{safe(rating - 300)})
+							Easier (&#8776;{safeZero(rating - 300)})
 						</option>
 						<option value='normal'>Normal (&#8776;{rating})</option>
 						<option value='harder' title='300 points above your puzzle rating'>

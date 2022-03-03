@@ -14,7 +14,7 @@ import {
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import Chessboard from '@/components/play/chessboard';
-import {sortBy} from '@/lib/help-array';
+import {sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {PuzzleInterface} from '@/models/puzzle-model';
 import audio from '@/lib/sound';
@@ -77,6 +77,7 @@ const PlayingPage = ({set}: Props) => {
 		setCompletedPuzzles(() => set.progression);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [set.puzzles, set.currentTime]);
 
 	/**
@@ -203,6 +204,7 @@ const PlayingPage = ({set}: Props) => {
 		initialPuzzleTimer,
 		set._id,
 		isSolutionClicked,
+		getGrade,
 	]);
 
 	/**
@@ -242,6 +244,7 @@ const PlayingPage = ({set}: Props) => {
 		} catch (error: unknown) {
 			console.log(error);
 		}
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [initialSetTimer, mistakes, set]);
 
 	/**
@@ -488,7 +491,7 @@ const PlayingPage = ({set}: Props) => {
 			<div className=''>
 				<Solution
 					time={initialPuzzleTimer}
-					solution={isSolutionClicked}
+					isSolutionClicked={isSolutionClicked}
 					setSolution={setIsSolutionClicked}
 					isComplete={isComplete}
 					answer={moveHistory[moveNumber]}
