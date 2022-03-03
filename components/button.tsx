@@ -1,6 +1,5 @@
 import {UrlObject} from 'url';
 import Link from 'next/link';
-import {memo} from 'react';
 import {overrideTailwindClasses} from 'tailwind-override';
 
 declare type ButtonProps = {
@@ -36,15 +35,17 @@ export const ButtonLink = ({
 	className,
 	type,
 }: ButtonLinkProps) => (
-	<button
-		className={overrideTailwindClasses(
-			`block w-full cursor-pointer self-center rounded-2xl border-none bg-white py-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700 ${className}`,
-		)}
-		/* eslint-disable-next-line react/button-has-type */
-		type={type ? type : 'button'}
-	>
-		<Link href={href}>
-			<a>{children}</a>
-		</Link>
-	</button>
+	<Link href={href}>
+		<a>
+			<button
+				className={overrideTailwindClasses(
+					`block w-full cursor-pointer self-center rounded-2xl border-none bg-white py-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700 ${className}`,
+				)}
+				/* eslint-disable-next-line react/button-has-type */
+				type={type ? type : 'button'}
+			>
+				{children}
+			</button>
+		</a>
+	</Link>
 );
