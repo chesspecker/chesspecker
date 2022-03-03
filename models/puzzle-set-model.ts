@@ -17,6 +17,7 @@ export interface PuzzleItemInterface {
 	PuzzleId: PuzzleInterface['PuzzleId'];
 	played: boolean;
 	count: number;
+	streak: number;
 	order: number;
 	mistakes: number[];
 	timeTaken: number[];
@@ -36,7 +37,6 @@ export interface PuzzleSetInterface extends Document {
 	rating: number;
 	progression: number;
 	level: Difficulty;
-	getAverage(): number;
 }
 
 const schema = new Schema<PuzzleSetInterface>({
@@ -47,6 +47,7 @@ const schema = new Schema<PuzzleSetInterface>({
 			PuzzleId: {type: String},
 			played: {type: Boolean, default: false},
 			count: {type: Number},
+			streak: {type: Number},
 			order: {type: Number},
 			mistakes: {type: [Number]},
 			timeTaken: {type: [Number]},

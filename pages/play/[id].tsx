@@ -128,12 +128,23 @@ const PlayingPage = ({set}: Props) => {
 	}, [puzzle]);
 
 	type BodyData = {
-		_id: PuzzleSetInterface['id'];
 		didCheat: boolean;
 		mistakes: number;
 		timeTaken: number;
-		perfect: number;
+		streak: number;
 	};
+
+	const getGrade = useCallback(
+		({didCheat, mistakes, timeTaken, streak = 0}: BodyData) => {
+			if (didCheat || mistakes >= 3) return 1;
+			if (mistakes === 2 || (mistakes === 1 && timeTaken >= 20)) return 2;
+			if (mistakes === 1 || timeTaken >= 20) return 3;
+			if (timeTaken >= 6) return 4;
+			if (streak < 2) return 5;
+			return 6;
+		},
+		[],
+	);
 
 	/**
 	 * Push the data of the current set when complete.
@@ -142,18 +153,35 @@ const PlayingPage = ({set}: Props) => {
 		const puzzle = puzzleList[puzzleIndex];
 		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
-		const body: BodyData = {
-			_id: set._id,
+
+		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
 			timeTaken,
-			perfect: 0,
+			streak: puzzle.streak,
+		});
+
+		const update = {
+			$inc: {
+				'puzzles.$.count': 1,
+				currentTime: timeTaken + 3 * mistakes,
+				progression: 1,
+			},
+			$push: {
+				'puzzles.$.mistakes': mistakes,
+				'puzzles.$.timeTaken': timeTaken,
+				'puzzles.$.grades': newGrade,
+			},
+			$set: {
+				'puzzles.$.played': true,
+				'puzzles.$.streak': puzzle.streak ? puzzle.streak + 1 : 0,
+			},
 		};
 
 		try {
 			const result = (await fetcher.put(
 				`/api/puzzle/${puzzle._id.toString()}`,
-				body,
+				{_id: set._id, update},
 			)) as UpdateData;
 			if (result.success) {
 				const grades = result.puzzle.grades;
@@ -200,7 +228,7 @@ const PlayingPage = ({set}: Props) => {
 				cycles: 1,
 			},
 			$push: {
-				times: timeTaken+1,
+				times: timeTaken + 1,
 			},
 			$set: {
 				'puzzles.$[].played': false,

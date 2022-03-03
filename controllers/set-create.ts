@@ -87,6 +87,7 @@ export const create = async (
 				PuzzleId: doc.PuzzleId,
 				played: false,
 				count: 0,
+				streak: 0,
 				order: puzzlesCount,
 				mistakes: [],
 				timeTaken: [],
