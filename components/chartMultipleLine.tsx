@@ -51,7 +51,7 @@ export const options = {
 	},
 };
 
-function ChartMultipleLine({array1, array2, name1, name2}) {
+const ChartMultipleLine = ({array1, array2, name1, name2}) => {
 	const labels = array1.map((_, index) => index);
 
 	const data = {
@@ -75,6 +75,6 @@ function ChartMultipleLine({array1, array2, name1, name2}) {
 	};
 
 	return <Line options={options} data={data} />;
-}
+};
 
 export default ChartMultipleLine;

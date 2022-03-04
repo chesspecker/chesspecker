@@ -54,8 +54,8 @@ const Choice = ({theme}: Props) => {
 			className={`m-4 h-fit w-64 ${getCursor()} flex-wrap rounded-lg border-2 ${getBorderColor()} ${getBgColor()}`}
 			onClick={handleClick}
 		>
-			<h4 className={`m-4 text-3xl ${getTextColor()}`}>{theme.title}</h4>
-			<p className={`m-4 text-2xl font-light ${getTextColor()}`}>
+			<h4 className={`m-4 text-2xl ${getTextColor()}`}>{theme.title}</h4>
+			<p className={`m-4 text-xl font-light ${getTextColor()}`}>
 				{theme.description}
 			</p>
 		</div>

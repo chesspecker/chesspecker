@@ -1,71 +1,67 @@
-import {Schema, model, models} from 'mongoose';
-import {UserInterface} from './user-model';
+import {Schema, model, models, Types} from 'mongoose';
+import type {Document} from 'mongoose';
+import {PuzzleInterface} from './puzzle-model';
 
-export interface PuzzleSetInterface {
-	_id: string;
-	user: UserInterface;
-	puzzles: Array<{
-		_id: string;
-		PuzzleId: string;
-		played: boolean;
-		count: number;
-		order: number;
-		mistakes: Array<number>;
-		timeTaken: Array<number>;
-		grade: Array<number>;
-		interval: number;
-		repetition: number;
-		easinessFactor: number;
-	}>;
+export type Difficulty =
+	| 'easiest'
+	| 'easier'
+	| 'easy'
+	| 'normal'
+	| 'intermediate'
+	| 'hard'
+	| 'harder'
+	| 'hardest';
+
+export interface PuzzleItemInterface {
+	_id: Types.ObjectId;
+	PuzzleId: PuzzleInterface['PuzzleId'];
+	played: boolean;
+	count: number;
+	streak: number;
+	order: number;
+	mistakes: number[];
+	timeTaken: number[];
+	grades: number[];
+}
+
+export interface PuzzleSetInterface extends Document {
+	_id: Types.ObjectId;
+	user: Types.ObjectId;
+	puzzles: PuzzleItemInterface[];
 	title: string;
 	length: number;
-	chunkLength: number;
 	cycles: number;
 	spacedRepetition: boolean;
 	currentTime: number;
-	bestTime: number;
+	times: number[];
 	rating: number;
-	totalMistakes: number;
-	totalPuzzlesPlayed: number;
-	accuracy: number;
-	level:
-		| 'easiest'
-		| 'easier'
-		| 'easy'
-		| 'normal'
-		| 'intermediate'
-		| 'hard'
-		| 'harder'
-		| 'hardest';
+	progression: number;
+	level: Difficulty;
 }
 
 const schema = new Schema<PuzzleSetInterface>({
-	user: {type: Schema.Types.ObjectId, ref: 'User'},
+	user: {type: 'ObjectId', ref: 'User'},
 	puzzles: [
 		{
-			_id: {type: Schema.Types.ObjectId, ref: 'Puzzle'},
+			_id: {type: 'ObjectId', ref: 'Puzzle'},
 			PuzzleId: {type: String},
-			played: {type: Boolean},
+			played: {type: Boolean, default: false},
+			count: {type: Number},
+			streak: {type: Number},
 			order: {type: Number},
-			mistakes: {type: Number},
-			timeTaken: {type: Number},
-			grade: {type: Number},
-			interval: {type: Number},
-			repetition: {type: Number},
-			easinessFactor: {type: Number},
+			mistakes: {type: [Number]},
+			timeTaken: {type: [Number]},
+			grades: {type: [Number]},
 		},
 	],
 	title: {type: String},
 	length: {type: Number},
-	chunkLength: {type: Number},
 	cycles: {type: Number},
 	spacedRepetition: {type: Boolean},
 	currentTime: {type: Number},
-	bestTime: {type: Number},
+	times: {type: [Number]},
 	rating: {type: Number},
-	totalMistakes: {type: Number},
-	totalPuzzlesPlayed: {type: Number},
-	accuracy: {type: Number},
+	progression: {type: Number},
 	level: {
 		type: String,
 		enum: [

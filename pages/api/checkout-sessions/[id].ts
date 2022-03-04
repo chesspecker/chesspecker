@@ -16,9 +16,9 @@ const getStripeSession = async (
 		response.status(404).end('Session Not Found');
 		return;
 	}
+
 	const result = await User.findByIdAndUpdate(userID, {isSponsor: true}).exec();
 	response.status(200).json(session);
-	return;
 };
 
 const handler = async (request: NextApiRequest, response: NextApiResponse) => {

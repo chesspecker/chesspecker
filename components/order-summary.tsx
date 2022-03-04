@@ -5,7 +5,7 @@ const OrderSummary = () => {
 		<div className=''>
 			<Row>
 				<Col span={1}>
-					<div className=''></div>
+					<div className='' />
 				</Col>
 				<Col span={23}>
 					<Row>
@@ -20,7 +20,7 @@ const OrderSummary = () => {
 							</div>
 						</Col>
 					</Row>
-					<hr></hr>
+					<hr />
 					<h3>Today's charge: $10.00</h3>
 				</Col>
 			</Row>

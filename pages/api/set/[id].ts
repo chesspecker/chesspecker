@@ -1,34 +1,84 @@
 import {NextApiRequest, NextApiResponse} from 'next';
-import PuzzleSet from '@/models/puzzle-set-model';
+import withMongoRoute from 'providers/mongoose';
+import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
+import {withSessionRoute} from '@/lib/session';
+import {retrieve, remove, update} from '@/controllers/set';
 
-const get_ = async (request: NextApiRequest, response: NextApiResponse) => {
-	const puzzleSetId = request.query.id;
-	const result = await PuzzleSet.findById(puzzleSetId).exec();
-	if (result === null) throw new Error('puzzleSet not found');
-	response.send(result);
+type SuccessData = {
+	success: true;
+	set: PuzzleSetInterface;
 };
 
-const delete_ = async (request: NextApiRequest, response: NextApiResponse) => {
-	const puzzleSetId = request.query.id;
-	const result = await PuzzleSet.deleteOne({_id: puzzleSetId}).exec();
-	if (result === null) throw new Error('puzzleSet not found');
-	response.send('success');
+type ErrorData = {
+	success: false;
+	error: string;
 };
 
-const handler = (request: NextApiRequest, response: NextApiResponse) => {
+export type Data = SuccessData | ErrorData;
+
+const get_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	const {id} = request.query;
+	const set = await retrieve(id as string);
+	if (set === null) {
+		response.status(404).json({success: false, error: 'Set not found'});
+		return;
+	}
+
+	response.json({success: true, set});
+};
+
+const delete_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	const {id} = request.query;
+	const set = await remove(id as string);
+	if (set === null) {
+		response.status(404).json({success: false, error: 'Set not found'});
+		return;
+	}
+
+	response.json({success: true, set});
+};
+
+const put_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	const {id} = request.query;
+	const set = await update(id as string, request.body);
+	if (set === null) {
+		response.status(404).json({success: false, error: 'Set not found'});
+		return;
+	}
+
+	response.json({success: true, set});
+};
+
+const handler = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
 	switch (request.method) {
 		case 'GET':
-			get_(request, response);
+			await get_(request, response);
 			break;
 
-		case 'POST':
-			delete_(request, response);
+		case 'DELETE':
+			await delete_(request, response);
+			break;
+
+		case 'PUT':
+			await put_(request, response);
 			break;
 
 		default:
-			response.status(401).send('Method not allowed');
+			response.status(405).json({success: false, error: 'Method not allowed'});
 			break;
 	}
 };
 
-export default handler;
+export default withMongoRoute(withSessionRoute(handler));

@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import {useAtom} from 'jotai';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
@@ -16,9 +15,9 @@ const CreatePage = () => {
 	const router = useRouter();
 	const [choicesSelected, setChoicesSelected] = useAtom(selectedAtom);
 
-	const handleClick = () => {
+	const handleClick = async () => {
 		if (choicesSelected.length === 0) setChoicesSelected(() => ['healthyMix']);
-		router.push(
+		await router.push(
 			`/options?category=${encodeURIComponent(
 				JSON.stringify(choicesSelected),
 			)}`,
@@ -27,13 +26,13 @@ const CreatePage = () => {
 
 	return (
 		<div className='flex w-11/12 flex-col items-center justify-center'>
-			<h2 className='mt-56 text-white'>
+			<h2 className='mt-56 text-3xl font-bold text-white'>
 				Select one or more category to create your set!
 			</h2>
 			<div className='flex flex-col'>
 				{CATEGORIES.map((category: Category) => (
 					<div key={category.id}>
-						<h3 className='mx-2 mt-4 mb-3 pb-8 text-4xl text-white'>
+						<h3 className='mx-2 mt-4 mb-3 pb-8 text-3xl text-white'>
 							{category.name}
 						</h3>
 						<div className='flex flex-wrap'>

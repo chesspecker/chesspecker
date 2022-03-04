@@ -1,7 +1,7 @@
 import {ReactElement, useEffect, useState} from 'react';
+import {useRouter} from 'next/router';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
-import {useRouter} from 'next/router';
 import useConffeti from '@/hooks/use-conffeti';
 
 const SuccessPage = () => {

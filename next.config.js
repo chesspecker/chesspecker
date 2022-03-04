@@ -1,5 +1,3 @@
-// @ts-check
-
 /**
  * @type {import('next').NextConfig}
  **/
@@ -22,6 +20,6 @@ const nextConfig = {
 	},
 };
 
-const withTM = require('next-transpile-modules')(['@react-chess/chessground']);
+const withTM = require('next-transpile-modules')([]);
 
 module.exports = withTM(nextConfig);

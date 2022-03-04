@@ -2,32 +2,36 @@ import Image from 'next/image.js';
 import Link from 'next/link';
 import {LogoutIcon} from '@heroicons/react/solid';
 import logo from '@/public/images/logo.svg';
-import {origin} from '@/config';
-import useUserName from '@/hooks/use-username';
+import useUser from '@/hooks/use-user';
 
 const Navbar = () => (
 	<div className='fixed top-0 flex w-full items-center justify-between bg-sky-700 font-merriweather shadow'>
 		<div className='flex cursor-pointer'>
-			<Link href='/dashboard'>
-				<div className='flex'>
-					<div className='m-2 max-w-[3.5rem]'>
-						<Image src={logo} />
+			<Link passHref href='/dashboard'>
+				<a>
+					<div className='flex'>
+						<div className='m-2 max-w-[3.5rem]'>
+							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
+							<Image src={logo} />
+						</div>
+						<p className='ml-1 mr-4 self-center text-sm text-white md:text-lg'>
+							— Chesspecker
+						</p>
 					</div>
-					<p className='mr-4 self-center text-lg text-white'> — Chesspecker</p>
-				</div>
+				</a>
 			</Link>
 		</div>
 		<div className='mr-8 self-center text-lg text-white'>
 			<div className='flex'>
-				<Link href='/profile'>
+				<Link passHref href='/profile'>
 					<a className='mr-5 flex items-center justify-center'>
 						<span>⚔️&nbsp;</span>
-						{useUserName()?.data?.name}
+						{useUser()?.data?.username}
 					</a>
 				</Link>
-				<Link href='/api/auth/logout'>
+				<Link passHref href='/api/auth/logout'>
 					<a className='flex'>
-						<LogoutIcon className='mr-2 mt-1 h-5 w-5 text-white' />
+						<LogoutIcon className='mr-2 mt-1 h-3 w-3 text-white md:h-5 md:w-5' />
 						Logout
 					</a>
 				</Link>

@@ -3,65 +3,42 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
-import User from '@/models/user-model';
-import userGenerator from '@/controllers/user-generator';
+import User, {UserInterface} from '@/models/user-model';
+import {create} from '@/controllers/user';
 
-export type ResponseData = {success: boolean; message?: string};
+type ErrorData = {
+	success: false;
+	error: string;
+};
 
 const callback = async (
 	request: NextApiRequest,
-	response: NextApiResponse<ResponseData>,
+	response: NextApiResponse<ErrorData>,
 ) => {
 	if (request.method !== 'GET') {
-		response.status(405).json({success: false, message: 'Method not allowed.'});
+		response.status(405).json({success: false, error: 'Method not allowed.'});
 		return;
 	}
 
-	const {verifier} = request.session;
-
-	let oauthToken;
 	try {
+		const {verifier} = request.session;
 		const lichessToken = await getLichess.token(request.query.code, verifier);
-		oauthToken = lichessToken.access_token;
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, message: error.message});
-		return;
-	}
-
-	let lichessUser;
-	try {
-		lichessUser = await getLichess.data(oauthToken);
+		const oauthToken = lichessToken.access_token;
+		const lichessUser = await getLichess.account(oauthToken);
 		if (!lichessUser) throw new Error('user login failed');
+
+		let user: UserInterface = await User.findOne({id: lichessUser.id});
+		if (!user) user = await create(lichessUser);
+		request.session.token = oauthToken;
+		request.session.userID = user._id.toString();
+		request.session.username = user.username;
+		await request.session.save();
+		response.redirect(302, `${origin}/success-login`);
+		return;
 	} catch (error_: unknown) {
 		const error = error_ as Error;
-		response.status(500).json({success: false, message: error.message});
-		return;
+		response.status(500).json({success: false, error: error.message});
 	}
-
-	console.log('lichessUser', lichessUser);
-
-	request.session.token = oauthToken;
-	request.session.userID = lichessUser.id;
-	request.session.username = lichessUser.username;
-	await request.session.save();
-
-	let isAlreadyUsedId;
-
-	try {
-		isAlreadyUsedId = await User.exists({id: lichessUser.id});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, message: error.message});
-		return;
-	}
-
-	if (!isAlreadyUsedId) {
-		const user = userGenerator(lichessUser);
-		user.save();
-	}
-
-	response.redirect(302, `${origin}/success-login`);
 };
 
 export default withMongoRoute(withSessionRoute(callback));

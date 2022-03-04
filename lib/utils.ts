@@ -1,6 +1,6 @@
-export const shuffle = (array: any[]) => {
+export const shuffle = <T>(array: T[]): T[] => {
 	let currentIndex = array.length;
-	let temporary: any;
+	let temporary: T;
 	let rnd: number;
 
 	while (currentIndex !== 0) {
@@ -13,3 +13,8 @@ export const shuffle = (array: any[]) => {
 
 	return array;
 };
+
+export const sortBy = <T>(array: T[], p: string): T[] =>
+	[...array].sort((a, b) => (a[p] > b[p] ? 1 : a[p] < b[p] ? -1 : 0));
+
+export const safeZero = (value: number) => Math.max(value, 0);

@@ -49,7 +49,7 @@ export const options = {
 	},
 };
 
-function ChartInfinitLine({set}) {
+const ChartInfinitLine = ({set}) => {
 	const arrayOfPuzzlePlayed = set.puzzles.filter(
 		puzzle => puzzle.played === true,
 	);
@@ -64,22 +64,23 @@ function ChartInfinitLine({set}) {
 	const getMaxTimePlayed = () => {
 		let counter = 0;
 
-		for (let i = 0; i < array.length; i++) {
-			if (array[i].count > counter) counter = array[i].count;
+		for (const element of array) {
+			if (element.count > counter) counter = element.count;
 		}
+
 		return counter;
 	};
 
 	const getRandomColor = () => {
-		const num = Math.round(0xffffff * Math.random());
-		const r = num >> 16;
-		const g = (num >> 8) & 255;
-		const b = num & 255;
+		const number_ = Math.round(0xff_ff_ff * Math.random());
+		const r = number_ >> 16;
+		const g = (number_ >> 8) & 255;
+		const b = number_ & 255;
 		return r + ', ' + g + ', ' + b;
 	};
 
 	const getData = () => {
-		let datasets = [];
+		const datasets = [];
 		for (let i = 0; i < getMaxTimePlayed(); i++) {
 			const color = getRandomColor();
 
@@ -112,6 +113,6 @@ function ChartInfinitLine({set}) {
 	};
 
 	return <Line options={options} data={data} />;
-}
+};
 
 export default ChartInfinitLine;

@@ -37,7 +37,7 @@ const options = {
 
 const labels = ['RAPIDITY'];
 
-function ChartOneLine({rapidity}) {
+const ChartOneLine = ({rapidity}) => {
 	const data = {
 		labels,
 		datasets: [
@@ -49,6 +49,6 @@ function ChartOneLine({rapidity}) {
 		],
 	};
 	return <Bar options={options} data={data} />;
-}
+};
 
 export default ChartOneLine;

@@ -1,15 +1,15 @@
 import Slider from 'react-input-slider';
 import {useAtom} from 'jotai';
-import {optsSizeAtom} from '@/lib/atoms';
+import {optionsSizeAtom} from '@/lib/atoms';
 
 const OptionSize = () => {
-	const [size, setSize] = useAtom(optsSizeAtom);
+	const [size, setSize] = useAtom(optionsSizeAtom);
 	const handleChange = (values: {x: number; y: number}) => {
 		setSize(() => values.x);
 	};
 
 	return (
-		<div className='mt-8 flex w-full flex-col items-stretch justify-between border-2 border-white text-left'>
+		<div className='mt-8 flex w-full flex-col items-stretch justify-between text-left'>
 			<div className='flex justify-between'>
 				<label
 					htmlFor='number_game'

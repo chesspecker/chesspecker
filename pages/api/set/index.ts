@@ -1,89 +1,70 @@
-import type {NextApiRequest, NextApiResponse} from 'next';
+import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import PuzzleSet from '@/models/puzzle-set-model';
-import User, {UserInterface} from '@/models/user-model';
-import setGenerator from '@/controllers/set-generator';
+import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import {withSessionRoute} from '@/lib/session';
+import {create, retrieveByUser} from '@/controllers/set';
 
-const get_ = async (request: NextApiRequest, response: NextApiResponse) => {
-	const id = request.session.userID;
-	let user: UserInterface;
-	try {
-		user = await User.findOne({id}).exec();
-		if (user === null) {
-			response.status(401).send('user not found');
-			return;
-		}
-	} catch (error) {
-		console.log(error);
-		response.status(401).send('user not found');
-		return;
-	}
-
-	const puzzleSets = await PuzzleSet.find({user: user._id}).exec();
-	if (puzzleSets.length === 0) {
-		response.status(404).send('puzzleSets not found');
-		return;
-	}
-
-	response.send(puzzleSets);
+type SuccessDataMany = {
+	success: true;
+	sets: PuzzleSetInterface[];
 };
 
-const post_ = async (request: NextApiRequest, response: NextApiResponse) => {
-	const id = request.session.userID;
-	let user;
-	try {
-		user = await User.findOne({id}).exec();
-		if (user === null) {
-			const error = new Error('user not found');
-			throw error;
-		}
-	} catch (error) {
-		console.log(error);
-		return;
-	}
-
-	const {themeArray, size, title, level} = request.body;
-	const options = {themeArray, size, title, level};
-
-	let puzzleSet;
-	try {
-		puzzleSet = await setGenerator(user, options);
-	} catch (error) {
-		console.log(error);
-		return;
-	}
-
-	try {
-		await puzzleSet.populate('user');
-		await puzzleSet.populate('puzzles');
-	} catch (error) {
-		console.log(error);
-		return;
-	}
-
-	let puzzleSetId;
-	puzzleSet.save(async (error, item) => {
-		if (error) console.log(error);
-		return;
-		puzzleSetId = item._id;
-		response.send(puzzleSetId);
-	});
+type SuccessData = {
+	success: true;
+	set: PuzzleSetInterface;
 };
 
-const handler = (request: NextApiRequest, response: NextApiResponse) => {
+type ErrorData = {
+	success: false;
+	error: string;
+};
+
+export type Data = SuccessData | ErrorData;
+export type DataMany = SuccessDataMany | ErrorData;
+
+const get_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<DataMany>,
+) => {
+	const {userID} = request.session;
+	const sets = await retrieveByUser(userID);
+	if (sets === null) {
+		response.status(404).json({success: false, error: 'Set not found'});
+		throw new Error('Set not found');
+	}
+
+	response.json({success: true, sets});
+};
+
+const post_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	const {userID} = request.session;
+	const set = await create(userID, JSON.parse(request.body));
+	if (set === null) {
+		response.status(404).json({success: false, error: 'Set not found'});
+		throw new Error('Set not found');
+	}
+
+	response.json({success: true, set});
+};
+
+const handler = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data | DataMany>,
+) => {
 	switch (request.method) {
 		case 'GET':
-			get_(request, response);
-			break;
+			await get_(request, response);
+			return;
 
 		case 'POST':
-			post_(request, response);
-			break;
+			await post_(request, response);
+			return;
 
 		default:
-			response.status(401).send('Method not allowed');
-			break;
+			response.status(405).json({success: false, error: 'Method not allowed'});
 	}
 };
 

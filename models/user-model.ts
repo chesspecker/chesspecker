@@ -1,8 +1,10 @@
-import {Schema, model, models} from 'mongoose';
+import {Schema, model, models, Types} from 'mongoose';
+import type {Document} from 'mongoose';
 
-export interface UserInterface {
-	_id: string;
+export interface UserInterface extends Document {
+	_id: Types.ObjectId;
 	id: string;
+	lichessId: string;
 	username: string;
 	url: string;
 	permissionLevel: number;

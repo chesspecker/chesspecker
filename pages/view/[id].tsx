@@ -1,18 +1,18 @@
 import {useState, useEffect, useCallback, ReactElement} from 'react';
 import Router from 'next/router.js';
+import {loadStripe} from '@stripe/stripe-js';
+import axios from 'axios';
+import ChartOneLine from '../../components/chartOneLine';
+import {provPuzle} from '../../components/provisoire';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import {PuzzleInterface} from '@/models/puzzle-model';
 import useClock from '@/hooks/use-clock';
 import Donnuts from '@/components/donnuts';
-import ChartOneLine from '../../components/chartOneLine';
 import ChartMultipleLine from '@/components/chartMultipleLine';
-import {provPuzle} from '../../components/provisoire';
 import ChartInfinitLine from '@/components/chartInfinitLine';
 import {Button} from '@/components/button';
-import {loadStripe} from '@stripe/stripe-js';
-import axios from 'axios';
 
 const getCyclesColor = (set: PuzzleSetInterface) =>
 	set.cycles < 1
@@ -44,16 +44,17 @@ const getRapidity = (set: PuzzleSetInterface) => {
 	const wortTime = 40;
 	const scale = wortTime - bestTime;
 	const step = 100 / scale;
-	const averageTime = set.currentTime / set.totalPuzzlesPlayed;
+	const averageTime =
+		set.currentTime / set.puzzles.filter(puzzle => puzzle.played).length;
 	const rapidity = 100 - (averageTime - bestTime) * step;
 	return rapidity < 0 ? 0 : rapidity;
 };
 
-const armonizedData = (packBy: number, array: Array<number>) => {
+const armonizedData = (packBy: number, array: number[]) => {
 	const length = array.length;
 	const iterator = Math.ceil(length / packBy);
 	console.log(iterator);
-	let newArray = [];
+	const newArray = [];
 	for (let i = 0; i < iterator; i++) {
 		const _oldArray = [...array];
 
@@ -63,14 +64,15 @@ const armonizedData = (packBy: number, array: Array<number>) => {
 
 		newArray.push(sum / _array.length);
 	}
+
 	return newArray;
 };
 
 const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface) => {
-	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
+	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played);
 	const arrayOfData = arrayFiltered.map(puzzle => {
 		const length = puzzle.timeTaken.length;
-		//TODO: this function work for old set structure, replace puzzle.timeTaken by puzzle.timeTaken[length] to get the last element of the aray of timeTaken
+		// TODO: this function work for old set structure, replace puzzle.timeTaken by puzzle.timeTaken[length] to get the last element of the aray of timeTaken
 		return puzzle.timeTaken[length - 1];
 	});
 
@@ -78,13 +80,13 @@ const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface) => {
 };
 
 const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface) => {
-	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
+	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played);
 	console.log(arrayFiltered);
 
 	const arrayOfData = arrayFiltered.map(puzzle => {
 		const length = puzzle.mistakes.length;
 		console.log(length);
-		//TODO: this function work for old set structure, replace puzzle.mistakes by puzzle.mistakes[length] to get the last element of the aray of mistakes
+		// TODO: this function work for old set structure, replace puzzle.mistakes by puzzle.mistakes[length] to get the last element of the aray of mistakes
 		return puzzle.mistakes[length - 1];
 	});
 	console.log('array of data', armonizedData(40, arrayOfData));
@@ -94,7 +96,7 @@ const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface) => {
 const getArrayActualTimePreviousTime = (set: PuzzleSetInterface) => {
 	const timePlayed = set.cycles + 1;
 	const array = set.puzzles
-		.filter(puzzle => puzzle.played === true)
+		.filter(puzzle => puzzle.played)
 		.map(puzzle => puzzle.timeTaken[puzzle.timeTaken.length - 1]);
 };
 
@@ -115,7 +117,7 @@ const item = {name: 'test', price: 100, description: 'test', quantity: 43};
 const createCheckOutSession = async () => {
 	const stripe = await stripePromise;
 	const checkoutSession = await axios.post('/api/checkout-sessions', {
-		item: item,
+		item,
 	});
 	const result = await stripe.redirectToCheckout({
 		sessionId: checkoutSession.data.id,
@@ -128,6 +130,7 @@ const createCheckOutSession = async () => {
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	const provSet = provPuzle;
+	const bestTime = Math.max(...set.times);
 	console.log(set);
 	return (
 		<div className='m-0 mt-8 flex min-h-screen w-screen flex-col px-12 '>
@@ -158,9 +161,9 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						<h3 className='h3 text-center'>Total time spent on this puzzle</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className='align-self-center text-5xl font-bold text-white'>
-								{set.bestTime === 0
+								{bestTime === 0
 									? useClock(set.currentTime)
-									: useClock(set.bestTime)}
+									: useClock(bestTime)}
 							</p>
 						</div>
 					</div>
@@ -185,9 +188,9 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className='align-self-center text-5xl font-bold text-white'>
-								{set.bestTime === 0
+								{bestTime === 0
 									? useClock(set.currentTime)
-									: useClock(set.bestTime)}
+									: useClock(bestTime)}
 							</p>
 						</div>
 					</div>
@@ -226,8 +229,8 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				<ChartMultipleLine
 					array1={getArrayOfTimeByPuzzle(provSet)}
 					array2={getArrayOfMistakeByPuzzle(provSet)}
-					name1={'time evolution'}
-					name2={'mistake evolution'}
+					name1='time evolution'
+					name2='mistake evolution'
 				/>
 			</div>
 			<ChartInfinitLine set={provSet} />

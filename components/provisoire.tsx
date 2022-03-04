@@ -1,9 +1,10 @@
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 const getRandomArray = (min, max, length) => {
-	let array = [];
+	const array = [];
 	for (let i = 0; i < length; i++) {
 		array.push(getRandomNumber(min, max));
 	}
+
 	return array;
 };
 
@@ -48,7 +49,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617c2f003b500cbd866e0a91',
@@ -61,7 +62,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617d21cccb4f511a79c4c6da',
@@ -74,7 +75,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617c0445ea399cb61af8b067',
@@ -139,7 +140,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617c3cb33b500cbd866efc75',
@@ -152,7 +153,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617e1412f1f9ad7337fc1983',
@@ -165,7 +166,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617ae0b7f6807e44cd730fb4',
@@ -269,7 +270,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617dea66f1f9ad7337f772e9',
@@ -282,7 +283,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617dd4bdf1f9ad7337f511bf',
@@ -295,7 +296,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617dcd33f1f9ad7337f4364b',
@@ -334,7 +335,7 @@ export const provPuzle = {
 			grade: getRandomArray(1, 6, 5),
 			interval: 0,
 			repetition: 0,
-			easinessFactor: 1.7000000000000002,
+			easinessFactor: 1.700_000_000_000_000_2,
 		},
 		{
 			_id: '617d2684cb4f511a79c54752',
@@ -6520,9 +6521,9 @@ export const provPuzle = {
 	spacedRepetition: false,
 	currentTime: 894,
 	bestTime: 0,
-	rating: 1440.7945926966293,
+	rating: 1440.794_592_696_629_3,
 	totalMistakes: 44,
 	totalPuzzlesPlayed: 27,
-	accuracy: -0.6296296296296295,
+	accuracy: -0.629_629_629_629_629_5,
 	__v: 0,
 };

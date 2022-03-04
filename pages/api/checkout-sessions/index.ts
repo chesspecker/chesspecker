@@ -8,7 +8,7 @@ const createStripeSession = async (
 	_request: NextApiRequest,
 	response: NextApiResponse,
 ) => {
-	const params: Stripe.Checkout.SessionCreateParams = {
+	const parameters: Stripe.Checkout.SessionCreateParams = {
 		line_items: [{price: 'price_1KX6VVJJnC3eZxpZBQ3QZ76Q', quantity: 1}],
 		payment_method_types: ['card'],
 		mode: 'subscription',
@@ -17,15 +17,14 @@ const createStripeSession = async (
 	};
 
 	try {
-		console.log('params', params);
-		const session = await stripe.checkout.sessions.create(params);
+		console.log('params', parameters);
+		const session = await stripe.checkout.sessions.create(parameters);
 		console.log('session', session);
 		response.status(200).json(session);
 		return;
 	} catch (error) {
 		console.log('error', error);
 		response.status(500).end('Internal Server Error');
-		return;
 	}
 };
 

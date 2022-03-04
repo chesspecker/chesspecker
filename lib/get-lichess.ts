@@ -1,18 +1,21 @@
+import {LichessToken, LichessUser} from '@/types/lichess';
 import {lichess, origin} from '@/config';
 
-const getLichessData = async (accessToken: string, url = '') =>
-	fetch(`https://lichess.org/api/account${url}`, {
+const getAccount = async (
+	accessToken: LichessToken['access_token'],
+): Promise<LichessUser> =>
+	fetch('https://lichess.org/api/account', {
 		headers: {Authorization: `Bearer ${accessToken}`},
 	})
-		.then(async response => response.json())
+		.then(async response => response.json() as Promise<LichessUser>)
 		.catch(error => {
 			throw error;
 		});
 
-const getLichessToken = async (
+const getToken = async (
 	authCode: string | string[],
 	verifier: string,
-): Promise<any> =>
+): Promise<LichessToken> =>
 	fetch('https://lichess.org/api/token', {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
@@ -24,14 +27,14 @@ const getLichessToken = async (
 			code_verifier: verifier,
 		}),
 	})
-		.then(async response => response.json())
+		.then(async response => response.json() as Promise<LichessToken>)
 		.catch(error => {
 			throw error;
 		});
 
 const getLichess = {
-	data: getLichessData,
-	token: getLichessToken,
+	account: getAccount,
+	token: getToken,
 };
 
 export default getLichess;
