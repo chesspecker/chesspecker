@@ -49,16 +49,18 @@ const getRapidity = (set: PuzzleSetInterface) => {
 	return rapidity < 0 ? 0 : rapidity;
 };
 
-const armonizedData = (packBy: number, array: Array<number>) => {
+const armonizedData = (array: Array<number>) => {
+	const packBy = Math.floor((30 / 500) * array.length);
+
 	const length = array.length;
 	const iterator = Math.ceil(length / packBy);
-	console.log(iterator);
+
 	let newArray = [];
 	for (let i = 0; i < iterator; i++) {
 		const _oldArray = [...array];
 
 		const _array = _oldArray.splice(i * packBy, packBy);
-		console.log(iterator, packBy * i, packBy, _array);
+
 		const sum = _array.reduce((a, b) => a + b);
 
 		newArray.push(sum / _array.length);
@@ -74,21 +76,20 @@ const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface) => {
 		return puzzle.timeTaken[length - 1];
 	});
 
-	return armonizedData(40, arrayOfData);
+	return armonizedData(arrayOfData);
 };
 
 const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface) => {
 	const arrayFiltered = set.puzzles.filter(puzzle => puzzle.played === true);
-	console.log(arrayFiltered);
 
 	const arrayOfData = arrayFiltered.map(puzzle => {
 		const length = puzzle.mistakes.length;
-		console.log(length);
+
 		//TODO: this function work for old set structure, replace puzzle.mistakes by puzzle.mistakes[length] to get the last element of the aray of mistakes
 		return puzzle.mistakes[length - 1];
 	});
-	console.log('array of data', armonizedData(40, arrayOfData));
-	return armonizedData(40, arrayOfData);
+
+	return armonizedData(arrayOfData);
 };
 
 const getArrayActualTimePreviousTime = (set: PuzzleSetInterface) => {
@@ -128,7 +129,7 @@ const createCheckOutSession = async () => {
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	const provSet = provPuzle;
-	console.log(set);
+
 	return (
 		<div className='m-0 mt-8 flex min-h-screen w-screen flex-col px-12 '>
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
