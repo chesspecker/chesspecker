@@ -3,7 +3,7 @@ import Router from 'next/router.js';
 import {loadStripe} from '@stripe/stripe-js';
 import axios from 'axios';
 import ChartOneLine from '../../components/chartOneLine';
-import {provPuzle} from '../../components/provisoire';
+import {provSet} from '../../components/provisoire';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import {PuzzleSetInterface} from '@/models/puzzle-set-model';
@@ -44,8 +44,8 @@ const getRapidity = (set: PuzzleSetInterface) => {
 	const wortTime = 40;
 	const scale = wortTime - bestTime;
 	const step = 100 / scale;
-	const averageTime =
-		set.currentTime / set.puzzles.filter(puzzle => puzzle.played).length;
+	const length = set.puzzles ? set.puzzles.filter(p => p.played).length : 0;
+	const averageTime = set.currentTime / set.length;
 	const rapidity = 100 - (averageTime - bestTime) * step;
 	return rapidity < 0 ? 0 : rapidity;
 };
@@ -130,8 +130,8 @@ const createCheckOutSession = async () => {
 
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
-	const provSet = provPuzle;
-	const bestTime = Math.max(...set.times);
+	console.log(set);
+	const bestTime = set.times ? Math.max(...set.times) : 0;
 	return (
 		<div className='m-0 mt-8 flex min-h-screen w-screen flex-col px-12 '>
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
@@ -203,7 +203,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						<h3 className='h3 text-center'>Progress</h3>
 						<div className='flex h-full items-center justify-center'>
 							<Donnuts
-								played={provSet.totalPuzzlesPlayed}
+								played={provSet.puzzles.filter(p => p.played).length}
 								totalSet={provSet.length}
 							/>
 						</div>
