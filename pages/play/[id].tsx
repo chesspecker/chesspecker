@@ -479,28 +479,37 @@ const PlayingPage = ({set}: Props) => {
 					LEAVE 🧨
 				</Button>
 			</div>
-			<div className='flex w-full flex-col flex-wrap items-center justify-end md:flex-row md:self-center'>
-				<div className='mx-auto aspect-square w-5/6 items-center md:mx-2 md:mr-36 md:inline-block md:w-4/6 md:justify-center lg:w-3/6'>
+
+			<div className='flex w-full flex-col items-center justify-center md:flex-row'>
+				<div className='hidden w-36 md:invisible md:block' />
+				<div className='w-5/6 max-w-2xl flex-auto'>
 					<WithoutSsr>
 						<Chessboard
 							config={{...config, orientation, events: {move: onMove}}}
 						/>
 					</WithoutSsr>
+					<Promotion
+						isOpen={isOpen}
+						hide={hide}
+						color={getColor(chess.turn())}
+						onPromote={promotion}
+					/>
+					<div className='flex flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
+						<div className='flex h-full items-start justify-start'>
+							<Settings />
+							<Flip />
+						</div>
+						<History puzzles={previousPuzzle} />
+					</div>
 				</div>
-				<Promotion
-					isOpen={isOpen}
-					hide={hide}
-					color={getColor(chess.turn())}
-					onPromote={promotion}
-				/>
-				<div className='md:flex-end w-5/6 flex-row md:inline-block md:w-fit md:flex-col'>
-					<div className='mt-2 w-1/2 md:w-full'>
+				<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
+					<div className='mt-2'>
 						<Progress
 							totalPuzzles={set.length}
 							completedPuzzles={completedPuzzles}
 						/>
 					</div>
-					<div className='mt-2 w-1/2 md:w-full'>
+					<div className='mt-2'>
 						<Solution
 							time={initialPuzzleTimer}
 							isSolutionClicked={isSolutionClicked}
@@ -511,11 +520,6 @@ const PlayingPage = ({set}: Props) => {
 						<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
 					</div>
 				</div>
-			</div>
-			<div className='mx-auto flex w-5/6 flex-row-reverse items-end gap-2 py-1.5 text-gray-400 md:w-4/6 lg:w-3/6'>
-				<Settings />
-				<Flip />
-				<History puzzles={previousPuzzle} />
 			</div>
 		</div>
 	);

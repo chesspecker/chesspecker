@@ -10,7 +10,7 @@ declare type ButtonProps = {
 };
 
 const defaultClasses =
-	'block cursor-pointer w-full rounded-2xl font-merriweather text-lg font-bold leading-10 bg-white self-center py-2 px-2.5 text-center text-sky-800 bg-opacity-70 hover:bg-white hover:bg-opacity-90 backdrop-filter backdrop-blur-lg hover:text-sky-600 border border-transparent shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500';
+	'block cursor-pointer w-full rounded-2xl font-merriweather text-sm md:text-lg font-bold leading-10 bg-white self-center py-2 px-2.5 text-center text-sky-800 bg-opacity-70 hover:bg-white hover:bg-opacity-90 backdrop-filter backdrop-blur-lg hover:text-sky-600 border border-transparent shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500';
 
 export const Button = ({children, onClick, type, className}: ButtonProps) => (
 	<button

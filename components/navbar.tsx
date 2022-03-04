@@ -13,18 +13,17 @@ const Navbar = () => (
 							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 							<Image src={logo} />
 						</div>
-						<p className='mr-4 self-center text-lg text-white'>
-							{' '}
+						<p className='ml-1 mr-4 self-center text-sm text-white md:text-lg'>
 							— Chesspecker
 						</p>
 					</div>
 				</a>
 			</Link>
 		</div>
-		<div className='mr-8 self-center text-lg text-white'>
+		<div className='mr-8 self-center text-sm text-white md:text-lg'>
 			<Link passHref href='/api/auth/logout'>
 				<a className='flex'>
-					<LogoutIcon className='mr-2 mt-1 h-5 w-5 text-white' />
+					<LogoutIcon className='mr-2 mt-1 h-3 w-3 text-white md:h-5 md:w-5' />
 					Logout
 				</a>
 			</Link>
