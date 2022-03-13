@@ -33,7 +33,7 @@
 		"@heroicons/react": "^1.0.5",
 		"@tailwindcss/forms": "^0.4.0",
 		"chess.js": "^0.12.1",
-		"chessground": "^8.2.0",
+		"chessground": "^8.2.1",
 		"iron-session": "^6.0.5",
 		"jotai": "^1.6.0",
 		"mongoose": "^6.2.1",
