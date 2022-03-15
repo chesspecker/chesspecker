@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -10,6 +10,7 @@ import {
 	Legend,
 } from 'chart.js';
 import {Line} from 'react-chartjs-2';
+import chartTrendline from 'chartjs-plugin-trendline';
 
 ChartJS.register(
 	CategoryScale,
@@ -19,6 +20,7 @@ ChartJS.register(
 	Title,
 	Tooltip,
 	Legend,
+	chartTrendline,
 );
 
 export const options = {
@@ -32,16 +34,19 @@ export const options = {
 			text: 'Chart comparing time taken and mistakes evolutions',
 		},
 	},
+
 	scales: {
 		y: {
 			type: 'linear' as const,
 			display: true,
 			position: 'left' as const,
+			max: 10,
 		},
 		y1: {
 			type: 'linear' as const,
 			display: true,
 			position: 'right' as const,
+			max: 70,
 			grid: {
 				drawOnChartArea: false,
 			},
@@ -50,10 +55,13 @@ export const options = {
 };
 
 const armonizedData = (array: number[]) => {
-	const packBy = Math.floor((30 / 500) * array.length);
+	const numberOfLine = 20;
+
+	if (array.length < numberOfLine) return array;
 
 	const length = array.length;
-	const iterator = Math.ceil(length / packBy);
+	const iterator = numberOfLine;
+	const packBy = Math.round(length / iterator);
 
 	const newArray = [];
 	for (let i = 0; i < iterator; i++) {
@@ -61,7 +69,7 @@ const armonizedData = (array: number[]) => {
 
 		const _array = _oldArray.splice(i * packBy, packBy);
 
-		const sum = _array.reduce((a, b) => a + b);
+		const sum = _array.reduce((a, b) => a + b, 0);
 
 		newArray.push(sum / _array.length);
 	}
@@ -88,7 +96,7 @@ const ChartInfinitLine = ({set}) => {
 			if (element.count > counter) counter = element.count;
 		}
 
-		return counter;
+		return set.cycles;
 	};
 
 	const getRandomColor = () => {
@@ -98,10 +106,27 @@ const ChartInfinitLine = ({set}) => {
 		const b = number_ & 255;
 		return r + ', ' + g + ', ' + b;
 	};
+	const [isChecked, setIsChecked] = useState({});
+
+	const handlCLick = index => {
+		console.log(isChecked, 'ischecked', index);
+		const _object = !undefined && !isChecked[index];
+		setIsChecked(oldObject => ({
+			...oldObject,
+			[index]: _object,
+		}));
+	};
+
+	useEffect(() => {
+		for (let i = 0; i < getMaxTimePlayed(); i++) {
+			setIsChecked(oldObject => ({...oldObject, [i]: true}));
+		}
+	}, []);
 
 	const getData = () => {
 		const datasets = [];
 		for (let i = 0; i < getMaxTimePlayed(); i++) {
+			if (!isChecked[i]) continue;
 			const color = getRandomColor();
 
 			datasets.push(
@@ -132,12 +157,6 @@ const ChartInfinitLine = ({set}) => {
 	const data = {
 		labels,
 		datasets: getData(),
-	};
-
-	const [isChecked, setIsChecked] = useState({});
-
-	const handlCLick = index => {
-		console.log(isChecked, 'ischecked');
 	};
 
 	return (

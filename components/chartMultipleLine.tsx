@@ -10,8 +10,7 @@ import {
 	Legend,
 } from 'chart.js';
 import {Line} from 'react-chartjs-2';
-
-import {faker} from '@faker-js/faker';
+import chartTrendline from 'chartjs-plugin-trendline';
 
 ChartJS.register(
 	CategoryScale,
@@ -39,11 +38,13 @@ export const options = {
 			type: 'linear' as const,
 			display: true,
 			position: 'left' as const,
+			max: 40,
 		},
 		y1: {
 			type: 'linear' as const,
 			display: true,
 			position: 'right' as const,
+			max: 10,
 			grid: {
 				drawOnChartArea: false,
 			},

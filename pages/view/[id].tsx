@@ -3,7 +3,6 @@ import Router from 'next/router.js';
 import {loadStripe} from '@stripe/stripe-js';
 import axios from 'axios';
 import ChartOneLine from '../../components/chartOneLine';
-import {provSet} from '../../components/provisoire';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import {PuzzleSetInterface} from '@/models/puzzle-set-model';
@@ -13,6 +12,7 @@ import Donnuts from '@/components/donnuts';
 import ChartMultipleLine from '@/components/chartMultipleLine';
 import ChartInfinitLine from '@/components/chartInfinitLine';
 import {Button} from '@/components/button';
+import {provSet} from '@/components/provisoire';
 
 const getCyclesColor = (set: PuzzleSetInterface) =>
 	set.cycles < 1
@@ -51,10 +51,13 @@ const getRapidity = (set: PuzzleSetInterface) => {
 };
 
 const armonizedData = (array: number[]) => {
-	const packBy = Math.floor((30 / 500) * array.length);
+	const numberOfLine = 50;
+
+	if (array.length < numberOfLine) return array;
 
 	const length = array.length;
-	const iterator = Math.ceil(length / packBy);
+	const iterator = numberOfLine;
+	const packBy = Math.round(length / iterator);
 
 	const newArray = [];
 	for (let i = 0; i < iterator; i++) {
@@ -62,7 +65,7 @@ const armonizedData = (array: number[]) => {
 
 		const _array = _oldArray.splice(i * packBy, packBy);
 
-		const sum = _array.reduce((a, b) => a + b);
+		const sum = _array.reduce((a, b) => a + b, 0);
 
 		newArray.push(sum / _array.length);
 	}
@@ -132,10 +135,12 @@ type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	console.log(set);
 	const bestTime = set.times ? Math.max(...set.times) : 0;
+
+	if (!set || !set.puzzles) return <></>;
 	return (
 		<div className='m-0 mt-8 flex min-h-screen w-screen flex-col px-12 '>
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
-				{provSet.title}
+				{set.title}
 			</h1>
 
 			<div className='mt-4 w-full'>
@@ -203,8 +208,8 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						<h3 className='h3 text-center'>Progress</h3>
 						<div className='flex h-full items-center justify-center'>
 							<Donnuts
-								played={provSet.puzzles.filter(p => p.played).length}
-								totalSet={provSet.length}
+								played={set.puzzles && set.puzzles.filter(p => p.played).length}
+								totalSet={set.length}
 							/>
 						</div>
 					</div>
@@ -227,8 +232,8 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 
 			<div className='mt-10 pt-10'>
 				<ChartMultipleLine
-					array1={getArrayOfTimeByPuzzle(provSet)}
-					array2={getArrayOfMistakeByPuzzle(provSet)}
+					array1={getArrayOfTimeByPuzzle(set)}
+					array2={getArrayOfMistakeByPuzzle(set)}
 					name1='time evolution'
 					name2='mistake evolution'
 				/>
@@ -245,5 +250,5 @@ export const getServerSideProps = async ({params}) => {
 	const {id} = params;
 	const data = await fetcher.get(`/api/set/${id}`);
 	if (!data) return {notFound: true};
-	return {props: {currentSetProps: data}};
+	return {props: {currentSetProps: data.set}};
 };
