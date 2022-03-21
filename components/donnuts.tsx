@@ -19,14 +19,7 @@ const Donnuts = ({totalSet, played}) => {
 	};
 	return (
 		<div>
-			<Doughnut
-				data={data}
-				legend={{
-					labels: {
-						color: 'red',
-					},
-				}}
-			/>
+			<Doughnut data={data} />
 		</div>
 	);
 };
