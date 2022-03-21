@@ -12,7 +12,7 @@ const getRandomArray = (min, max, length) => {
 
 export const provSet = {
 	_id: '62200777f9edd28ed4a63ec5',
-	times: [],
+	times: [389, 345, 234, 345],
 	level: 'easiest',
 	puzzles: [
 		{
@@ -2702,6 +2702,7 @@ export const provSet = {
 	spacedRepetition: false,
 	currentTime: 830,
 	rating: 1045,
+
 	progression: 249,
 	cycles: 5,
 	__v: 0,
