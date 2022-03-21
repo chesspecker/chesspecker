@@ -40,13 +40,15 @@ const getDifficultyColor = (set: PuzzleSetInterface) =>
 		: 'bg-green-900';
 
 const getRapidity = (set: PuzzleSetInterface) => {
-	const bestTime = 10;
-	const wortTime = 40;
+	const bestTime = 5;
+	const wortTime = 50;
 	const scale = wortTime - bestTime;
 	const step = 100 / scale;
 	const length = set.puzzles ? set.puzzles.filter(p => p.played).length : 0;
-	const averageTime = set.currentTime / set.length;
+	const averageTime = set.currentTime / length;
+	console.log(averageTime);
 	const rapidity = 100 - (averageTime - bestTime) * step;
+	console.log(rapidity);
 	return rapidity < 0 ? 0 : rapidity;
 };
 
@@ -131,9 +133,98 @@ const createCheckOutSession = async () => {
 	}
 };
 
+const TotalTime = (set: PuzzleSetInterface) => {
+	const totalTime = set.times.reduce((prev, current) => prev + current, 0);
+	const toFormatTime = totalTime === 0 ? set.currentTime : totalTime;
+	const [days, hours, minutes, secondes] = useClock(toFormatTime);
+
+	return (
+		<p className='align-self-center text-2xl font-bold text-white'>
+			{days !== 0 && `${days} days `}
+			{hours !== 0 && `${hours} hours `}
+			{minutes !== 0 && `${minutes} minutes `}
+			{secondes !== 0 && `${secondes} secondes `}
+		</p>
+	);
+};
+
+const getAtonAp = (set: PuzzleSetInterface) => {
+	let arrayOfPreviousTime = [];
+	for (let i = 0; i < set.times.length; i++) {
+		set.puzzles.map(puzzle => {
+			arrayOfPreviousTime.push(puzzle.timeTaken[i]);
+		});
+	}
+	const averagePreviousTime =
+		arrayOfPreviousTime.reduce((prev, current) => prev + current) /
+		arrayOfPreviousTime.length;
+	const puzzlePlayedInLastTry = set.puzzles.filter(
+		puzzle => puzzle.timeTaken.length >= set.times.length,
+	);
+	const arrayOfActualTime = puzzlePlayedInLastTry.map(
+		puzzle => puzzle.timeTaken[puzzle.timeTaken.length - 1],
+	);
+	const averageActualTime =
+		arrayOfActualTime.reduce((prev, current) => prev + current) /
+		arrayOfActualTime.length;
+
+	return `${Math.round((1 - averageActualTime / averagePreviousTime) * 100)} %`;
+};
+
+const getAgonAg = (set: PuzzleSetInterface) => {
+	let arrayOfPreviousMistakes = [];
+	for (let i = 0; i < set.times.length; i++) {
+		set.puzzles.map(puzzle => {
+			arrayOfPreviousMistakes.push(puzzle.mistakes[i]);
+		});
+	}
+	const averagePreviousMistakes =
+		arrayOfPreviousMistakes.reduce((prev, current) => prev + current) /
+		arrayOfPreviousMistakes.length;
+	const puzzlePlayedInLastTry = set.puzzles.filter(
+		puzzle => puzzle.mistakes.length >= set.times.length,
+	);
+	const arrayOfActualMistakes = puzzlePlayedInLastTry.map(
+		puzzle => puzzle.mistakes[puzzle.mistakes.length - 1],
+	);
+	const averageActualTime =
+		arrayOfActualMistakes.reduce((prev, current) => prev + current) /
+		arrayOfActualMistakes.length;
+
+	return `${Math.round(
+		(1 - averageActualTime / averagePreviousMistakes) * 100,
+	)} %`;
+};
+
+const getActualTime = (set: PuzzleSetInterface) => {
+	const [days, hours, minutes, secondes] = useClock(set.currentTime);
+
+	return (
+		<p className='align-self-center text-2xl font-bold text-white'>
+			{days !== 0 && `${days} days `}
+			{hours !== 0 && `${hours} hours `}
+			{minutes !== 0 && `${minutes} minutes `}
+			{secondes !== 0 && `${secondes} secondes `}
+		</p>
+	);
+};
+
+const getTotalAverageGrade = (set: PuzzleSetInterface) => {
+	const arrayOfGrade = set.puzzles.map(puzzle => puzzle.grades).flat(Infinity);
+	const sum = arrayOfGrade.reduce((prev, current) => prev + current, 0);
+	const average = sum / arrayOfGrade.length;
+	if (average > 5.5) return 'A';
+	if (average > 4.5) return 'B';
+	if (average > 3.5) return 'C';
+	if (average > 2.5) return 'D';
+	if (average > 1.5) return 'E';
+	if (average <= 1.5) return 'F';
+};
+
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
-	console.log(set);
+	console.log('set finished', set.cycles);
+
 	const bestTime = set.times ? Math.max(...set.times) : 0;
 
 	if (!set || !set.puzzles) return <></>;
@@ -150,7 +241,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						<h3 className='h3 text-center'>Time you complete this set</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className='justify-self-center text-5xl font-bold text-white'>
-								{set.cycles}
+								{set.cycles ? set.cycles : 0}
 							</p>
 						</div>
 					</div>
@@ -158,18 +249,14 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						<h3 className='h3 text-center'>Total average grade</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className=' justify-self-center text-5xl font-bold text-white'>
-								C
+								{getTotalAverageGrade(set)}
 							</p>
 						</div>
 					</div>
 					<div className=' mx-3 flex min-h-full w-1/3 flex-col items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Total time spent on this puzzle</h3>
+						<h3 className='h3 text-center'>Total time spent on this set</h3>
 						<div className='flex h-full w-full items-center justify-center'>
-							<p className='align-self-center text-5xl font-bold text-white'>
-								{bestTime === 0
-									? useClock(set.currentTime)
-									: useClock(bestTime)}
-							</p>
+							{TotalTime(set)}
 						</div>
 					</div>
 				</div>
@@ -183,7 +270,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className=' justify-self-center text-5xl font-bold text-white'>
-								C
+								{getAtonAp(provSet)}
 							</p>
 						</div>
 					</div>
@@ -193,9 +280,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className='align-self-center text-5xl font-bold text-white'>
-								{bestTime === 0
-									? useClock(set.currentTime)
-									: useClock(bestTime)}
+								{getAgonAg(provSet)}
 							</p>
 						</div>
 					</div>
@@ -216,9 +301,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Actual time</h3>
 						<div className='flex h-full w-full items-center justify-center'>
-							<p className='align-self-center text-5xl font-bold text-white'>
-								{useClock(set.currentTime)}
-							</p>
+							{getActualTime(set)}
 						</div>
 					</div>
 					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
@@ -238,7 +321,6 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					name2='mistake evolution'
 				/>
 			</div>
-			<ChartInfinitLine set={provSet} />
 		</div>
 	);
 };
