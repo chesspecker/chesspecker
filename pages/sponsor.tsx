@@ -1,3 +1,4 @@
+import Stripe from 'stripe';
 import type {ReactElement} from 'react';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
@@ -12,7 +13,7 @@ const SponsorPage = () => {
 		});
 
 		if (response.ok) {
-			const data = await response.json();
+			const data = (await response.json()) as Stripe.Checkout.Session;
 			const {id: sessionId} = data;
 			const stripe = await getStripe();
 			const {error} = await stripe.redirectToCheckout({sessionId});

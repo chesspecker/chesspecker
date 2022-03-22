@@ -1,5 +1,4 @@
 import React from 'react';
-import faker from '@faker-js/faker';
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -37,7 +36,7 @@ const options = {
 
 const labels = ['RAPIDITY'];
 
-const ChartOneLine = ({rapidity}) => {
+const ChartOneLine = ({rapidity}: {rapidity: number}) => {
 	const data = {
 		labels,
 		datasets: [

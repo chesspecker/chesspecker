@@ -10,7 +10,6 @@ import {
 	Legend,
 } from 'chart.js';
 import {Line} from 'react-chartjs-2';
-import chartTrendline from 'chartjs-plugin-trendline';
 
 ChartJS.register(
 	CategoryScale,
@@ -52,7 +51,17 @@ export const options = {
 	},
 };
 
-const ChartMultipleLine = ({array1, array2, name1, name2}) => {
+const ChartMultipleLine = ({
+	array1,
+	array2,
+	name1,
+	name2,
+}: {
+	array1: number[];
+	array2: number[];
+	name1: string;
+	name2: string;
+}) => {
 	const labels = array1.map((_, index) => index);
 
 	const data = {

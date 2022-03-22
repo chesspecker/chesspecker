@@ -1,29 +1,24 @@
-import {ReactElement, useEffect, useState} from 'react';
+import {ReactElement, useState} from 'react';
+import Stripe from 'stripe';
 import {useRouter} from 'next/router';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
+import useEffectAsync from '@/hooks/use-effect-async';
 
 const SuccessPage = () => {
 	const router = useRouter();
 	const {session_id: sessionId} = router.query;
-	const [session, setSession] = useState();
+	const [, setSession] = useState<Stripe.Checkout.Session>();
 
-	useEffect(() => {
+	useEffectAsync(async () => {
 		if (!sessionId) return;
-		const getSession = async () => {
-			const response = await fetch(`/api/checkout-sessions/${sessionId}`);
-			const data = await response.json();
-			setSession(data);
-		};
-
-		getSession();
+		const response = await fetch(
+			`/api/checkout-sessions/${sessionId as string}`,
+		);
+		const data = (await response.json()) as Stripe.Checkout.Session;
+		setSession(data);
 	}, [sessionId]);
-
-	useEffect(() => {
-		if (!session) return;
-		console.log(session);
-	}, [session]);
 
 	return (
 		<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>

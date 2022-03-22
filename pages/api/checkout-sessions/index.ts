@@ -1,8 +1,11 @@
+import process from 'process';
 import Stripe from 'stripe';
 import {NextApiRequest, NextApiResponse} from 'next';
 import {origin} from '@/config';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+	apiVersion: '2020-08-27',
+});
 
 const createStripeSession = async (
 	_request: NextApiRequest,
@@ -17,12 +20,11 @@ const createStripeSession = async (
 	};
 
 	try {
-		console.log('params', parameters);
-		const session = await stripe.checkout.sessions.create(parameters);
-		console.log('session', session);
+		const session: Stripe.Checkout.Session =
+			await stripe.checkout.sessions.create(parameters);
 		response.status(200).json(session);
 		return;
-	} catch (error) {
+	} catch (error: unknown) {
 		console.log('error', error);
 		response.status(500).end('Internal Server Error');
 	}

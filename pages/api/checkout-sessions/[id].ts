@@ -1,23 +1,24 @@
+import process from 'process';
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import User, {UserInterface} from '@/models/user-model';
+import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+	apiVersion: '2020-08-27',
+});
 
 const getStripeSession = async (
 	request: NextApiRequest,
-	response: NextApiResponse,
+	response: NextApiResponse<Stripe.Checkout.Session>,
 ) => {
-	const {id} = request.query;
-	const {userID} = request.session;
+	const {id} = request.query as Record<string, string>;
 	const session = await stripe.checkout.sessions.retrieve(id);
 	if (!session) {
 		response.status(404).end('Session Not Found');
 		return;
 	}
 
-	const result = await User.findByIdAndUpdate(userID, {isSponsor: true}).exec();
 	response.status(200).json(session);
 };
 
