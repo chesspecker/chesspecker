@@ -6,7 +6,6 @@ export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 		id: liUser.id,
 		username: liUser.username,
 		url: liUser.url,
-		averageRating: 1500,
 	};
 
 	if (!liUser.perfs) {
@@ -23,7 +22,6 @@ export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 		}
 	}
 
-	parameters.averageRating = perfs.reduce((a, b) => a + b, 0) / perfs.length;
 	const user: UserInterface = new User(parameters) as UserInterface;
 	return user.save();
 };
