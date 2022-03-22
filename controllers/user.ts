@@ -1,5 +1,6 @@
 import {LichessUser} from '@/types/lichess';
 import User, {UserInterface} from '@/models/user-model';
+import {UpdateQuery} from 'mongoose';
 
 export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 	const parameters: Partial<UserInterface> = {
@@ -32,7 +33,7 @@ export const retrieve = async (
 
 export const update = async (
 	id: UserInterface['id'],
-	body: Partial<UserInterface>,
+	body: UpdateQuery<Partial<UserInterface>>,
 ): Promise<UserInterface> =>
 	User.findByIdAndUpdate(id, body, {
 		new: true,

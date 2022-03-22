@@ -35,6 +35,7 @@ import {ButtonLink as Button} from '@/components/button';
 import Progress from '@/components/play/progress';
 import Solution from '@/components/play/solution';
 import MoveToNext from '@/components/play/move-to-next';
+import { checkForAchievement } from '@/lib/achievements';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -68,7 +69,7 @@ const PlayingPage = ({set}: Props) => {
 	const [orientation, setOrientation] = useAtom(orientationAtom);
 	const router = useRouter();
 
-	//for achievement
+	// For achievement
 	const [strikeMistakes, setStrikeMistakes] = useState(0);
 	const [strikeTime, setStrikeTime] = useState(0);
 	const [lastTime, setLastTime] = useState(0);
@@ -139,36 +140,6 @@ const PlayingPage = ({set}: Props) => {
 		streak: number;
 	};
 
-	const checkForAchievement = () => {
-		if (strikeMistakes > 10) {
-			console.log('push watchmaker');
-		}
-		if (strikeMistakes > 20) {
-			console.log('push watchmaker-master');
-		}
-		if (strikeMistakes > 30) {
-			console.log('push watchmaker-super-master');
-		}
-		if (strikeTime > 10) {
-			console.log('push rabbit');
-		}
-		if (strikeTime > 20) {
-			console.log('push rabbit-master');
-		}
-		if (strikeTime > 30) {
-			console.log('push rabbit-super-master');
-		}
-		if (lastTime > 60 * 2) {
-			console.log('push turtle');
-		}
-		if (lastTime > 60 * 3) {
-			console.log('push turtle-master');
-		}
-		if (lastTime > 60 * 4) {
-			console.log('push turtle-super-master');
-		}
-	};
-
 	const getGrade = useCallback(
 		({didCheat, mistakes, timeTaken, streak = 0}: BodyData) => {
 			if (didCheat || mistakes >= 3) return 1;
@@ -188,6 +159,7 @@ const PlayingPage = ({set}: Props) => {
 		const puzzle = puzzleList[puzzleIndex];
 		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
+		await checkForAchievement(1,31,1);
 
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
@@ -248,15 +220,17 @@ const PlayingPage = ({set}: Props) => {
 		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
 		if (mistakes === 0) {
-			setStrikeMistakes(prev => prev + 1);
+			setStrikeMistakes(previous => previous + 1);
 		} else {
 			setStrikeMistakes(() => 0);
 		}
+
 		if (initialPuzzleTimer - Date.now() < 5) {
-			setStrikeTime(prev => prev + 1);
+			setStrikeTime(previous => previous + 1);
 		} else {
 			setStrikeTime(() => 0);
 		}
+
 		setMistakes(() => 0);
 		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);

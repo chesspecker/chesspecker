@@ -1,12 +1,12 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import {retrieve, remove, update} from '@/controllers/user';
-
+import {retrieve} from '@/controllers/user';
 import {withSessionRoute} from '@/lib/session';
+import User, {UserInterface} from '@/models/user-model';
 
 type SuccessDataMany = {
 	success: true;
-	message: string;
+	user: UserInterface;
 };
 
 type SuccessData = {
@@ -26,28 +26,18 @@ const post_ = async (
 	response: NextApiResponse<DataMany>,
 ) => {
 	const {userID} = request.session;
-	const {achievementId} = request.body;
-	const user = await retrieve(userID as string);
+	const user: UserInterface = await retrieve(userID);
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
 		return;
 	}
-	const {achievements} = user;
 
-	if (achievements[achievementId]) {
-		response.status(200).json({success: true, message: 'achievement already'});
-		return;
-	}
-
-	const body = {
-		$push: {
-			achievement: {id: achievementId, claimed: false},
-		},
-	};
-
-	const newUser = await update(userID as string, body);
-
-	response.json({success: true user:newUser});
+	const body = await JSON.parse(request.body);
+	const id = body.achievementId;
+	const newUser = await User.findByIdAndUpdate(userID, {
+		$push: {validatedAchievements: {id, claimed: false}},
+	}).exec();
+	response.json({success: true, user: newUser});
 };
 
 const handler = async (

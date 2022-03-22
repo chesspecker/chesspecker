@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import type {ReactElement} from 'react';
-import {motion} from 'framer-motion';
+import {motion, Variants} from 'framer-motion';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 
@@ -20,7 +20,7 @@ const Card = () => {
 	);
 };
 
-const variants = {
+const variants: Variants = {
 	open: {opacity: 1, visibility: 'visible'},
 	closed: {opacity: 0, visibility: 'hidden'},
 };
@@ -30,9 +30,8 @@ const Modal = ({
 	setShowModal,
 }: {
 	showModal: boolean;
-	setShowModal: (previous: boolean) => void;
+	setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-	console.log(showModal);
 	return (
 		<motion.div
 			animate={showModal ? 'open' : 'closed'}
@@ -44,7 +43,11 @@ const Modal = ({
 			</h3>
 			<Card />
 			<div className='mt-4 w-1/3'>
-				<Button onClick={() => setShowModal(previous => !previous)}>
+				<Button
+					onClick={() => {
+						setShowModal((previous: boolean) => !previous);
+					}}
+				>
 					Claim
 				</Button>
 			</div>

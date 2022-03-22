@@ -1,5 +1,6 @@
 import {Schema, model, models, Types} from 'mongoose';
 import type {Document} from 'mongoose';
+import {AchievementInterface} from '@/data/achievements';
 
 export interface UserInterface extends Document {
 	_id: Types.ObjectId;
@@ -10,6 +11,10 @@ export interface UserInterface extends Document {
 	permissionLevel: number;
 	lastUpdatedAt: number;
 	isSponsor: boolean;
+	validatedAchievements: {
+		id: AchievementInterface['id'];
+		claimed: boolean;
+	}[];
 	perfs: {
 		ultraBullet: {games: number; rating: number};
 		bullet: {games: number; rating: number};
@@ -29,6 +34,10 @@ const schema = new Schema<UserInterface>({
 	permissionLevel: Number,
 	lastUpdatedAt: Date,
 	isSponsor: Boolean,
+	validatedAchievements: [{
+		id: String,
+		claimed: Boolean,
+	}],
 	perfs: {
 		ultraBullet: {games: Number, rating: Number},
 		bullet: {games: Number, rating: Number},
