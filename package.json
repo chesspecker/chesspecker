@@ -40,7 +40,7 @@
 		"chart.js": "^3.7.1",
 		"chartjs-plugin-trendline": "^1.0.2",
 		"chess.js": "^0.12.1",
-		"chessground": "^8.2.0",
+		"chessground": "^8.2.1",
 		"iron-session": "^6.0.5",
 		"jotai": "^1.6.0",
 		"mongoose": "^6.2.1",
