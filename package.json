@@ -41,6 +41,7 @@
 		"chartjs-plugin-trendline": "^1.0.2",
 		"chess.js": "^0.12.1",
 		"chessground": "^8.2.1",
+		"framer-motion": "^6.2.8",
 		"iron-session": "^6.0.5",
 		"jotai": "^1.6.0",
 		"mongoose": "^6.2.1",
