@@ -22,7 +22,7 @@ const Footer = () => (
 				<Link href='https://github.com/chesspecker'>
 					<a>
 						<div className='flex w-full cursor-pointer content-center items-center justify-between px-3'>
-							<div className='hidden md:block'>
+							<div className='hidden md:mt-1 md:block'>
 								{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 								<Image src={github} width={30} height={30} />
 							</div>

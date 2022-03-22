@@ -20,7 +20,9 @@ const IndexPage = () => {
 				Hello {useUser()?.data?.username} 👋 <br /> Welcome to chesspecker
 			</h1>
 			<div className='my-3 mx-0 w-full text-center text-white'>
-				<Button onClick={handleClick}>LET&apos;S GO! 🔥</Button>
+				<Button className='py-4' onClick={handleClick}>
+					LET&apos;S GO! 🔥
+				</Button>
 			</div>
 		</div>
 	);

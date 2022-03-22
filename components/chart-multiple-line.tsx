@@ -37,7 +37,7 @@ export const options = {
 			type: 'linear' as const,
 			display: true,
 			position: 'left' as const,
-			max: 40,
+			max: 60,
 		},
 		y1: {
 			type: 'linear' as const,
