@@ -13,16 +13,16 @@ const OptionTextInput = ({children}: Props) => {
 	};
 
 	return (
-		<div className='mt-8 flex w-full items-center justify-between overflow-hidden pb-4 text-left'>
+		<div className='my-8 flex w-full flex-col items-center justify-between overflow-hidden pb-4 text-left md:flex-row'>
 			<label
 				htmlFor='number_game'
-				className='m-0 mr-4 self-center text-3xl text-white'
+				className='m-0 mr-4 self-center text-2xl text-white'
 			>
 				{children}
 			</label>
 			<input
 				id='title'
-				className='text-2xl'
+				className='m-0 mt-2 box-border block h-10 w-1/2 appearance-none rounded-md bg-white bg-no-repeat py-1 text-base font-semibold text-stone-700 shadow-lg hover:border-neutral-500 focus:outline-none focus-visible:border-stone-400 sm:text-sm md:mt-0'
 				type='text'
 				value={title}
 				placeholder='ex: Road to 2300 elo :)'

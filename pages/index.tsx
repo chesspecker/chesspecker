@@ -17,7 +17,9 @@ const IndexPage = () => (
 			newcomer 👋
 		</h1>
 		<div className='my-3 mx-0 w-full text-center text-white'>
-			<Button href='/api/auth/login'>SIGN IN WITH LICHESS</Button>
+			<Button className='py-4' href='/api/auth/login'>
+				SIGN IN WITH LICHESS
+			</Button>
 		</div>
 	</div>
 );

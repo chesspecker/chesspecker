@@ -21,20 +21,25 @@ const getRapidity = (set: PuzzleSetInterface) => {
 };
 
 const armonizedData = (array: number[]): number[] => {
-	const numberOfLine = 50;
+	const numberOfLine = 10;
+	console.log(array);
 
 	if (array.length < numberOfLine) return array;
 	const length = array.length;
+	console.log('length', length);
 	const iterator = numberOfLine;
+	console.log('iterator', iterator);
 	const packBy = Math.round(length / iterator);
+	console.log('packBy', packBy);
 
 	const newArray: number[] = [];
 	for (let i = 0; i < iterator; i++) {
 		const _oldArray = [...array];
-		const _array = _oldArray.splice(i * packBy, packBy);
-		newArray.push(_array.reduce((a, b) => a + b, 0) / _array.length, 0);
+		const _array = _oldArray.slice(i * packBy, i * packBy + packBy);
+		newArray.push(_array.reduce((a, b) => a + b, 0) / _array.length);
 	}
 
+	console.log('new array', newArray);
 	return newArray;
 };
 
@@ -156,15 +161,15 @@ type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
-		<div className='m-0 mt-8 flex min-h-screen w-screen flex-col px-12 '>
+		<div className='m-0 flex min-h-screen w-screen flex-col px-2 sm:px-12 '>
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
 				{set.title}
 			</h1>
 
 			<div className='mt-4 w-full'>
 				<h2 className='h2'>Puzzle set state</h2>
-				<div className='mt-4 flex w-full'>
-					<div className=' mx-3 flex min-h-full w-1/3 flex-col items-center rounded-xl border-4 border-white p-4  '>
+				<div className='mt-4 flex w-full flex-wrap'>
+					<div className=' m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Time you complete this set</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className='justify-self-center text-5xl font-bold text-white'>
@@ -172,7 +177,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 							</p>
 						</div>
 					</div>
-					<div className=' mx-3 flex min-h-full w-1/3 flex-col items-center rounded-xl border-4 border-white p-4  '>
+					<div className=' m-3 flex min-h-[10rem] w-1/3 min-w-[20rem] flex-auto  flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Total average grade</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							<p className=' justify-self-center text-5xl font-bold text-white'>
@@ -180,7 +185,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 							</p>
 						</div>
 					</div>
-					<div className=' mx-3 flex min-h-full w-1/3 flex-col items-center rounded-xl border-4 border-white p-4  '>
+					<div className=' m-3 flex min-h-[10rem] w-1/3 min-w-[20rem] flex-auto  flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Total time spent on this set</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							{GetTotalTime(set)}
@@ -190,8 +195,8 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 			</div>
 			<div className='mt-4 w-full'>
 				<h2 className='h2'>Global Progression</h2>
-				<div className='mt-4 flex w-full'>
-					<div className=' mx-3 flex min-h-full w-1/2 flex-col items-center rounded-xl border-4 border-white p-4  '>
+				<div className='mt-4 flex w-full flex-wrap'>
+					<div className=' m-3 flex  min-h-[10rem]  min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>
 							Actual time / Average previous time
 						</h3>
@@ -201,7 +206,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 							</p>
 						</div>
 					</div>
-					<div className=' mx-3 flex min-h-full w-1/2 flex-col items-center rounded-xl border-4 border-white p-4  '>
+					<div className=' m-3 flex min-h-[10rem]   min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>
 							Actual grade / Average previous grade
 						</h3>
@@ -213,10 +218,10 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					</div>
 				</div>
 			</div>
-			<div className='mt-4 w-full'>
+			<div className='mt-4 w-full flex-wrap'>
 				<h2 className='h2'>Actual Progression</h2>
 				<div className='mt-4 flex w-full flex-wrap justify-around'>
-					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
+					<div className=' m-3 flex flex-auto flex-col items-center  rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Progress</h3>
 						<div className='flex h-full items-center justify-center'>
 							<Donnuts
@@ -225,13 +230,13 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 							/>
 						</div>
 					</div>
-					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
+					<div className='m-3 flex min-h-[10rem]  min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Actual time</h3>
 						<div className='flex h-full w-full items-center justify-center'>
 							{GetActualTime(set)}
 						</div>
 					</div>
-					<div className=' mx-3 flex  flex-col items-center rounded-xl border-4 border-white p-4  '>
+					<div className=' m-3 flex  flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
 						<h3 className='h3 text-center'>Average Grade</h3>
 						<div className='flex h-full items-center justify-center'>
 							<ChartOneLine rapidity={getRapidity(set)} />

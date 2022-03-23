@@ -63,17 +63,17 @@ const OptionsPage = () => {
 	};
 
 	return (
-		<div className='-mb-24 flex min-h-screen w-11/12 flex-col items-center justify-center overflow-hidden'>
-			<h1 className='text-5xl text-white'>One last thing...</h1>
+		<div className='-mb-24 flex min-h-screen w-11/12 flex-col items-center justify-center text-center'>
+			<h1 className='mb-8 text-5xl text-white'>One last thing...</h1>
 			<Alert type='error' isVisible={isOpen} message='Title is needed!' />
-			<div className='flex flex-col items-center justify-center overflow-hidden'>
+			<div className='mx-12 flex w-5/6 flex-col items-center justify-center'>
 				<OptionTextInput>Give your set a name</OptionTextInput>
 				<OptionDifficulty />
 				<OptionSize />
 
-				<div className='mt-20 w-4/5'>
+				<div className='mt-20 w-3/5'>
 					<Button
-						className={`flex flex-row items-center justify-center ${
+						className={`flex h-14 flex-row items-center justify-center ${
 							isDisabled
 								? 'font-sky-700 cursor-default hover:bg-white'
 								: 'cursor-pointer'
