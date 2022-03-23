@@ -21,6 +21,27 @@ type ErrorData = {
 export type Data = SuccessData | ErrorData;
 export type DataMany = SuccessDataMany | ErrorData;
 
+const put_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<DataMany>,
+) => {
+	const {userID} = request.session;
+	const user: UserInterface = await retrieve(userID);
+	if (user === null) {
+		response.status(404).json({success: false, error: 'User not found'});
+		return;
+	}
+
+	const body = await JSON.parse(request.body);
+	const newUser = await User.findOneAndUpdate(
+		{_id: userID, 'validatedAchievements.id': body.achievementId},
+		{
+			$set: {'validatedAchievements.$.claimed': body.claimed},
+		},
+	).exec();
+	response.json({success: true, user: newUser});
+};
+
 const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<DataMany>,
@@ -33,9 +54,8 @@ const post_ = async (
 	}
 
 	const body = await JSON.parse(request.body);
-	const id = body.achievementId;
 	const newUser = await User.findByIdAndUpdate(userID, {
-		$push: {validatedAchievements: {id, claimed: false}},
+		$push: {validatedAchievements: {id: body.achievementId, claimed: false}},
 	}).exec();
 	response.json({success: true, user: newUser});
 };
@@ -47,6 +67,9 @@ const handler = async (
 	switch (request.method) {
 		case 'POST':
 			await post_(request, response);
+			return;
+		case 'PUT':
+			await put_(request, response);
 			return;
 
 		default:

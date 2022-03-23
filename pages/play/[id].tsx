@@ -35,7 +35,8 @@ import {ButtonLink as Button} from '@/components/button';
 import Progress from '@/components/play/progress';
 import Solution from '@/components/play/solution';
 import MoveToNext from '@/components/play/move-to-next';
-import { checkForAchievement } from '@/lib/achievements';
+import {checkForAchievement} from '@/lib/achievements';
+import Notification from '@/components/notification';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -73,6 +74,7 @@ const PlayingPage = ({set}: Props) => {
 	const [strikeMistakes, setStrikeMistakes] = useState(0);
 	const [strikeTime, setStrikeTime] = useState(0);
 	const [lastTime, setLastTime] = useState(0);
+	const [showNotification, setShowNotification] = useState(true);
 
 	/**
 	 * Extract the list of puzzles.
@@ -156,10 +158,23 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
+		// TODO: Add achievements conditions
+		if (mistakes === 0) {
+			setStrikeMistakes(previous => previous + 1);
+		} else {
+			setStrikeMistakes(() => 0);
+		}
+
+		if (initialPuzzleTimer - Date.now() < 5) {
+			setStrikeTime(previous => previous + 1);
+		} else {
+			setStrikeTime(() => 0);
+		}
+
 		const puzzle = puzzleList[puzzleIndex];
 		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
-		await checkForAchievement(1,31,1);
+		await checkForAchievement(1, 31, 1);
 
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
@@ -219,18 +234,6 @@ const PlayingPage = ({set}: Props) => {
 	const changePuzzle = useCallback(async () => {
 		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
-		if (mistakes === 0) {
-			setStrikeMistakes(previous => previous + 1);
-		} else {
-			setStrikeMistakes(() => 0);
-		}
-
-		if (initialPuzzleTimer - Date.now() < 5) {
-			setStrikeTime(previous => previous + 1);
-		} else {
-			setStrikeTime(() => 0);
-		}
-
 		setMistakes(() => 0);
 		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
@@ -488,59 +491,66 @@ const PlayingPage = ({set}: Props) => {
 	useKeyPress({targetKey: 'N', fn});
 
 	return (
-		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
-			<div className='flex flex-row justify-center gap-2'>
-				<Timer value={initialSetTimer} mistakes={totalMistakes} />
-				<Button
-					className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
-					href='/dashboard'
-				>
-					LEAVE 🧨
-				</Button>
-			</div>
+		<>
+			<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
+				<div className='flex flex-row justify-center gap-2'>
+					<Timer value={initialSetTimer} mistakes={totalMistakes} />
+					<Button
+						className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
+						href='/dashboard'
+					>
+						LEAVE 🧨
+					</Button>
+				</div>
 
-			<div className='flex w-full flex-col items-center justify-center md:flex-row'>
-				<div className='hidden w-36 md:invisible md:block' />
-				<div className='w-5/6 max-w-2xl flex-auto'>
-					<WithoutSsr>
-						<Chessboard
-							config={{...config, orientation, events: {move: onMove}}}
+				<div className='flex w-full flex-col items-center justify-center md:flex-row'>
+					<div className='hidden w-36 md:invisible md:block' />
+					<div className='w-5/6 max-w-2xl flex-auto'>
+						<WithoutSsr>
+							<Chessboard
+								config={{...config, orientation, events: {move: onMove}}}
+							/>
+						</WithoutSsr>
+						<Promotion
+							isOpen={isOpen}
+							hide={hide}
+							color={getColor(chess.turn())}
+							onPromote={promotion}
 						/>
-					</WithoutSsr>
-					<Promotion
-						isOpen={isOpen}
-						hide={hide}
-						color={getColor(chess.turn())}
-						onPromote={promotion}
-					/>
-					<div className='flex flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
-						<div className='flex h-full items-start justify-start'>
-							<Settings />
-							<Flip />
+						<div className='flex flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
+							<div className='flex h-full items-start justify-start'>
+								<Settings />
+								<Flip />
+							</div>
+							<History puzzles={previousPuzzle} />
 						</div>
-						<History puzzles={previousPuzzle} />
 					</div>
-				</div>
-				<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
-					<div className='mt-2'>
-						<Progress
-							totalPuzzles={set.length}
-							completedPuzzles={completedPuzzles}
-						/>
-					</div>
-					<div className='mt-2'>
-						<Solution
-							time={initialPuzzleTimer}
-							isSolutionClicked={isSolutionClicked}
-							setSolution={setIsSolutionClicked}
-							isComplete={isComplete}
-							answer={moveHistory[moveNumber]}
-						/>
-						<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
+					<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
+						<div className='mt-2'>
+							<Progress
+								totalPuzzles={set.length}
+								completedPuzzles={completedPuzzles}
+							/>
+						</div>
+						<div className='mt-2'>
+							<Solution
+								time={initialPuzzleTimer}
+								isSolutionClicked={isSolutionClicked}
+								setSolution={setIsSolutionClicked}
+								isComplete={isComplete}
+								answer={moveHistory[moveNumber]}
+							/>
+							<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+			<Notification
+				text='bonsoir'
+				show={showNotification}
+				setShow={setShowNotification}
+			/>
+		</>
 	);
 };
 

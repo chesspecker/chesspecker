@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
-import type {ReactElement} from 'react';
+import React, {useState, Fragment, ReactElement} from 'react';
+
 import {motion, Variants} from 'framer-motion';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
+import {Transition} from '@headlessui/react';
 
 const Card = () => {
 	return (
@@ -33,25 +34,57 @@ const Modal = ({
 	setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
 	return (
-		<motion.div
-			animate={showModal ? 'open' : 'closed'}
-			variants={variants}
-			className='absolute   z-40 flex h-screen w-screen flex-col items-center justify-center  bg-[rgba(1,1,1,0.6)]'
+		<Transition
+			as={Fragment}
+			show={showModal}
+			enter='transform transition duration-[400ms]'
+			enterFrom='opacity-0'
+			enterTo='opacity-100'
+			leave='transform duration-200 transition ease-in-out'
+			leaveFrom='opacity-100'
+			leaveTo='opacity-0'
 		>
-			<h3 className='mb-5 text-6xl font-bold text-white'>
-				New achievement 🎉🔥
-			</h3>
-			<Card />
-			<div className='mt-4 w-1/3'>
-				<Button
-					onClick={() => {
-						setShowModal((previous: boolean) => !previous);
-					}}
+			{
+				//juste j'ai toujours cette merde de backgroud qui ne prend pas toute la place disponible, elle reste dans son container qui à une margin top
+				// chelou jsp trop
+				// maintenant ce qui serait stylé c'est d'avoir quand tu play et que tu deblock un achievement tu as un truc avec une  c'est la ou daisyUi est ouf...
+				// tu peux le faire avec headless ui aussi en soit c'est juste une div en haut à droite avec une transition https://daisyui.com/components/indicator/
+			}
+			<div className='absolute z-40 -mt-20 flex h-screen w-screen flex-col items-center justify-center bg-black bg-opacity-60'>
+				<Transition.Child
+					enter='transform transition duration-[400ms]'
+					enterFrom='opacity-0 scale-0'
+					enterTo='opacity-100 rotate-0 scale-100'
+					leave='transform duration-200 transition ease-in-out'
+					leaveFrom='opacity-100 rotate-0 scale-100 '
+					leaveTo='opacity-0 scale-95 '
 				>
-					Claim
-				</Button>
+					<h3 className='mb-5 text-6xl font-bold text-white'>
+						New achievement 🎉🔥
+					</h3>
+				</Transition.Child>
+				<Transition.Child
+					enter='transform transition duration-[400ms]'
+					enterFrom='opacity-0 scale-0'
+					enterTo='opacity-100 rotate-0 scale-100'
+					leave='transform duration-200 transition ease-in-out'
+					leaveFrom='opacity-100 rotate-0 scale-100 '
+					leaveTo='opacity-0 scale-95 '
+				>
+					<Card />
+				</Transition.Child>
+
+				<div className='mt-4 w-1/3'>
+					<Button
+						onClick={() => {
+							setShowModal(previous => !previous);
+						}}
+					>
+						Claim
+					</Button>
+				</div>
 			</div>
-		</motion.div>
+		</Transition>
 	);
 };
 

@@ -1,6 +1,6 @@
+import {UpdateQuery} from 'mongoose';
 import {LichessUser} from '@/types/lichess';
 import User, {UserInterface} from '@/models/user-model';
-import {UpdateQuery} from 'mongoose';
 
 export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 	const parameters: Partial<UserInterface> = {

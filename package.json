@@ -30,6 +30,7 @@
 		}
 	},
 	"dependencies": {
+		"@headlessui/react": "^1.5.0",
 		"@heroicons/react": "^1.0.5",
 		"@react-chess/chessground": "^1.2.2",
 		"@stripe/react-stripe-js": "^1.7.0",
