@@ -1,10 +1,9 @@
 import {useState, Fragment} from 'react';
+import {Transition} from '@headlessui/react';
 import useEffectAsync from '../hooks/use-effect-async';
 import {Button} from '@/components/button';
-import {AchievementInterface} from '@/data/achievements';
 import {achievements as arrayOfPossibleAchievement} from '@/data/achievements';
-import {AchievementItem} from '@/models/user-model';
-import {Transition} from '@headlessui/react';
+import type {AchievementItem, AchievementInterface} from '@/models/types';
 import Card from '@/components/card-achievement';
 
 const Modal = ({
@@ -20,15 +19,16 @@ const Modal = ({
 	const [achievement, setAchievement] = useState<AchievementInterface>();
 	useEffectAsync(async () => {
 		if (!currentAchievementItem) return;
-		const array = arrayOfPossibleAchievement.filter(
+		const array = arrayOfPossibleAchievement.find(
 			item => item.id === currentAchievementItem.id,
 		);
 
-		/* 	const response = await fetcher.get(
+		/* TODO:
+		const response = await fetcher.get(
 			`/api/achievement/${currentAchievementItem.id}`,
 		);
 		setAchievement(response.data); */
-		setAchievement(array[0]);
+		setAchievement(array);
 	}, [currentAchievementItem]);
 
 	return (

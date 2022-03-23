@@ -1,13 +1,12 @@
 import type {ReactElement} from 'react';
-import Layout from '@/layouts/login';
+import {useState, useEffect} from 'react';
+import Layout from '@/layouts/main';
 import {ButtonLink} from '@/components/button';
 import {fetcher} from '@/lib/fetcher';
-import {useState, useEffect} from 'react';
 import Card from '@/components/card-achievement';
-
 import {Data as UserData} from '@/api/user/[id]';
-
-import {achievements, AchievementInterface} from '@/data/achievements';
+import {achievements} from '@/data/achievements';
+import type {AchievementInterface} from '@/models/types';
 
 const Profile = ({user}) => {
 	const itemAchievements = user.validatedAchievements;
@@ -16,30 +15,26 @@ const Profile = ({user}) => {
 
 	useEffect(() => {
 		if (!itemAchievements) return;
-		let array = [];
+		const array = [];
 		for (const item of itemAchievements) {
-			console.log(item.name);
-			array.push(
-				achievements.filter(achivement => achivement.id === item.id)[0],
-			);
+			array.push(achievements.find(achivement => achivement.id === item.id));
 		}
 
 		const userAchievements_ = array;
 		setUserAchievement(userAchievements_);
 	}, [itemAchievements]);
 
-	console.log(userAchievements);
-
 	return (
 		<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
 			<ButtonLink href='sponsor'>Become sponsor </ButtonLink>
 			<p>My badges</p>
 			<div className='flex w-full flex-wrap'>
-				{userAchievements.map(achievement => (
-					<div key={achievement.id}>
-						<Card achievement={achievement} />
-					</div>
-				))}
+				{userAchievements &&
+					userAchievements.map(achievement => (
+						<div key={achievement.id}>
+							<Card achievement={achievement} />
+						</div>
+					))}
 			</div>
 			<p>Dashboard settings</p>
 		</div>

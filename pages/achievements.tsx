@@ -1,9 +1,7 @@
 import React, {useState, Fragment, ReactElement} from 'react';
-
-import {motion, Variants} from 'framer-motion';
+import {Transition} from '@headlessui/react';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
-import {Transition} from '@headlessui/react';
 
 const Card = () => {
 	return (
@@ -19,11 +17,6 @@ const Card = () => {
 			</div>
 		</div>
 	);
-};
-
-const variants: Variants = {
-	open: {opacity: 1, visibility: 'visible'},
-	closed: {opacity: 0, visibility: 'hidden'},
 };
 
 const Modal = ({
@@ -44,12 +37,6 @@ const Modal = ({
 			leaveFrom='opacity-100'
 			leaveTo='opacity-0'
 		>
-			{
-				//juste j'ai toujours cette merde de backgroud qui ne prend pas toute la place disponible, elle reste dans son container qui à une margin top
-				// chelou jsp trop
-				// maintenant ce qui serait stylé c'est d'avoir quand tu play et que tu deblock un achievement tu as un truc avec une  c'est la ou daisyUi est ouf...
-				// tu peux le faire avec headless ui aussi en soit c'est juste une div en haut à droite avec une transition https://daisyui.com/components/indicator/
-			}
 			<div className='absolute z-40 -mt-20 flex h-screen w-screen flex-col items-center justify-center bg-black bg-opacity-60'>
 				<Transition.Child
 					enter='transform transition duration-[400ms]'
@@ -88,7 +75,7 @@ const Modal = ({
 	);
 };
 
-const Achievments = () => {
+const Achievements = () => {
 	const [showModal, setShowModal] = useState(false);
 	return (
 		<div className='flex min-h-screen flex-col items-center justify-center'>
@@ -98,12 +85,12 @@ const Achievments = () => {
 					setShowModal(previous => !previous);
 				}}
 			>
-				Showmodal{' '}
+				Showmodal
 			</Button>
 		</div>
 	);
 };
 
-Achievments.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
+Achievements.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 
-export default Achievments;
+export default Achievements;

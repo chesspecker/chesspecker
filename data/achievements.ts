@@ -1,15 +1,9 @@
+import {AchievementInterface} from '@/models/types';
+
 type Args = {
 	strikeMistakes: number;
 	strikeTime: number;
 	lastTime: number;
-};
-
-export type AchievementInterface = {
-	id: string;
-	name: string;
-	description: string;
-	isValidated: (args: Args) => boolean;
-	image: string;
 };
 
 export const achievements: AchievementInterface[] = [

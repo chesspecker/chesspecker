@@ -1,33 +1,5 @@
-import {Schema, model, models, Types} from 'mongoose';
-import type {Document} from 'mongoose';
-import {AchievementInterface} from '@/data/achievements';
-
-export interface AchievementItem {
-	id: AchievementInterface['id'];
-	claimed: boolean;
-}
-
-export interface UserInterface extends Document {
-	_id: Types.ObjectId;
-	id: string;
-	lichessId: string;
-	username: string;
-	url: string;
-	permissionLevel: number;
-	lastUpdatedAt: number;
-	isSponsor: boolean;
-	validatedAchievements: AchievementItem[];
-	perfs: {
-		ultraBullet: {games: number; rating: number};
-		bullet: {games: number; rating: number};
-		blitz: {games: number; rating: number};
-		rapid: {games: number; rating: number};
-		classical: {games: number; rating: number};
-		correspondence: {games: number; rating: number};
-		puzzle: {games: number; rating: number};
-	};
-	puzzleSet: any[];
-}
+import {Schema, model, models} from 'mongoose';
+import {UserInterface} from './types';
 
 const schema = new Schema<UserInterface>({
 	id: String,
