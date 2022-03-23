@@ -5,6 +5,7 @@ import logo from '@/public/images/logo.svg';
 import useUser from '@/hooks/use-user';
 
 const Navbar = () => {
+	const user = useUser()?.data;
 	return (
 		<div className='fixed top-0 z-10 flex w-full items-center justify-between bg-sky-700 font-merriweather shadow'>
 			<div className='flex cursor-pointer'>
@@ -24,10 +25,10 @@ const Navbar = () => {
 			</div>
 			<div className='mr-8 self-center text-lg text-white'>
 				<div className='flex'>
-					<Link passHref href='/profile'>
+					<Link passHref href={`/user/${user?._id.toString()}`}>
 						<a className='mr-5 flex items-center justify-center'>
 							<span>⚔️&nbsp;</span>
-							{useUser()?.data?.username}
+							{user?.username}
 						</a>
 					</Link>
 					<Link passHref href='/api/auth/logout'>
