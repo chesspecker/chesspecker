@@ -2,7 +2,8 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {retrieve} from '@/controllers/user';
 import {withSessionRoute} from '@/lib/session';
-import User, {UserInterface} from '@/models/user-model';
+import User from '@/models/user-model';
+import type {UserInterface} from '@/models/types';
 
 type SuccessDataMany = {
 	success: true;
@@ -33,11 +34,10 @@ const put_ = async (
 	}
 
 	const body = await JSON.parse(request.body);
+	console.log(userID, body);
 	const newUser = await User.findOneAndUpdate(
 		{_id: userID, 'validatedAchievements.id': body.achievementId},
-		{
-			$set: {'validatedAchievements.$.claimed': body.claimed},
-		},
+		{$set: {'validatedAchievements.$.claimed': body.claimed}},
 	).exec();
 	response.json({success: true, user: newUser});
 };

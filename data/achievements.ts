@@ -39,4 +39,12 @@ export const achievements: AchievementInterface[] = [
 		image:
 			'http://www.lespetitslapins.fr/wp-content/uploads/2011/01/pan-pan1.jpg',
 	},
+	{
+		id: 'turlle',
+		name: 'Turtle',
+		description: 'more than 2 minutes to solve a puzzle',
+		isValidated: (args: Args) => args.lastTime > 120, // sans erreurs ?
+		image:
+			'http://www.lespetitslapins.fr/wp-content/uploads/2011/01/pan-pan1.jpg',
+	},
 ];

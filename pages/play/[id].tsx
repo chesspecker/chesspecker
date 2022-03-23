@@ -7,15 +7,15 @@ import {useRouter} from 'next/router';
 import type {Data as PuzzleData, UpdateData} from '../api/puzzle/[id]';
 import type {Data as SetData} from '../api/set/[id]';
 import {
+	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
-} from '@/models/puzzle-set-model';
+} from '@/models/types';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import Chessboard from '@/components/play/chessboard';
 import {sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {PuzzleInterface} from '@/models/puzzle-model';
 import audio from '@/lib/sound';
 import {
 	soundAtom,
@@ -74,7 +74,9 @@ const PlayingPage = ({set}: Props) => {
 	const [strikeMistakes, setStrikeMistakes] = useState(0);
 	const [strikeTime, setStrikeTime] = useState(0);
 	const [lastTime, setLastTime] = useState(0);
-	const [showNotification, setShowNotification] = useState(true);
+	const [showNotification, setShowNotification] = useState(false);
+	const [notificationMessage, setNotificationMessage] = useState('');
+	const [notificationUrl, setNotificationUrl] = useState('');
 
 	/**
 	 * Extract the list of puzzles.
@@ -155,26 +157,41 @@ const PlayingPage = ({set}: Props) => {
 	);
 
 	/**
-	 * Push the data of the current set when complete.
+	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
 		// TODO: Add achievements conditions
+
+		// ça du coup ça va reset on refresh?
 		if (mistakes === 0) {
 			setStrikeMistakes(previous => previous + 1);
 		} else {
 			setStrikeMistakes(() => 0);
 		}
-
-		if (initialPuzzleTimer - Date.now() < 5) {
+		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		if (timeTaken < 5) {
 			setStrikeTime(previous => previous + 1);
 		} else {
+			console.log('time', timeTaken);
 			setStrikeTime(() => 0);
 		}
 
 		const puzzle = puzzleList[puzzleIndex];
-		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
-		await checkForAchievement(1, 31, 1);
+
+		console.log(strikeMistakes, strikeTime, lastTime);
+
+		const unlockedAchievements = await checkForAchievement(
+			strikeMistakes,
+			strikeTime,
+			lastTime,
+		);
+
+		if (unlockedAchievements.length > 0) {
+			setShowNotification(() => true);
+			setNotificationMessage(() => 'Achievement unlocked!');
+			setNotificationUrl(() => '/dashboard');
+		}
 
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
@@ -546,8 +563,9 @@ const PlayingPage = ({set}: Props) => {
 				</div>
 			</div>
 			<Notification
-				text='bonsoir'
+				text={notificationMessage}
 				show={showNotification}
+				url={notificationUrl}
 				setShow={setShowNotification}
 			/>
 		</>

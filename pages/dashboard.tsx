@@ -2,13 +2,9 @@ import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
-
 import useUser from '@/hooks/use-user';
-
 import {fetcher} from '@/lib/fetcher';
-
-import {AchievementItem} from '@/models/user-model';
-
+import {AchievementItem} from '@/models/types';
 import Modal from '@/components/modal-achievement';
 
 const DashbaordPage = () => {
@@ -23,6 +19,7 @@ const DashbaordPage = () => {
 		const list = user.validatedAchievements.filter(
 			achievement => !achievement.claimed,
 		);
+		console.log('list', list);
 
 		setAchievementsList(() => list);
 		if (list.length > 0) setShowModal(() => true);

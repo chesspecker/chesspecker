@@ -1,18 +1,20 @@
 import {Fragment, Dispatch, SetStateAction} from 'react';
 import {Transition} from '@headlessui/react';
 import {XIcon} from '@heroicons/react/solid';
+import Link from 'next/link';
 
 type Props = {
 	text: string;
 	show: boolean;
+	url: string;
 	setShow: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function Notification({text, show, setShow}: Props) {
+export default function Notification({text, show, url, setShow}: Props) {
 	return (
 		<div
 			aria-live='assertive'
-			className='pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6'
+			className='pointer-events-none fixed inset-0 z-20 flex items-end px-4 py-6 sm:items-start sm:p-6'
 		>
 			<div className='flex w-full flex-col items-center space-y-4 sm:items-end'>
 				<Transition
@@ -32,12 +34,16 @@ export default function Notification({text, show, setShow}: Props) {
 									<p className='w-0 flex-1 text-sm font-medium text-gray-900'>
 										{text}
 									</p>
-									<button
-										type='button'
-										className='ml-3 flex-shrink-0 rounded-md bg-white text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-									>
-										Discover
-									</button>
+									<Link href={url}>
+										<a>
+											<button
+												type='button'
+												className='ml-3 flex-shrink-0 rounded-md bg-white text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+											>
+												Discover
+											</button>
+										</a>
+									</Link>
 								</div>
 								<div className='ml-4 flex flex-shrink-0'>
 									<button
