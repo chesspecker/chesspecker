@@ -4,6 +4,9 @@
 const nextConfig = {
 	reactStrictMode: true,
 	swcMinify: true,
+	images: {
+		domains: ['localhost'],
+	},
 	webpack(config) {
 		config.module.rules.push({
 			test: /\.(ogg|mp3|wav|mpe?g)$/i,

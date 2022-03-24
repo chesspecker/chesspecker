@@ -1,10 +1,11 @@
 import {AchievementInterface} from '@/data/achievements';
+import Image from 'next/image';
 
 const Card = ({achievement}: {achievement: AchievementInterface}) => {
 	return (
 		<div className=' m-2 flex h-96 w-64 flex-col rounded-lg border border-white bg-white p-2 '>
-			<div className=' flex h-1/2 w-full items-center justify-center rounded-lg bg-sky-700'>
-				<p className='text-9xl'>🐇</p>
+			<div className=' relative flex h-1/2 w-full items-center justify-center rounded-lg bg-sky-700'>
+				<Image src={achievement.image} layout='fill' objectFit='contain' />
 			</div>
 			<div className=' flex h-1/2 w-full flex-col   '>
 				<h4 className='mt-2 text-xl font-bold'>{achievement?.name}</h4>

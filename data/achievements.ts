@@ -12,24 +12,21 @@ export const achievements: AchievementInterface[] = [
 		name: 'First Puzzle',
 		description: 'You completed your first puzzle.',
 		isValidated: (args: Args) => true,
-		image:
-			'http://www.lespetitslapins.fr/wp-content/uploads/2011/01/pan-pan1.jpg',
+		image: 'http://localhost:3000/images/achievements/baby_bunny.svg',
 	},
 	{
 		id: 'rabbit',
 		name: 'Rabbit',
 		description: 'series of 20 puzzles in less than 5 seconds',
 		isValidated: (args: Args) => args.strikeTime > 20,
-		image:
-			'http://www.lespetitslapins.fr/wp-content/uploads/2011/01/pan-pan1.jpg',
+		image: 'http://localhost:3000/images/achievements/bunny.svg',
 	},
 	{
 		id: 'rabbit-master',
 		name: 'Rabbit Master',
 		description: 'series of 30 puzzles in less than 5 seconds',
 		isValidated: (args: Args) => args.strikeTime > 30,
-		image:
-			'http://www.lespetitslapins.fr/wp-content/uploads/2011/01/pan-pan1.jpg',
+		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 	},
 	{
 		id: 'super-rabbit-master',
