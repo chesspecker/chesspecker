@@ -1,12 +1,14 @@
 import {fetcher} from './fetcher';
 import {achievements} from '@/data/achievements';
 import {Data} from '@/pages/api/user';
-import type {AchievementItem, AchievementInterface} from '@/models/types';
+import type {
+	AchievementItem,
+	AchievementInterface,
+	AchivementsArgs,
+} from '@/models/types';
 
 export const checkForAchievement = async (
-	strikeMistakes: number,
-	strikeTime: number,
-	lastTime: number,
+	args: AchivementsArgs,
 ): Promise<AchievementInterface[]> => {
 	const response = (await fetcher.get('/api/user')) as Data;
 	if (!response.success) return;
@@ -16,8 +18,7 @@ export const checkForAchievement = async (
 
 	for (const achievement of achievements) {
 		if (list.map(item => item.id).includes(achievement.id)) continue;
-		if (!achievement.isValidated({strikeMistakes, strikeTime, lastTime}))
-			continue;
+		if (!achievement.isValidated(args)) continue;
 		promises.push(
 			fetcher.post(`/api/achievement`, {achievementId: achievement.id}),
 		);
