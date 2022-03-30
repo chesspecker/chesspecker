@@ -10,6 +10,7 @@ import {
 	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
+	AchivementsArgs,
 } from '@/models/types';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
@@ -24,6 +25,7 @@ import {
 	autoMoveAtom,
 } from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
+import useUser from '@/hooks/use-user';
 import Flip from '@/components/play/flip';
 import Settings from '@/components/play/settings';
 import Promotion from '@/components/play/promotion';
@@ -69,10 +71,11 @@ const PlayingPage = ({set}: Props) => {
 	const [, setAnimation] = useAtom(animationAtom);
 	const [orientation, setOrientation] = useAtom(orientationAtom);
 	const router = useRouter();
+	const user = useUser().data;
 
 	// For achievement
-	const [strikeMistakes, setStrikeMistakes] = useState(0);
-	const [strikeTime, setStrikeTime] = useState(0);
+	const [streakMistakes, setStreakMistakes] = useState(0);
+	const [streakTime, setStreakTime] = useState(0);
 	const [lastTime, setLastTime] = useState(0);
 	const [showNotification, setShowNotification] = useState(false);
 	const [notificationMessage, setNotificationMessage] = useState('');
@@ -160,32 +163,24 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
-		// TODO: Add achievements conditions
-
-		// ça du coup ça va reset on refresh?
-		if (mistakes === 0) {
-			setStrikeMistakes(previous => previous + 1);
-		} else {
-			setStrikeMistakes(() => 0);
-		}
 		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
-		if (timeTaken < 5) {
-			setStrikeTime(previous => previous + 1);
-		} else {
-			console.log('time', timeTaken);
-			setStrikeTime(() => 0);
-		}
+		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
+		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
 
 		const puzzle = puzzleList[puzzleIndex];
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
 
-		console.log(strikeMistakes, strikeTime, lastTime);
+		const body: AchivementsArgs = {
+			streakMistakes,
+			streakTime,
+			completionTime: timeTaken,
+			completionMistakes: mistakes,
+			totalPuzzleSolved: user.totalPuzzleSolved + 1,
+		};
 
-		const unlockedAchievements = await checkForAchievement(
-			strikeMistakes,
-			strikeTime,
-			lastTime,
-		);
+		console.log(body);
+
+		const unlockedAchievements = await checkForAchievement(body);
 
 		if (unlockedAchievements.length > 0) {
 			setShowNotification(() => true);
