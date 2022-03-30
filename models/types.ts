@@ -1,16 +1,22 @@
 import type {Document, Types} from 'mongoose';
 
-type Args = {
-	strikeMistakes: number;
-	strikeTime: number;
-	lastTime: number;
+export type AchivementsArgs = {
+	streakMistakes: number;
+	streakTime: number;
+	completionTime: number;
+	completionMistakes: number;
+	totalPuzzleSolved: number;
+	totalSetSolved: number;
+	theme: {id: string; totalPuzzleSolved: number};
+	streakDays: number;
+	lastVisit: number;
 };
 
 export type AchievementInterface = {
 	id: string;
 	name: string;
 	description: string;
-	isValidated: (args: Args) => boolean;
+	isValidated: (args: AchivementsArgs) => boolean;
 	image: string;
 };
 
@@ -42,6 +48,17 @@ export interface UserInterface extends Document {
 	lastUpdatedAt: number;
 	isSponsor: boolean;
 	validatedAchievements: AchievementItem[];
+	/*
+	TODO:
+	totalPuzzleSolved: number;
+	totalSetCompleted: number;
+	streakDays: number;
+	totalTimePlayed: number;
+	lastVisit: date;
+	 puzzleSolvedByCategories : {
+		[category: string]: number;
+	} */
+
 	perfs: {
 		ultraBullet: {games: number; rating: number};
 		bullet: {games: number; rating: number};
