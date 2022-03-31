@@ -1,30 +1,23 @@
-FROM node:17.7.1-alpine3.15
-
+FROM node:16-alpine
 RUN apk add --no-cache libc6-compat
 
-ENV NODE_ENV production
-ENV PORT 3000
+RUN mkdir -p /app
+
+WORKDIR /app
+
+COPY package.json /app
+COPY yarn.lock /app
+
+RUN yarn install
+
+COPY . /app
 
 EXPOSE 3000
 
-WORKDIR /home/nextjs/app
-
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
-
-COPY package.json .
-COPY yarn.lock .
-
-RUN chown -R nextjs:nodejs /home/nextjs
-
-USER nextjs
-
-RUN yarn install
-RUN npx browserslist@latest --update-db
-RUN npx next telemetry disable
-
-COPY . .
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV development
+ENV PORT 3000
 
 RUN yarn run build
 
-CMD [ "yarn", "start" ]
+CMD ["yarn", "dev"]
