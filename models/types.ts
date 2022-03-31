@@ -1,5 +1,7 @@
 import type {Document, Types} from 'mongoose';
 
+type ThemeItem = {id: string; totalPuzzleSolved: number};
+
 export type AchivementsArgs = {
 	streakMistakes: number;
 	streakTime: number;
@@ -7,7 +9,7 @@ export type AchivementsArgs = {
 	completionMistakes: number;
 	totalPuzzleSolved: number;
 	totalSetSolved: number;
-	theme: {id: string; totalPuzzleSolved: number};
+	theme: ThemeItem;
 	streakDays: number;
 	lastVisit: number;
 };
@@ -57,7 +59,10 @@ export interface UserInterface extends Document {
 	lastVisit: date;
 	 puzzleSolvedByCategories : {
 		[category: string]: number;
-	} */
+	} 
+	ThemeItem[]
+	
+	*/
 
 	perfs: {
 		ultraBullet: {games: number; rating: number};

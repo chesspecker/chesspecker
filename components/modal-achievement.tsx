@@ -1,6 +1,6 @@
 import {useState, Fragment} from 'react';
 import {Transition} from '@headlessui/react';
-import useEffectAsync from '../hooks/use-effect-async';
+import useEffectAsync from '@/hooks/use-effect-async';
 import {Button} from '@/components/button';
 import {achievements as arrayOfPossibleAchievement} from '@/data/achievements';
 import type {AchievementItem, AchievementInterface} from '@/models/types';

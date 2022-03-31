@@ -1,13 +1,16 @@
 /* eslint-disable unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument */
 import {FilterQuery} from 'mongoose';
 import {safeZero, shuffle} from '@/lib/utils';
-import Puzzle, {PuzzleInterface} from '@/models/puzzle-model';
-import PuzzleSet, {
+import Puzzle from '@/models/puzzle-model';
+import PuzzleSet from '@/models/puzzle-set-model';
+import User from '@/models/user-model';
+import {Theme} from '@/data/themes';
+import type {
+	UserInterface,
+	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
-} from '@/models/puzzle-set-model';
-import User, {UserInterface} from '@/models/user-model';
-import {Theme} from '@/data/themes';
+} from '@/models/types';
 
 const rating = (
 	level: PuzzleSetInterface['level'],

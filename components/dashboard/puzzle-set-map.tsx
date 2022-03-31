@@ -3,9 +3,9 @@ import type {MouseEvent} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {useRouter} from 'next/router';
-import {Button} from '../button';
+import {Button} from '@/components/button';
 import plus from '@/public/images/plus.svg';
-import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
+import type {PuzzleSetInterface} from '@/models/types';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {DataMany} from '@/pages/api/set';
 

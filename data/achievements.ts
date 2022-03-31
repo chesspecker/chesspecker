@@ -40,14 +40,14 @@ export const achievements: AchievementInterface[] = [
 		name: 'First Puzzle',
 		description: 'You completed your first puzzle.',
 		isValidated: (args: AchivementsArgs) => args.totalPuzzleSolved === 1,
-		image: 'http://localhost:3000/images/achievements/baby_bunny.svg', // change
+		image: 'http://localhost:3000/images/achievements/baby_bunny.svg', // Change
 	},
 	{
 		id: 'first-set',
 		name: 'First Set',
 		description: 'You completed your first set.',
 		isValidated: (args: AchivementsArgs) => args.totalSetSolved === 1,
-		image: 'http://localhost:3000/images/achievements/baby_bunny.svg', // change
+		image: 'http://localhost:3000/images/achievements/baby_bunny.svg', // Change
 	},
 
 	// PERFORMANCE
@@ -138,7 +138,7 @@ export const achievements: AchievementInterface[] = [
 		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
 		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 	},
-	//DURATION
+	// DURATION
 
 	{
 		id: 'baby-chessaolic',
@@ -166,34 +166,36 @@ export const achievements: AchievementInterface[] = [
 		name: 'Revenant',
 		description: 'Come back after more than 30 days of inactivity',
 		isValidated: (args: AchivementsArgs) =>
-			(Date.now() - args.lastVisit) / 1000 > 2592000, //30 jours en secondes
+			(Date.now() - args.lastVisit) / 1000 > 2_592_000, // 30 jours en secondes
 		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 	},
 ];
 
 for (const theme of THEMES) {
-	achievements.push({
-		id: theme.id,
-		name: `National master of ${theme.title}`,
-		description: `Your are now national master of ${theme.description}`,
-		isValidated: (args: AchivementsArgs) =>
-			args.theme.id === theme.id && args.theme.totalPuzzleSolved === 500,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
-	});
-	achievements.push({
-		id: theme.id,
-		name: `International master of ${theme.title}`,
-		description: `Your are now international master of ${theme.description}`,
-		isValidated: (args: AchivementsArgs) =>
-			args.theme.id === theme.id && args.theme.totalPuzzleSolved === 1000,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
-	});
-	achievements.push({
-		id: theme.id,
-		name: `Great-master of ${theme.title}`,
-		description: `Your are now great master of ${theme.description}`,
-		isValidated: (args: AchivementsArgs) =>
-			args.theme.id === theme.id && args.theme.totalPuzzleSolved === 1500,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
-	});
+	achievements.push(
+		{
+			id: theme.id,
+			name: `National master of ${theme.title}`,
+			description: `Your are now national master of ${theme.description}`,
+			isValidated: (args: AchivementsArgs) =>
+				args.theme.id === theme.id && args.theme.totalPuzzleSolved === 500,
+			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		},
+		{
+			id: theme.id,
+			name: `International master of ${theme.title}`,
+			description: `Your are now international master of ${theme.description}`,
+			isValidated: (args: AchivementsArgs) =>
+				args.theme.id === theme.id && args.theme.totalPuzzleSolved === 1000,
+			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		},
+		{
+			id: theme.id,
+			name: `Great-master of ${theme.title}`,
+			description: `Your are now great master of ${theme.description}`,
+			isValidated: (args: AchivementsArgs) =>
+				args.theme.id === theme.id && args.theme.totalPuzzleSolved === 1500,
+			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		},
+	);
 }

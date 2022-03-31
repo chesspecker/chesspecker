@@ -1,12 +1,12 @@
 /* eslint-disable new-cap */
 import {ReactElement} from 'react';
 import {GetServerSideProps} from 'next';
-import ChartOneLine from '../../components/chart-one-line';
+import ChartOneLine from '@/components/chart-one-line';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
-import {PuzzleSetInterface} from '@/models/puzzle-set-model';
+import {PuzzleSetInterface} from '@/models/types';
 import useClock from '@/hooks/use-clock';
-import Donnuts from '@/components/donnuts';
+import Donnuts from '@/components/doughnuts';
 import ChartMultipleLine from '@/components/chart-multiple-line';
 
 const getRapidity = (set: PuzzleSetInterface) => {

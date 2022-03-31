@@ -1,8 +1,10 @@
-import Puzzle, {PuzzleInterface} from '@/models/puzzle-model';
-import PuzzleSet, {
+import Puzzle from '@/models/puzzle-model';
+import PuzzleSet from '@/models/puzzle-set-model';
+import type {
+	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
-} from '@/models/puzzle-set-model';
+} from '@/models/types';
 
 export const create = async (
 	body: PuzzleInterface,
