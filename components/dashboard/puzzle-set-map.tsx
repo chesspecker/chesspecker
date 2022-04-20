@@ -8,6 +8,8 @@ import plus from '@/public/images/plus.svg';
 import type {PuzzleSetInterface} from '@/models/types';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {DataMany} from '@/pages/api/set';
+import {fetcher} from '@/lib/fetcher';
+import RemoveModal from '@/components/dashboard/remove-modal';
 
 type PropsComponent = {
 	set: PuzzleSetInterface;
@@ -15,6 +17,11 @@ type PropsComponent = {
 
 const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const router = useRouter();
+	const removeSet = async () =>
+		fetch(`/api/set/${set._id}`, {method: 'DELETE'})
+			.then(() => router.reload())
+			.catch(error => console.error(error));
+
 	const onPlayClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
@@ -29,6 +36,9 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 
 	return (
 		<div className='m-2 flex h-64 w-64 flex-col overflow-hidden rounded-xl border-2 border-white p-4 text-white'>
+			<div className='flex w-full justify-end'>
+				<RemoveModal onClick={removeSet} />
+			</div>
 			<h3 className='mx-4 mt-0 mb-4 text-4xl font-medium'>
 				{set.title.length > 12 ? set.title.slice(0, 11) + ' ...' : set.title}
 			</h3>
@@ -44,6 +54,8 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 
 const PuzzleSetMap = () => {
 	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
+	const [setToRemove, setSetToRemove] = useState<PuzzleSetInterface>();
+	const [toggleConfirm, setToggleConfirm] = useState<boolean>(false);
 	useEffectAsync(async () => {
 		const response = await fetch('/api/set');
 		const data = (await response.json()) as DataMany;
