@@ -22,14 +22,32 @@ const SponsorPage = () => {
 	};
 
 	return (
-		<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
+		<div className='mx-10 flex h-screen flex-col items-center justify-center text-slate-800'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
 				Become sponsor
 			</h1>
-			<p className='w-11/12 text-2xl text-gray-100 md:text-3xl'>
-				Why you should help us blabla
+			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
+				We love to code on this site. Become a sponsor to help us pay for the
+				server costs and to have the chance to unlock a great (really nice)
+				badge !
 			</p>
-			<Button onClick={handleClick}>LET&apos;S GO! 🔥</Button>
+			<iframe
+				src='https://giphy.com/embed/lCbSAbRrFEfkY'
+				width='480'
+				height='372'
+				frameBorder='0'
+				class='giphy-embed'
+				allowFullScreen
+			></iframe>
+			<p className='mb-6 mt-7 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
+				How much does it cost? Just one small coffee per month !
+			</p>
+			<p>
+				<a href='https://giphy.com/gifs/lCbSAbRrFEfkY'>via GIPHY</a>
+			</p>
+			<div className='w-1/3'>
+				<Button onClick={handleClick}>LET&apos;S GO! 🔥</Button>
+			</div>
 		</div>
 	);
 };
