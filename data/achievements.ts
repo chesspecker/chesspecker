@@ -178,7 +178,7 @@ for (const theme of THEMES) {
 			name: `National master of ${theme.title}`,
 			description: `Your are now national master of ${theme.description}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.theme.id === theme.id && args.theme.totalPuzzleSolved === 500,
+				args.themes.some(t => t.id === theme.id && t.totalPuzzleSolved === 500),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 		},
 		{
@@ -186,7 +186,9 @@ for (const theme of THEMES) {
 			name: `International master of ${theme.title}`,
 			description: `Your are now international master of ${theme.description}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.theme.id === theme.id && args.theme.totalPuzzleSolved === 1000,
+				args.themes.some(
+					t => t.id === theme.id && t.totalPuzzleSolved === 1000,
+				),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 		},
 		{
@@ -194,7 +196,9 @@ for (const theme of THEMES) {
 			name: `Great-master of ${theme.title}`,
 			description: `Your are now great master of ${theme.description}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.theme.id === theme.id && args.theme.totalPuzzleSolved === 1500,
+				args.themes.some(
+					t => t.id === theme.id && t.totalPuzzleSolved === 1500,
+				),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 		},
 	);

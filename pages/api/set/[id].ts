@@ -1,8 +1,9 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {PuzzleSetInterface} from '@/models/puzzle-set-model';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/set';
+
+import type {PuzzleSetInterface} from '@/models/types';
 
 type SuccessData = {
 	success: true;
@@ -35,6 +36,7 @@ const delete_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
+	console.log('bakcend got delete request for set', id);
 	const set = await remove(id as string);
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
@@ -50,6 +52,7 @@ const put_ = async (
 ) => {
 	const {id} = request.query;
 	const set = await update(id as string, request.body);
+	console.log('the set');
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
 		return;
@@ -62,7 +65,7 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
-	switch (request.method) {
+	switch (request.method.toUpperCase()) {
 		case 'GET':
 			await get_(request, response);
 			break;

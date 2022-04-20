@@ -9,7 +9,7 @@ export type AchivementsArgs = {
 	completionMistakes: number;
 	totalPuzzleSolved: number;
 	totalSetSolved: number;
-	theme: ThemeItem;
+	themes: ThemeItem[];
 	streakDays: number;
 	lastVisit: number;
 };
@@ -59,9 +59,9 @@ export interface UserInterface extends Document {
 	lastVisit: date;
 	 puzzleSolvedByCategories : {
 		[category: string]: number;
-	} 
+	}
 	ThemeItem[]
-	
+
 	*/
 
 	perfs: {

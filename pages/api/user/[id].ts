@@ -1,8 +1,9 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {UserInterface} from '@/models/user-model';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/user';
+
+import type {UserInterface} from '@/models/types';
 
 type SuccessData = {
 	success: true;

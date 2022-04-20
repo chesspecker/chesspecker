@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {UserInterface} from '@/models/user-model';
+import type {UserInterface} from '@/models/types';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, create} from '@/controllers/user';
 

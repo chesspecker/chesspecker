@@ -6,6 +6,7 @@ import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {Data as PuzzleData, UpdateData} from '../api/puzzle/[id]';
 import type {Data as SetData} from '../api/set/[id]';
+import type {Data as UserData} from '../api/user/[id]';
 import {
 	PuzzleInterface,
 	PuzzleItemInterface,
@@ -71,7 +72,7 @@ const PlayingPage = ({set}: Props) => {
 	const [, setAnimation] = useAtom(animationAtom);
 	const [orientation, setOrientation] = useAtom(orientationAtom);
 	const router = useRouter();
-	const user = useUser().data;
+	const {data: user, mutate} = useUser();
 
 	// For achievement
 	const [streakMistakes, setStreakMistakes] = useState(0);
@@ -166,9 +167,11 @@ const PlayingPage = ({set}: Props) => {
 		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
-
-		const puzzle = puzzleList[puzzleIndex];
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
+
+		const hasVisited = user.lastVisit;
+
+		// TODO: Get totalPuzzleSolved by themes from api
 
 		const body: AchivementsArgs = {
 			streakMistakes,
@@ -176,11 +179,16 @@ const PlayingPage = ({set}: Props) => {
 			completionTime: timeTaken,
 			completionMistakes: mistakes,
 			totalPuzzleSolved: user.totalPuzzleSolved + 1,
+			themes: puzzle.Themes.map(t => ({id: t, totalPuzzleSolved})),
+			totalSetSolved,
+			streakDays,
+			lastVisit: Date.now(),
 		};
 
 		console.log(body);
 
 		const unlockedAchievements = await checkForAchievement(body);
+		const puzzleItem = puzzleList[puzzleIndex];
 
 		if (unlockedAchievements.length > 0) {
 			setShowNotification(() => true);
@@ -192,7 +200,7 @@ const PlayingPage = ({set}: Props) => {
 			didCheat: isSolutionClicked,
 			mistakes,
 			timeTaken,
-			streak: puzzle.streak,
+			streak: puzzleItem.streak,
 		});
 
 		const update = {
@@ -208,25 +216,50 @@ const PlayingPage = ({set}: Props) => {
 			},
 			$set: {
 				'puzzles.$.played': true,
-				'puzzles.$.streak': puzzle.streak ? puzzle.streak + 1 : 0,
+				'puzzles.$.streak': puzzleItem.streak ? puzzleItem.streak + 1 : 0,
+			},
+		};
+
+		const updateUser = {
+			$inc: {
+				totalPuzzleSolved: 1,
+			},
+			$set: {
+				lastVisit: Date.now(),
 			},
 		};
 
 		try {
 			const result = (await fetcher.put(
-				`/api/puzzle/${puzzle._id.toString()}`,
+				`/api/puzzle/${puzzleItem._id.toString()}`,
 				{_id: set._id, update},
 			)) as UpdateData;
-			if (result.success) {
-				const grades = result.puzzle.grades;
-				setPreviousPuzzle(previous => [
-					...previous,
-					{
-						grade: grades[grades.length - 1],
-						PuzzleId: result.puzzle._id.toString(),
-					},
-				]);
+
+			if (result.success === false) {
+				console.log(result.error);
+				return;
 			}
+
+			const grades = result.puzzle.grades;
+			setPreviousPuzzle(previous => [
+				...previous,
+				{
+					grade: grades[grades.length - 1],
+					PuzzleId: result.puzzle._id.toString(),
+				},
+			]);
+
+			const userResult = (await fetcher.put(
+				`/api/user/${user._id.toString()}`,
+				updateUser,
+			)) as UserData;
+
+			if (userResult.success === false) {
+				console.log(userResult.error);
+				return;
+			}
+
+			mutate();
 		} catch (error: unknown) {
 			console.log(error);
 		}
