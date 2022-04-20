@@ -25,18 +25,29 @@ const Profile = ({user}) => {
 	}, [itemAchievements]);
 
 	return (
-		<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
-			<ButtonLink href='sponsor'>Become sponsor </ButtonLink>
-			<p>My badges</p>
-			<div className='flex w-full flex-wrap'>
-				{userAchievements &&
-					userAchievements.map(achievement => (
-						<div key={achievement.id}>
-							<Card achievement={achievement} />
-						</div>
-					))}
+		<div className='mt-32 flex h-screen w-screen flex-col px-10 text-slate-800'>
+			<div className='flex items-center'>
+				<p className=' mr-5 text-6xl text-white'>{user.username}</p>
+				<ButtonLink href='/sponsor'>Become sponsor </ButtonLink>
 			</div>
-			<p>Dashboard settings</p>
+
+			<div className='borded-white m-2 mt-6 min-h-[5rem] rounded-xl border p-2'>
+				<p className='text-xl text-white'>My badges</p>
+				<div className='flex w-full flex-wrap'>
+					{userAchievements && userAchievements.length === 0 && (
+						<p className='text-center text-white'>
+							You don't have achievement yet
+						</p>
+					)}
+					{userAchievements &&
+						userAchievements.length > 0 &&
+						userAchievements.map(achievement => (
+							<div key={achievement.id}>
+								<Card achievement={achievement} />
+							</div>
+						))}
+				</div>
+			</div>
 		</div>
 	);
 };
