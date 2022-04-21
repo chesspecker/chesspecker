@@ -183,7 +183,6 @@ const PlayingPage = ({set}: Props) => {
 		const themesInCommon = oldThemes.filter(t =>
 			newThemesIds.includes(t.title),
 		);
-		console.log('themesInCommon', themesInCommon);
 
 		if (themesInCommon.length > 0) {
 			// If there are, we update the user's themes
@@ -206,7 +205,6 @@ const PlayingPage = ({set}: Props) => {
 		// Is there some themes not in common?
 		const oldThemesIds = new Set(oldThemes.map(t => t.title));
 		const themesNotInCommon = newThemesIds.filter(id => !oldThemesIds.has(id));
-		console.log('themesNotInCommon', themesNotInCommon);
 
 		if (themesNotInCommon.length > 0) {
 			// If there are, we add them to the user's themes
@@ -242,21 +240,17 @@ const PlayingPage = ({set}: Props) => {
 			totalPuzzleSolved: user.totalPuzzleSolved
 				? user.totalPuzzleSolved + 1
 				: 1,
-			themes: puzzle.Themes.map(t => ({
-				title: t,
-				count: user.puzzleSolvedByCategories[t]?.count
-					? user.puzzleSolvedByCategories[t].count + 1
-					: 1,
-			})),
+			themes: puzzle.Themes.map(t => {
+				const a = oldThemes.find(c => t === c.title);
+				const count = a ? a.count + 1 : 1;
+				return {title: t, count};
+			}),
 			totalSetSolved: user.totalSetCompleted,
 			streak,
 			isSponsor: user.isSponsor,
 		};
 
-		console.log(body);
-
 		const unlockedAchievements = await checkForAchievement(body);
-
 		const puzzleItem = puzzleList[puzzleIndex];
 
 		if (unlockedAchievements.length > 0) {
