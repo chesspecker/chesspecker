@@ -10,7 +10,6 @@ import type {
 export const checkForAchievement = async (
 	args: AchivementsArgs,
 ): Promise<AchievementInterface[]> => {
-	console.log('in the function', args);
 	const response = (await fetcher.get('/api/user')) as Data;
 	if (!response.success) return;
 	const list: AchievementItem[] = response.user.validatedAchievements;
@@ -18,7 +17,6 @@ export const checkForAchievement = async (
 	const result = [];
 
 	for (const achievement of achievements) {
-		console.log(achievement.isValidated(args));
 		if (list.map(item => item.id).includes(achievement.id)) continue;
 		if (!achievement.isValidated(args)) continue;
 		promises.push(

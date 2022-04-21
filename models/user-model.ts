@@ -21,7 +21,7 @@ const schema = new Schema<UserInterface>({
 		lastLoginDate: String, // 14/11/2019
 	},
 	totalTimePlayed: Number,
-	puzzleSolvedByCategories: {id: String, totalPuzzleSolved: Number},
+	puzzleSolvedByCategories: [{id: String, totalPuzzleSolved: Number}],
 });
 
 export default models.User || model<UserInterface>('User', schema);

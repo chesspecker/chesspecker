@@ -13,6 +13,7 @@ import type {UpdateQuery} from 'mongoose';
 import {fetcher} from '@/lib/fetcher';
 import type {Streak, UserInterface} from '@/models/types';
 import {formattedDate} from '@/lib/utils';
+import {useEffect, useState} from 'react';
 
 const resetStreakCount = (date: string) => ({
 	startDate: date,
@@ -77,7 +78,7 @@ const shouldInrementOrResetStreakCount = (
  * @param {string} id - the user id to update
  * @param {Streak} currentStreak - an object with `currentCount`, `lastLoginDate`, `startDate`
  * @returns Streak - an object with `currentCount`, `lastLoginDate`, `startDate`
- * 
+ *
  * @example
 import { useStreak } from "use-streak";
 const streak = useStreak(user.id, user.currentStreak);
@@ -88,39 +89,40 @@ const streak = useStreak(user.id, user.currentStreak);
 //    startDate: "11/11/2021",
 // }
  */
-const useStreak = async (id: string, currentStreak: Streak) => {
+const useStreak = (id: string, currentStreak: Streak) => {
 	const today = new Date();
 	const currentDate = formattedDate(today);
+	const [streak, setStreak] = useState<Streak>(currentStreak);
 
-	// Check if we should increment or reset
-	const {shouldIncrement, shouldReset} = shouldInrementOrResetStreakCount(
-		currentDate,
-		currentStreak.lastLoginDate,
-	);
+	useEffect(() => {
+		// Check if we should increment or reset
+		const {shouldIncrement, shouldReset} = shouldInrementOrResetStreakCount(
+			currentDate,
+			currentStreak.lastLoginDate,
+		);
 
-	if (shouldReset) {
-		const updatedStreak = resetStreakCount(currentDate);
-		const body: UpdateQuery<Partial<UserInterface>> = {
-			$set: {
-				streak: updatedStreak,
-			},
-		};
-		await updateStreak(id, body);
-		return updatedStreak;
-	}
+		if (shouldReset) {
+			const updatedStreak = resetStreakCount(currentDate);
+			const body: UpdateQuery<Partial<UserInterface>> = {
+				$set: {
+					streak: updatedStreak,
+				},
+			};
+			updateStreak(id, body).then(() => setStreak(() => updatedStreak));
+		}
 
-	if (shouldIncrement) {
-		const updatedStreak = incrementStreakCount(currentStreak, currentDate);
-		const body: UpdateQuery<Partial<UserInterface>> = {
-			$set: {
-				streak: updatedStreak,
-			},
-		};
-		await updateStreak(id, body);
-		return updatedStreak;
-	}
+		if (shouldIncrement) {
+			const updatedStreak = incrementStreakCount(currentStreak, currentDate);
+			const body: UpdateQuery<Partial<UserInterface>> = {
+				$set: {
+					streak: updatedStreak,
+				},
+			};
+			updateStreak(id, body).then(() => setStreak(() => updatedStreak));
+		}
+	}, []);
 
-	return currentStreak;
+	return streak;
 };
 
 export default useStreak;

@@ -16,6 +16,7 @@ export type AchivementsArgs = {
 	totalSetSolved: number;
 	themes: ThemeItem[];
 	streak: Streak;
+	isSponsor: boolean;
 };
 
 export type AchievementInterface = {

@@ -47,6 +47,13 @@ export const achievements: AchievementInterface[] = [
 		name: 'First Set',
 		description: 'You completed your first set.',
 		isValidated: (args: AchivementsArgs) => args.totalSetSolved === 1,
+		image: 'http://localhost:3000/images/achievements/socks.png', // Change
+	},
+	{
+		id: 'sponsor',
+		name: 'Sponsor',
+		description: 'because you are a sponsor, you have won this beautiful sock ',
+		isValidated: (args: AchivementsArgs) => args.isSponsor,
 		image: 'http://localhost:3000/images/achievements/baby_bunny.svg', // Change
 	},
 
@@ -144,29 +151,31 @@ export const achievements: AchievementInterface[] = [
 		id: 'baby-chessaolic',
 		name: 'Baby chessaolic',
 		description: 'Play more than 15 mn in last 7 days',
-		isValidated: (args: AchivementsArgs) => args.streakDays > 7,
+		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 7,
 		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 	},
 	{
 		id: 'chessaolic',
 		name: 'Chessaolic',
 		description: 'Play more than 15 mn in last 15 days',
-		isValidated: (args: AchivementsArgs) => args.streakDays > 15,
+		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 15,
 		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 	},
 	{
 		id: 'king-chessaolic',
 		name: 'King chessaolic',
 		description: 'Play more than 15 mn in last 30 days',
-		isValidated: (args: AchivementsArgs) => args.streakDays > 30,
+		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 30,
 		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 	},
 	{
 		id: 'revenant',
 		name: 'Revenant',
 		description: 'Come back after more than 30 days of inactivity',
+		// TODO: test, not sure if it works
 		isValidated: (args: AchivementsArgs) =>
-			(Date.now() - args.lastVisit) / 1000 > 2_592_000, // 30 jours en secondes
+			(Date.now() - new Date(args.streak.lastLoginDate).getTime()) / 1000 >
+			2_592_000, // 30 jours en secondes
 		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 	},
 ];

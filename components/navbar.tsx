@@ -27,7 +27,7 @@ const Navbar = () => {
 				<div className='flex'>
 					<Link passHref href={`/user/${user?._id.toString()}`}>
 						<a className='mr-5 flex items-center justify-center'>
-							<span>⚔️&nbsp;</span>
+							{user?.isSponsor && <span>⚔️&nbsp;</span>}
 							{user?.username}
 						</a>
 					</Link>

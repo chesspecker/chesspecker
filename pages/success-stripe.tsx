@@ -5,11 +5,21 @@ import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
+import {fetcher} from '@/lib/fetcher';
+import useUser from '@/hooks/use-user';
+import type {Data as UserData} from '@/api/user/[id]';
 
 const SuccessPage = () => {
 	const router = useRouter();
+	const {data: user} = useUser();
 	const {session_id: sessionId} = router.query;
 	const [, setSession] = useState<Stripe.Checkout.Session>();
+
+	const updateUser = {
+		$set: {
+			isSponsor: true,
+		},
+	};
 
 	useEffectAsync(async () => {
 		if (!sessionId) return;
@@ -18,6 +28,10 @@ const SuccessPage = () => {
 		);
 		const data = (await response.json()) as Stripe.Checkout.Session;
 		setSession(data);
+		const userResult = (await fetcher.put(
+			`/api/user/${user._id.toString()}`,
+			updateUser,
+		)) as UserData;
 	}, [sessionId]);
 
 	return (

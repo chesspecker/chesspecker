@@ -40,6 +40,7 @@ import Solution from '@/components/play/solution';
 import MoveToNext from '@/components/play/move-to-next';
 import {checkForAchievement} from '@/lib/achievements';
 import Notification from '@/components/notification';
+import useStreak from '@/hooks/use-streak';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -73,6 +74,7 @@ const PlayingPage = ({set}: Props) => {
 	const [orientation, setOrientation] = useAtom(orientationAtom);
 	const router = useRouter();
 	const {data: user, mutate} = useUser();
+	const streak = useStreak(user._id.toString(), user.streak);
 
 	// For achievement
 	const [streakMistakes, setStreakMistakes] = useState(0);
@@ -169,26 +171,29 @@ const PlayingPage = ({set}: Props) => {
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
 
-		// TODO: Get useStreak
-		// TODO: Get totalPuzzleSolved by themes from api
-
 		const body: AchivementsArgs = {
 			streakMistakes,
 			streakTime,
 			completionTime: timeTaken,
 			completionMistakes: mistakes,
-			totalPuzzleSolved: user.totalPuzzleSolved + 1,
+			totalPuzzleSolved: user.totalPuzzleSolved
+				? user.totalPuzzleSolved + 1
+				: 1,
 			themes: puzzle.Themes.map(t => ({
 				id: t,
-				totalPuzzleSolved: user.totalPuzzleSolved + 1,
+				totalPuzzleSolved: user.totalPuzzleSolved
+					? user.totalPuzzleSolved + 1
+					: 1,
 			})),
 			totalSetSolved: user.totalSetCompleted,
-			streak: user.streak,
+			streak,
+			isSponsor: user.isSponsor,
 		};
 
 		console.log(body);
 
 		const unlockedAchievements = await checkForAchievement(body);
+
 		const puzzleItem = puzzleList[puzzleIndex];
 
 		if (unlockedAchievements.length > 0) {
@@ -221,12 +226,36 @@ const PlayingPage = ({set}: Props) => {
 			},
 		};
 
+		const oldThemes = user.puzzleSolvedByCategories;
+		const newThemes = puzzle.Themes.map(currentTheme => {
+			if (oldThemes[currentTheme]) {
+				return {
+					id: currentTheme,
+					totalPuzzleSolved: oldThemes[currentTheme] + 1,
+				};
+			} else {
+				return {
+					id: currentTheme,
+					totalPuzzleSolved: 1,
+				};
+			}
+		});
+
+		oldThemes.forEach(theme => {
+			if (!puzzle.Themes.includes(theme.id)) {
+				newThemes.push(theme);
+			}
+		});
+
+		console.log('oldThemes', user.puzzleSolvedByCategories);
+		console.log('newThemes', newThemes);
+
 		const updateUser = {
 			$inc: {
 				totalPuzzleSolved: 1,
 			},
 			$set: {
-				lastVisit: Date.now(),
+				puzzleSolvedByCategories: newThemes,
 			},
 		};
 
@@ -251,10 +280,12 @@ const PlayingPage = ({set}: Props) => {
 				},
 			]);
 
-			const userResult = (await fetcher.put(
-				`/api/user/${user._id.toString()}`,
-				updateUser,
-			)) as UserData;
+			const response = await fetch(`/api/user/${user._id.toString()}`, {
+				method: 'PUT',
+				body: JSON.stringify(updateUser),
+			});
+			const userResult: UserData = await response.json();
+			console.log('userResult', userResult);
 
 			/* eslint-disable-next-line */
 			if (userResult.success === false) {

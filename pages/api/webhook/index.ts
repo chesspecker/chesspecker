@@ -1,0 +1,81 @@
+import process from 'process';
+import {NextApiRequest, NextApiResponse} from 'next';
+import Stripe from 'stripe';
+import {PuzzleInterface} from '@/models/types';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+	apiVersion: '2020-08-27',
+});
+
+// Replace this endpoint secret with your endpoint's unique secret
+// If you are testing with the CLI, find the secret by running 'stripe listen'
+// If you are using an endpoint defined with the API or dashboard, look in your webhook settings
+// at https://dashboard.stripe.com/webhooks
+const endpointSecret = 'whsec_...';
+
+type SuccessData = {
+	success: true;
+	puzzle: PuzzleInterface;
+};
+
+type ErrorData = {
+	success: false;
+	error: string;
+};
+
+type Data = SuccessData | ErrorData;
+
+const post_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	let event = request.body;
+	if (endpointSecret) {
+		// Get the signature sent by Stripe
+		const signature = request.headers['stripe-signature'];
+		try {
+			event = stripe.webhooks.constructEvent(
+				request.body,
+				signature,
+				endpointSecret,
+			);
+		} catch (err) {
+			console.log(`⚠️  Webhook signature verification failed.`, err.message);
+			return response.status(400);
+		}
+	}
+
+	switch (event.type) {
+		case 'payment_intent.succeeded':
+			const paymentIntent = event.data.object;
+			console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
+			// Then define and call a method to handle the successful payment intent.
+			// handlePaymentIntentSucceeded(paymentIntent);
+			break;
+		case 'payment_method.attached':
+			const paymentMethod = event.data.object;
+			// Then define and call a method to handle the successful attachment of a PaymentMethod.
+			// handlePaymentMethodAttached(paymentMethod);
+			break;
+		default:
+			// Unexpected event type
+			console.log(`Unhandled event type ${event.type}.`);
+	}
+};
+
+const handler = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	switch (request.method) {
+		case 'POST':
+			await post_(request, response);
+			break;
+
+		default:
+			response.status(405).json({success: false, error: 'Method not allowed'});
+			break;
+	}
+};
+
+//app.listen(4242, () => console.log('Running on port 4242'));

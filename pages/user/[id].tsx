@@ -25,7 +25,7 @@ const Profile = ({user}) => {
 	}, [itemAchievements]);
 
 	return (
-		<div className='mt-32 flex h-screen w-screen flex-col px-10 text-slate-800'>
+		<div className='mt-32 flex min-h-screen w-screen flex-col px-10 text-slate-800'>
 			<div className='flex items-center'>
 				<p className=' mr-5 text-6xl text-white'>{user.username}</p>
 				<ButtonLink href='/sponsor'>Become sponsor </ButtonLink>
