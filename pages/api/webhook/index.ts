@@ -1,7 +1,6 @@
 import process from 'process';
 import {NextApiRequest, NextApiResponse} from 'next';
 import Stripe from 'stripe';
-import {PuzzleInterface} from '@/models/types';
 import {buffer} from 'micro';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -64,6 +63,7 @@ const post_ = async (
 			// Unexpected event type
 			console.log(`Unhandled event type ${event.type}.`);
 	}
+
 	response.json({received: true});
 };
 
@@ -83,5 +83,3 @@ const handler = async (
 };
 
 export default handler;
-
-// App.listen(4242, () => console.log('Running on port 4242'));
