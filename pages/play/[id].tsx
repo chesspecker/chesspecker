@@ -171,6 +171,69 @@ const PlayingPage = ({set}: Props) => {
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
 
+		const oldThemes = user.puzzleSolvedByCategories;
+		let updateUser: Record<any, any> = {
+			$inc: {
+				totalPuzzleSolved: 1,
+			},
+		};
+
+		// Is there some puzzles in common in the old and new themes?
+		const newThemesIds = puzzle.Themes;
+		const themesInCommon = oldThemes.filter(t =>
+			newThemesIds.includes(t.title),
+		);
+		console.log('themesInCommon', themesInCommon);
+
+		if (themesInCommon.length > 0) {
+			// If there are, we update the user's themes
+			for (const theme of themesInCommon) {
+				updateUser.$inc[
+					`puzzleSolvedByCategories.${oldThemes.indexOf(theme)}.count`
+				] = 1;
+			}
+		}
+
+		try {
+			await fetch(`/api/user/${user._id.toString()}`, {
+				method: 'PUT',
+				body: JSON.stringify(updateUser),
+			});
+		} catch (error: unknown) {
+			console.log(error);
+		}
+
+		// Is there some themes not in common?
+		const oldThemesIds = new Set(oldThemes.map(t => t.title));
+		const themesNotInCommon = newThemesIds.filter(id => !oldThemesIds.has(id));
+		console.log('themesNotInCommon', themesNotInCommon);
+
+		if (themesNotInCommon.length > 0) {
+			// If there are, we add them to the user's themes
+			updateUser = {
+				$push: {
+					puzzleSolvedByCategories: {
+						$each: [],
+					},
+				},
+			};
+			for (const theme of themesNotInCommon) {
+				updateUser.$push.puzzleSolvedByCategories.$each.push({
+					title: theme,
+					count: 1,
+				});
+			}
+
+			try {
+				await fetch(`/api/user/${user._id.toString()}`, {
+					method: 'PUT',
+					body: JSON.stringify(updateUser),
+				});
+			} catch (error: unknown) {
+				console.log(error);
+			}
+		}
+
 		const body: AchivementsArgs = {
 			streakMistakes,
 			streakTime,
@@ -180,9 +243,9 @@ const PlayingPage = ({set}: Props) => {
 				? user.totalPuzzleSolved + 1
 				: 1,
 			themes: puzzle.Themes.map(t => ({
-				id: t,
-				totalPuzzleSolved: user.totalPuzzleSolved
-					? user.totalPuzzleSolved + 1
+				title: t,
+				count: user.puzzleSolvedByCategories[t]?.count
+					? user.puzzleSolvedByCategories[t].count + 1
 					: 1,
 			})),
 			totalSetSolved: user.totalSetCompleted,
@@ -226,39 +289,6 @@ const PlayingPage = ({set}: Props) => {
 			},
 		};
 
-		const oldThemes = user.puzzleSolvedByCategories;
-		const newThemes = puzzle.Themes.map(currentTheme => {
-			if (oldThemes[currentTheme]) {
-				return {
-					id: currentTheme,
-					totalPuzzleSolved: oldThemes[currentTheme] + 1,
-				};
-			} else {
-				return {
-					id: currentTheme,
-					totalPuzzleSolved: 1,
-				};
-			}
-		});
-
-		oldThemes.forEach(theme => {
-			if (!puzzle.Themes.includes(theme.id)) {
-				newThemes.push(theme);
-			}
-		});
-
-		console.log('oldThemes', user.puzzleSolvedByCategories);
-		console.log('newThemes', newThemes);
-
-		const updateUser = {
-			$inc: {
-				totalPuzzleSolved: 1,
-			},
-			$set: {
-				puzzleSolvedByCategories: newThemes,
-			},
-		};
-
 		try {
 			const result = (await fetcher.put(
 				`/api/puzzle/${puzzleItem._id.toString()}`,
@@ -279,19 +309,6 @@ const PlayingPage = ({set}: Props) => {
 					PuzzleId: result.puzzle._id.toString(),
 				},
 			]);
-
-			const response = await fetch(`/api/user/${user._id.toString()}`, {
-				method: 'PUT',
-				body: JSON.stringify(updateUser),
-			});
-			const userResult: UserData = await response.json();
-			console.log('userResult', userResult);
-
-			/* eslint-disable-next-line */
-			if (userResult.success === false) {
-				console.log(userResult.error);
-				return;
-			}
 
 			await mutate();
 		} catch (error: unknown) {

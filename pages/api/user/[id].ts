@@ -47,8 +47,7 @@ const put_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	const user = await update(id as string, request.body);
-	console.log('update user');
+	const user = await update(id as string, JSON.parse(request.body));
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
 		return;

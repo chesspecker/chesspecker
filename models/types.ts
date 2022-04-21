@@ -1,6 +1,6 @@
 import type {Document, Types} from 'mongoose';
 
-type ThemeItem = {id: string; totalPuzzleSolved: number};
+type ThemeItem = {title: string; count: number};
 export type Streak = {
 	currentCount: number;
 	startDate: string; // 11/11/2019

@@ -15,7 +15,6 @@ const Modal = ({
 	currentAchievementItem: AchievementItem;
 	handleClick: (id: string) => void;
 }): JSX.Element => {
-	console.log('currentAchievementItem', currentAchievementItem);
 	const [achievement, setAchievement] = useState<AchievementInterface>();
 	useEffectAsync(async () => {
 		if (!currentAchievementItem) return;

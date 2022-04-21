@@ -34,7 +34,6 @@ const put_ = async (
 	}
 
 	const body = await JSON.parse(request.body);
-	console.log(userID, body);
 	const newUser = await User.findOneAndUpdate(
 		{_id: userID, 'validatedAchievements.id': body.achievementId},
 		{$set: {'validatedAchievements.$.claimed': body.claimed}},
