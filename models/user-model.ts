@@ -15,8 +15,11 @@ const schema = new Schema<UserInterface>({
 	],
 	totalPuzzleSolved: Number,
 	totalSetCompleted: Number,
-	lastVisit: Date,
-	streakDays: Number,
+	streak: {
+		currentCount: Number,
+		startDate: String, // 11/11/2019
+		lastLoginDate: String, // 14/11/2019
+	},
 	totalTimePlayed: Number,
 	puzzleSolvedByCategories: {id: String, totalPuzzleSolved: Number},
 });

@@ -1,6 +1,11 @@
 import type {Document, Types} from 'mongoose';
 
 type ThemeItem = {id: string; totalPuzzleSolved: number};
+export type Streak = {
+	currentCount: number;
+	startDate: string; // 11/11/2019
+	lastLoginDate: string; // 14/11/2019
+};
 
 export type AchivementsArgs = {
 	streakMistakes: number;
@@ -10,8 +15,7 @@ export type AchivementsArgs = {
 	totalPuzzleSolved: number;
 	totalSetSolved: number;
 	themes: ThemeItem[];
-	streakDays: number;
-	lastVisit: number;
+	streak: Streak;
 };
 
 export type AchievementInterface = {
@@ -50,8 +54,7 @@ export interface UserInterface extends Document {
 	validatedAchievements: AchievementItem[];
 	totalPuzzleSolved: number;
 	totalSetCompleted: number;
-	lastVisit: Date;
-	streakDays: number;
+	streak: Streak;
 	totalTimePlayed: number;
 	puzzleSolvedByCategories: ThemeItem[];
 }

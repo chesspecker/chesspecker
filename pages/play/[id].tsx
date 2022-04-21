@@ -169,8 +169,7 @@ const PlayingPage = ({set}: Props) => {
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
 
-		const hasVisited = user.lastVisit;
-
+		// TODO: Get useStreak
 		// TODO: Get totalPuzzleSolved by themes from api
 
 		const body: AchivementsArgs = {
@@ -184,8 +183,7 @@ const PlayingPage = ({set}: Props) => {
 				totalPuzzleSolved: user.totalPuzzleSolved + 1,
 			})),
 			totalSetSolved: user.totalSetCompleted,
-			streakDays: user.streakDays,
-			lastVisit: Date.now(),
+			streak: user.streak,
 		};
 
 		console.log(body);

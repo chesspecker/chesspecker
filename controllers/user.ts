@@ -2,8 +2,10 @@ import {UpdateQuery} from 'mongoose';
 import {LichessUser} from '@/types/lichess';
 import User from '@/models/user-model';
 import type {UserInterface} from '@/models/types';
+import {formattedDate} from '@/lib/utils';
 
 export const create = async (liUser: LichessUser): Promise<UserInterface> => {
+	const today = formattedDate(new Date());
 	const parameters: Partial<UserInterface> = {
 		id: liUser.id,
 		username: liUser.username,
@@ -12,8 +14,11 @@ export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 		validatedAchievements: [],
 		totalPuzzleSolved: 0,
 		totalSetCompleted: 0,
-		lastVisit: new Date(),
-		streakDays: 0,
+		streak: {
+			currentCount: 0,
+			startDate: today,
+			lastLoginDate: today,
+		},
 		totalTimePlayed: 0,
 		puzzleSolvedByCategories: [],
 	};
