@@ -8,6 +8,14 @@ export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 		id: liUser.id,
 		username: liUser.username,
 		url: liUser.url,
+		isSponsor: false,
+		validatedAchievements: [],
+		totalPuzzleSolved: 0,
+		totalSetCompleted: 0,
+		lastVisit: new Date(),
+		streakDays: 0,
+		totalTimePlayed: 0,
+		puzzleSolvedByCategories: [],
 	};
 	const user: UserInterface = new User(parameters) as UserInterface;
 	return user.save();
