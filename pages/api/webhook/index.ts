@@ -11,7 +11,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 // If you are testing with the CLI, find the secret by running 'stripe listen'
 // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
 // at https://dashboard.stripe.com/webhooks
-const endpointSecret = 'whsec_...';
+const endpointSecret =
+	'whsec_99fcd9515202763090aa50613b1e7fa1edaafe451a290ef8720f6a117b5ae23e';
 
 type SuccessData = {
 	success: true;
@@ -30,6 +31,8 @@ const post_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	let event = request.body;
+
+	console.log('the event', request.headers);
 	if (endpointSecret) {
 		// Get the signature sent by Stripe
 		const signature = request.headers['stripe-signature'];
@@ -77,5 +80,7 @@ const handler = async (
 			break;
 	}
 };
+
+export default handler;
 
 //app.listen(4242, () => console.log('Running on port 4242'));
