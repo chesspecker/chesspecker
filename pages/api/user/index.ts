@@ -1,20 +1,18 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import type {UserInterface} from '@/models/types';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, create} from '@/controllers/user';
 
-type SuccessData = {
-	success: true;
-	user: UserInterface;
-};
-
-type ErrorData = {
-	success: false;
-	error: string;
-};
-
-export type Data = SuccessData | ErrorData;
+export type Data =
+	| {
+			success: true;
+			user: UserInterface;
+	  }
+	| {
+			success: false;
+			error: string;
+	  };
 
 const get_ = async (
 	request: NextApiRequest,

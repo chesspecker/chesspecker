@@ -238,7 +238,8 @@ const PlayingPage = ({set}: Props) => {
 				{_id: set._id, update},
 			)) as UpdateData;
 
-			if (!result.success) {
+			/* eslint-disable-next-line */
+			if (result.success === false) {
 				console.log(result.error);
 				return;
 			}
@@ -257,12 +258,13 @@ const PlayingPage = ({set}: Props) => {
 				updateUser,
 			)) as UserData;
 
-			if (!userResult.success) {
+			/* eslint-disable-next-line */
+			if (userResult.success === false) {
 				console.log(userResult.error);
 				return;
 			}
 
-			mutate();
+			await mutate();
 		} catch (error: unknown) {
 			console.log(error);
 		}
