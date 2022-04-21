@@ -1,8 +1,9 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {retrieve} from '@/controllers/user';
 import {withSessionRoute} from '@/lib/session';
-import User, {UserInterface} from '@/models/user-model';
+import User from '@/models/user-model';
+import type {UserInterface} from '@/models/types';
 
 type SuccessDataMany = {
 	success: true;
@@ -26,7 +27,6 @@ const get_ = async (
 	response: NextApiResponse<DataMany>,
 ) => {
 	const {id} = request.query;
-
 	const result = await Achievement.findById(id).exec();
 	response.json({success: true, achievement: result});
 };

@@ -42,8 +42,8 @@ const post_ = async (
 				signature,
 				endpointSecret,
 			);
-		} catch (err) {
-			console.log(`⚠️  Webhook signature verification failed.`, err.message);
+		} catch (error) {
+			console.log(`⚠️  Webhook signature verification failed.`, error.message);
 			return response.status(400);
 		}
 	}
@@ -83,4 +83,4 @@ const handler = async (
 
 export default handler;
 
-//app.listen(4242, () => console.log('Running on port 4242'));
+// App.listen(4242, () => console.log('Running on port 4242'));

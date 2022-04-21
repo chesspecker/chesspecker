@@ -10,10 +10,10 @@
  */
 
 import type {UpdateQuery} from 'mongoose';
+import {useEffect, useState} from 'react';
 import {fetcher} from '@/lib/fetcher';
 import type {Streak, UserInterface} from '@/models/types';
 import {formattedDate} from '@/lib/utils';
-import {useEffect, useState} from 'react';
 
 const resetStreakCount = (date: string) => ({
 	startDate: date,
@@ -108,7 +108,9 @@ const useStreak = (id: string, currentStreak: Streak) => {
 					streak: updatedStreak,
 				},
 			};
-			updateStreak(id, body).then(() => setStreak(() => updatedStreak));
+			updateStreak(id, body).then(() => {
+				setStreak(() => updatedStreak);
+			});
 		}
 
 		if (shouldIncrement) {
@@ -118,7 +120,9 @@ const useStreak = (id: string, currentStreak: Streak) => {
 					streak: updatedStreak,
 				},
 			};
-			updateStreak(id, body).then(() => setStreak(() => updatedStreak));
+			updateStreak(id, body).then(() => {
+				setStreak(() => updatedStreak);
+			});
 		}
 	}, []);
 
