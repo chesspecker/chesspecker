@@ -2,21 +2,22 @@ import process from 'process';
 import {NextApiRequest, NextApiResponse} from 'next';
 import Stripe from 'stripe';
 import {PuzzleInterface} from '@/models/types';
+import {buffer} from 'micro';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 	apiVersion: '2020-08-27',
 });
 
-// Replace this endpoint secret with your endpoint's unique secret
-// If you are testing with the CLI, find the secret by running 'stripe listen'
-// If you are using an endpoint defined with the API or dashboard, look in your webhook settings
-// at https://dashboard.stripe.com/webhooks
-const endpointSecret =
-	'whsec_99fcd9515202763090aa50613b1e7fa1edaafe451a290ef8720f6a117b5ae23e';
+export const config = {
+	api: {
+		bodyParser: false,
+	},
+};
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 type SuccessData = {
-	success: true;
-	puzzle: PuzzleInterface;
+	received: true;
 };
 
 type ErrorData = {
@@ -30,21 +31,20 @@ const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
-	let event = request.body;
+	const buf = await buffer(request);
+	let event = JSON.parse(buf.toString());
 
-	console.log('the event', request.headers);
-	if (endpointSecret) {
+	if (webhookSecret) {
 		// Get the signature sent by Stripe
-		const signature = request.headers['stripe-signature'];
+		const sig = request.headers['stripe-signature'];
 		try {
-			event = stripe.webhooks.constructEvent(
-				request.body,
-				signature,
-				endpointSecret,
-			);
+			event = stripe.webhooks.constructEvent(buf, sig, webhookSecret);
 		} catch (error) {
 			console.log(`⚠️  Webhook signature verification failed.`, error.message);
-			return response.status(400);
+			response
+				.status(400)
+				.send({success: false, error: `Webhook Error: ${error.message}`});
+			return;
 		}
 	}
 
@@ -64,6 +64,7 @@ const post_ = async (
 			// Unexpected event type
 			console.log(`Unhandled event type ${event.type}.`);
 	}
+	response.json({received: true});
 };
 
 const handler = async (
