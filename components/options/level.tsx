@@ -5,9 +5,7 @@ import useEffectAsync from '@/hooks/use-effect-async';
 import {fetcher} from '@/lib/fetcher';
 import {Data} from '@/pages/api/rating';
 import {safeZero} from '@/lib/utils';
-
-// FIXME: ?
-import {Difficulty} from '@/models/puzzle-set-model';
+import type {Difficulty} from '@/models/types';
 
 const OptionLevel = () => {
 	const [, setLevel] = useAtom(optionsLevelAtom);
