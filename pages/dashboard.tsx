@@ -16,6 +16,7 @@ const DashbaordPage = () => {
 
 	useEffect(() => {
 		if (!user) return;
+		console.log(user);
 		const list = user.validatedAchievements.filter(
 			achievement => !achievement.claimed,
 		);

@@ -106,7 +106,7 @@ export const achievements: AchievementInterface[] = [
 		id: 'watchmaker',
 		name: 'watchmaker',
 		description: 'Solve 30 consecutive puzzles with no mistakes',
-		isValidated: (args: AchivementsArgs) => args.streakMistakes > 30,
+		isValidated: (args: AchivementsArgs) => args.streakMistakes > 3,
 		image: 'http://localhost:3000/images/achievements/watchmaker.svg',
 	},
 	{

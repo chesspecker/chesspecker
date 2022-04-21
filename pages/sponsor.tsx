@@ -36,7 +36,7 @@ const SponsorPage = () => {
 				width='480'
 				height='372'
 				frameBorder='0'
-				class='giphy-embed'
+				className='giphy-embed'
 				allowFullScreen
 			></iframe>
 			<p className='mb-6 mt-7 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>

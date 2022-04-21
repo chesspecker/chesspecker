@@ -54,6 +54,7 @@ const post_ = async (
 	}
 
 	const body = await JSON.parse(request.body);
+	console.log('push data to user');
 	const newUser = await User.findByIdAndUpdate(userID, {
 		$push: {validatedAchievements: {id: body.achievementId, claimed: false}},
 	}).exec();

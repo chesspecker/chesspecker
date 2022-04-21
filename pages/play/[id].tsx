@@ -179,9 +179,12 @@ const PlayingPage = ({set}: Props) => {
 			completionTime: timeTaken,
 			completionMistakes: mistakes,
 			totalPuzzleSolved: user.totalPuzzleSolved + 1,
-			themes: puzzle.Themes.map(t => ({id: t, totalPuzzleSolved})),
-			totalSetSolved,
-			streakDays,
+			themes: puzzle.Themes.map(t => ({
+				id: t,
+				totalPuzzleSolved: user.totalPuzzleSolved + 1,
+			})),
+			totalSetSolved: user.totalSetCompleted,
+			streakDays: user.streakDays,
 			lastVisit: Date.now(),
 		};
 

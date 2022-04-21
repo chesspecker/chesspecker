@@ -50,6 +50,15 @@ export interface UserInterface extends Document {
 	lastUpdatedAt: number;
 	isSponsor: boolean;
 	validatedAchievements: AchievementItem[];
+	totalPuzzleSolved: number;
+	totalSetCompleted: number;
+	streakDays: number;
+	totalTimePlayed: number;
+	lastVisit: Date;
+	puzzleSolvedByCategories: {
+		[category: string]: number;
+	};
+
 	/*
 	TODO:
 	totalPuzzleSolved: number;
