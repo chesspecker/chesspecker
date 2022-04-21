@@ -1,6 +1,6 @@
 import {createHash, randomBytes} from 'crypto';
-import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import {lichess, origin} from '@/config';
 import {withSessionRoute} from '@/lib/session';
 

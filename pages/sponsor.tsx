@@ -32,13 +32,13 @@ const SponsorPage = () => {
 				badge !
 			</p>
 			<iframe
+				allowFullScreen
 				src='https://giphy.com/embed/lCbSAbRrFEfkY'
 				width='480'
 				height='372'
 				frameBorder='0'
 				className='giphy-embed'
-				allowFullScreen
-			></iframe>
+			/>
 			<p className='mb-6 mt-7 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
 				How much does it cost? Just one small coffee per month !
 			</p>

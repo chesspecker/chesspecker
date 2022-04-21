@@ -238,7 +238,7 @@ const PlayingPage = ({set}: Props) => {
 				{_id: set._id, update},
 			)) as UpdateData;
 
-			if (result.success === false) {
+			if (!result.success) {
 				console.log(result.error);
 				return;
 			}
@@ -257,7 +257,7 @@ const PlayingPage = ({set}: Props) => {
 				updateUser,
 			)) as UserData;
 
-			if (userResult.success === false) {
+			if (!userResult.success) {
 				console.log(userResult.error);
 				return;
 			}

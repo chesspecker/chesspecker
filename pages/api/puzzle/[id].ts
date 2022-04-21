@@ -1,11 +1,9 @@
-import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import {Types} from 'mongoose';
+import type {Types} from 'mongoose';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/puzzle';
-
-import type {PuzzleInterface} from '@/models/types';
-import type {PuzzleItemInterface} from '@/models/types';
+import type {PuzzleInterface, PuzzleItemInterface} from '@/models/types';
 
 type SuccessData = {
 	success: true;

@@ -19,8 +19,12 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const router = useRouter();
 	const removeSet = async () =>
 		fetch(`/api/set/${set._id}`, {method: 'DELETE'})
-			.then(() => router.reload())
-			.catch(error => console.error(error));
+			.then(() => {
+				router.reload();
+			})
+			.catch(error => {
+				console.error(error);
+			});
 
 	const onPlayClick = async (event: MouseEvent) => {
 		event.preventDefault();

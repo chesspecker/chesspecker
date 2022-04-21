@@ -55,23 +55,7 @@ export interface UserInterface extends Document {
 	streakDays: number;
 	totalTimePlayed: number;
 	lastVisit: Date;
-	puzzleSolvedByCategories: {
-		[category: string]: number;
-	};
-
-	/*
-	TODO:
-	totalPuzzleSolved: number;
-	totalSetCompleted: number;
-	streakDays: number;
-	totalTimePlayed: number;
-	lastVisit: date;
-	 puzzleSolvedByCategories : {
-		[category: string]: number;
-	}
-	ThemeItem[]
-
-	*/
+	puzzleSolvedByCategories: ThemeItem[];
 
 	perfs: {
 		ultraBullet: {games: number; rating: number};
