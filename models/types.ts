@@ -46,27 +46,14 @@ export interface UserInterface extends Document {
 	lichessId: string;
 	username: string;
 	url: string;
-	permissionLevel: number;
-	lastUpdatedAt: number;
 	isSponsor: boolean;
 	validatedAchievements: AchievementItem[];
 	totalPuzzleSolved: number;
 	totalSetCompleted: number;
+	lastVisit: Date;
 	streakDays: number;
 	totalTimePlayed: number;
-	lastVisit: Date;
 	puzzleSolvedByCategories: ThemeItem[];
-
-	perfs: {
-		ultraBullet: {games: number; rating: number};
-		bullet: {games: number; rating: number};
-		blitz: {games: number; rating: number};
-		rapid: {games: number; rating: number};
-		classical: {games: number; rating: number};
-		correspondence: {games: number; rating: number};
-		puzzle: {games: number; rating: number};
-	};
-	puzzleSet: any[];
 }
 
 export type Difficulty =

@@ -3,10 +3,9 @@ import {UserInterface} from './types';
 
 const schema = new Schema<UserInterface>({
 	id: String,
+	lichessId: String,
 	username: String,
 	url: String,
-	permissionLevel: Number,
-	lastUpdatedAt: Date,
 	isSponsor: Boolean,
 	validatedAchievements: [
 		{
@@ -14,16 +13,12 @@ const schema = new Schema<UserInterface>({
 			claimed: Boolean,
 		},
 	],
-	perfs: {
-		ultraBullet: {games: Number, rating: Number},
-		bullet: {games: Number, rating: Number},
-		blitz: {games: Number, rating: Number},
-		rapid: {games: Number, rating: Number},
-		classical: {games: Number, rating: Number},
-		correspondence: {games: Number, rating: Number},
-		puzzle: {games: Number, rating: Number},
-	},
-	puzzleSet: [{type: Schema.Types.ObjectId, ref: 'PuzzleSet'}],
+	totalPuzzleSolved: Number,
+	totalSetCompleted: Number,
+	lastVisit: Date,
+	streakDays: Number,
+	totalTimePlayed: Number,
+	puzzleSolvedByCategories: {id: String, totalPuzzleSolved: Number},
 });
 
 export default models.User || model<UserInterface>('User', schema);
