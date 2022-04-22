@@ -54,7 +54,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'Sponsor',
 		description: 'because you are a sponsor, you have won this beautiful sock ',
 		isValidated: (args: AchivementsArgs) => args.isSponsor,
-		image: 'http://localhost:3000/images/achievements/baby_bunny.svg', // Change
+		image: 'http://localhost:3000/images/achievements/socks.png', // Change
 	},
 
 	// PERFORMANCE
