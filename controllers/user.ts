@@ -10,6 +10,7 @@ export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 		id: liUser.id,
 		username: liUser.username,
 		url: liUser.url,
+		stripeId: null,
 		isSponsor: false,
 		validatedAchievements: [],
 		totalPuzzleSolved: 0,
