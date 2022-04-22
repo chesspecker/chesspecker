@@ -4,6 +4,7 @@ import {UserInterface} from './types';
 const schema = new Schema<UserInterface>({
 	id: String,
 	lichessId: String,
+	stripeId: String,
 	username: String,
 	url: String,
 	isSponsor: Boolean,
