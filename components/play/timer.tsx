@@ -5,11 +5,16 @@ import useTimer from '@/hooks/use-timer';
 type Props = {
 	value: number;
 	mistakes: number;
+	isRunning: boolean;
 };
 
-const Timer = ({value, mistakes}: Props) => {
-	const {timer, updateTimer} = useTimer(value);
+const Timer = ({value, mistakes, isRunning}: Props) => {
+	const {timer, updateTimer, toggleTimer} = useTimer(value);
 	const [days, hours, minutes, seconds] = useClock(timer.value + mistakes * 3);
+
+	useEffect(() => {
+		toggleTimer(isRunning);
+	}, [isRunning]);
 
 	useEffect(() => {
 		updateTimer(value);
