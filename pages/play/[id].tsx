@@ -4,6 +4,7 @@ import {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
+import type {GetServerSidePropsContext, Redirect} from 'next';
 import type {Data as PuzzleData, UpdateData} from '../api/puzzle/[id]';
 import type {Data as SetData} from '../api/set/[id]';
 import {
@@ -35,6 +36,7 @@ import {ButtonLink as Button} from '@/components/button';
 import Progress from '@/components/play/progress';
 import Solution from '@/components/play/solution';
 import MoveToNext from '@/components/play/move-to-next';
+import {withSessionSsr} from '@/lib/session';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -528,13 +530,25 @@ const PlayingPage = ({set}: Props) => {
 PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
-interface SSRProps {
+interface SSRProps extends GetServerSidePropsContext {
 	params: {id: string | undefined};
 }
 
-export const getServerSideProps = async ({params}: SSRProps) => {
-	const id: string = params.id;
-	const data = (await fetcher.get(`/api/set/${id}`)) as SetData;
-	if (!data.success) return {notFound: true};
-	return {props: {set: data.set}};
-};
+export const getServerSideProps = withSessionSsr(
+	async ({params, req}: SSRProps) => {
+		if (!req?.session?.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/'};
+			return {redirect};
+		}
+
+		const id: string = params.id;
+		const data = (await fetcher.get(`/api/set/${id}`)) as SetData;
+		if (!data.success) return {notFound: true};
+		if (data.set.user.toString() !== req.session.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
+			return {redirect};
+		}
+
+		return {props: {set: data.set}};
+	},
+);
