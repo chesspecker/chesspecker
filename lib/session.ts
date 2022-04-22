@@ -14,6 +14,8 @@ declare module 'iron-session' {
 		token?: string;
 		userID?: string;
 		username?: string;
+		type: 'lichess' | 'chesscom';
+		state?: string;
 	}
 }
 

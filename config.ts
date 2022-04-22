@@ -14,6 +14,10 @@ export const lichess = {
 	token: env.LICHESS_TOKEN,
 };
 
+export const chesscom = {
+	clientId: env.CHESSCOM_CLIENT_ID,
+};
+
 export const config = {
 	port: env.APP_PORT || 8000,
 	frontPort: env.FRONT_PORT || 3000,
