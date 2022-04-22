@@ -4,14 +4,15 @@ import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
 import {fetcher} from '@/lib/fetcher';
-import {AchievementItem, UserInterface} from '@/models/types';
+import {AchievementItem, AchivementsArgs, UserInterface} from '@/models/types';
 import Modal from '@/components/modal-achievement';
 import {checkForAchievement} from '@/lib/achievements';
+import useEffectAsync from '@/hooks/use-effect-async';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
 	const data = useUser();
-	const [user, setUser] = useState();
+	const [user, setUser] = useState<UserInterface>();
 	const [achievementsList, setAchievementsList] = useState<AchievementItem[]>(
 		[],
 	);
@@ -24,24 +25,22 @@ const DashbaordPage = () => {
 		totalPuzzleSolved: 0,
 		themes: [],
 		totalSetSolved: 0,
+		// FIXME: incorrect type
 		streak: 0,
 		isSponsor: user?.isSponsor,
 	};
 
-	useEffect(() => {
+	useEffectAsync(async () => {
 		if (!data) return;
 		setUser(data.user);
-		const check = async () => checkForAchievement(body);
-		check();
-	}, [data]);
+		await checkForAchievement(body);
+	}, [data, body]);
 
 	useEffect(() => {
 		if (!user) return;
-		console.log(user);
 		const list = user.validatedAchievements.filter(
 			achievement => !achievement.claimed,
 		);
-		console.log('list', list);
 
 		setAchievementsList(() => list);
 		if (list.length > 0) setShowModal(() => true);

@@ -3,13 +3,15 @@ import type {ReactElement} from 'react';
 import {useEffect, useState} from 'react';
 import Modal from 'react-pure-modal';
 import {useRouter} from 'next/router';
-import {fetcher} from '../lib/fetcher';
-import useModal from '../hooks/use-modal';
+import type {Data as SubscriptionData} from './api/subscription/[id]';
+import {fetcher} from '@/lib/fetcher';
+import useModal from '@/hooks/use-modal';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
 import {UserInterface} from '@/models/types';
+import useEffectAsync from '@/hooks/use-effect-async';
 
 type Body = {
 	stripePriceId: string;
@@ -105,9 +107,7 @@ const BecomeSponsor = ({handleClick}: {handleClick: (string) => void}) => {
 const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	const router = useRouter();
 	const cancelSubscription = async () => {
-		const response = await fetcher.delete(
-			`/api/subscription/${subscription.id}`,
-		);
+		await fetcher.delete(`/api/subscription/${subscription.id}`);
 		router.reload();
 	};
 
@@ -141,17 +141,14 @@ const SponsorPage = () => {
 		}
 	}, [data]);
 
-	useEffect(() => {
+	useEffectAsync(async () => {
 		if (!user) return;
 		if (!user.isSponsor) return;
-		const getContract = async () => {
-			const response = await fetcher.get(`/api/subscription/${user.stripeId}`);
-			if (!response.success) return;
-			setSubscription(response.stripeSub);
-			console.log(subscription);
-		};
-
-		getContract();
+		const response = (await fetcher.get(
+			`/api/subscription/${user.stripeId}`,
+		)) as SubscriptionData;
+		if (!response.success) return;
+		setSubscription(response.subscription);
 	}, [user]);
 
 	const handleClick = async (priceId: string) => {

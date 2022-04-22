@@ -5,13 +5,9 @@ import {withSessionRoute} from '@/lib/session';
 import User from '@/models/user-model';
 import type {UserInterface} from '@/models/types';
 
-type SuccessDataMany = {
-	success: true;
-	user: UserInterface;
-};
-
 type SuccessData = {
 	success: true;
+	user: UserInterface;
 };
 
 type ErrorData = {
@@ -20,11 +16,10 @@ type ErrorData = {
 };
 
 export type Data = SuccessData | ErrorData;
-export type DataMany = SuccessDataMany | ErrorData;
 
 const put_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<DataMany>,
+	response: NextApiResponse<Data>,
 ) => {
 	const {userID} = request.session;
 	const user: UserInterface = await retrieve(userID);
@@ -43,7 +38,7 @@ const put_ = async (
 
 const post_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<DataMany>,
+	response: NextApiResponse<Data>,
 ) => {
 	const {userID} = request.session;
 	const user: UserInterface = await retrieve(userID);
@@ -62,7 +57,7 @@ const post_ = async (
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data | DataMany>,
+	response: NextApiResponse<Data>,
 ) => {
 	switch (request.method) {
 		case 'POST':

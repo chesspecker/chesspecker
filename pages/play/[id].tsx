@@ -6,12 +6,12 @@ import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
 import type {Data as SetData} from '@/api/set/[id]';
-import type {Data as UserData} from '@/api/user/[id]';
 import {
 	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
 	AchivementsArgs,
+	ThemeItem,
 } from '@/models/types';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
@@ -79,7 +79,6 @@ const PlayingPage = ({set}: Props) => {
 	// For achievement
 	const [streakMistakes, setStreakMistakes] = useState(0);
 	const [streakTime, setStreakTime] = useState(0);
-	const [lastTime, setLastTime] = useState(0);
 	const [showNotification, setShowNotification] = useState(false);
 	const [notificationMessage, setNotificationMessage] = useState('');
 	const [notificationUrl, setNotificationUrl] = useState('');
@@ -172,7 +171,20 @@ const PlayingPage = ({set}: Props) => {
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
 
 		const oldThemes = user.puzzleSolvedByCategories;
-		let updateUser: Record<any, any> = {
+
+		type UpdateUser = {
+			$inc?: {
+				totalPuzzleSolved: number;
+				puzzleSolvedByCategories?: Record<number, ThemeItem>;
+			};
+			$push?: {
+				puzzleSolvedByCategories: {
+					$each: ThemeItem[];
+				};
+			};
+		};
+
+		let updateUser: UpdateUser = {
 			$inc: {
 				totalPuzzleSolved: 1,
 			},
@@ -289,7 +301,7 @@ const PlayingPage = ({set}: Props) => {
 				{_id: set._id, update},
 			)) as UpdateData;
 
-			/* eslint-disable-next-line */
+			/* eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare */
 			if (result.success === false) {
 				console.log(result.error);
 				return;
@@ -637,7 +649,7 @@ const PlayingPage = ({set}: Props) => {
 			</div>
 			<Notification
 				text={notificationMessage}
-				show={showNotification}
+				isVisible={showNotification}
 				url={notificationUrl}
 				setShow={setShowNotification}
 			/>

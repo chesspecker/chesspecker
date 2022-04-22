@@ -1,50 +1,62 @@
+import process from 'process';
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import Stripe from 'stripe';
-import {Data} from '../user';
-import {DataMany} from '../achievement';
-import {retrieve} from '@/controllers/user';
 import {withSessionRoute} from '@/lib/session';
-import User from '@/models/user-model';
-import type {UserInterface} from '@/models/types';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 	apiVersion: '2020-08-27',
 });
 
-// Retrieve
-const get_ = async (request, response) => {
-	const {id} = request.query;
+export type Data =
+	| {
+			success: true;
+			subscription: Stripe.Subscription;
+	  }
+	| {
+			success: false;
+			error: string;
+	  };
 
-	//	Const customer = await stripe.customers.retrieve(id);
-	//	console.log('customer', customer);
+// Retrieve
+const get_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	// TODO:	donst customer = await stripe.customers.retrieve(id);
+	const {id} = request.query as {id: string};
 	const {data} = await stripe.subscriptions.list({customer: id});
 	const stripeSub = data[0];
 
-	response.status(200).json({success: true, stripeSub});
+	response.status(200).json({success: true, subscription: stripeSub});
 };
 
 // Update
-const put_ = async (request, response) => {
+const put_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
 	const sub = await stripe.subscriptions.update(request.body.id, {
-		items: request.body.priceId,
+		items: request.body.priceId as Stripe.SubscriptionUpdateParams.Item[],
 	});
-	response.status(200).json({success: true, sub});
+	response.status(200).json({success: true, subscription: sub});
 };
 
 // Cancel subscription
-const delete_ = async (request, response) => {
-	const {id} = request.query;
-	console.log('the request', request);
+const delete_ = async (
+	request: NextApiRequest,
+	response: NextApiResponse<Data>,
+) => {
+	const {id} = request.query as {id: string};
 	const subscription = await stripe.subscriptions.update(id, {
 		cancel_at_period_end: true,
 	});
-	response.status(200).json(subscription);
+	response.status(200).json({success: true, subscription});
 };
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data | DataMany>,
+	response: NextApiResponse<Data>,
 ) => {
 	switch (request.method) {
 		case 'GET':

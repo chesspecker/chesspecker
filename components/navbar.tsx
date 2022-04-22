@@ -2,23 +2,18 @@ import Image from 'next/image.js';
 import Link from 'next/link';
 import {LogoutIcon} from '@heroicons/react/solid';
 import {useState, useEffect} from 'react';
-import {fetcher} from '../lib/fetcher';
 import logo from '@/public/images/logo.svg';
 import useUser from '@/hooks/use-user';
+import {UserInterface} from '@/models/types';
 
 const Navbar = () => {
-	const [user, setUser] = useState();
+	const [user, setUser] = useState<UserInterface>();
 	const data = useUser();
 
 	useEffect(() => {
 		if (!data) return;
 		setUser(data.user);
 	}, [data]);
-
-	const deleteUser = async () => {
-		const response = await fetcher.delete(`/api/user/${user?._id.toString()}`);
-		console.log(response);
-	};
 
 	return (
 		<div className='fixed top-0 z-10 flex w-full items-center justify-between bg-sky-700 font-merriweather shadow'>

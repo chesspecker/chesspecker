@@ -8,7 +8,6 @@ import plus from '@/public/images/plus.svg';
 import type {PuzzleSetInterface} from '@/models/types';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {DataMany} from '@/pages/api/set';
-import {fetcher} from '@/lib/fetcher';
 import RemoveModal from '@/components/dashboard/remove-modal';
 
 type PropsComponent = {
@@ -18,7 +17,7 @@ type PropsComponent = {
 const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const router = useRouter();
 	const removeSet = async () =>
-		fetch(`/api/set/${set._id}`, {method: 'DELETE'})
+		fetch(`/api/set/${set._id.toString()}`, {method: 'DELETE'})
 			.then(() => {
 				router.reload();
 			})

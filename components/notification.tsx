@@ -5,12 +5,11 @@ import Link from 'next/link';
 
 type Props = {
 	text: string;
-	show: boolean;
+	isVisible: boolean;
 	url: string;
 	setShow: Dispatch<SetStateAction<boolean>>;
 };
-
-export default function Notification({text, show, url, setShow}: Props) {
+const Notification = ({text, isVisible, url, setShow}: Props) => {
 	return (
 		<div
 			aria-live='assertive'
@@ -18,7 +17,7 @@ export default function Notification({text, show, url, setShow}: Props) {
 		>
 			<div className='flex w-full flex-col items-center space-y-4 sm:items-end'>
 				<Transition
-					show={show}
+					show={isVisible}
 					as={Fragment}
 					enter='transform ease-out duration-300 transition'
 					enterFrom='translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2'
@@ -47,6 +46,7 @@ export default function Notification({text, show, url, setShow}: Props) {
 								</div>
 								<div className='ml-4 flex flex-shrink-0'>
 									<button
+										type='button'
 										className='inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
 										onClick={() => {
 											setShow(false);
@@ -63,4 +63,6 @@ export default function Notification({text, show, url, setShow}: Props) {
 			</div>
 		</div>
 	);
-}
+};
+
+export default Notification;

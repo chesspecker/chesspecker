@@ -2,7 +2,7 @@ import {useAtom} from 'jotai';
 import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
-import {RefreshIcon} from '@heroicons/react/solid';
+import Image from 'next/image';
 import {
 	optionsTitleAtom,
 	optionsSizeAtom,
@@ -20,7 +20,6 @@ import Alert from '@/components/alert';
 import {Options} from '@/controllers/set-create';
 import type {Difficulty} from '@/models/types';
 import loading from '@/public/images/loading.png';
-import Image from 'next/image';
 
 const OptionsPage = () => {
 	const router = useRouter();

@@ -6,9 +6,13 @@ import {fetcher} from '@/lib/fetcher';
 import Card from '@/components/card-achievement';
 import {Data as UserData} from '@/api/user/[id]';
 import {achievements} from '@/data/achievements';
-import type {AchievementInterface} from '@/models/types';
+import type {AchievementInterface, UserInterface} from '@/models/types';
 
-const Profile = ({user}) => {
+type Props = {
+	user: UserInterface;
+};
+
+const Profile = ({user}: Props) => {
 	const itemAchievements = user.validatedAchievements;
 	const [userAchievements, setUserAchievement] =
 		useState<AchievementInterface[]>();
@@ -40,7 +44,7 @@ const Profile = ({user}) => {
 				<div className='flex w-full flex-wrap'>
 					{userAchievements && userAchievements.length === 0 && (
 						<p className='text-center text-white'>
-							You don't have achievement yet
+							You don&apos;t have any achievement yet
 						</p>
 					)}
 					{userAchievements &&
