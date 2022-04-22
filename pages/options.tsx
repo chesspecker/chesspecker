@@ -19,6 +19,8 @@ import useModal from '@/hooks/use-modal';
 import Alert from '@/components/alert';
 import {Options} from '@/controllers/set-create';
 import type {Difficulty} from '@/models/types';
+import loading from '@/public/images/loading.png';
+import Image from 'next/image';
 
 const OptionsPage = () => {
 	const router = useRouter();
@@ -71,7 +73,7 @@ const OptionsPage = () => {
 				<OptionDifficulty />
 				<OptionSize />
 
-				<div className='mt-20 w-3/5'>
+				<div className='mt-20 w-3/5 '>
 					<Button
 						className={`flex h-14 flex-row items-center justify-center ${
 							isDisabled
@@ -80,11 +82,14 @@ const OptionsPage = () => {
 						}`}
 						onClick={validate}
 					>
-						<RefreshIcon
-							className={`mr-2 h-5 w-5 animate-spin ${
+						<div
+							className={`h-9 w-9 relative animate-spin mr-3 ${
 								isDisabled ? 'visible' : 'invisible'
 							}`}
-						/>
+						>
+							<Image src={loading} objectFit='contain' layout='fill' />
+						</div>
+
 						{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
 					</Button>
 				</div>
