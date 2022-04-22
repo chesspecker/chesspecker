@@ -21,3 +21,6 @@ export const safeZero = (value: number) => Math.max(value, 0);
 
 export const formattedDate = (date: Date): string =>
 	date.toLocaleString('en-US').split(',')[0];
+
+export const getRandomInt = (max: number): number =>
+	Math.floor(Math.random() * max);

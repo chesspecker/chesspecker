@@ -1,7 +1,6 @@
 import {AchievementInterface, AchivementsArgs} from '@/models/types';
 import THEMES from '@/data/themes';
-
-const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
+import {getRandomInt} from '@/lib/utils';
 
 export const achievements: AchievementInterface[] = [
 	// RANDOM
