@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument */
-import {shuffle} from '@/lib/help-array';
+import {FilterQuery} from 'mongoose';
+import {safeZero, shuffle} from '@/lib/utils';
 import Puzzle, {PuzzleInterface} from '@/models/puzzle-model';
 import PuzzleSet, {
 	PuzzleItemInterface,
@@ -10,14 +11,14 @@ import {Theme} from '@/data/themes';
 
 const rating = (
 	level: PuzzleSetInterface['level'],
-	averageRating: UserInterface['averageRating'] = 1500,
+	averageRating = 1500,
 ): [number, number] => {
 	switch (level) {
 		case 'easiest':
-			return [averageRating - 600, averageRating - 500];
+			return [safeZero(averageRating - 600), safeZero(averageRating - 500)];
 
 		case 'easier':
-			return [averageRating - 300, averageRating - 200];
+			return [safeZero(averageRating - 300), safeZero(averageRating - 200)];
 
 		case 'harder':
 			return [averageRating + 200, averageRating + 300];
@@ -31,12 +32,12 @@ const rating = (
 	}
 };
 
-const getQuery = (
+const getFilter = (
 	themeArray: string[],
 	minRating: number,
 	maxRating: number,
 	spread: number,
-) =>
+): FilterQuery<any> =>
 	themeArray.includes('healthyMix')
 		? {Rating: {$gt: minRating - spread, $lt: maxRating + spread}}
 		: {
@@ -51,6 +52,7 @@ export type Options = {
 	themeArray: Array<Theme['id']>;
 	size: PuzzleSetInterface['length'];
 	level: PuzzleSetInterface['level'];
+	averageRating: PuzzleSetInterface['rating'];
 };
 
 export const create = async (
@@ -62,40 +64,46 @@ export const create = async (
 	).exec()) as UserInterface;
 	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
 	const setLevel = options.level || 'normal';
-	const [minRating, maxRating] = rating(setLevel, user.averageRating);
+	const [minRating, maxRating] = rating(setLevel, options.averageRating);
 	puzzleSet.user = user._id;
 	puzzleSet.puzzles = [];
 	let puzzlesCount = 0;
 
-	const iterateCursor = async query => {
-		const cursor = (await Puzzle.find(query, {
+	let futurePuzzleSetRating = 0;
+	const iterateCursor = async (filter: FilterQuery<any>) => {
+		const cursor = (await Puzzle.find(filter, {
 			_id: 1,
 			PuzzleId: 1,
+			Rating: 1,
 		}).exec()) as PuzzleInterface[];
+		if (cursor.length === 0) throw new Error('No puzzles found');
 		const docArray = shuffle(cursor);
 		for (const doc of docArray) {
 			if (puzzlesCount >= options.size) break;
+			if (puzzleSet.puzzles.some(pzl => pzl._id === doc._id)) continue;
 			const puzzleToInsert: PuzzleItemInterface = {
 				_id: doc._id,
 				PuzzleId: doc.PuzzleId,
 				played: false,
 				count: 0,
+				streak: 0,
 				order: puzzlesCount,
 				mistakes: [],
 				timeTaken: [],
 				grades: [],
 			};
 			puzzleSet.puzzles.push(puzzleToInsert);
+			futurePuzzleSetRating += doc.Rating;
 			puzzlesCount++;
 		}
 	};
 
 	let spread = 0;
 	do {
-		const query = getQuery(options.themeArray, minRating, maxRating, spread);
+		const filter = getFilter(options.themeArray, minRating, maxRating, spread);
 		try {
 			// eslint-disable-next-line no-await-in-loop
-			await iterateCursor(query);
+			await iterateCursor(filter);
 		} catch (error: unknown) {
 			const error_ = error as Error;
 			throw error_;
@@ -108,10 +116,9 @@ export const create = async (
 	puzzleSet.title = options.title;
 	puzzleSet.spacedRepetition = false;
 	puzzleSet.currentTime = 0;
-	puzzleSet.bestTime = 0;
-	puzzleSet.rating = user.averageRating;
-	puzzleSet.totalMistakes = 0;
-	puzzleSet.totalPuzzlesPlayed = 0;
+	puzzleSet.times = [];
+	puzzleSet.rating = Math.round(futurePuzzleSetRating / puzzlesCount);
+	puzzleSet.progression = 0;
 	puzzleSet.level = setLevel;
 	return puzzleSet.save();
 };

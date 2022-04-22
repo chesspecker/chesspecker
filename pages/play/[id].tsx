@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {useState, useEffect, useCallback, ReactElement} from 'react';
 import * as ChessJS from 'chess.js';
 import {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
+import type {GetServerSidePropsContext, Redirect} from 'next';
 import type {Data as PuzzleData, UpdateData} from '../api/puzzle/[id]';
 import type {Data as SetData} from '../api/set/[id]';
 import {
@@ -14,7 +14,7 @@ import {
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import Chessboard from '@/components/play/chessboard';
-import {sortBy} from '@/lib/help-array';
+import {sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {PuzzleInterface} from '@/models/puzzle-model';
 import audio from '@/lib/sound';
@@ -32,10 +32,11 @@ import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import WithoutSsr from '@/components/without-ssr';
 import History from '@/components/play/history';
-import {LeaveButton} from '@/components/button';
+import {ButtonLink as Button} from '@/components/button';
 import Progress from '@/components/play/progress';
 import Solution from '@/components/play/solution';
 import MoveToNext from '@/components/play/move-to-next';
+import {withSessionSsr} from '@/lib/session';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -73,10 +74,11 @@ const PlayingPage = ({set}: Props) => {
 	 * Extract the list of puzzles.
 	 */
 	useEffect(() => {
-		setInitialSetTimer(set.currentTime);
-		setCompletedPuzzles(set.puzzles.filter(p => p.played).length);
+		setInitialSetTimer(() => set.currentTime);
+		setCompletedPuzzles(() => set.progression);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [set.puzzles, set.currentTime]);
 
 	/**
@@ -128,31 +130,60 @@ const PlayingPage = ({set}: Props) => {
 	}, [puzzle]);
 
 	type BodyData = {
-		_id: PuzzleSetInterface['id'];
 		didCheat: boolean;
 		mistakes: number;
 		timeTaken: number;
-		perfect: number;
+		streak: number;
 	};
+
+	const getGrade = useCallback(
+		({didCheat, mistakes, timeTaken, streak = 0}: BodyData) => {
+			if (didCheat || mistakes >= 3) return 1;
+			if (mistakes === 2 || (mistakes === 1 && timeTaken >= 20)) return 2;
+			if (mistakes === 1 || timeTaken >= 20) return 3;
+			if (timeTaken >= 6) return 4;
+			if (streak < 2) return 5;
+			return 6;
+		},
+		[],
+	);
 
 	/**
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
 		const puzzle = puzzleList[puzzleIndex];
-		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
-		const body: BodyData = {
-			_id: set._id,
+		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
+
+		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
 			timeTaken,
-			perfect: 0,
+			streak: puzzle.streak,
+		});
+
+		const update = {
+			$inc: {
+				'puzzles.$.count': 1,
+				currentTime: timeTaken + 3 * mistakes,
+				progression: 1,
+			},
+			$push: {
+				'puzzles.$.mistakes': mistakes,
+				'puzzles.$.timeTaken': timeTaken,
+				'puzzles.$.grades': newGrade,
+			},
+			$set: {
+				'puzzles.$.played': true,
+				'puzzles.$.streak': puzzle.streak ? puzzle.streak + 1 : 0,
+			},
 		};
 
 		try {
 			const result = (await fetcher.put(
 				`/api/puzzle/${puzzle._id.toString()}`,
-				body,
+				{_id: set._id, update},
 			)) as UpdateData;
 			if (result.success) {
 				const grades = result.puzzle.grades;
@@ -174,6 +205,7 @@ const PlayingPage = ({set}: Props) => {
 		initialPuzzleTimer,
 		set._id,
 		isSolutionClicked,
+		getGrade,
 	]);
 
 	/**
@@ -194,15 +226,26 @@ const PlayingPage = ({set}: Props) => {
 	const updateFinishedSet = useCallback(async () => {
 		let timeTaken = (Date.now() - initialSetTimer) / 1000;
 		timeTaken += mistakes * 3; // Add 3sec malus for each mistake
-		try {
-			await fetcher.put(`/api/set/${set._id.toString()}`, {
-				cycles: set.cycles + 1,
+		const update = {
+			$inc: {
+				cycles: 1,
+			},
+			$push: {
+				times: timeTaken + 1,
+			},
+			$set: {
+				'puzzles.$[].played': false,
 				currentTime: 0,
-				bestTime: timeTaken + 1,
-			});
+				progression: 0,
+			},
+		};
+		try {
+			await fetcher.put(`/api/set/${set._id.toString()}`, update);
+			await router.push(`/view/${set._id.toString()}`);
 		} catch (error: unknown) {
 			console.log(error);
 		}
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [initialSetTimer, mistakes, set]);
 
 	/**
@@ -248,6 +291,7 @@ const PlayingPage = ({set}: Props) => {
 	const calcMovable = useCallback((): Partial<Config['movable']> => {
 		const dests = new Map();
 		// FIXME: not working
+		/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 		const color = getColor(chess.turn());
 		for (const s of chess.SQUARES) {
 			const ms = chess.moves({square: s, verbose: true});
@@ -430,35 +474,54 @@ const PlayingPage = ({set}: Props) => {
 		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
 			<div className='flex flex-row justify-center gap-2'>
 				<Timer value={initialSetTimer} mistakes={totalMistakes} />
-				<LeaveButton />
+				<Button
+					className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
+					href='/dashboard'
+				>
+					LEAVE 🧨
+				</Button>
 			</div>
-			<WithoutSsr>
-				<Chessboard config={{...config, orientation, events: {move: onMove}}} />
-			</WithoutSsr>
-			<Promotion
-				isOpen={isOpen}
-				hide={hide}
-				color={getColor(chess.turn())}
-				onPromote={promotion}
-			/>
-			<div className=''>
-				<Solution
-					time={initialPuzzleTimer}
-					solution={isSolutionClicked}
-					setSolution={setIsSolutionClicked}
-					isComplete={isComplete}
-					answer={moveHistory[moveNumber]}
-				/>
-				<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
-				<Progress
-					totalPuzzles={set.length}
-					completedPuzzles={completedPuzzles}
-				/>
-			</div>
-			<div className='mx-auto flex w-2/5 flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
-				<Settings />
-				<Flip />
-				<History puzzles={previousPuzzle} />
+
+			<div className='flex w-full flex-col items-center justify-center md:flex-row'>
+				<div className='hidden w-36 md:invisible md:block' />
+				<div className='w-5/6 max-w-2xl flex-auto'>
+					<WithoutSsr>
+						<Chessboard
+							config={{...config, orientation, events: {move: onMove}}}
+						/>
+					</WithoutSsr>
+					<Promotion
+						isOpen={isOpen}
+						hide={hide}
+						color={getColor(chess.turn())}
+						onPromote={promotion}
+					/>
+					<div className='flex flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
+						<div className='flex h-full items-start justify-start'>
+							<Settings />
+							<Flip />
+						</div>
+						<History puzzles={previousPuzzle} />
+					</div>
+				</div>
+				<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
+					<div className='mt-2'>
+						<Progress
+							totalPuzzles={set.length}
+							completedPuzzles={completedPuzzles}
+						/>
+					</div>
+					<div className='mt-2'>
+						<Solution
+							time={initialPuzzleTimer}
+							isSolutionClicked={isSolutionClicked}
+							setSolution={setIsSolutionClicked}
+							isComplete={isComplete}
+							answer={moveHistory[moveNumber]}
+						/>
+						<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
+					</div>
+				</div>
 			</div>
 		</div>
 	);
@@ -467,13 +530,25 @@ const PlayingPage = ({set}: Props) => {
 PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
-interface SSRProps {
+interface SSRProps extends GetServerSidePropsContext {
 	params: {id: string | undefined};
 }
 
-export const getServerSideProps = async ({params}: SSRProps) => {
-	const id: string = params.id;
-	const data = (await fetcher.get(`/api/set/${id}`)) as SetData;
-	if (!data.success) return {notFound: true};
-	return {props: {set: data.set}};
-};
+export const getServerSideProps = withSessionSsr(
+	async ({params, req}: SSRProps) => {
+		if (!req?.session?.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/'};
+			return {redirect};
+		}
+
+		const id: string = params.id;
+		const data = (await fetcher.get(`/api/set/${id}`)) as SetData;
+		if (!data.success) return {notFound: true};
+		if (data.set.user.toString() !== req.session.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
+			return {redirect};
+		}
+
+		return {props: {set: data.set}};
+	},
+);

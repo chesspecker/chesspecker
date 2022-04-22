@@ -1,49 +1,48 @@
 import {useCallback, useEffect, useState} from 'react';
 
 const useTimer = (initialTime = 0) => {
-	const [timer, setTimer] = useState(initialTime);
-	const [isTimerOn, setIsTimerOn] = useState(true);
+	const [timer, setTimer] = useState({value: initialTime, isRunning: true});
 	/**
 	 * Setup timer.
 	 */
 	useEffect(() => {
 		let interval = null;
-		if (isTimerOn) {
+		if (timer.isRunning) {
 			interval = setInterval(() => {
-				setTimer(lastCount => lastCount + 1);
+				setTimer(timer => ({...timer, value: timer.value + 1}));
 			}, 1000);
 		}
 
 		return () => {
 			clearInterval(interval);
 		};
-	}, [isTimerOn]);
+	}, [timer]);
 
 	const toggleTimer = useCallback((value?: boolean) => {
 		switch (value) {
 			case undefined: {
-				setIsTimerOn(state => !state);
+				setTimer(timer => ({...timer, isRunning: !timer.isRunning}));
 				break;
 			}
 
 			case true: {
-				setIsTimerOn(true);
+				setTimer(timer => ({...timer, isRunning: true}));
 				break;
 			}
 
 			case false:
 			default: {
-				setIsTimerOn(false);
+				setTimer(timer => ({...timer, isRunning: false}));
 				break;
 			}
 		}
 	}, []);
 
 	const updateTimer = useCallback((value: number) => {
-		setTimer(() => value);
+		setTimer(timer => ({...timer, value}));
 	}, []);
 
-	return {timer, updateTimer, isTimerOn, toggleTimer};
+	return {timer, updateTimer, isTimerOn: timer.isRunning, toggleTimer};
 };
 
 export default useTimer;

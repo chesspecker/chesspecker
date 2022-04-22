@@ -5,7 +5,7 @@ export interface LichessToken {
 }
 
 type Perfs = {
-	game: number;
+	games: number;
 	rating: number;
 	rd: number;
 	prog: number;

@@ -8,11 +8,8 @@ import {
 import {withIronSessionApiRoute, withIronSessionSsr} from 'iron-session/next';
 import {cookiePassword} from '@/config';
 
-declare type User = Record<string, unknown>;
-
 declare module 'iron-session' {
 	interface IronSessionData {
-		user?: User;
 		verifier?: string;
 		token?: string;
 		userID?: string;

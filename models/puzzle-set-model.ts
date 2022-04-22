@@ -17,6 +17,7 @@ export interface PuzzleItemInterface {
 	PuzzleId: PuzzleInterface['PuzzleId'];
 	played: boolean;
 	count: number;
+	streak: number;
 	order: number;
 	mistakes: number[];
 	timeTaken: number[];
@@ -32,10 +33,9 @@ export interface PuzzleSetInterface extends Document {
 	cycles: number;
 	spacedRepetition: boolean;
 	currentTime: number;
-	bestTime: number;
+	times: number[];
 	rating: number;
-	totalMistakes: number;
-	totalPuzzlesPlayed: number;
+	progression: number;
 	level: Difficulty;
 }
 
@@ -47,6 +47,7 @@ const schema = new Schema<PuzzleSetInterface>({
 			PuzzleId: {type: String},
 			played: {type: Boolean, default: false},
 			count: {type: Number},
+			streak: {type: Number},
 			order: {type: Number},
 			mistakes: {type: [Number]},
 			timeTaken: {type: [Number]},
@@ -58,10 +59,9 @@ const schema = new Schema<PuzzleSetInterface>({
 	cycles: {type: Number},
 	spacedRepetition: {type: Boolean},
 	currentTime: {type: Number},
-	bestTime: {type: Number},
+	times: {type: [Number]},
 	rating: {type: Number},
-	totalMistakes: {type: Number},
-	totalPuzzlesPlayed: {type: Number},
+	progression: {type: Number},
 	level: {
 		type: String,
 		enum: [

@@ -1,21 +1,23 @@
 import {UrlObject} from 'url';
 import Link from 'next/link';
-import {memo} from 'react';
+import {overrideTailwindClasses} from 'tailwind-override';
 
 declare type ButtonProps = {
 	children: React.ReactNode;
 	className?: string;
-	isDisabled?: boolean;
 	type?: 'submit' | 'reset' | 'button';
-	href?: string | UrlObject;
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export const Button = ({children, ...props}: ButtonProps) => (
+const defaultClasses =
+	'block cursor-pointer w-full rounded-2xl font-merriweather text-sm md:text-lg font-bold leading-10 bg-white self-center py-2 px-2.5 text-center text-sky-800 bg-opacity-70 hover:bg-white hover:bg-opacity-90 backdrop-filter backdrop-blur-lg hover:text-sky-600 border border-transparent shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500';
+
+export const Button = ({children, onClick, type, className}: ButtonProps) => (
 	<button
-		className='block w-full cursor-pointer self-center rounded-2xl border-none bg-white pt-2 pb-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700 hover:bg-sky-800 hover:text-white'
-		type='button'
-		{...props}
+		className={overrideTailwindClasses(`${defaultClasses} ${className}`)}
+		/* eslint-disable-next-line react/button-has-type */
+		type={type ? type : 'button'}
+		onClick={onClick}
 	>
 		{children}
 	</button>
@@ -26,28 +28,23 @@ declare type ButtonLinkProps = {
 	href: string | UrlObject;
 	className?: string;
 	type?: 'submit' | 'reset' | 'button';
-	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export const ButtonLink = ({children, href, ...props}: ButtonLinkProps) => (
-	<button
-		className='block w-full cursor-pointer self-center rounded-2xl border-none bg-white pt-2 pb-2 text-center font-merriweather text-lg font-bold leading-10 text-sky-700'
-		type='button'
-		{...props}
-	>
-		<Link href={href}>
-			<a>{children}</a>
-		</Link>
-	</button>
+export const ButtonLink = ({
+	children,
+	href,
+	className,
+	type,
+}: ButtonLinkProps) => (
+	<Link href={href}>
+		<a>
+			<button
+				className={overrideTailwindClasses(`${defaultClasses} ${className}`)}
+				/* eslint-disable-next-line react/button-has-type */
+				type={type ? type : 'button'}
+			>
+				{children}
+			</button>
+		</a>
+	</Link>
 );
-
-export const LeaveButton = memo(() => (
-	<button
-		type='button'
-		className='block w-36 cursor-pointer self-center rounded-md border-none bg-gray-500 py-2 text-center font-merriweather text-lg font-bold leading-8 text-white'
-	>
-		<Link href='/dashboard'>
-			<a>LEAVE 🧨</a>
-		</Link>
-	</button>
-));
