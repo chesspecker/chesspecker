@@ -10,7 +10,8 @@
  */
 
 import type {UpdateQuery} from 'mongoose';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
+import useEffectAsync from './use-effect-async';
 import {fetcher} from '@/lib/fetcher';
 import type {Streak, UserInterface} from '@/models/types';
 import {formattedDate} from '@/lib/utils';
@@ -21,6 +22,7 @@ const resetStreakCount = (date: string) => ({
 	currentCount: 1,
 });
 
+/* eslint-disable-next-line no-return-assign */
 const incrementStreakCount = (currentStreak: Streak, date: string): Streak => ({
 	...currentStreak,
 	lastLoginDate: date,
@@ -46,8 +48,8 @@ const shouldInrementOrResetStreakCount = (
 	// We get 11/5/2021
 	// so to get 5, we split on / and get the second item
 	const difference =
-		Number.parseInt(currentDate.split('/')[1]) -
-		Number.parseInt(lastLoginDate.split('/')[1]);
+		Number.parseInt(currentDate.split('/')[1], 10) -
+		Number.parseInt(lastLoginDate.split('/')[1], 10);
 
 	// Logging in on the same day
 	if (difference === 0) {
@@ -94,7 +96,7 @@ const useStreak = (id: string, currentStreak: Streak) => {
 	const currentDate = formattedDate(today);
 	const [streak, setStreak] = useState<Streak>(currentStreak);
 
-	useEffect(() => {
+	useEffectAsync(async () => {
 		// Check if we should increment or reset
 		const {shouldIncrement, shouldReset} = shouldInrementOrResetStreakCount(
 			currentDate,
@@ -108,9 +110,8 @@ const useStreak = (id: string, currentStreak: Streak) => {
 					streak: updatedStreak,
 				},
 			};
-			updateStreak(id, body).then(() => {
-				setStreak(() => updatedStreak);
-			});
+			await updateStreak(id, body);
+			setStreak(() => updatedStreak);
 		}
 
 		if (shouldIncrement) {
@@ -120,9 +121,8 @@ const useStreak = (id: string, currentStreak: Streak) => {
 					streak: updatedStreak,
 				},
 			};
-			updateStreak(id, body).then(() => {
-				setStreak(() => updatedStreak);
-			});
+			await updateStreak(id, body);
+			setStreak(() => updatedStreak);
 		}
 	}, []);
 
