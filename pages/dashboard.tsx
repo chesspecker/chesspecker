@@ -1,6 +1,8 @@
 import type {ReactElement} from 'react';
+import {GetServerSidePropsContext, Redirect} from 'next';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
+import {withSessionSsr} from '@/lib/session';
 
 const DashbaordPage = () => (
 	<div className='-mb-24 flex min-h-screen flex-col items-center justify-center text-slate-800'>
@@ -20,3 +22,14 @@ const DashbaordPage = () => (
 
 DashbaordPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default DashbaordPage;
+
+export const getServerSideProps = withSessionSsr(
+	async ({req}: GetServerSidePropsContext) => {
+		if (!req?.session?.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/'};
+			return {redirect};
+		}
+
+		return {props: {}};
+	},
+);
