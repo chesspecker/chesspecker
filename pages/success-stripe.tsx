@@ -1,4 +1,4 @@
-import {ReactElement, useState} from 'react';
+import {ReactElement, useState, useEffect} from 'react';
 import Stripe from 'stripe';
 import {useRouter} from 'next/router';
 import Layout from '@/layouts/login';
@@ -8,21 +8,31 @@ import useEffectAsync from '@/hooks/use-effect-async';
 import {fetcher} from '@/lib/fetcher';
 import useUser from '@/hooks/use-user';
 import type {Data as UserData} from '@/api/user/[id]';
+import {UserInterface} from '@/models/types';
 
 const SuccessPage = () => {
 	const router = useRouter();
-	const {user} = useUser();
+	const data = useUser();
+	const [user, setUser] = useState<UserInterface>();
 	const {session_id: sessionId} = router.query;
-	const [, setSession] = useState<Stripe.Checkout.Session>();
+	const [session, setSession] = useState<Stripe.Checkout.Session>();
+
+	console.log(session);
 
 	const updateUser = {
 		$set: {
 			isSponsor: true,
+			stripeId: session?.customer && session.customer,
 		},
 	};
 
+	useEffect(() => {
+		if (!data) return;
+		setUser(data.user);
+	}, [data]);
+
 	useEffectAsync(async () => {
-		if (!sessionId) return;
+		if (!sessionId || !user) return;
 		const response = await fetch(
 			`/api/checkout-sessions/${sessionId as string}`,
 		);
@@ -32,7 +42,8 @@ const SuccessPage = () => {
 			`/api/user/${user._id.toString()}`,
 			updateUser,
 		)) as UserData;
-	}, [sessionId]);
+		console.log('newUser', userResult);
+	}, [sessionId, user]);
 
 	return (
 		<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
