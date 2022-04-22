@@ -25,7 +25,7 @@ const DashbaordPage = () => {
 		themes: [],
 		totalSetSolved: 0,
 		streak: 0,
-		isSponsor: user.isSponsor,
+		isSponsor: user?.isSponsor,
 	};
 
 	useEffect(() => {
