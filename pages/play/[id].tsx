@@ -4,9 +4,9 @@ import {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
-import type {Data as PuzzleData, UpdateData} from '../api/puzzle/[id]';
-import type {Data as SetData} from '../api/set/[id]';
-import type {Data as UserData} from '../api/user/[id]';
+import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
+import type {Data as SetData} from '@/api/set/[id]';
+import type {Data as UserData} from '@/api/user/[id]';
 import {
 	PuzzleInterface,
 	PuzzleItemInterface,

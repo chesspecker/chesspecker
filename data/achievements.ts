@@ -1,7 +1,6 @@
 import {AchievementInterface, AchivementsArgs} from '@/models/types';
 import THEMES from '@/data/themes';
-
-const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
+import {getRandomInt} from '@/lib/utils';
 
 export const achievements: AchievementInterface[] = [
 	// RANDOM
@@ -9,28 +8,28 @@ export const achievements: AchievementInterface[] = [
 		id: 'pizza',
 		name: 'Pizza',
 		description: 'Great, you won a slice of pizza...',
-		isValidated: (args: AchivementsArgs) => getRandomInt(1000) === 42,
+		isValidated: (_args: AchivementsArgs) => getRandomInt(1000) === 42,
 		image: 'http://localhost:3000/images/achievements/pizza.png',
 	},
 	{
 		id: 'plunger',
 		name: 'Toilet plunger',
 		description: 'Great, you won a toilet plunger...',
-		isValidated: (args: AchivementsArgs) => getRandomInt(1000) === 666,
+		isValidated: (_args: AchivementsArgs) => getRandomInt(1000) === 666,
 		image: 'http://localhost:3000/images/achievements/plunger.jpg',
 	},
 	{
 		id: 'unicorn',
 		name: 'Nice unicorn',
 		description: 'I love unicorns and their beautiful horns',
-		isValidated: (args: AchivementsArgs) => getRandomInt(1000) === 999,
+		isValidated: (_args: AchivementsArgs) => getRandomInt(1000) === 999,
 		image: 'http://localhost:3000/images/achievements/unicorn.png',
 	},
 	{
 		id: 'clown',
 		name: 'Funny clown',
 		description: 'Funny joke goes here',
-		isValidated: (args: AchivementsArgs) => getRandomInt(1000) === 181,
+		isValidated: (_args: AchivementsArgs) => getRandomInt(1000) === 181,
 		image: 'http://localhost:3000/images/achievements/clown.png',
 	},
 
@@ -187,7 +186,7 @@ for (const theme of THEMES) {
 			name: `National master of ${theme.title}`,
 			description: `Your are now national master of ${theme.description}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.id === theme.id && t.totalPuzzleSolved === 500),
+				args.themes.some(t => t.title === theme.id && t.count === 500),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 		},
 		{
@@ -195,9 +194,7 @@ for (const theme of THEMES) {
 			name: `International master of ${theme.title}`,
 			description: `Your are now international master of ${theme.description}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(
-					t => t.id === theme.id && t.totalPuzzleSolved === 1000,
-				),
+				args.themes.some(t => t.title === theme.id && t.count === 1000),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 		},
 		{
@@ -205,9 +202,7 @@ for (const theme of THEMES) {
 			name: `Great-master of ${theme.title}`,
 			description: `Your are now great master of ${theme.description}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(
-					t => t.id === theme.id && t.totalPuzzleSolved === 1500,
-				),
+				args.themes.some(t => t.title === theme.id && t.count === 1500),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 		},
 	);

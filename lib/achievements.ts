@@ -13,8 +13,8 @@ export const checkForAchievement = async (
 	const response = (await fetcher.get('/api/user')) as Data;
 	if (!response.success) return;
 	const list: AchievementItem[] = response.user.validatedAchievements;
-	const promises = [];
-	const result = [];
+	const promises: Array<Promise<any>> = [];
+	const result: AchievementInterface[] = [];
 
 	for (const achievement of achievements) {
 		if (list.map(item => item.id).includes(achievement.id)) continue;
