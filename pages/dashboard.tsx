@@ -4,15 +4,36 @@ import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
 import {fetcher} from '@/lib/fetcher';
-import {AchievementItem} from '@/models/types';
+import {AchievementItem, UserInterface} from '@/models/types';
 import Modal from '@/components/modal-achievement';
+import {checkForAchievement} from '@/lib/achievements';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
-	const {user} = useUser();
+	const data = useUser();
+	const [user, setUser] = useState();
 	const [achievementsList, setAchievementsList] = useState<AchievementItem[]>(
 		[],
 	);
+
+	const body: AchivementsArgs = {
+		streakMistakes: 0,
+		streakTime: 0,
+		completionTime: 0,
+		completionMistakes: 0,
+		totalPuzzleSolved: 0,
+		themes: [],
+		totalSetSolved: 0,
+		streak: 0,
+		isSponsor: user.isSponsor,
+	};
+
+	useEffect(() => {
+		if (!data) return;
+		setUser(data.user);
+		const check = async () => checkForAchievement(body);
+		check();
+	}, [data]);
 
 	useEffect(() => {
 		if (!user) return;
