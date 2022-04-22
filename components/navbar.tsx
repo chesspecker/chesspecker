@@ -5,7 +5,7 @@ import logo from '@/public/images/logo.svg';
 import useUser from '@/hooks/use-user';
 
 const Navbar = () => {
-	const user = useUser()?.data;
+	const {user} = useUser();
 	return (
 		<div className='fixed top-0 z-10 flex w-full items-center justify-between bg-sky-700 font-merriweather shadow'>
 			<div className='flex cursor-pointer'>

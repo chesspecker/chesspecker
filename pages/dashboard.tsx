@@ -9,7 +9,7 @@ import Modal from '@/components/modal-achievement';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
-	const user = useUser()?.data;
+	const {user} = useUser();
 	const [achievementsList, setAchievementsList] = useState<AchievementItem[]>(
 		[],
 	);

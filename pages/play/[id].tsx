@@ -73,7 +73,7 @@ const PlayingPage = ({set}: Props) => {
 	const [, setAnimation] = useAtom(animationAtom);
 	const [orientation, setOrientation] = useAtom(orientationAtom);
 	const router = useRouter();
-	const {data: user, mutate} = useUser();
+	const {user, mutate} = useUser();
 	const streak = useStreak(user._id.toString(), user.streak);
 
 	// For achievement

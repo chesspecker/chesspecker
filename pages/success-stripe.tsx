@@ -11,7 +11,7 @@ import type {Data as UserData} from '@/api/user/[id]';
 
 const SuccessPage = () => {
 	const router = useRouter();
-	const {data: user} = useUser();
+	const {user} = useUser();
 	const {session_id: sessionId} = router.query;
 	const [, setSession] = useState<Stripe.Checkout.Session>();
 
