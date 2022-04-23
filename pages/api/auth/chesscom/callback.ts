@@ -27,7 +27,11 @@ const callback = async (
 		const {verifier} = request.session;
 		const chesscomToken = await getChesscom.token(request.query.code, verifier);
 		const oauthToken = chesscomToken.access_token;
+
 		console.log('token', oauthToken);
+
+		request.session.type = 'chesscom';
+		request.session.chesscomToken = oauthToken;
 		response.redirect(302, `${origin}/success-login`);
 		return;
 	} catch (error_: unknown) {

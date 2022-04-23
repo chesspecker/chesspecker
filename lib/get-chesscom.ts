@@ -1,5 +1,29 @@
-import {ChesscomToken} from '@/types/chesscom';
+import {ChesscomStats, ChesscomToken, ChesscomUser} from '@/types/chesscom';
 import {chesscom, origin} from '@/config';
+
+const getStats = async (
+	accessToken: ChesscomToken['access_token'],
+	username: string,
+): Promise<ChesscomStats> =>
+	fetch(`https://api.chess.com/pub/player/${username}/stats`, {
+		headers: {Authorization: `Bearer ${accessToken}`},
+	})
+		.then(async response => response.json() as Promise<ChesscomStats>)
+		.catch(error => {
+			throw error;
+		});
+
+const getAccount = async (
+	accessToken: ChesscomToken['access_token'],
+	username: string,
+): Promise<ChesscomUser> =>
+	fetch(`https://api.chess.com/pub/player/${username}`, {
+		headers: {Authorization: `Bearer ${accessToken}`},
+	})
+		.then(async response => response.json() as Promise<ChesscomUser>)
+		.catch(error => {
+			throw error;
+		});
 
 const getToken = async (
 	authCode: string | string[],
@@ -23,6 +47,8 @@ const getToken = async (
 
 const getChesscom = {
 	token: getToken,
+	account: getAccount,
+	stats: getStats,
 };
 
 export default getChesscom;

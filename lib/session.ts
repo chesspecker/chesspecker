@@ -11,7 +11,8 @@ import {cookiePassword} from '@/config';
 declare module 'iron-session' {
 	interface IronSessionData {
 		verifier?: string;
-		token?: string;
+		lichessToken?: string;
+		chesscomToken?: string;
 		userID?: string;
 		username?: string;
 		type: 'lichess' | 'chesscom';

@@ -29,7 +29,8 @@ const callback = async (
 
 		let user: UserInterface = await User.findOne({id: lichessUser.id});
 		if (!user) user = await create(lichessUser);
-		request.session.token = oauthToken;
+		request.session.type = 'lichess';
+		request.session.lichessToken = oauthToken;
 		request.session.userID = user._id.toString();
 		request.session.username = user.username;
 		await request.session.save();
