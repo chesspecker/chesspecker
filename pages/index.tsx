@@ -20,7 +20,7 @@ const IndexPage = () => (
 			<Button className='py-4' href='/api/auth/lichess/login'>
 				SIGN IN WITH LICHESS
 			</Button>
-			<Button className='py-4 mt-4' href='/api/auth/chesscom/login'>
+			<Button className='mt-4 py-4' href='/api/auth/chesscom/login'>
 				SIGN IN WITH CHESS.COM
 			</Button>
 		</div>

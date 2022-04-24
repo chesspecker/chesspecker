@@ -4,7 +4,7 @@ import withMongoRoute from 'providers/mongoose';
 import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
 import User, {UserInterface} from '@/models/user-model';
-import {create} from '@/controllers/user';
+import {createLichessUser} from '@/controllers/user';
 
 type ErrorData = {
 	success: false;
@@ -28,7 +28,7 @@ const callback = async (
 		if (!lichessUser) throw new Error('user login failed');
 
 		let user: UserInterface = await User.findOne({id: lichessUser.id});
-		if (!user) user = await create(lichessUser);
+		if (!user) user = await createLichessUser(lichessUser);
 		request.session.type = 'lichess';
 		request.session.lichessToken = oauthToken;
 		request.session.userID = user._id.toString();

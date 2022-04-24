@@ -44,6 +44,7 @@
 		"iron-session": "^6.0.5",
 		"jotai": "^1.6.0",
 		"mongoose": "^6.2.1",
+		"nanoid": "^3.3.3",
 		"next": "latest",
 		"next-transpile-modules": "^9.0.0",
 		"react": "^17.0.2",

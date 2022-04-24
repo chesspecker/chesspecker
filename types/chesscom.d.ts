@@ -56,6 +56,4 @@ interface ChesscomStatItem {
 	};
 }
 
-interface ChesscomStats {
-	[key:string]: ChesscomStatItem;
-}
+type ChesscomStats = Record<string, ChesscomStatItem>;

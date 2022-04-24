@@ -1,26 +1,28 @@
 import {LichessUser} from '@/types/lichess';
 import User, {UserInterface} from '@/models/user-model';
+import {ChesscomUser} from '@/types/chesscom';
 
-export const create = async (liUser: LichessUser): Promise<UserInterface> => {
+export const createChesscomUser = async (
+	chUser: ChesscomUser,
+): Promise<UserInterface> => {
+	const parameters: Partial<UserInterface> = {
+		id: chUser.username,
+		username: chUser.username,
+		url: chUser.url,
+	};
+
+	const user: UserInterface = new User(parameters) as UserInterface;
+	return user.save();
+};
+
+export const createLichessUser = async (
+	liUser: LichessUser,
+): Promise<UserInterface> => {
 	const parameters: Partial<UserInterface> = {
 		id: liUser.id,
 		username: liUser.username,
 		url: liUser.url,
 	};
-
-	if (!liUser.perfs) {
-		const user: UserInterface = new User(parameters) as UserInterface;
-		return user.save();
-	}
-
-	const perfs: number[] = [];
-	for (const key in liUser.perfs) {
-		if (liUser.perfs[key]) {
-			for (let i = 0; i < liUser.perfs[key].games; i++) {
-				perfs.push(liUser.perfs[key].rating);
-			}
-		}
-	}
 
 	const user: UserInterface = new User(parameters) as UserInterface;
 	return user.save();
