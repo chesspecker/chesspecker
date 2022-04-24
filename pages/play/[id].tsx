@@ -63,6 +63,7 @@ const PlayingPage = ({set}: Props) => {
 		Date.now(),
 	);
 	const [isComplete, setIsComplete] = useState(false);
+	const [isRunning, setIsRunning] = useState(true);
 	const [completedPuzzles, setCompletedPuzzles] = useState(0);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const {isOpen, show, hide} = useModal();
@@ -275,7 +276,12 @@ const PlayingPage = ({set}: Props) => {
 				if (isSetComplete) return true;
 				setIsComplete(() => true);
 				await audio('GENERIC', hasSound, 0.3);
-				if (hasAutoMove) await changePuzzle();
+				if (hasAutoMove) {
+					await changePuzzle();
+					return true;
+				}
+
+				setIsRunning(() => false);
 				return true;
 			}
 
@@ -462,6 +468,10 @@ const PlayingPage = ({set}: Props) => {
 		await changePuzzle();
 	}, [isComplete, changePuzzle]);
 
+	const launchTimer = useCallback(() => {
+		setIsRunning(() => true);
+	}, []);
+
 	useKeyPress({targetKey: 'Q', fn: async () => router.push('/dashboard')});
 	useKeyPress({targetKey: 'q', fn: async () => router.push('/dashboard')});
 	useKeyPress({targetKey: 'Escape', fn: async () => router.push('/dashboard')});
@@ -473,7 +483,11 @@ const PlayingPage = ({set}: Props) => {
 	return (
 		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
 			<div className='flex flex-row justify-center gap-2'>
-				<Timer value={initialSetTimer} mistakes={totalMistakes} />
+				<Timer
+					value={initialSetTimer}
+					mistakes={totalMistakes}
+					isRunning={isRunning}
+				/>
 				<Button
 					className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
 					href='/dashboard'
@@ -519,7 +533,11 @@ const PlayingPage = ({set}: Props) => {
 							isComplete={isComplete}
 							answer={moveHistory[moveNumber]}
 						/>
-						<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
+						<MoveToNext
+							isComplete={isComplete}
+							changePuzzle={changePuzzle}
+							launchTimer={launchTimer}
+						/>
 					</div>
 				</div>
 			</div>
