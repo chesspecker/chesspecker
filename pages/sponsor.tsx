@@ -3,7 +3,8 @@ import type {ReactElement} from 'react';
 import {useEffect, useState} from 'react';
 import Modal from 'react-pure-modal';
 import {useRouter} from 'next/router';
-import type {Data as SubscriptionData} from './api/subscription/[id]';
+import type {Data as SubscriptionData} from '@/api/subscription/[id]';
+import type {SubBody, Data as SessionData} from '@/api/subscription/index';
 import {fetcher} from '@/lib/fetcher';
 import useModal from '@/hooks/use-modal';
 import Layout from '@/layouts/main';
@@ -13,10 +14,6 @@ import getStripe from '@/lib/get-stripe';
 import {UserInterface} from '@/models/types';
 import useEffectAsync from '@/hooks/use-effect-async';
 
-type Body = {
-	stripePriceId: string;
-	customer?: string;
-};
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
 	const {isOpen, hide, toggle} = useModal(false);
@@ -49,7 +46,11 @@ const RemoveModal = ({onClick}: Props) => {
 	);
 };
 
-const BecomeSponsor = ({handleClick}: {handleClick: (string) => void}) => {
+const BecomeSponsor = ({
+	handleClick,
+}: {
+	handleClick: (string: string) => void;
+}) => {
 	return (
 		<div className='mx-10 flex h-screen flex-col items-center justify-center text-slate-800'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
@@ -74,7 +75,7 @@ const BecomeSponsor = ({handleClick}: {handleClick: (string) => void}) => {
 			<p>
 				<a href='https://giphy.com/gifs/lCbSAbRrFEfkY'>via GIPHY</a>
 			</p>
-			<div className='w-2/3 flex'>
+			<div className='flex w-2/3'>
 				<Button
 					className='mx-2'
 					onClick={() => {
@@ -119,8 +120,8 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
 				Thank you for supporting us.
 			</p>
-			<p className='text-white pb-6'>{`Your actual subscription is ${
-				subscription?.plan.amount / 100
+			<p className='pb-6 text-white'>{`Your actual subscription is ${
+				(subscription as any)?.plan.amount / 100
 			} € per month`}</p>
 
 			<RemoveModal onClick={async () => cancelSubscription()} />
@@ -137,13 +138,12 @@ const SponsorPage = () => {
 		if (!data) return;
 		setUser(data.user);
 		if (user?.isSponsor) {
-			// Retrive contract
+			// TODO: Retrive contract
 		}
 	}, [data]);
 
 	useEffectAsync(async () => {
-		if (!user) return;
-		if (!user.isSponsor) return;
+		if (!user?.isSponsor) return;
 		const response = (await fetcher.get(
 			`/api/subscription/${user.stripeId}`,
 		)) as SubscriptionData;
@@ -152,9 +152,7 @@ const SponsorPage = () => {
 	}, [user]);
 
 	const handleClick = async (priceId: string) => {
-		const body: Body = {
-			stripePriceId: priceId,
-		};
+		const body: SubBody = {stripePriceId: priceId};
 		if (user.stripeId) body.customer = user.stripeId;
 
 		const response = await fetch('/api/subscription', {
@@ -163,23 +161,20 @@ const SponsorPage = () => {
 		});
 
 		if (response.ok) {
-			const data = (await response.json()) as Stripe.Checkout.Session;
-			const {id: sessionId} = data;
-			const stripe = await getStripe();
-			const {error} = await stripe.redirectToCheckout({sessionId});
-			if (error) console.log(error);
+			const data = (await response.json()) as SessionData;
+			if (data.success) {
+				const {id: sessionId} = data.session;
+				const stripe = await getStripe();
+				const {error} = await stripe.redirectToCheckout({sessionId});
+				if (error) console.log(error);
+			}
 		}
 	};
 
-	return (
-		<>
-			{user?.isSponsor && !subscription?.cancel_at_period_end ? (
-				<ManageSponsor subscription={subscription} />
-			) : (
-				<BecomeSponsor handleClick={handleClick} />
-			)}
-		</>
-	);
+	if (user?.isSponsor && !subscription?.cancel_at_period_end)
+		return <ManageSponsor subscription={subscription} />;
+
+	return <BecomeSponsor handleClick={handleClick} />;
 };
 
 SponsorPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;

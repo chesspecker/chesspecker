@@ -26,9 +26,7 @@ const get_ = async (
 	// TODO:	donst customer = await stripe.customers.retrieve(id);
 	const {id} = request.query as {id: string};
 	const {data} = await stripe.subscriptions.list({customer: id});
-	const stripeSub = data[0];
-
-	response.status(200).json({success: true, subscription: stripeSub});
+	response.status(200).json({success: true, subscription: data[0]});
 };
 
 // Update
@@ -36,10 +34,10 @@ const put_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
-	const sub = await stripe.subscriptions.update(request.body.id, {
+	const subscription = await stripe.subscriptions.update(request.body.id, {
 		items: request.body.priceId as Stripe.SubscriptionUpdateParams.Item[],
 	});
-	response.status(200).json({success: true, subscription: sub});
+	response.status(200).json({success: true, subscription});
 };
 
 // Cancel subscription

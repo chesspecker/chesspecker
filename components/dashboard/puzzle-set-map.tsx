@@ -57,8 +57,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 
 const PuzzleSetMap = () => {
 	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
-	const [setToRemove, setSetToRemove] = useState<PuzzleSetInterface>();
-	const [toggleConfirm, setToggleConfirm] = useState<boolean>(false);
+
 	useEffectAsync(async () => {
 		const response = await fetch('/api/set');
 		const data = (await response.json()) as DataMany;

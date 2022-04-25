@@ -82,7 +82,7 @@ const OptionsPage = () => {
 						onClick={validate}
 					>
 						<div
-							className={`h-9 w-9 relative animate-spin mr-3 ${
+							className={`relative mr-3 h-9 w-9 animate-spin ${
 								isDisabled ? 'visible' : 'invisible'
 							}`}
 						>

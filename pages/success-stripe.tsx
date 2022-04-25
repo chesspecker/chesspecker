@@ -17,8 +17,6 @@ const SuccessPage = () => {
 	const {session_id: sessionId} = router.query;
 	const [session, setSession] = useState<Stripe.Checkout.Session>();
 
-	console.log(session);
-
 	const updateUser = {
 		$set: {
 			isSponsor: true,
