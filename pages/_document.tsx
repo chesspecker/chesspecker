@@ -10,6 +10,9 @@ const Document = () => {
 					property='og:description'
 					content='Application to practice chess with the woodpecker method! Puzzles are from Lichess!'
 				/>
+				<link rel='manifest' href='/manifest.json' />
+				<link rel='apple-touch-icon' href='/icon.png'></link>
+				<meta name='theme-color' content='#fff' />
 				<meta
 					name='description'
 					content='Application to practice chess with the woodpecker method! Puzzles are from Lichess!'
