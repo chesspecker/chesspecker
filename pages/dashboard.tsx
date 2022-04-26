@@ -8,6 +8,8 @@ import {AchievementItem, AchivementsArgs, UserInterface} from '@/models/types';
 import Modal from '@/components/modal-achievement';
 import {checkForAchievement} from '@/lib/achievements';
 import useEffectAsync from '@/hooks/use-effect-async';
+import {GetServerSidePropsContext, Redirect} from 'next';
+import {withSessionSsr} from '@/lib/session';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
@@ -81,3 +83,14 @@ const DashbaordPage = () => {
 
 DashbaordPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default DashbaordPage;
+
+export const getServerSideProps = withSessionSsr(
+	async ({req}: GetServerSidePropsContext) => {
+		if (!req?.session?.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/'};
+			return {redirect};
+		}
+
+		return {props: {}};
+	},
+);

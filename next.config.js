@@ -7,6 +7,16 @@ const nextConfig = {
 	images: {
 		domains: ['localhost'],
 	},
+	experimental: {
+		outputStandalone: true,
+	},
+	webpackDevMiddleware: config => {
+		config.watchOptions = {
+			poll: 1000,
+			aggregateTimeout: 300,
+		};
+		return config;
+	},
 	webpack(config) {
 		config.module.rules.push({
 			test: /\.(ogg|mp3|wav|mpe?g)$/i,

@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"Themes":{"$numberInt":"1"},"Rating":{"$numberInt":"1"}},"name":"Themes_1_Rating_1_autocreated"}],"uuid":"80a3e4e8b94643ac9cede228268f2ca5","collectionName":"puzzles","type":"collection"}

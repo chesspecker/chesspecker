@@ -2,8 +2,6 @@ import {env} from 'process';
 
 export const db = {
 	url: env.DB_URL,
-	name: env.DB_NAME,
-	debug: env.DB_DEBUG,
 };
 
 export const redisConfig = {

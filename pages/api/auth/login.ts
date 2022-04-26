@@ -27,6 +27,11 @@ const loginRoute = async (
 		return;
 	}
 
+	if (request.session.userID) {
+		response.redirect(303, `${origin}/success-login`);
+		return;
+	}
+
 	const verifier = createVerifier();
 	const challenge = createChallenge(verifier);
 	request.session.verifier = verifier;

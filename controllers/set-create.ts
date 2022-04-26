@@ -79,6 +79,7 @@ export const create = async (
 			PuzzleId: 1,
 			Rating: 1,
 		}).exec()) as PuzzleInterface[];
+		if (cursor.length === 0) throw new Error('No puzzles found');
 		const docArray = shuffle(cursor);
 		for (const doc of docArray) {
 			if (puzzlesCount >= options.size) break;

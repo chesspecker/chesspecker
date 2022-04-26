@@ -4,6 +4,7 @@ import {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
+import type {GetServerSidePropsContext, Redirect} from 'next';
 import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
 import type {Data as SetData} from '@/api/set/[id]';
 import {
@@ -41,6 +42,7 @@ import MoveToNext from '@/components/play/move-to-next';
 import {checkForAchievement} from '@/lib/achievements';
 import Notification from '@/components/notification';
 import useStreak from '@/hooks/use-streak';
+import {withSessionSsr} from '@/lib/session';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -67,6 +69,7 @@ const PlayingPage = ({set}: Props) => {
 		Date.now(),
 	);
 	const [isComplete, setIsComplete] = useState(false);
+	const [isRunning, setIsRunning] = useState(true);
 	const [completedPuzzles, setCompletedPuzzles] = useState(0);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const {isOpen, show, hide} = useModal();
@@ -397,7 +400,12 @@ const PlayingPage = ({set}: Props) => {
 				if (isSetComplete) return true;
 				setIsComplete(() => true);
 				await audio('GENERIC', hasSound, 0.3);
-				if (hasAutoMove) await changePuzzle();
+				if (hasAutoMove) {
+					await changePuzzle();
+					return true;
+				}
+
+				setIsRunning(() => false);
 				return true;
 			}
 
@@ -584,6 +592,10 @@ const PlayingPage = ({set}: Props) => {
 		await changePuzzle();
 	}, [isComplete, changePuzzle]);
 
+	const launchTimer = useCallback(() => {
+		setIsRunning(() => true);
+	}, []);
+
 	useKeyPress({targetKey: 'Q', fn: async () => router.push('/dashboard')});
 	useKeyPress({targetKey: 'q', fn: async () => router.push('/dashboard')});
 	useKeyPress({targetKey: 'Escape', fn: async () => router.push('/dashboard')});
@@ -594,9 +606,13 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
-			<div className='m-0  flex min-h-screen w-screen flex-col justify-center pt-32 pb-24 text-slate-800'>
+			<div className='m-0 flex min-h-screen w-screen flex-col justify-center pt-32 pb-24 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
-					<Timer value={initialSetTimer} mistakes={totalMistakes} />
+				<Timer
+					value={initialSetTimer}
+					mistakes={totalMistakes}
+					isRunning={isRunning}
+				/>
 					<Button
 						className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
 						href='/dashboard'
@@ -604,7 +620,6 @@ const PlayingPage = ({set}: Props) => {
 						LEAVE 🧨
 					</Button>
 				</div>
-
 				<div className='flex w-full flex-col items-center justify-center md:flex-row  '>
 					<div className='hidden w-36 md:invisible md:block ' />
 					<div className='max-w-[33rem] flex-auto  '>
@@ -643,7 +658,11 @@ const PlayingPage = ({set}: Props) => {
 								isComplete={isComplete}
 								answer={moveHistory[moveNumber]}
 							/>
-							<MoveToNext isComplete={isComplete} changePuzzle={changePuzzle} />
+													<MoveToNext
+							isComplete={isComplete}
+							changePuzzle={changePuzzle}
+							launchTimer={launchTimer}
+						/>
 						</div>
 					</div>
 				</div>
@@ -661,13 +680,25 @@ const PlayingPage = ({set}: Props) => {
 PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
-interface SSRProps {
+interface SSRProps extends GetServerSidePropsContext {
 	params: {id: string | undefined};
 }
 
-export const getServerSideProps = async ({params}: SSRProps) => {
-	const id: string = params.id;
-	const data = (await fetcher.get(`/api/set/${id}`)) as SetData;
-	if (!data.success) return {notFound: true};
-	return {props: {set: data.set}};
-};
+export const getServerSideProps = withSessionSsr(
+	async ({params, req}: SSRProps) => {
+		if (!req?.session?.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/'};
+			return {redirect};
+		}
+
+		const id: string = params.id;
+		const data = (await fetcher.get(`/api/set/${id}`)) as SetData;
+		if (!data.success) return {notFound: true};
+		if (data.set.user.toString() !== req.session.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
+			return {redirect};
+		}
+
+		return {props: {set: data.set}};
+	},
+);
