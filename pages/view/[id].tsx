@@ -161,7 +161,7 @@ type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
-		<div className='m-0 flex min-h-screen w-screen flex-col px-2 sm:px-12 '>
+		<div className='m-0 pt-32 pb-24 flex min-h-screen w-screen flex-col px-2 sm:px-12 '>
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
 				{set.title}
 			</h1>
