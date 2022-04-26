@@ -10,25 +10,25 @@ export type AchievementsCategorys = {
 export const achievementsCategorys: AchievementsCategorys[] = [
 	{
 		name: 'random',
-		description: 'Achievement awarded in a perfectly random way',
+		description: 'Achievements awarded in a perfectly random way',
 	},
 	{
 		name: 'avancement',
-		description: 'Achievement related to your general progress on this site',
+		description: 'Achievements related to your general progress on this site',
 	},
 	{
 		name: 'performance',
-		description: 'Achievement related to your ability in solving problems',
+		description: 'Achievements related to your ability in solving problems',
 	},
 	{
 		name: 'duration',
 		description:
-			'Achievement related to to your diligence in working on problems',
+			'Achievements related to to your diligence in working on problems',
 	},
 	{
 		name: 'type',
 		description:
-			'Achievement related to to your diligence in working on problems',
+			'Achievement related to the categories you have been working on',
 	},
 ];
 
@@ -239,7 +239,7 @@ for (const theme of THEMES) {
 			name: `National master of ${theme.title}`,
 			description: `Your are now national master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 500),
+				args.themes.some(t => t.title === theme.id && t.count === 400),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 			category: 'type',
 		},
@@ -248,7 +248,7 @@ for (const theme of THEMES) {
 			name: `International master of ${theme.title}`,
 			description: `Your are now international master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 1000),
+				args.themes.some(t => t.title === theme.id && t.count === 800),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 			category: 'type',
 		},
@@ -257,7 +257,7 @@ for (const theme of THEMES) {
 			name: `Great-master of ${theme.title}`,
 			description: `Your are now great master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 1500),
+				args.themes.some(t => t.title === theme.id && t.count === 1200),
 			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
 			category: 'type',
 		},

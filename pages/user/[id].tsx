@@ -66,7 +66,7 @@ const Profile = ({user}: Props) => {
 					</div>
 				</div>
 			</div>
-			<div className='flex w-1/3'></div>
+			<div className='flex w-1/3' />
 		</div>
 	);
 };

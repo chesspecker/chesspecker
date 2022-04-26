@@ -4,9 +4,8 @@ import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import Card from '@/components/card-achievement';
 import {Data as UserData} from '@/api/user/[id]';
-import {achievements} from '@/data/achievements';
+import {achievements, achievementsCategorys} from '@/data/achievements';
 import type {AchievementInterface, UserInterface} from '@/models/types';
-import {achievementsCategorys} from '@/data/achievements';
 
 type Props = {
 	user: UserInterface;
@@ -44,7 +43,7 @@ const Achievements = ({user}: Props) => {
 			</h1>
 			{achievementsCategorys.map(category => {
 				return (
-					<div>
+					<div key={category.name as React.Key}>
 						<h1 className='mx-auto mt-8  px-5 text-center font-merriweather text-xl font-bold text-white sm:text-2xl md:text-3xl'>
 							{category.name}
 						</h1>
@@ -58,6 +57,7 @@ const Achievements = ({user}: Props) => {
 										achievement =>
 											achievement.category === category.name && (
 												<Card
+													key={achievement.id}
 													achievement={achievement}
 													isClaimed={checkIfWon(achievement)}
 												/>
