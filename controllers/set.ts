@@ -1,5 +1,5 @@
-import PuzzleSet, {PuzzleSetInterface} from '@/models/puzzle-set-model';
-import {UserInterface} from '@/models/user-model';
+import PuzzleSet from '@/models/puzzle-set-model';
+import type {UserInterface, PuzzleSetInterface} from '@/models/types';
 
 export {create} from '@/controllers/set-create';
 

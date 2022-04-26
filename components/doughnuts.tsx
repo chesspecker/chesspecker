@@ -4,7 +4,7 @@ import {Doughnut} from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Donnuts = ({totalSet, played}: {totalSet: number; played: number}) => {
+const Doughnuts = ({totalSet, played}: {totalSet: number; played: number}) => {
 	const data = {
 		labels: ['Not Played yet', 'Played'],
 		datasets: [
@@ -24,4 +24,4 @@ const Donnuts = ({totalSet, played}: {totalSet: number; played: number}) => {
 	);
 };
 
-export default Donnuts;
+export default Doughnuts;

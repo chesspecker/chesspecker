@@ -1,43 +1,5 @@
-import {Schema, model, models, Types} from 'mongoose';
-import type {Document} from 'mongoose';
-import {PuzzleInterface} from './puzzle-model';
-
-export type Difficulty =
-	| 'easiest'
-	| 'easier'
-	| 'easy'
-	| 'normal'
-	| 'intermediate'
-	| 'hard'
-	| 'harder'
-	| 'hardest';
-
-export interface PuzzleItemInterface {
-	_id: Types.ObjectId;
-	PuzzleId: PuzzleInterface['PuzzleId'];
-	played: boolean;
-	count: number;
-	streak: number;
-	order: number;
-	mistakes: number[];
-	timeTaken: number[];
-	grades: number[];
-}
-
-export interface PuzzleSetInterface extends Document {
-	_id: Types.ObjectId;
-	user: Types.ObjectId;
-	puzzles: PuzzleItemInterface[];
-	title: string;
-	length: number;
-	cycles: number;
-	spacedRepetition: boolean;
-	currentTime: number;
-	times: number[];
-	rating: number;
-	progression: number;
-	level: Difficulty;
-}
+import {Schema, model, models} from 'mongoose';
+import {PuzzleSetInterface} from './types';
 
 const schema = new Schema<PuzzleSetInterface>({
 	user: {type: 'ObjectId', ref: 'User'},

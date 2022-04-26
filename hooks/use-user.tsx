@@ -7,7 +7,7 @@ const useUser = () => {
 	const {data, mutate} = useSWR('/api/user', fetcher);
 	if (data?.success) {
 		return {
-			data: data.user,
+			user: data.user,
 			mutate,
 		};
 	}
