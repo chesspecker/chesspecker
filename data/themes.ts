@@ -1,4 +1,4 @@
-import {Category} from './categories';
+import {Category} from '@/data/categories';
 
 export type Theme = {
 	title: string;

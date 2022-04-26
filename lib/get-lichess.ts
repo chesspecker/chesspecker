@@ -32,7 +32,13 @@ const getToken = async (
 			throw error;
 		});
 
-const getLichess = {
+const getLichess: {
+	account: (accessToken: LichessToken['access_token']) => Promise<LichessUser>;
+	token: (
+		authCode: string | string[],
+		verifier: string,
+	) => Promise<LichessToken>;
+} = {
 	account: getAccount,
 	token: getToken,
 };

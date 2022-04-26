@@ -1,5 +1,5 @@
 import {withSessionRoute} from 'lib/session';
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import {origin} from '@/config';
 
 export type ResponseData = {success: boolean; message?: string};

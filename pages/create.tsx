@@ -25,7 +25,7 @@ const CreatePage = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center'>
+		<div className=' flex flex-col items-center justify-center pt-32 pb-24'>
 			<h2 className=' text-xl font-bold text-white sm:text-3xl'>
 				Select one or more category to create your set!
 			</h2>
@@ -35,17 +35,21 @@ const CreatePage = () => {
 						<h3 className='mx-2 mt-4 mb-3 pb-8 text-3xl text-white'>
 							{category.name}
 						</h3>
-						<div className='flex flex-wrap justify-around'>
-							{THEMES.filter(
-								(theme: Theme) => theme.category.name === category.name,
-							).map((theme: Theme) => (
-								<Choice key={theme.id} theme={theme} />
-							))}
+						<div className='flex w-full items-center justify-center'>
+							<div className='flex w-full max-w-screen-xl items-center justify-center'>
+								<div className='flex w-full flex-wrap  justify-center'>
+									{THEMES.filter(
+										(theme: Theme) => theme.category.name === category.name,
+									).map((theme: Theme) => (
+										<Choice key={theme.id} theme={theme} />
+									))}
+								</div>
+							</div>
 						</div>
 					</div>
 				))}
 			</div>
-			<div className='sticky bottom-0 right-0 w-6/12'>
+			<div className='sticky bottom-2 right-0 w-6/12'>
 				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>

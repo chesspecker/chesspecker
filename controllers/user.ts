@@ -1,5 +1,8 @@
+import {UpdateQuery} from 'mongoose';
 import {LichessUser} from '@/types/lichess';
-import User, {UserInterface} from '@/models/user-model';
+import User from '@/models/user-model';
+import type {UserInterface} from '@/models/types';
+import {formattedDate} from '@/lib/utils';
 import {ChesscomUser} from '@/types/chesscom';
 
 export const createChesscomUser = async (
@@ -18,12 +21,24 @@ export const createChesscomUser = async (
 export const createLichessUser = async (
 	liUser: LichessUser,
 ): Promise<UserInterface> => {
+	const today = formattedDate(new Date());
 	const parameters: Partial<UserInterface> = {
 		id: liUser.id,
 		username: liUser.username,
 		url: liUser.url,
+		stripeId: null,
+		isSponsor: false,
+		validatedAchievements: [],
+		totalPuzzleSolved: 0,
+		totalSetCompleted: 0,
+		streak: {
+			currentCount: 0,
+			startDate: today,
+			lastLoginDate: today,
+		},
+		totalTimePlayed: 0,
+		puzzleSolvedByCategories: [],
 	};
-
 	const user: UserInterface = new User(parameters) as UserInterface;
 	return user.save();
 };
@@ -34,7 +49,7 @@ export const retrieve = async (
 
 export const update = async (
 	id: UserInterface['id'],
-	body: Partial<UserInterface>,
+	body: UpdateQuery<Partial<UserInterface>>,
 ): Promise<UserInterface> =>
 	User.findByIdAndUpdate(id, body, {
 		new: true,

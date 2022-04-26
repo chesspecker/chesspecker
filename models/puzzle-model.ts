@@ -1,18 +1,5 @@
-import {Schema, model, models, Types} from 'mongoose';
-import type {Document} from 'mongoose';
-
-export interface PuzzleInterface extends Document {
-	_id: Types.ObjectId;
-	PuzzleId: string;
-	FEN: string;
-	Moves: string;
-	Rating: number;
-	RatingDeviation: number;
-	Popularity: number;
-	NbPlays: number;
-	Themes: string[];
-	GameUrl: string;
-}
+import {Schema, model, models} from 'mongoose';
+import {PuzzleInterface} from './types';
 
 const schema = new Schema<PuzzleInterface>({
 	PuzzleId: {type: String},

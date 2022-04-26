@@ -5,18 +5,20 @@ import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
-import type {Data as PuzzleData, UpdateData} from '../api/puzzle/[id]';
-import type {Data as SetData} from '../api/set/[id]';
+import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
+import type {Data as SetData} from '@/api/set/[id]';
 import {
+	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
-} from '@/models/puzzle-set-model';
+	AchivementsArgs,
+	ThemeItem,
+} from '@/models/types';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import Chessboard from '@/components/play/chessboard';
 import {sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {PuzzleInterface} from '@/models/puzzle-model';
 import audio from '@/lib/sound';
 import {
 	soundAtom,
@@ -25,6 +27,7 @@ import {
 	autoMoveAtom,
 } from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
+import useUser from '@/hooks/use-user';
 import Flip from '@/components/play/flip';
 import Settings from '@/components/play/settings';
 import Promotion from '@/components/play/promotion';
@@ -36,6 +39,9 @@ import {ButtonLink as Button} from '@/components/button';
 import Progress from '@/components/play/progress';
 import Solution from '@/components/play/solution';
 import MoveToNext from '@/components/play/move-to-next';
+import {checkForAchievement} from '@/lib/achievements';
+import Notification from '@/components/notification';
+import useStreak from '@/hooks/use-streak';
 import {withSessionSsr} from '@/lib/session';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
@@ -70,6 +76,15 @@ const PlayingPage = ({set}: Props) => {
 	const [, setAnimation] = useAtom(animationAtom);
 	const [orientation, setOrientation] = useAtom(orientationAtom);
 	const router = useRouter();
+	const {user, mutate} = useUser();
+	const streak = useStreak(user._id.toString(), user.streak);
+
+	// For achievement
+	const [streakMistakes, setStreakMistakes] = useState(0);
+	const [streakTime, setStreakTime] = useState(0);
+	const [showNotification, setShowNotification] = useState(false);
+	const [notificationMessage, setNotificationMessage] = useState('');
+	const [notificationUrl, setNotificationUrl] = useState('');
 
 	/**
 	 * Extract the list of puzzles.
@@ -150,18 +165,120 @@ const PlayingPage = ({set}: Props) => {
 	);
 
 	/**
-	 * Push the data of the current set when complete.
+	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
-		const puzzle = puzzleList[puzzleIndex];
 		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
+		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
 		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
+
+		const oldThemes = user.puzzleSolvedByCategories;
+
+		type UpdateUser = {
+			$inc?: {
+				totalPuzzleSolved: number;
+				puzzleSolvedByCategories?: Record<number, ThemeItem>;
+			};
+			$push?: {
+				puzzleSolvedByCategories: {
+					$each: ThemeItem[];
+				};
+			};
+		};
+
+		let updateUser: UpdateUser = {
+			$inc: {
+				totalPuzzleSolved: 1,
+			},
+		};
+
+		// Is there some puzzles in common in the old and new themes?
+		const newThemesIds = puzzle.Themes;
+		const themesInCommon = oldThemes.filter(t =>
+			newThemesIds.includes(t.title),
+		);
+
+		if (themesInCommon.length > 0) {
+			// If there are, we update the user's themes
+			for (const theme of themesInCommon) {
+				updateUser.$inc[
+					`puzzleSolvedByCategories.${oldThemes.indexOf(theme)}.count`
+				] = 1;
+			}
+		}
+
+		try {
+			await fetch(`/api/user/${user._id.toString()}`, {
+				method: 'PUT',
+				body: JSON.stringify(updateUser),
+			});
+		} catch (error: unknown) {
+			console.log(error);
+		}
+
+		// Is there some themes not in common?
+		const oldThemesIds = new Set(oldThemes.map(t => t.title));
+		const themesNotInCommon = newThemesIds.filter(id => !oldThemesIds.has(id));
+
+		if (themesNotInCommon.length > 0) {
+			// If there are, we add them to the user's themes
+			updateUser = {
+				$push: {
+					puzzleSolvedByCategories: {
+						$each: [],
+					},
+				},
+			};
+			for (const theme of themesNotInCommon) {
+				updateUser.$push.puzzleSolvedByCategories.$each.push({
+					title: theme,
+					count: 1,
+				});
+			}
+
+			try {
+				await fetch(`/api/user/${user._id.toString()}`, {
+					method: 'PUT',
+					body: JSON.stringify(updateUser),
+				});
+			} catch (error: unknown) {
+				console.log(error);
+			}
+		}
+
+		const body: AchivementsArgs = {
+			streakMistakes,
+			streakTime,
+			completionTime: timeTaken,
+			completionMistakes: mistakes,
+			totalPuzzleSolved: user.totalPuzzleSolved
+				? user.totalPuzzleSolved + 1
+				: 1,
+			themes: puzzle.Themes.map(t => {
+				const a = oldThemes.find(c => t === c.title);
+				const count = a ? a.count + 1 : 1;
+				return {title: t, count};
+			}),
+			totalSetSolved: user.totalSetCompleted,
+			streak,
+			isSponsor: user.isSponsor,
+		};
+
+		const unlockedAchievements = await checkForAchievement(body);
+		const puzzleItem = puzzleList[puzzleIndex];
+
+		if (unlockedAchievements.length > 0) {
+			setShowNotification(() => true);
+			setNotificationMessage(() => 'Achievement unlocked!');
+			setNotificationUrl(() => '/dashboard');
+		}
 
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
 			timeTaken,
-			streak: puzzle.streak,
+			streak: puzzleItem.streak,
 		});
 
 		const update = {
@@ -177,25 +294,32 @@ const PlayingPage = ({set}: Props) => {
 			},
 			$set: {
 				'puzzles.$.played': true,
-				'puzzles.$.streak': puzzle.streak ? puzzle.streak + 1 : 0,
+				'puzzles.$.streak': puzzleItem.streak ? puzzleItem.streak + 1 : 0,
 			},
 		};
 
 		try {
 			const result = (await fetcher.put(
-				`/api/puzzle/${puzzle._id.toString()}`,
+				`/api/puzzle/${puzzleItem._id.toString()}`,
 				{_id: set._id, update},
 			)) as UpdateData;
-			if (result.success) {
-				const grades = result.puzzle.grades;
-				setPreviousPuzzle(previous => [
-					...previous,
-					{
-						grade: grades[grades.length - 1],
-						PuzzleId: result.puzzle._id.toString(),
-					},
-				]);
+
+			/* eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare */
+			if (result.success === false) {
+				console.log(result.error);
+				return;
 			}
+
+			const grades = result.puzzle.grades;
+			setPreviousPuzzle(previous => [
+				...previous,
+				{
+					grade: grades[grades.length - 1],
+					PuzzleId: result.puzzle._id.toString(),
+				},
+			]);
+
+			await mutate();
 		} catch (error: unknown) {
 			console.log(error);
 		}
@@ -481,67 +605,75 @@ const PlayingPage = ({set}: Props) => {
 	useKeyPress({targetKey: 'N', fn});
 
 	return (
-		<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
-			<div className='flex flex-row justify-center gap-2'>
-				<Timer
-					value={initialSetTimer}
-					mistakes={totalMistakes}
-					isRunning={isRunning}
-				/>
-				<Button
-					className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
-					href='/dashboard'
-				>
-					LEAVE 🧨
-				</Button>
-			</div>
-
-			<div className='flex w-full flex-col items-center justify-center md:flex-row'>
-				<div className='hidden w-36 md:invisible md:block' />
-				<div className='w-5/6 max-w-2xl flex-auto'>
-					<WithoutSsr>
-						<Chessboard
-							config={{...config, orientation, events: {move: onMove}}}
-						/>
-					</WithoutSsr>
-					<Promotion
-						isOpen={isOpen}
-						hide={hide}
-						color={getColor(chess.turn())}
-						onPromote={promotion}
+		<>
+			<div className='m-0 flex min-h-screen w-screen flex-col justify-center pt-32 pb-24 text-slate-800'>
+				<div className='flex flex-row justify-center gap-2'>
+					<Timer
+						value={initialSetTimer}
+						mistakes={totalMistakes}
+						isRunning={isRunning}
 					/>
-					<div className='flex flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
-						<div className='flex h-full items-start justify-start'>
-							<Settings />
-							<Flip />
-						</div>
-						<History puzzles={previousPuzzle} />
-					</div>
+					<Button
+						className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
+						href='/dashboard'
+					>
+						LEAVE 🧨
+					</Button>
 				</div>
-				<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
-					<div className='mt-2'>
-						<Progress
-							totalPuzzles={set.length}
-							completedPuzzles={completedPuzzles}
+				<div className='flex w-full flex-col items-center justify-center md:flex-row  '>
+					<div className='hidden w-36 md:invisible md:block ' />
+					<div className='max-w-[33rem] w-11/12 md:w-full  flex-auto  '>
+						<WithoutSsr>
+							<Chessboard
+								config={{...config, orientation, events: {move: onMove}}}
+							/>
+						</WithoutSsr>
+
+						<Promotion
+							isOpen={isOpen}
+							hide={hide}
+							color={getColor(chess.turn())}
+							onPromote={promotion}
 						/>
+						<div className='flex flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
+							<div className='flex h-full items-start justify-start'>
+								<Settings />
+								<Flip />
+							</div>
+							<History puzzles={previousPuzzle} />
+						</div>
 					</div>
-					<div className='mt-2'>
-						<Solution
-							time={initialPuzzleTimer}
-							isSolutionClicked={isSolutionClicked}
-							setSolution={setIsSolutionClicked}
-							isComplete={isComplete}
-							answer={moveHistory[moveNumber]}
-						/>
-						<MoveToNext
-							isComplete={isComplete}
-							changePuzzle={changePuzzle}
-							launchTimer={launchTimer}
-						/>
+					<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
+						<div className='mt-2'>
+							<Progress
+								totalPuzzles={set.length}
+								completedPuzzles={completedPuzzles}
+							/>
+						</div>
+						<div className='mt-2'>
+							<Solution
+								time={initialPuzzleTimer}
+								isSolutionClicked={isSolutionClicked}
+								setSolution={setIsSolutionClicked}
+								isComplete={isComplete}
+								answer={moveHistory[moveNumber]}
+							/>
+							<MoveToNext
+								isComplete={isComplete}
+								changePuzzle={changePuzzle}
+								launchTimer={launchTimer}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+			<Notification
+				text={notificationMessage}
+				isVisible={showNotification}
+				url={notificationUrl}
+				setShow={setShowNotification}
+			/>
+		</>
 	);
 };
 

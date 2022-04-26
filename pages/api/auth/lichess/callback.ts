@@ -1,10 +1,11 @@
 import {withSessionRoute} from 'lib/session';
-import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
-import User, {UserInterface} from '@/models/user-model';
+import User from '@/models/user-model';
 import {createLichessUser} from '@/controllers/user';
+import type {UserInterface} from '@/models/types';
 
 type ErrorData = {
 	success: false;
