@@ -58,6 +58,9 @@ const Profile = ({user}: Props) => {
 			</div>
 			<div className='flex w-1/3'>
 				<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
+				<ButtonLink href={`/achievements/${user?._id.toString()}`}>
+					See all avalaible achievements
+				</ButtonLink>
 			</div>
 		</div>
 	);

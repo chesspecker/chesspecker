@@ -1,9 +1,22 @@
 import Image from 'next/image';
 import {AchievementInterface} from '@/models/types';
 
-const Card = ({achievement}: {achievement: AchievementInterface}) => {
+const Card = ({
+	achievement,
+	isClaimed = true,
+}: {
+	achievement: AchievementInterface;
+	isClaimed?: boolean;
+}) => {
 	return (
-		<div className=' m-2 flex h-96 w-64 flex-col rounded-lg border border-white bg-white p-2 '>
+		<div
+			className={` m-2 flex h-96 w-64 flex-col rounded-lg border border-white bg-white p-2 ${
+				!isClaimed && 'grayscale'
+			} relative overflow-hidden`}
+		>
+			{!isClaimed && (
+				<div className='absolute top-0 left-0 w-full h-full bg-black z-20 opacity-50'></div>
+			)}
 			<div className=' relative flex h-1/2 w-full items-center justify-center rounded-lg bg-sky-700'>
 				<Image src={achievement.image} layout='fill' objectFit='contain' />
 			</div>

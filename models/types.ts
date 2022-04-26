@@ -25,6 +25,7 @@ export type AchievementInterface = {
 	description: string;
 	isValidated: (args: AchivementsArgs) => boolean;
 	image: string;
+	category: string;
 };
 
 export interface PuzzleInterface extends Document {
