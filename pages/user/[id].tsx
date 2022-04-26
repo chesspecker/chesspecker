@@ -29,7 +29,7 @@ const Profile = ({user}: Props) => {
 	}, [itemAchievements]);
 
 	return (
-		<div className='mt-32 flex min-h-screen w-screen flex-col px-10 text-slate-800'>
+		<div className='pt-32 pb-24 flex min-h-screen w-screen flex-col px-10 text-slate-800'>
 			<div className='flex items-center flex-wrap'>
 				<p className=' mr-5 text-6xl text-white'>{user.username}</p>
 				{user?.isSponsor ? (

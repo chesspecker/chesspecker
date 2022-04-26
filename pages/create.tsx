@@ -25,7 +25,7 @@ const CreatePage = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center'>
+		<div className=' pt-32 pb-24 flex flex-col items-center justify-center'>
 			<h2 className=' text-xl font-bold text-white sm:text-3xl'>
 				Select one or more category to create your set!
 			</h2>
@@ -49,7 +49,7 @@ const CreatePage = () => {
 					</div>
 				))}
 			</div>
-			<div className='sticky bottom-0 right-0 w-6/12'>
+			<div className='sticky bottom-2 right-0 w-6/12'>
 				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>

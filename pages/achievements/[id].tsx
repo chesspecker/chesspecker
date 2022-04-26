@@ -37,7 +37,7 @@ const Achievements = ({user}: Props) => {
 	};
 
 	return (
-		<div className='flex min-h-screen flex-col items-center justify-center'>
+		<div className='pt-32 pb-24 flex min-h-screen flex-col items-center justify-center'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white sm:text-4xl md:text-5xl'>
 				Achievements
 			</h1>

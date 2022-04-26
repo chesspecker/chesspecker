@@ -113,7 +113,7 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	};
 
 	return (
-		<div className='mx-10 flex h-screen flex-col items-center justify-center text-slate-800'>
+		<div className='mx-10 flex min-h-screen pt-32 pb-24 flex-col items-center justify-center text-slate-800'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
 				Manage sponsorship
 			</h1>
