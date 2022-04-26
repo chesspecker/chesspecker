@@ -17,6 +17,13 @@ type ErrorData = {
 
 export type Data = SuccessData | ErrorData;
 
+type PutRequestBody = {
+	achievementId: string;
+	claimed: boolean;
+};
+
+type PostRequestBody = {achievementId: string};
+
 const put_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
@@ -28,11 +35,11 @@ const put_ = async (
 		return;
 	}
 
-	const body = await JSON.parse(request.body);
-	const newUser = await User.findOneAndUpdate(
+	const body = (await JSON.parse(request.body)) as PutRequestBody;
+	const newUser = (await User.findOneAndUpdate(
 		{_id: userID, 'validatedAchievements.id': body.achievementId},
 		{$set: {'validatedAchievements.$.claimed': body.claimed}},
-	).exec();
+	).exec()) as UserInterface;
 	response.json({success: true, user: newUser});
 };
 
@@ -47,11 +54,10 @@ const post_ = async (
 		return;
 	}
 
-	const body = await JSON.parse(request.body);
-	console.log('push data to user');
-	const newUser = await User.findByIdAndUpdate(userID, {
+	const body = (await JSON.parse(request.body)) as PostRequestBody;
+	const newUser = (await User.findByIdAndUpdate(userID, {
 		$push: {validatedAchievements: {id: body.achievementId, claimed: false}},
-	}).exec();
+	}).exec()) as UserInterface;
 	response.json({success: true, user: newUser});
 };
 

@@ -11,7 +11,7 @@ import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
-import {UserInterface} from '@/models/types';
+import type {UserInterface} from '@/models/types';
 import useEffectAsync from '@/hooks/use-effect-async';
 
 type Props = {onClick: () => Promise<void>};
@@ -113,7 +113,7 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	};
 
 	return (
-		<div className='mx-10 flex min-h-screen pt-32 pb-24 flex-col items-center justify-center text-slate-800'>
+		<div className='mx-10 flex min-h-screen flex-col items-center justify-center pt-32 pb-24 text-slate-800'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
 				Manage sponsorship
 			</h1>
@@ -121,7 +121,7 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 				Thank you for supporting us.
 			</p>
 			<p className='pb-6 text-white'>{`Your actual subscription is ${
-				(subscription as any)?.plan.amount / 100
+				((subscription as any)?.plan.amount as number) / 100
 			} € per month`}</p>
 
 			<RemoveModal onClick={async () => cancelSubscription()} />

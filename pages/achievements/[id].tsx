@@ -37,7 +37,7 @@ const Achievements = ({user}: Props) => {
 	};
 
 	return (
-		<div className='pt-32 pb-24 flex min-h-screen flex-col items-center justify-center'>
+		<div className='flex min-h-screen flex-col items-center justify-center pt-32 pb-24'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white sm:text-4xl md:text-5xl'>
 				Achievements
 			</h1>
@@ -50,8 +50,8 @@ const Achievements = ({user}: Props) => {
 						<h2 className='mx-auto  mb-6 p-5 text-center font-merriweather text-lg font-bold text-white sm:text-lg md:text-xl'>
 							{category.description}
 						</h2>
-						<div className='w-full flex items-center justify-center'>
-							<div className='flex justify-center items-center w-full max-w-screen-xl'>
+						<div className='flex w-full items-center justify-center'>
+							<div className='flex w-full max-w-screen-xl items-center justify-center'>
 								<div className='flex w-full flex-wrap items-center justify-center'>
 									{achievements.map(
 										achievement =>

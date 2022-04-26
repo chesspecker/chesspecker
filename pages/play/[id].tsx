@@ -594,7 +594,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
-			<div className='m-0  flex min-h-screen pt-32 pb-24 w-screen flex-col justify-center text-slate-800'>
+			<div className='m-0  flex min-h-screen w-screen flex-col justify-center pt-32 pb-24 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
 					<Timer value={initialSetTimer} mistakes={totalMistakes} />
 					<Button

@@ -29,8 +29,8 @@ const Profile = ({user}: Props) => {
 	}, [itemAchievements]);
 
 	return (
-		<div className='pt-32 pb-24 flex min-h-screen w-screen flex-col px-10 text-slate-800'>
-			<div className='flex items-center flex-wrap'>
+		<div className='flex min-h-screen w-screen flex-col px-10 pt-32 pb-24 text-slate-800'>
+			<div className='flex flex-wrap items-center'>
 				<p className=' mr-5 text-6xl text-white'>{user.username}</p>
 				{user?.isSponsor ? (
 					<p className='text-white'>Official Sponsor</p>
@@ -49,8 +49,8 @@ const Profile = ({user}: Props) => {
 
 			<div className='borded-white m-2 mt-6 min-h-[5rem] rounded-xl border p-2'>
 				<p className='text-xl text-white'>My badges</p>
-				<div className='w-full flex items-center justify-center'>
-					<div className='flex justify-center items-center w-full max-w-screen-xl'>
+				<div className='flex w-full items-center justify-center'>
+					<div className='flex w-full max-w-screen-xl items-center justify-center'>
 						<div className='flex w-full flex-wrap items-center justify-center'>
 							{userAchievements && userAchievements.length === 0 && (
 								<p className='text-center text-white'>

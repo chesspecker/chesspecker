@@ -3,8 +3,8 @@ import THEMES from '@/data/themes';
 import {getRandomInt} from '@/lib/utils';
 
 export type AchievementsCategorys = {
-	name: String;
-	description: String;
+	name: string;
+	description: string;
 };
 
 export const achievementsCategorys: AchievementsCategorys[] = [

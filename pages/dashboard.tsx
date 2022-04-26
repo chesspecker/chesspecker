@@ -62,7 +62,7 @@ const DashbaordPage = () => {
 				currentAchievementItem={achievementsList[0]}
 				handleClick={updateValidatedAchievement}
 			/>
-			<div className=' flex min-h-screen pb-20 pt-24  flex-col items-center justify-center text-slate-800'>
+			<div className=' flex min-h-screen flex-col items-center  justify-center pb-20 pt-24 text-slate-800'>
 				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>

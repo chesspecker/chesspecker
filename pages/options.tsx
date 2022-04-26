@@ -64,7 +64,7 @@ const OptionsPage = () => {
 	};
 
 	return (
-		<div className='pt-32 pb-24 flex min-h-screen w-11/12 flex-col items-center justify-center text-center'>
+		<div className='flex min-h-screen w-11/12 flex-col items-center justify-center pt-32 pb-24 text-center'>
 			<div>
 				<h1 className='mb-8 text-5xl text-white'>One last thing...</h1>
 				<Alert type='error' isVisible={isOpen} message='Title is needed!' />

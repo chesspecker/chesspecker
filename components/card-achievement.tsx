@@ -15,7 +15,7 @@ const Card = ({
 			} relative overflow-hidden`}
 		>
 			{!isClaimed && (
-				<div className='absolute top-0 left-0 w-full h-full bg-black z-20 opacity-50' />
+				<div className='absolute top-0 left-0 z-20 h-full w-full bg-black opacity-50' />
 			)}
 			<div className=' relative flex h-1/2 w-full items-center justify-center rounded-lg bg-sky-700'>
 				<Image src={achievement.image} layout='fill' objectFit='contain' />
