@@ -594,7 +594,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
-			<div className='m-0 -mb-24 flex min-h-screen w-screen flex-col justify-center text-slate-800'>
+			<div className='m-0  flex min-h-screen pt-32 pb-24 w-screen flex-col justify-center text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
 					<Timer value={initialSetTimer} mistakes={totalMistakes} />
 					<Button
@@ -605,14 +605,15 @@ const PlayingPage = ({set}: Props) => {
 					</Button>
 				</div>
 
-				<div className='flex w-full flex-col items-center justify-center md:flex-row'>
-					<div className='hidden w-36 md:invisible md:block' />
-					<div className='w-5/6 max-w-2xl flex-auto'>
+				<div className='flex w-full flex-col items-center justify-center md:flex-row  '>
+					<div className='hidden w-36 md:invisible md:block ' />
+					<div className='w-5/6 max-w-2xl flex-auto  '>
 						<WithoutSsr>
 							<Chessboard
 								config={{...config, orientation, events: {move: onMove}}}
 							/>
 						</WithoutSsr>
+
 						<Promotion
 							isOpen={isOpen}
 							hide={hide}
