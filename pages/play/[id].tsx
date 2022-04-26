@@ -607,7 +607,7 @@ const PlayingPage = ({set}: Props) => {
 
 				<div className='flex w-full flex-col items-center justify-center md:flex-row  '>
 					<div className='hidden w-36 md:invisible md:block ' />
-					<div className='w-5/6 max-w-2xl flex-auto  '>
+					<div className='max-w-[33rem] flex-auto  '>
 						<WithoutSsr>
 							<Chessboard
 								config={{...config, orientation, events: {move: onMove}}}
