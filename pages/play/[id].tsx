@@ -608,11 +608,11 @@ const PlayingPage = ({set}: Props) => {
 		<>
 			<div className='m-0 flex min-h-screen w-screen flex-col justify-center pt-32 pb-24 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
-				<Timer
-					value={initialSetTimer}
-					mistakes={totalMistakes}
-					isRunning={isRunning}
-				/>
+					<Timer
+						value={initialSetTimer}
+						mistakes={totalMistakes}
+						isRunning={isRunning}
+					/>
 					<Button
 						className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
 						href='/dashboard'
@@ -658,11 +658,11 @@ const PlayingPage = ({set}: Props) => {
 								isComplete={isComplete}
 								answer={moveHistory[moveNumber]}
 							/>
-													<MoveToNext
-							isComplete={isComplete}
-							changePuzzle={changePuzzle}
-							launchTimer={launchTimer}
-						/>
+							<MoveToNext
+								isComplete={isComplete}
+								changePuzzle={changePuzzle}
+								launchTimer={launchTimer}
+							/>
 						</div>
 					</div>
 				</div>

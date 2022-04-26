@@ -1,5 +1,6 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
+import {GetServerSidePropsContext, Redirect} from 'next';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
@@ -8,8 +9,8 @@ import {AchievementItem, AchivementsArgs, UserInterface} from '@/models/types';
 import Modal from '@/components/modal-achievement';
 import {checkForAchievement} from '@/lib/achievements';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {GetServerSidePropsContext, Redirect} from 'next';
 import {withSessionSsr} from '@/lib/session';
+import {formattedDate} from '@/lib/utils';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
@@ -18,6 +19,9 @@ const DashbaordPage = () => {
 	const [achievementsList, setAchievementsList] = useState<AchievementItem[]>(
 		[],
 	);
+
+	const today = new Date();
+	const currentDate = formattedDate(today);
 
 	const body: AchivementsArgs = {
 		streakMistakes: 0,
@@ -28,7 +32,11 @@ const DashbaordPage = () => {
 		themes: [],
 		totalSetSolved: 0,
 		// FIXME: incorrect type
-		streak: 0,
+		streak: {
+			currentCount: 0,
+			startDate: currentDate, // 11/11/2019
+			lastLoginDate: currentDate, // 14/11/2019
+		},
 		isSponsor: user?.isSponsor,
 	};
 
