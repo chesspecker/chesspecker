@@ -2,7 +2,7 @@ import {useAtom} from 'jotai';
 import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
-import {RefreshIcon} from '@heroicons/react/solid';
+import Image from 'next/image';
 import {
 	optionsTitleAtom,
 	optionsSizeAtom,
@@ -18,7 +18,8 @@ import OptionDifficulty from '@/components/options/level';
 import useModal from '@/hooks/use-modal';
 import Alert from '@/components/alert';
 import {Options} from '@/controllers/set-create';
-import type {Difficulty} from '@/models/puzzle-set-model';
+import type {Difficulty} from '@/models/types';
+import loading from '@/public/images/loading.png';
 
 const OptionsPage = () => {
 	const router = useRouter();
@@ -63,30 +64,33 @@ const OptionsPage = () => {
 	};
 
 	return (
-		<div className='-mb-24 flex min-h-screen w-11/12 flex-col items-center justify-center text-center'>
-			<h1 className='mb-8 text-5xl text-white'>One last thing...</h1>
-			<Alert type='error' isVisible={isOpen} message='Title is needed!' />
-			<div className='mx-12 flex w-5/6 flex-col items-center justify-center'>
-				<OptionTextInput>Give your set a name</OptionTextInput>
-				<OptionDifficulty />
-				<OptionSize />
-
-				<div className='mt-20 w-3/5'>
-					<Button
-						className={`flex h-14 flex-row items-center justify-center ${
-							isDisabled
-								? 'font-sky-700 cursor-default hover:bg-white'
-								: 'cursor-pointer'
-						}`}
-						onClick={validate}
-					>
-						<RefreshIcon
-							className={`mr-2 h-5 w-5 animate-spin ${
-								isDisabled ? 'visible' : 'invisible'
+		<div className='flex min-h-screen w-11/12 flex-col items-center justify-center pt-32 pb-24 text-center'>
+			<div>
+				<h1 className='mb-8 text-5xl text-white'>One last thing...</h1>
+				<Alert type='error' isVisible={isOpen} message='Title is needed!' />
+				<div className='mx-12 flex w-5/6 flex-col items-center justify-center'>
+					<OptionTextInput>Give your set a name</OptionTextInput>
+					<OptionDifficulty />
+					<OptionSize />
+					<div className='mt-20 w-3/5 '>
+						<Button
+							className={`flex h-14 flex-row items-center justify-center ${
+								isDisabled
+									? 'font-sky-700 cursor-default hover:bg-white'
+									: 'cursor-pointer'
 							}`}
-						/>
-						{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
-					</Button>
+							onClick={validate}
+						>
+							<div
+								className={`relative mr-3 h-9 w-9 animate-spin ${
+									isDisabled ? 'visible' : 'invisible'
+								}`}
+							>
+								<Image src={loading} objectFit='contain' layout='fill' />
+							</div>
+							{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
+						</Button>
+					</div>
 				</div>
 			</div>
 		</div>

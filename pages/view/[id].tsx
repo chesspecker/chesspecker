@@ -1,12 +1,12 @@
 /* eslint-disable new-cap */
 import {ReactElement} from 'react';
 import {GetServerSideProps} from 'next';
-import ChartOneLine from '../../components/chart-one-line';
+import ChartOneLine from '@/components/chart-one-line';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
-import {PuzzleSetInterface} from '@/models/puzzle-set-model';
+import {PuzzleSetInterface} from '@/models/types';
 import useClock from '@/hooks/use-clock';
-import Donnuts from '@/components/donnuts';
+import Donnuts from '@/components/doughnuts';
 import ChartMultipleLine from '@/components/chart-multiple-line';
 
 const getRapidity = (set: PuzzleSetInterface) => {
@@ -161,7 +161,7 @@ type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
-		<div className='m-0 flex min-h-screen w-screen flex-col px-2 sm:px-12 '>
+		<div className='m-0 flex min-h-screen w-screen flex-col px-2 pt-32 pb-24 sm:px-12 '>
 			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
 				{set.title}
 			</h1>

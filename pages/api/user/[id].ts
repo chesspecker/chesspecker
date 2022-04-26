@@ -1,20 +1,18 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {UserInterface} from '@/models/user-model';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/user';
+import type {UserInterface} from '@/models/types';
 
-type SuccessData = {
-	success: true;
-	user: UserInterface;
-};
-
-type ErrorData = {
-	success: false;
-	error: string;
-};
-
-type Data = SuccessData | ErrorData;
+export type Data =
+	| {
+			success: true;
+			user: UserInterface;
+	  }
+	| {
+			success: false;
+			error: string;
+	  };
 
 const get_ = async (
 	request: NextApiRequest,
@@ -49,7 +47,7 @@ const put_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	const user = await update(id as string, request.body);
+	const user = await update(id as string, JSON.parse(request.body));
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
 		return;
