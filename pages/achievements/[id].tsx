@@ -51,17 +51,19 @@ const Achievements = ({user}: Props) => {
 						<h2 className='mx-auto  mb-6 p-5 text-center font-merriweather text-lg font-bold text-white sm:text-lg md:text-xl'>
 							{category.description}
 						</h2>
-						<div className='flex justify-center items-center w-full max-w-screen-xl'>
-							<div className=' w-full  justify-center flex flex-wrap'>
-								{achievements.map(
-									achievement =>
-										achievement.category === category.name && (
-											<Card
-												achievement={achievement}
-												isClaimed={checkIfWon(achievement)}
-											/>
-										),
-								)}
+						<div className='w-full flex items-center justify-center'>
+							<div className='flex justify-center items-center w-full max-w-screen-xl'>
+								<div className='flex w-full flex-wrap items-center justify-center'>
+									{achievements.map(
+										achievement =>
+											achievement.category === category.name && (
+												<Card
+													achievement={achievement}
+													isClaimed={checkIfWon(achievement)}
+												/>
+											),
+									)}
+								</div>
 							</div>
 						</div>
 					</div>

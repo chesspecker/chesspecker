@@ -37,31 +37,37 @@ const Profile = ({user}: Props) => {
 				) : (
 					<ButtonLink href='/sponsor'>Become sponsor </ButtonLink>
 				)}
+				<ButtonLink className='mx-2' href='/sponsor'>
+					Manage subscription
+				</ButtonLink>
+				<ButtonLink
+					className='mx-6'
+					href={`/achievements/${user?._id.toString()}`}
+				>
+					See all avalaible achievements
+				</ButtonLink>
 			</div>
 
 			<div className='borded-white m-2 mt-6 min-h-[5rem] rounded-xl border p-2'>
 				<p className='text-xl text-white'>My badges</p>
-				<div className='flex w-full flex-wrap'>
-					{userAchievements && userAchievements.length === 0 && (
-						<p className='text-center text-white'>
-							You don&apos;t have any achievement yet
-						</p>
-					)}
-					{userAchievements &&
-						userAchievements.length > 0 &&
-						userAchievements.map(achievement => (
-							<div key={achievement.id}>
-								<Card achievement={achievement} />
-							</div>
-						))}
+				<div className='w-full flex items-center justify-center'>
+					<div className='flex justify-center items-center w-full max-w-screen-xl'>
+						<div className='flex w-full flex-wrap items-center justify-center'>
+							{userAchievements && userAchievements.length === 0 && (
+								<p className='text-center text-white'>
+									You don&apos;t have any achievement yet
+								</p>
+							)}
+							{userAchievements &&
+								userAchievements.length > 0 &&
+								userAchievements.map(achievement => (
+									<Card key={achievement.id} achievement={achievement} />
+								))}
+						</div>
+					</div>
 				</div>
 			</div>
-			<div className='flex w-1/3'>
-				<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
-				<ButtonLink href={`/achievements/${user?._id.toString()}`}>
-					See all avalaible achievements
-				</ButtonLink>
-			</div>
+			<div className='flex w-1/3'></div>
 		</div>
 	);
 };

@@ -35,12 +35,16 @@ const CreatePage = () => {
 						<h3 className='mx-2 mt-4 mb-3 pb-8 text-3xl text-white'>
 							{category.name}
 						</h3>
-						<div className='flex flex-wrap justify-around'>
-							{THEMES.filter(
-								(theme: Theme) => theme.category.name === category.name,
-							).map((theme: Theme) => (
-								<Choice key={theme.id} theme={theme} />
-							))}
+						<div className='w-full flex items-center justify-center'>
+							<div className='flex justify-center items-center w-full max-w-screen-xl'>
+								<div className='flex w-full flex-wrap  justify-center'>
+									{THEMES.filter(
+										(theme: Theme) => theme.category.name === category.name,
+									).map((theme: Theme) => (
+										<Choice key={theme.id} theme={theme} />
+									))}
+								</div>
+							</div>
 						</div>
 					</div>
 				))}
