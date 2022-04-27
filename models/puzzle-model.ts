@@ -1,5 +1,5 @@
 import {Schema, model, models} from 'mongoose';
-import {PuzzleInterface} from './types';
+import {PuzzleInterface} from '@/types/models';
 
 const schema = new Schema<PuzzleInterface>({
 	PuzzleId: {type: String},

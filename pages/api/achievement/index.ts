@@ -3,7 +3,7 @@ import withMongoRoute from 'providers/mongoose';
 import {retrieve} from '@/controllers/user';
 import {withSessionRoute} from '@/lib/session';
 import User from '@/models/user-model';
-import type {UserInterface} from '@/models/types';
+import type {UserInterface} from '@/types/models';
 
 type SuccessData = {
 	success: true;

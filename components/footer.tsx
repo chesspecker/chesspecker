@@ -5,7 +5,7 @@ import github from '@/public/images/github.svg';
 import discord from '@/public/images/discord.svg';
 
 const Footer = () => (
-	<footer className='flex h-24 w-full flex-row items-center justify-center bg-slate-900 shadow  '>
+	<footer className='sm:flex h-24 w-full flex-row items-center justify-center bg-slate-900 shadow hidden sm:visible '>
 		<div className='flex w-full content-center justify-between'>
 			<div className='mx-1 flex flex-col items-center justify-center sm:mx-5'>
 				{/* TODO: add link to sponsor page */}

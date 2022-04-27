@@ -5,7 +5,7 @@ import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
 import {fetcher} from '@/lib/fetcher';
-import {AchievementItem, AchivementsArgs, UserInterface} from '@/models/types';
+import {AchievementItem, AchivementsArgs, UserInterface} from '@/types/models';
 import Modal from '@/components/modal-achievement';
 import {checkForAchievement} from '@/lib/achievements';
 import useEffectAsync from '@/hooks/use-effect-async';

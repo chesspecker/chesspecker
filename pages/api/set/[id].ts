@@ -3,7 +3,7 @@ import withMongoRoute from 'providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/set';
 
-import type {PuzzleSetInterface} from '@/models/types';
+import type {PuzzleSetInterface} from '@/types/models';
 
 type SuccessData = {
 	success: true;

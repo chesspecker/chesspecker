@@ -43,6 +43,7 @@
 		"mongoose": "^6.2.1",
 		"nanoid": "^3.3.3",
 		"next": "latest",
+		"next-pwa": "^5.5.2",
 		"next-transpile-modules": "^9.0.0",
 		"react": "^17.0.2",
 		"react-chartjs-2": "^4.0.1",

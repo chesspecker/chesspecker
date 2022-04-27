@@ -1,6 +1,6 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {UserInterface} from '@/models/types';
+import type {UserInterface} from '@/types/models';
 import {withSessionRoute} from '@/lib/session';
 import {
 	createChesscomUser,

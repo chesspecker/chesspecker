@@ -3,7 +3,7 @@ import type {Types} from 'mongoose';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/puzzle';
-import type {PuzzleInterface, PuzzleItemInterface} from '@/models/types';
+import type {PuzzleInterface, PuzzleItemInterface} from '@/types/models';
 
 type SuccessData = {
 	success: true;

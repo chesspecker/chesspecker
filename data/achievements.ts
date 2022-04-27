@@ -1,4 +1,4 @@
-import {AchievementInterface, AchivementsArgs} from '@/models/types';
+import {AchievementInterface, AchivementsArgs} from '@/types/models';
 import THEMES from '@/data/themes';
 import {getRandomInt} from '@/lib/utils';
 

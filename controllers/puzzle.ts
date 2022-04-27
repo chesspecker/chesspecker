@@ -4,7 +4,7 @@ import type {
 	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
-} from '@/models/types';
+} from '@/types/models';
 
 export const create = async (
 	body: PuzzleInterface,

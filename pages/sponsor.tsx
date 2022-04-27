@@ -11,7 +11,7 @@ import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
-import type {UserInterface} from '@/models/types';
+import type {UserInterface} from '@/types/models';
 import useEffectAsync from '@/hooks/use-effect-async';
 
 type Props = {onClick: () => Promise<void>};

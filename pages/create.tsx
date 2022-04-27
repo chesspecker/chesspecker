@@ -7,7 +7,6 @@ import CATEGORIES from '@/data/categories';
 import THEMES from '@/data/themes';
 import Choice from '@/components/choice';
 import {selectedAtom} from '@/lib/atoms';
-
 import type {Category} from '@/data/categories';
 import type {Theme} from '@/data/themes';
 
@@ -49,7 +48,7 @@ const CreatePage = () => {
 					</div>
 				))}
 			</div>
-			<div className='sticky bottom-2 right-0 w-6/12'>
+			<div className='sticky bottom-20 right-0 w-6/12'>
 				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>
