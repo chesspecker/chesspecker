@@ -49,7 +49,7 @@ const CreatePage = () => {
 					</div>
 				))}
 			</div>
-			<div className='sticky bottom-2 right-0 w-6/12'>
+			<div className='sticky bottom-20 right-0 w-6/12'>
 				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>

@@ -1,4 +1,5 @@
 import Footer from '@/components/footer';
+import BottomTab from '@/components/mobile-assets/bottom-tab';
 import Navbar from '@/components/navbar';
 
 const MainLayout = ({children}: {children: React.ReactNode}) => (
@@ -7,6 +8,7 @@ const MainLayout = ({children}: {children: React.ReactNode}) => (
 		<div className=' h-full w-full'>{children}</div>
 		<div className='absolute bottom-0 w-full'>
 			<Footer />
+			<BottomTab />
 		</div>
 	</main>
 );
