@@ -5,10 +5,8 @@ import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {fetcher} from '@/lib/fetcher';
 import useUser from '@/hooks/use-user';
-import type {Data as UserData} from '@/api/user/[id]';
-import {UserInterface} from '@/types/models';
+import type {UserInterface} from '@/types/models';
 
 const SuccessPage = () => {
 	const router = useRouter();
@@ -31,16 +29,17 @@ const SuccessPage = () => {
 
 	useEffectAsync(async () => {
 		if (!sessionId || !user) return;
-		const response = await fetch(
+		const data = await fetch(
 			`/api/checkout-sessions/${sessionId as string}`,
+		).then(
+			async response => response.json() as Promise<Stripe.Checkout.Session>,
 		);
-		const data = (await response.json()) as Stripe.Checkout.Session;
 		setSession(data);
-		const userResult = (await fetcher.put(
-			`/api/user/${user._id.toString()}`,
-			updateUser,
-		)) as UserData;
-		console.log('newUser', userResult);
+
+		await fetch(`/api/user/${user._id.toString()}`, {
+			method: 'PUT',
+			body: JSON.stringify(updateUser),
+		});
 	}, [sessionId, user]);
 
 	return (

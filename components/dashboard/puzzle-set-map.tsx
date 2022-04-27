@@ -59,11 +59,10 @@ const PuzzleSetMap = () => {
 	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
 
 	useEffectAsync(async () => {
-		const response = await fetch('/api/set');
-		const data = (await response.json()) as DataMany;
-		if (data.success) {
-			setSets(data.sets);
-		}
+		const data = await fetch('/api/set').then(
+			async response => response.json() as Promise<DataMany>,
+		);
+		if (data.success) setSets(data.sets);
 	}, []);
 
 	return (

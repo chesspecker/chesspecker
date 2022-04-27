@@ -15,7 +15,6 @@ import {
 	ThemeItem,
 } from '@/types/models';
 import Layout from '@/layouts/main';
-import {fetcher} from '@/lib/fetcher';
 import Chessboard from '@/components/play/chessboard';
 import {sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
@@ -103,12 +102,10 @@ const PlayingPage = ({set}: Props) => {
 	useEffectAsync(async () => {
 		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
 		const nextPuzzle = puzzleList[puzzleIndex];
-		const data = (await fetcher.get(
-			`/api/puzzle/${nextPuzzle._id.toString()}`,
-		)) as PuzzleData;
-		if (data.success) {
-			setPuzzle(() => data.puzzle);
-		}
+		const data = await fetch(`/api/puzzle/${nextPuzzle._id.toString()}`).then(
+			async response => response.json() as Promise<PuzzleData>,
+		);
+		if (data.success) setPuzzle(() => data.puzzle);
 	}, [puzzleList, puzzleIndex]);
 
 	/**
@@ -299,10 +296,10 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		try {
-			const result = (await fetcher.put(
-				`/api/puzzle/${puzzleItem._id.toString()}`,
-				{_id: set._id, update},
-			)) as UpdateData;
+			const result = await fetch(`/api/puzzle/${puzzleItem._id.toString()}`, {
+				method: 'PUT',
+				body: JSON.stringify({_id: set._id, update}),
+			}).then(async response => response.json() as Promise<UpdateData>);
 
 			/* eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare */
 			if (result.success === false) {
@@ -365,7 +362,10 @@ const PlayingPage = ({set}: Props) => {
 			},
 		};
 		try {
-			await fetcher.put(`/api/set/${set._id.toString()}`, update);
+			await fetch(`/api/set/${set._id.toString()}`, {
+				method: 'PUT',
+				body: JSON.stringify(update),
+			});
 			await router.push(`/view/${set._id.toString()}`);
 		} catch (error: unknown) {
 			console.log(error);

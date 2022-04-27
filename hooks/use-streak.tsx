@@ -12,7 +12,6 @@
 import type {UpdateQuery} from 'mongoose';
 import {useState} from 'react';
 import useEffectAsync from './use-effect-async';
-import {fetcher} from '@/lib/fetcher';
 import type {Streak, UserInterface} from '@/types/models';
 import {formattedDate} from '@/lib/utils';
 
@@ -31,8 +30,11 @@ const incrementStreakCount = (currentStreak: Streak, date: string): Streak => ({
 
 const updateStreak = async (
 	id: string,
-	body: UpdateQuery<Partial<UserInterface>>,
-) => fetcher.put(`/api/user/${id}`, body);
+	data: UpdateQuery<Partial<UserInterface>>,
+) =>
+	fetch(`/api/user/${id}`, {method: 'PUT', body: JSON.stringify(data)}).then(
+		async response => response.json(),
+	);
 
 /**
  *

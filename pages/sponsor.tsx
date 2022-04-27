@@ -5,7 +5,6 @@ import Modal from 'react-pure-modal';
 import {useRouter} from 'next/router';
 import type {Data as SubscriptionData} from '@/api/subscription/[id]';
 import type {SubBody, Data as SessionData} from '@/api/subscription/index';
-import {fetcher} from '@/lib/fetcher';
 import useModal from '@/hooks/use-modal';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
@@ -108,7 +107,7 @@ const BecomeSponsor = ({
 const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	const router = useRouter();
 	const cancelSubscription = async () => {
-		await fetcher.delete(`/api/subscription/${subscription.id}`);
+		await fetch(`/api/subscription/${subscription.id}`, {method: 'DELETE'});
 		router.reload();
 	};
 
@@ -144,30 +143,27 @@ const SponsorPage = () => {
 
 	useEffectAsync(async () => {
 		if (!user?.isSponsor) return;
-		const response = (await fetcher.get(
-			`/api/subscription/${user.stripeId}`,
-		)) as SubscriptionData;
-		if (!response.success) return;
-		setSubscription(response.subscription);
+		const data = await fetch(`/api/subscription/${user.stripeId}`).then(
+			async response => response.json() as Promise<SubscriptionData>,
+		);
+		if (!data.success) return;
+		setSubscription(data.subscription);
 	}, [user]);
 
 	const handleClick = async (priceId: string) => {
 		const body: SubBody = {stripePriceId: priceId};
 		if (user.stripeId) body.customer = user.stripeId;
 
-		const response = await fetch('/api/subscription', {
+		const data = await fetch('/api/subscription', {
 			method: 'POST',
 			body: JSON.stringify(body),
-		});
+		}).then(async response => response.json() as Promise<SessionData>);
 
-		if (response.ok) {
-			const data = (await response.json()) as SessionData;
-			if (data.success) {
-				const {id: sessionId} = data.session;
-				const stripe = await getStripe();
-				const {error} = await stripe.redirectToCheckout({sessionId});
-				if (error) console.log(error);
-			}
+		if (data.success) {
+			const {id: sessionId} = data.session;
+			const stripe = await getStripe();
+			const {error} = await stripe.redirectToCheckout({sessionId});
+			if (error) console.log(error);
 		}
 	};
 

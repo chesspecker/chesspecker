@@ -1,7 +1,7 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
+import {GetServerSidePropsContext} from 'next';
 import Layout from '@/layouts/main';
-import {fetcher} from '@/lib/fetcher';
 import Card from '@/components/card-achievement';
 import {Data as UserData} from '@/api/user/[id]';
 import {achievements, achievementsCategorys} from '@/data/achievements';
@@ -76,14 +76,15 @@ const Achievements = ({user}: Props) => {
 Achievements.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default Achievements;
 
-interface SSRProps {
+interface SSRProps extends GetServerSidePropsContext {
 	params: {id: string | undefined};
 }
 
 export const getServerSideProps = async ({params}: SSRProps) => {
 	const id: string = params.id;
-	const data = (await fetcher.get(`/api/user/${id}`)) as UserData;
-	console.log('user', data);
+	const data = await fetch(`/api/user/${id}`).then(
+		async response => response.json() as Promise<UserData>,
+	);
 	if (!data.success) return {notFound: true};
 	return {props: {user: data.user}};
 };
