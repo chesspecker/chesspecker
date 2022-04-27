@@ -3,7 +3,6 @@ import {ReactElement} from 'react';
 import {GetServerSideProps} from 'next';
 import ChartOneLine from '@/components/chart-one-line';
 import Layout from '@/layouts/main';
-import {fetcher} from '@/lib/fetcher';
 import {PuzzleSetInterface} from '@/types/models';
 import useClock from '@/hooks/use-clock';
 import Donnuts from '@/components/doughnuts';
@@ -22,15 +21,10 @@ const getRapidity = (set: PuzzleSetInterface) => {
 
 const armonizedData = (array: number[]): number[] => {
 	const numberOfLine = 10;
-	console.log(array);
-
 	if (array.length < numberOfLine) return array;
 	const length = array.length;
-	console.log('length', length);
 	const iterator = numberOfLine;
-	console.log('iterator', iterator);
 	const packBy = Math.round(length / iterator);
-	console.log('packBy', packBy);
 
 	const newArray: number[] = [];
 	for (let i = 0; i < iterator; i++) {
@@ -39,7 +33,6 @@ const armonizedData = (array: number[]): number[] => {
 		newArray.push(_array.reduce((a, b) => a + b, 0) / _array.length);
 	}
 
-	console.log('new array', newArray);
 	return newArray;
 };
 
@@ -264,9 +257,9 @@ export default ViewingPage;
 
 export const getServerSideProps: GetServerSideProps = async ({params}) => {
 	const {id} = params;
-	const data = (await fetcher.get(
-		`/api/set/${id as string}`,
-	)) as PuzzleSetInterface;
+	const data = await fetch(`/api/set/${id as string}`).then(
+		async response => response.json() as Promise<PuzzleSetInterface>,
+	);
 	if (!data) return {notFound: true};
 	return {props: {currentSetProps: data.set}};
 };

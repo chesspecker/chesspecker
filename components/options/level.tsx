@@ -2,7 +2,6 @@ import {useAtom} from 'jotai';
 import {ChangeEvent} from 'react';
 import {optionsLevelAtom, ratingAtom} from '@/lib/atoms';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {fetcher} from '@/lib/fetcher';
 import {Data} from '@/pages/api/rating';
 import {safeZero} from '@/lib/utils';
 import type {Difficulty} from '@/types/models';
@@ -11,9 +10,10 @@ const OptionLevel = () => {
 	const [, setLevel] = useAtom(optionsLevelAtom);
 	const [rating, setRating] = useAtom(ratingAtom);
 	useEffectAsync(async () => {
-		const response: Data = (await fetcher.get('/api/rating')) as Data;
-		if (!response.success) return;
-		setRating(response.rating);
+		const data = await fetch('/api/rating').then(
+			async response => response.json() as Promise<Data>,
+		);
+		if (data.success) setRating(data.rating);
 	}, []);
 
 	const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {

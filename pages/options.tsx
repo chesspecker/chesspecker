@@ -11,7 +11,6 @@ import {
 } from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
-import {fetcher} from '@/lib/fetcher';
 import OptionTextInput from '@/components/options/text-input';
 import OptionSize from '@/components/options/size';
 import OptionDifficulty from '@/components/options/level';
@@ -48,15 +47,17 @@ const OptionsPage = () => {
 		}
 
 		setIsDisabled(() => true);
-		const body: Options = {
+		const options: Options = {
 			title,
 			size,
 			level,
 			themeArray,
 			averageRating: rating,
 		};
-		return fetcher
-			.post(`/api/set`, body)
+		return fetch(`/api/set`, {
+			method: 'PUT',
+			body: JSON.stringify(options),
+		})
 			.then(async () => router.push('/dashboard'))
 			.catch(error => {
 				console.error(error);

@@ -1,4 +1,3 @@
-import {fetcher} from './fetcher';
 import {achievements} from '@/data/achievements';
 import {Data} from '@/pages/api/user';
 import type {
@@ -10,9 +9,11 @@ import type {
 export const checkForAchievement = async (
 	args: AchivementsArgs,
 ): Promise<AchievementInterface[]> => {
-	const response = (await fetcher.get('/api/user')) as Data;
-	if (!response.success) return;
-	const list: AchievementItem[] = response.user.validatedAchievements;
+	const data = await fetch('/api/user').then(
+		async reponse => reponse.json() as Promise<Data>,
+	);
+	if (!data.success) return;
+	const list: AchievementItem[] = data.user.validatedAchievements;
 	const promises: Array<Promise<any>> = [];
 	const result: AchievementInterface[] = [];
 
@@ -20,7 +21,10 @@ export const checkForAchievement = async (
 		if (list.map(item => item.id).includes(achievement.id)) continue;
 		if (!achievement.isValidated(args)) continue;
 		promises.push(
-			fetcher.post(`/api/achievement`, {achievementId: achievement.id}),
+			fetch(`/api/achievement`, {
+				method: 'POST',
+				body: JSON.stringify({achievementId: achievement.id}),
+			}).then(async response => response.json()),
 		);
 		result.push(achievement);
 	}

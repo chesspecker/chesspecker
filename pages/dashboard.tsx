@@ -4,7 +4,6 @@ import {GetServerSidePropsContext, Redirect} from 'next';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
-import {fetcher} from '@/lib/fetcher';
 import {AchievementItem, AchivementsArgs, UserInterface} from '@/types/models';
 import Modal from '@/components/modal-achievement';
 import {checkForAchievement} from '@/lib/achievements';
@@ -59,7 +58,10 @@ const DashbaordPage = () => {
 	// TODO: check achievements order
 	const updateValidatedAchievement = async (achievementId: string) => {
 		setShowModal(() => false);
-		await fetcher.put(`/api/achievement`, {achievementId, claimed: true});
+		await fetch(`/api/achievement`, {
+			method: 'PUT',
+			body: JSON.stringify({achievementId, claimed: true}),
+		});
 		const list = achievementsList.filter(item => item.id !== achievementId);
 		if (list.length > 0) setShowModal(() => true);
 		setAchievementsList(() => list);
