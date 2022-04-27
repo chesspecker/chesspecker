@@ -2,7 +2,7 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/user';
-import type {UserInterface} from '@/models/types';
+import type {UserInterface} from '@/types/models';
 
 export type Data =
 	| {

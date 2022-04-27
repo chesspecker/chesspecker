@@ -5,7 +5,7 @@ import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
 import User from '@/models/user-model';
 import {create} from '@/controllers/user';
-import type {UserInterface} from '@/models/types';
+import type {UserInterface} from '@/types/models';
 
 type ErrorData = {
 	success: false;

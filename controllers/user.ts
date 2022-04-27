@@ -1,7 +1,7 @@
 import {UpdateQuery} from 'mongoose';
 import {LichessUser} from '@/types/lichess';
 import User from '@/models/user-model';
-import type {UserInterface} from '@/models/types';
+import type {UserInterface} from '@/types/models';
 import {formattedDate} from '@/lib/utils';
 
 export const create = async (liUser: LichessUser): Promise<UserInterface> => {

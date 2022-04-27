@@ -1,5 +1,5 @@
 import {Schema, model, models} from 'mongoose';
-import {PuzzleSetInterface} from './types';
+import {PuzzleSetInterface} from '@/types/models';
 
 const schema = new Schema<PuzzleSetInterface>({
 	user: {type: 'ObjectId', ref: 'User'},

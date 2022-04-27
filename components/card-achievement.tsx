@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import {AchievementInterface} from '@/models/types';
+import {AchievementInterface} from '@/types/models';
 
 const Card = ({
 	achievement,

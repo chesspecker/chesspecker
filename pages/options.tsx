@@ -18,7 +18,7 @@ import OptionDifficulty from '@/components/options/level';
 import useModal from '@/hooks/use-modal';
 import Alert from '@/components/alert';
 import {Options} from '@/controllers/set-create';
-import type {Difficulty} from '@/models/types';
+import type {Difficulty} from '@/types/models';
 import loading from '@/public/images/loading.png';
 
 const OptionsPage = () => {

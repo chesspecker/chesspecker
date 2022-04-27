@@ -11,7 +11,7 @@ const Document = () => {
 					content='Application to practice chess with the woodpecker method! Puzzles are from Lichess!'
 				/>
 				<link rel='manifest' href='/manifest.json' />
-				<link rel='apple-touch-icon' href='/icon.png'></link>
+				<link rel='apple-touch-icon' href='/icon.png' />
 				<meta name='theme-color' content='#fff' />
 				<meta
 					name='description'

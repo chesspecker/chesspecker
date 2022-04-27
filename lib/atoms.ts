@@ -2,7 +2,7 @@ import {atom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
 
 import type {Category} from 'data/categories';
-import type {Difficulty} from '@/models/types';
+import type {Difficulty} from '@/types/models';
 
 export const selectedAtom = atom<Array<Category['id']>>([]);
 

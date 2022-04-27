@@ -8,7 +8,7 @@ import useEffectAsync from '@/hooks/use-effect-async';
 import {fetcher} from '@/lib/fetcher';
 import useUser from '@/hooks/use-user';
 import type {Data as UserData} from '@/api/user/[id]';
-import {UserInterface} from '@/models/types';
+import {UserInterface} from '@/types/models';
 
 const SuccessPage = () => {
 	const router = useRouter();

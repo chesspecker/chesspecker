@@ -5,7 +5,7 @@ import {useState, useEffect} from 'react';
 import Burger from './mobile-assets/burger';
 import logo from '@/public/images/logo.svg';
 import useUser from '@/hooks/use-user';
-import {UserInterface} from '@/models/types';
+import {UserInterface} from '@/types/models';
 
 const Navbar = () => {
 	const [user, setUser] = useState<UserInterface>();

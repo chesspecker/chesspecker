@@ -6,7 +6,7 @@ import {fetcher} from '@/lib/fetcher';
 import Card from '@/components/card-achievement';
 import {Data as UserData} from '@/api/user/[id]';
 import {achievements} from '@/data/achievements';
-import type {AchievementInterface, UserInterface} from '@/models/types';
+import type {AchievementInterface, UserInterface} from '@/types/models';
 
 type Props = {
 	user: UserInterface;

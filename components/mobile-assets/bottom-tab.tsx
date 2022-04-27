@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {UserIcon, HomeIcon, LightningBoltIcon} from '@heroicons/react/solid';
 import Link from 'next/link';
-import {UserInterface} from '@/models/types';
+import {UserInterface} from '@/types/models';
 import useUser from '@/hooks/use-user';
 
 const BottomTab = () => {

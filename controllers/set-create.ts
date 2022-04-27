@@ -10,7 +10,7 @@ import type {
 	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
-} from '@/models/types';
+} from '@/types/models';
 
 const rating = (
 	level: PuzzleSetInterface['level'],

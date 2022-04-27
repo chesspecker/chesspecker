@@ -13,7 +13,7 @@ import type {UpdateQuery} from 'mongoose';
 import {useState} from 'react';
 import useEffectAsync from './use-effect-async';
 import {fetcher} from '@/lib/fetcher';
-import type {Streak, UserInterface} from '@/models/types';
+import type {Streak, UserInterface} from '@/types/models';
 import {formattedDate} from '@/lib/utils';
 
 const resetStreakCount = (date: string) => ({

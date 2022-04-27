@@ -4,7 +4,7 @@ import {GetServerSideProps} from 'next';
 import ChartOneLine from '@/components/chart-one-line';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
-import {PuzzleSetInterface} from '@/models/types';
+import {PuzzleSetInterface} from '@/types/models';
 import useClock from '@/hooks/use-clock';
 import Donnuts from '@/components/doughnuts';
 import ChartMultipleLine from '@/components/chart-multiple-line';

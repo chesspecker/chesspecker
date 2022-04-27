@@ -9,7 +9,7 @@ import {
 	LightningBoltIcon,
 } from '@heroicons/react/solid';
 import Link from 'next/link';
-import {UserInterface} from '@/models/types';
+import {UserInterface} from '@/types/models';
 
 const Burger = ({user}: {user: UserInterface}) => {
 	return (

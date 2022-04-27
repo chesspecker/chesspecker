@@ -13,7 +13,7 @@ import {
 	PuzzleSetInterface,
 	AchivementsArgs,
 	ThemeItem,
-} from '@/models/types';
+} from '@/types/models';
 import Layout from '@/layouts/main';
 import {fetcher} from '@/lib/fetcher';
 import Chessboard from '@/components/play/chessboard';

@@ -5,7 +5,7 @@ import type {
 	AchievementItem,
 	AchievementInterface,
 	AchivementsArgs,
-} from '@/models/types';
+} from '@/types/models';
 
 export const checkForAchievement = async (
 	args: AchivementsArgs,
