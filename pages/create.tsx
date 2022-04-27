@@ -7,7 +7,6 @@ import CATEGORIES from '@/data/categories';
 import THEMES from '@/data/themes';
 import Choice from '@/components/choice';
 import {selectedAtom} from '@/lib/atoms';
-
 import type {Category} from '@/data/categories';
 import type {Theme} from '@/data/themes';
 
