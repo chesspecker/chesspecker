@@ -3,7 +3,8 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {origin} from '@/config';
 import getChesscom from '@/lib/get-chesscom';
-import User, {UserInterface} from '@/models/user-model';
+import User from '@/models/user-model';
+import type {UserInterface} from '@/types/models';
 import {createChesscomUser} from '@/controllers/user';
 
 type ErrorData = {
