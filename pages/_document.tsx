@@ -11,10 +11,6 @@ const Document = () => {
 					content='black-translucent'
 				/>
 				<meta name='apple-mobile-web-app-title' content='ChessPecker' />
-				<meta
-					name='viewport'
-					content='initial-scale=1, viewport-fit=cover, width=device-width'
-				/>
 				<meta property='og:title' content='Chesspecker' />
 				<meta
 					property='og:description'
