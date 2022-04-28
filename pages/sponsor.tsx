@@ -51,7 +51,7 @@ const BecomeSponsor = ({
 	handleClick: (string: string) => void;
 }) => {
 	return (
-		<div className='mx-10 flex h-screen flex-col items-center justify-center text-slate-800'>
+		<div className=' flex min-h-screen flex-col items-center  justify-center pb-40 pt-24 text-slate-800'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
 				Become sponsor
 			</h1>
@@ -71,12 +71,10 @@ const BecomeSponsor = ({
 			<p className='mb-6 mt-7 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
 				How much does it cost? Just one small coffee per month !
 			</p>
-			<p>
-				<a href='https://giphy.com/gifs/lCbSAbRrFEfkY'>via GIPHY</a>
-			</p>
-			<div className='flex w-2/3'>
+
+			<div className='flex w-2/3 flex-col lg:flex-row'>
 				<Button
-					className='mx-2'
+					className='m-2'
 					onClick={() => {
 						handleClick('price_1KrH3UGL9hdiIkIS71GBjPNS');
 					}}
@@ -84,7 +82,7 @@ const BecomeSponsor = ({
 					1 Coffee ☕️ (3€)
 				</Button>
 				<Button
-					className='mx-2'
+					className='m-2'
 					onClick={() => {
 						handleClick('price_1KrH9zGL9hdiIkISPg2FKEBD');
 					}}
@@ -92,7 +90,7 @@ const BecomeSponsor = ({
 					2 Coffee (5€) ☕️☕️
 				</Button>
 				<Button
-					className='mx-2'
+					className='m-2'
 					onClick={() => {
 						handleClick('price_1KrH5yGL9hdiIkIShHkBKgPN');
 					}}
@@ -112,7 +110,7 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	};
 
 	return (
-		<div className='mx-10 flex min-h-screen flex-col items-center justify-center pt-32 pb-24 text-slate-800'>
+		<div className=' flex min-h-screen flex-col items-center  justify-center pb-20 pt-24 text-slate-800'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
 				Manage sponsorship
 			</h1>

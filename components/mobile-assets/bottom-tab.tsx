@@ -13,7 +13,7 @@ const BottomTab = () => {
 		setUser(data.user);
 	}, [data]);
 	return (
-		<div className='bg-white fixed bottom-0 w-full h-16 sm:hidden flex justify-around items-center'>
+		<div className='bg-white fixed bottom-0 safe-bottom pt-2 min-h-[4rem] w-full sm:hidden flex justify-around items-center'>
 			<Link passHref href={`/achievements/${user?._id.toString()}`}>
 				<div className='border-b-2 border-white hover:border-sky-700 focus:border-sky-700'>
 					<LightningBoltIcon

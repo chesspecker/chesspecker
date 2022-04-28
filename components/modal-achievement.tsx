@@ -50,7 +50,7 @@ const Modal = ({
 					leaveFrom='opacity-100 rotate-0 scale-100 '
 					leaveTo='opacity-0 scale-95 '
 				>
-					<h3 className='mb-5 text-6xl font-bold text-white'>
+					<h3 className='mb-5 text-6xl text-center font-bold text-white'>
 						New achievement 🎉🔥
 					</h3>
 				</Transition.Child>
