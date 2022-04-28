@@ -6,7 +6,15 @@ import VICTORY from '@/sounds/Victory.mp3';
 
 type Sound = 'MOVE' | 'CAPTURE' | 'ERROR' | 'GENERIC' | 'VICTORY';
 
+const isIOS = (): boolean => {
+	const ua = window.navigator.userAgent;
+	const isIPad = Boolean(/ipad/i.test(ua));
+	const isIPhone = Boolean(/iphone/i.test(ua));
+	return isIPad || isIPhone;
+};
+
 const play = async (src: string, volume: HTMLMediaElement['volume']) => {
+	if (isIOS()) return;
 	const audio = new Audio(src);
 	audio.volume = volume;
 	return audio.play();
