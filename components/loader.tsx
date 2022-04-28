@@ -14,7 +14,7 @@ const Loader = ({isVisible}: {isVisible: boolean}) => {
 				leaveFrom=' visible  '
 				leaveTo=' hidden  '
 			>
-				<div className=' h-screen w-screen absolute top-0 left-0 z-40 '>
+				<div className=' h-screen w-screen fixed top-0 left-0 z-40 '>
 					<Transition.Child
 						as={Fragment}
 						enter='transform transition duration-[200ms]'
