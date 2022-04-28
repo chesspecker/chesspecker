@@ -20,17 +20,15 @@ type AppPropsWithLayout = AppProps & {
 	Component: NextPageWithLayout;
 };
 
-const customApp = ({
+const CustomApp = ({
 	Component,
 	pageProps: {session, ...pageProps},
 }: AppPropsWithLayout) => {
 	const [loading, setLoading] = useState<boolean>();
 	Router.events.on('routeChangeStart', () => {
-		console.log('route is changing');
 		setLoading(() => true);
 	});
 	Router.events.on('routeChangeComplete', () => {
-		console.log('route change completed');
 		setLoading(() => false);
 	});
 
@@ -54,4 +52,4 @@ const customApp = ({
 	);
 };
 
-export default customApp;
+export default CustomApp;
