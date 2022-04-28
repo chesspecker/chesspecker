@@ -13,7 +13,7 @@ import {UserInterface} from '@/types/models';
 
 const Burger = ({user}: {user: UserInterface}) => {
 	return (
-		<div className='w-56 flex items-end justify-end fixed top-3 right-5 visible sm:hidden z-20'>
+		<div className='w-56 flex items-end justify-end fixed top-9 right-5 visible sm:hidden z-20'>
 			<Menu as='div' className='relative inline-block text-left '>
 				<div>
 					<Menu.Button className=' p-2 inline-flex justify-center w-full text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75'>
