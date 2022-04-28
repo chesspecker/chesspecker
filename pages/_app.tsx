@@ -5,10 +5,12 @@ import '@/styles/cg-chess.css';
 import '@/styles/cg-board.css';
 import '@/styles/cg-pieces.css';
 import Head from 'next/head';
-import type {ReactElement, ReactNode} from 'react';
+import {ReactElement, ReactNode, useState} from 'react';
 import type {NextPage} from 'next';
 import type {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
+import Router from 'next/router';
+import Loader from '@/components/loader';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -22,6 +24,16 @@ const customApp = ({
 	Component,
 	pageProps: {session, ...pageProps},
 }: AppPropsWithLayout) => {
+	const [loading, setLoading] = useState<boolean>();
+	Router.events.on('routeChangeStart', () => {
+		console.log('route is changing');
+		setLoading(() => true);
+	});
+	Router.events.on('routeChangeComplete', () => {
+		console.log('route change completed');
+		setLoading(() => false);
+	});
+
 	const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
 
 	return getLayout(
@@ -35,6 +47,7 @@ const customApp = ({
 			</Head>
 
 			<SWRConfig>
+				<Loader isVisible={loading} />
 				<Component {...pageProps} />
 			</SWRConfig>
 		</>,

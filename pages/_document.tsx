@@ -5,6 +5,12 @@ const Document = () => {
 		<Html lang='en'>
 			<Head>
 				{/* Meta properties */}
+				<meta name='apple-mobile-web-app-capable' content='yes' />
+				<meta
+					name='apple-mobile-web-app-status-bar-style'
+					content='black-translucent'
+				/>
+				<meta name='apple-mobile-web-app-title' content='ChessPecker' />
 				<meta property='og:title' content='Chesspecker' />
 				<meta
 					property='og:description'
@@ -51,7 +57,7 @@ const Document = () => {
 					src='https://plausible.io/js/plausible.js'
 				/>
 			</Head>
-			<body className='min-w-screen min-h-screen'>
+			<body className='min-w-screen min-h-screen bg-sky-700'>
 				<Main />
 				<NextScript />
 			</body>
