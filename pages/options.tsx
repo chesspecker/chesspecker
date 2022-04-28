@@ -55,7 +55,7 @@ const OptionsPage = () => {
 			averageRating: rating,
 		};
 		return fetch(`/api/set`, {
-			method: 'PUT',
+			method: 'POST',
 			body: JSON.stringify(options),
 		})
 			.then(async () => router.push('/dashboard'))
