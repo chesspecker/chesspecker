@@ -2,6 +2,8 @@ import type {ReactElement} from 'react';
 import Image from 'next/image.js';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
+import {GetServerSidePropsContext, Redirect} from 'next';
+import {withSessionSsr} from '@/lib/session';
 
 const IndexPage = () => (
 	<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
@@ -26,3 +28,13 @@ const IndexPage = () => (
 
 IndexPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default IndexPage;
+
+export const getServerSideProps = withSessionSsr(
+	async ({req}: GetServerSidePropsContext) => {
+		if (req?.session?.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
+			return {redirect};
+		}
+		return {props: {}};
+	},
+);
