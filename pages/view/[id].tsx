@@ -7,6 +7,7 @@ import {PuzzleSetInterface} from '@/types/models';
 import useClock from '@/hooks/use-clock';
 import Donnuts from '@/components/doughnuts';
 import ChartMultipleLine from '@/components/chart-multiple-line';
+import type {Data as SetData} from '@/api/set/[id]';
 
 const getRapidity = (set: PuzzleSetInterface) => {
 	const bestTime = 5;
@@ -255,11 +256,13 @@ ViewingPage.getLayout = (page: ReactElement): JSX.Element => (
 );
 export default ViewingPage;
 
-export const getServerSideProps: GetServerSideProps = async ({params}) => {
-	const {id} = params;
-	const data = await fetch(`/api/set/${id as string}`).then(
-		async response => response.json() as Promise<PuzzleSetInterface>,
+export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
+	const id: string = params.id as string;
+	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
+	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
+	const data = await fetch(`${baseUrl}/api/set/${id}`).then(
+		async response => response.json() as Promise<SetData>,
 	);
-	if (!data) return {notFound: true};
+	if (!data?.success) return {notFound: true};
 	return {props: {currentSetProps: data.set}};
 };
