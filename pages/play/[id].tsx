@@ -692,9 +692,10 @@ export const getServerSideProps = withSessionSsr(
 		}
 
 		const id: string = params.id;
-		const data = await fetch(`/api/set/${id}`).then(
-			async response => response.json() as Promise<SetData>,
-		);
+		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
+		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
+		const response = await fetch(`${baseUrl}/api/set/${id}`);
+		const data = (await response.json()) as SetData;
 		if (!data.success) return {notFound: true};
 		if (data.set.user.toString() !== req.session.userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
