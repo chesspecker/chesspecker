@@ -18,7 +18,7 @@ import useModal from '@/hooks/use-modal';
 import Alert from '@/components/alert';
 import {Options} from '@/controllers/set-create';
 import type {Difficulty} from '@/types/models';
-import loading from '@/public/images/loading.png';
+import loading from '@/public/images/spinner.svg';
 
 const OptionsPage = () => {
 	const router = useRouter();

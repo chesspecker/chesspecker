@@ -5,6 +5,7 @@ import Image from 'next/image';
 import {useRouter} from 'next/router';
 import {Button} from '@/components/button';
 import plus from '@/public/images/plus.svg';
+import spinner from '@/public/images/spinner.svg';
 import type {PuzzleSetInterface} from '@/types/models';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {DataMany} from '@/pages/api/set';
@@ -57,16 +58,28 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 
 const PuzzleSetMap = () => {
 	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffectAsync(async () => {
 		const data = await fetch('/api/set').then(
 			async response => response.json() as Promise<DataMany>,
 		);
-		if (data.success) setSets(data.sets);
+		if (!data?.success) return;
+		setSets(data.sets);
+		setIsLoading(false);
 	}, []);
 
 	return (
 		<div className='flex flex-wrap items-center justify-center'>
+			{isLoading ? (
+				<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
+					<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center border border-transparent bg-white bg-opacity-60 text-3xl font-medium text-sky-800 shadow-md backdrop-blur-xl backdrop-filter'>
+						{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
+						<Image src={spinner} className='animate-spin' />
+						<p className='mt-4'>Loading...</p>
+					</div>
+				</div>
+			) : null}
 			{sets.map(set => (
 				<PuzzleSetComponent key={set._id.toString()} set={set} />
 			))}
