@@ -80,9 +80,11 @@ interface SSRProps extends GetServerSidePropsContext {
 	params: {id: string | undefined};
 }
 
-export const getServerSideProps = async ({params}: SSRProps) => {
+export const getServerSideProps = async ({req, params}: SSRProps) => {
 	const id: string = params.id;
-	const data = await fetch(`/api/user/${id}`).then(
+	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
+	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
+	const data = await fetch(`${baseUrl}/api/user/${id}`).then(
 		async response => response.json() as Promise<UserData>,
 	);
 	if (!data.success) return {notFound: true};
