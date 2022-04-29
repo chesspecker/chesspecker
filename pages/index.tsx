@@ -1,8 +1,8 @@
 import type {ReactElement} from 'react';
 import Image from 'next/image.js';
+import {GetServerSidePropsContext, Redirect} from 'next';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
-import {GetServerSidePropsContext, Redirect} from 'next';
 import {withSessionSsr} from '@/lib/session';
 
 const IndexPage = () => (
@@ -35,6 +35,7 @@ export const getServerSideProps = withSessionSsr(
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
 			return {redirect};
 		}
+
 		return {props: {}};
 	},
 );

@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-keys */
 const plugin = require('tailwindcss/plugin');
 
 module.exports = {

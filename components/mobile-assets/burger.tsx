@@ -11,7 +11,16 @@ import {
 import Link from 'next/link';
 import {UserInterface} from '@/types/models';
 
-const Burger = ({user}: {user: UserInterface}) => {
+type BurgerProps = {
+	user: UserInterface;
+};
+
+type MenuProps = {
+	/* eslint-disable-next-line react/no-unused-prop-types */
+	active: boolean;
+};
+
+const Burger = ({user}: BurgerProps) => {
 	return (
 		<div className='safe-top w-56 flex items-end justify-end fixed top-5 right-5 visible sm:hidden z-20'>
 			<Menu as='div' className='relative inline-block text-left '>
@@ -35,7 +44,7 @@ const Burger = ({user}: {user: UserInterface}) => {
 					<Menu.Items className='absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
 						<Link passHref href={`/user/${user?._id.toString()}`}>
 							<Menu.Item>
-								{({active}: {active: boolean}) => (
+								{({active}: MenuProps) => (
 									<button
 										type='button'
 										className={`${
@@ -50,7 +59,7 @@ const Burger = ({user}: {user: UserInterface}) => {
 						</Link>
 						<Link passHref href='/dashboard'>
 							<Menu.Item>
-								{({active}: {active: boolean}) => (
+								{({active}: MenuProps) => (
 									<button
 										type='button'
 										className={`${
@@ -66,7 +75,7 @@ const Burger = ({user}: {user: UserInterface}) => {
 
 						<Link passHref href='/api/auth/logout'>
 							<Menu.Item>
-								{({active}: {active: boolean}) => (
+								{({active}: MenuProps) => (
 									<button
 										type='button'
 										className={`${
@@ -81,7 +90,7 @@ const Burger = ({user}: {user: UserInterface}) => {
 						</Link>
 						<Link passHref href='/create'>
 							<Menu.Item>
-								{({active}: {active: boolean}) => (
+								{({active}: MenuProps) => (
 									<button
 										type='button'
 										className={`${
@@ -97,7 +106,7 @@ const Burger = ({user}: {user: UserInterface}) => {
 
 						<Link passHref href={`/achievements/${user?._id.toString()}`}>
 							<Menu.Item>
-								{({active}: {active: boolean}) => (
+								{({active}: MenuProps) => (
 									<button
 										type='button'
 										className={`${
