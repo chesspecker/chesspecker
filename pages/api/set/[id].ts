@@ -36,7 +36,6 @@ const delete_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	console.log('bakcend got delete request for set', id);
 	const set = await remove(id as string);
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
@@ -52,7 +51,6 @@ const put_ = async (
 ) => {
 	const {id} = request.query;
 	const set = await update(id as string, request.body);
-	console.log('the set');
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
 		return;

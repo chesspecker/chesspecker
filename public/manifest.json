@@ -4,8 +4,8 @@
 	"display": "standalone",
 	"scope": "/",
 	"start_url": "/",
-	"name": "ChessPecker",
-	"short_name": "ChessPecker",
+	"name": "Chesspecker",
+	"short_name": "Chesspecker",
 	"icons": [
 		{
 			"src": "/icon-192x192.png",

@@ -15,7 +15,6 @@ const Achievements = ({user}: Props) => {
 	const itemAchievements = user.validatedAchievements;
 	const [userAchievements, setUserAchievement] =
 		useState<AchievementInterface[]>();
-	console.log(userAchievements);
 	useEffect(() => {
 		if (!itemAchievements) return;
 		const array = [];
@@ -31,7 +30,6 @@ const Achievements = ({user}: Props) => {
 		const isWon = userAchievements?.find(
 			achievement_ => achievement_.id === achievement?.id,
 		);
-		console.log(isWon);
 		if (isWon) return true;
 		return false;
 	};

@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
-// Import useShouldShowPrompt from 'app/shared/hooks/useShouldShowPrompt';
+// FIXME: is needed ?
+// import useShouldShowPrompt from 'app/shared/hooks/useShouldShowPrompt';
 
 const useWebInstallPrompt = (): [boolean, boolean] => {
 	const [hasInstalled, setHasInstalled] = useState<boolean>();
@@ -29,8 +30,9 @@ const useWebInstallPrompt = (): [boolean, boolean] => {
 			setHasInstalled(false);
 		}
 
+		/* FIXME: Fix
 		console.log('**************here we are***********', isStandalone());
-		/* 		Const beforeInstallPromptHandler = event => {
+		const beforeInstallPromptHandler = event => {
 			event.preventDefault();
 			console.log('here we are');
 			// check if user has already been asked
