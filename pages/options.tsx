@@ -87,7 +87,11 @@ const OptionsPage = () => {
 									isDisabled ? 'visible' : 'invisible'
 								}`}
 							>
-								<Image src={loading} objectFit='contain' layout='fill' />
+								<Image
+									src={loading as string}
+									objectFit='contain'
+									layout='fill'
+								/>
 							</div>
 							{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
 						</Button>

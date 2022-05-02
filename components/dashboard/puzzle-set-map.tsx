@@ -56,6 +56,15 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	);
 };
 
+const EmptyPuzzleSetComponent = ({image, text}) => (
+	<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
+		<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center border border-transparent bg-white bg-opacity-60 text-3xl font-medium text-sky-800 shadow-md backdrop-blur-xl backdrop-filter'>
+			{image}
+			{text}
+		</div>
+	</div>
+);
+
 const PuzzleSetMap = () => {
 	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -72,28 +81,22 @@ const PuzzleSetMap = () => {
 	return (
 		<div className='flex flex-wrap items-center justify-center'>
 			{isLoading ? (
-				<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
-					<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center border border-transparent bg-white bg-opacity-60 text-3xl font-medium text-sky-800 shadow-md backdrop-blur-xl backdrop-filter'>
-						{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
-						<Image src={spinner} className='animate-spin' />
-						<p className='mt-4'>Loading...</p>
-					</div>
-				</div>
+				<EmptyPuzzleSetComponent
+					image={<Image src={spinner} className='animate-spin' />}
+					text={<p className='mt-4 animate-pulse'>Loading...</p>}
+				/>
 			) : null}
 			{sets.map(set => (
 				<PuzzleSetComponent key={set._id.toString()} set={set} />
 			))}
-			<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
-				<Link href='/create'>
-					<a>
-						<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center border border-transparent bg-white bg-opacity-60 text-3xl font-medium text-sky-800 shadow-md backdrop-blur-xl backdrop-filter'>
-							{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
-							<Image src={plus} className='' />
-							<p className='mt-4'>Create a set</p>
-						</div>
-					</a>
-				</Link>
-			</div>
+			<Link href='/create'>
+				<a>
+					<EmptyPuzzleSetComponent
+						image={<Image src={plus} />}
+						text={<p className='mt-4'>Create a set</p>}
+					/>
+				</a>
+			</Link>
 		</div>
 	);
 };
