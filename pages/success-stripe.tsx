@@ -6,7 +6,9 @@ import {ButtonLink as Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
 import useUser from '@/hooks/use-user';
-import type {UserInterface} from '@/types/models';
+import {AchivementsArgs, UserInterface} from '@/types/models';
+import {checkForAchievement} from '@/lib/achievements';
+import {formattedDate} from '@/lib/utils';
 
 const SuccessPage = () => {
 	const router = useRouter();
@@ -21,6 +23,27 @@ const SuccessPage = () => {
 			stripeId: session?.customer && session.customer,
 		},
 	};
+
+	useEffectAsync(async () => {
+		const today = new Date();
+		const currentDate = formattedDate(today);
+		const body: AchivementsArgs = {
+			streakMistakes: 0,
+			streakTime: 0,
+			completionTime: 0,
+			completionMistakes: 0,
+			totalPuzzleSolved: 0,
+			themes: [],
+			totalSetSolved: 0,
+			streak: {
+				currentCount: 0,
+				startDate: currentDate,
+				lastLoginDate: currentDate,
+			},
+			isSponsor: true,
+		};
+		await checkForAchievement(body);
+	}, []);
 
 	useEffect(() => {
 		if (!data) return;

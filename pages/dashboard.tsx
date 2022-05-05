@@ -4,12 +4,9 @@ import {GetServerSidePropsContext, Redirect} from 'next';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
-import {AchievementItem, AchivementsArgs, UserInterface} from '@/types/models';
+import {AchievementItem, UserInterface} from '@/types/models';
 import Modal from '@/components/modal-achievement';
-import {checkForAchievement} from '@/lib/achievements';
-import useEffectAsync from '@/hooks/use-effect-async';
 import {withSessionSsr} from '@/lib/session';
-import {formattedDate} from '@/lib/utils';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
@@ -19,31 +16,10 @@ const DashbaordPage = () => {
 		[],
 	);
 
-	const today = new Date();
-	const currentDate = formattedDate(today);
-
-	const body: AchivementsArgs = {
-		streakMistakes: 0,
-		streakTime: 0,
-		completionTime: 0,
-		completionMistakes: 0,
-		totalPuzzleSolved: 0,
-		themes: [],
-		totalSetSolved: 0,
-		// FIXME: incorrect type
-		streak: {
-			currentCount: 0,
-			startDate: currentDate, // 11/11/2019
-			lastLoginDate: currentDate, // 14/11/2019
-		},
-		isSponsor: user?.isSponsor,
-	};
-
-	useEffectAsync(async () => {
+	useEffect(() => {
 		if (!data) return;
-		setUser(data.user);
-		await checkForAchievement(body);
-	}, [data, body]);
+		setUser(() => data.user);
+	}, [data]);
 
 	useEffect(() => {
 		if (!user) return;
