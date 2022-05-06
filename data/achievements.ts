@@ -47,7 +47,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'Toilet plunger',
 		description: 'Great, you won a toilet plunger...',
 		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 666,
-		image: '/images/achievements/plunger.jpg',
+		image: '/images/achievements/plunger.png',
 		category: 'random',
 	},
 	{
@@ -60,7 +60,7 @@ export const achievements: AchievementInterface[] = [
 	},
 	{
 		id: 'clown',
-		name: 'Funny clown',
+		name: 'Clown',
 		description: 'Funny joke goes here',
 		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 181,
 		image: '/images/achievements/clown.png',
@@ -73,7 +73,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'First Puzzle',
 		description: 'You completed your first puzzle.',
 		isValidated: (args: AchivementsArgs) => args.totalPuzzleSolved === 1,
-		image: '/images/achievements/baby_bunny.svg', // Change
+		image: '/images/achievements/unicorn.png', // Change
 		category: 'avancement',
 	},
 	{
@@ -81,13 +81,14 @@ export const achievements: AchievementInterface[] = [
 		name: 'First Set',
 		description: 'You completed your first set.',
 		isValidated: (args: AchivementsArgs) => args.totalSetSolved === 1,
-		image: '/images/achievements/socks.png', // Change
+		image: '/images/achievements/accordéon.png', // Change
 		category: 'avancement',
 	},
 	{
 		id: 'sponsor',
 		name: 'Sponsor',
-		description: 'because you are a sponsor, you have won this beautiful sock ',
+		description:
+			'Because you are a sponsor, you have won thos beautiful socks ',
 		isValidated: (args: AchivementsArgs) => args.isSponsor,
 		image: '/images/achievements/socks.png', // Change
 		category: 'avancement',
@@ -97,25 +98,25 @@ export const achievements: AchievementInterface[] = [
 	{
 		id: 'baby-bunny',
 		name: 'Baby Bunny',
-		description: 'Solve 10 consecutive puzzles in less than 5 seconds',
+		description: 'Solve 20 consecutive puzzles in less than 5 seconds',
 		isValidated: (args: AchivementsArgs) => args.streakTime > 20,
-		image: '/images/achievements/baby_bunny.svg',
+		image: '/images/achievements/bunny-baby.svg',
 		category: 'performance',
 	},
 	{
 		id: 'bunny',
 		name: 'Bunny',
-		description: 'Solve 25 consecutive puzzles in less than 5 seconds',
-		isValidated: (args: AchivementsArgs) => args.streakTime > 30,
-		image: '/images/achievements/bunny.svg',
+		description: 'Solve 40 consecutive puzzles in less than 5 seconds',
+		isValidated: (args: AchivementsArgs) => args.streakTime > 40,
+		image: '/images/achievements/bunny.png',
 		category: 'performance',
 	},
 	{
 		id: 'king-bunny',
 		name: 'King Bunny',
-		description: 'Solve 50 consecutive puzzles in less than 5 seconds',
-		isValidated: (args: AchivementsArgs) => args.streakTime > 50,
-		image: '/images/achievements/king_bunny.svg',
+		description: 'Solve 70 consecutive puzzles in less than 5 seconds',
+		isValidated: (args: AchivementsArgs) => args.streakTime > 70,
+		image: '/images/achievements/bunny-king.png',
 		category: 'performance',
 	},
 
@@ -124,7 +125,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'Baby turtle',
 		description: 'Solve a puzzle after 2 minutes',
 		isValidated: (args: AchivementsArgs) => args.completionTime > 120,
-		image: '/images/achievements/king_bunny.svg',
+		image: '/images/achievements/turtle-baby.png',
 		category: 'performance',
 	},
 	{
@@ -132,7 +133,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'turtle',
 		description: 'Solve a puzzle after 5 minutes',
 		isValidated: (args: AchivementsArgs) => args.completionTime > 300,
-		image: '/images/achievements/king_bunny.svg',
+		image: '/images/achievements/turtle.png',
 		category: 'performance',
 	},
 	{
@@ -140,7 +141,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'King turtle',
 		description: 'Solve a puzzle after 15 minutes',
 		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: '/images/achievements/king_bunny.svg',
+		image: '/images/achievements/turtle-king.png',
 		category: 'performance',
 	},
 
@@ -149,15 +150,15 @@ export const achievements: AchievementInterface[] = [
 		name: 'Baby watchmaker',
 		description: 'Solve 20 consecutive puzzles with no mistakes',
 		isValidated: (args: AchivementsArgs) => args.streakMistakes > 20,
-		image: '/images/achievements/baby_watchmaker.svg',
+		image: '/images/achievements/archery.png',
 		category: 'performance',
 	},
 	{
 		id: 'watchmaker',
 		name: 'watchmaker',
 		description: 'Solve 30 consecutive puzzles with no mistakes',
-		isValidated: (args: AchivementsArgs) => args.streakMistakes > 3,
-		image: '/images/achievements/watchmaker.svg',
+		isValidated: (args: AchivementsArgs) => args.streakMistakes > 30,
+		image: '/images/achievements/archery-plus.svg',
 		category: 'performance',
 	},
 	{
@@ -165,7 +166,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'King watchmaker',
 		description: 'Solve 50 consecutive puzzles with no mistakes',
 		isValidated: (args: AchivementsArgs) => args.streakMistakes > 50,
-		image: '/images/achievements/king_watchmaker.svg',
+		image: '/images/achievements/archery-plus-plus.svg',
 		category: 'performance',
 	},
 
@@ -173,24 +174,24 @@ export const achievements: AchievementInterface[] = [
 		id: 'baby-goat',
 		name: 'Baby goat',
 		description: 'Solve a puzzle after more than 5 mistakes',
-		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: '/images/achievements/king_bunny.svg',
+		isValidated: (args: AchivementsArgs) => args.completionMistakes > 5,
+		image: '/images/achievements/goat-baby.png',
 		category: 'performance',
 	},
 	{
 		id: 'goat',
 		name: 'Goat',
 		description: 'Solve a puzzle after more than 15 mistakes',
-		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: '/images/achievements/king_bunny.svg',
+		isValidated: (args: AchivementsArgs) => args.completionMistakes > 15,
+		image: '/images/achievements/goat.png',
 		category: 'performance',
 	},
 	{
 		id: 'king-goat',
 		name: 'King goat',
 		description: 'Solve a puzzle after more than 30 mistakes',
-		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: '/images/achievements/king_bunny.svg',
+		isValidated: (args: AchivementsArgs) => args.completionMistakes > 30,
+		image: '/images/achievements/gaot-king.png',
 		category: 'performance',
 	},
 	// DURATION
@@ -200,7 +201,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'Baby chessaolic',
 		description: 'Play more than 15 mn in last 7 days',
 		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 7,
-		image: '/images/achievements/king_bunny.svg',
+		image: '/images/achievements/flamme.png',
 		category: 'duration',
 	},
 	{
@@ -208,7 +209,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'Chessaolic',
 		description: 'Play more than 15 mn in last 15 days',
 		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 15,
-		image: '/images/achievements/king_bunny.svg',
+		image: '/images/achievements/flamme2.png',
 		category: 'duration',
 	},
 	{
@@ -216,7 +217,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'King chessaolic',
 		description: 'Play more than 15 mn in last 30 days',
 		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 30,
-		image: '/images/achievements/king_bunny.svg',
+		image: '/images/achievements/flamme3.png',
 		category: 'duration',
 	},
 	{
@@ -227,7 +228,7 @@ export const achievements: AchievementInterface[] = [
 		isValidated: (args: AchivementsArgs) =>
 			(Date.now() - new Date(args.streak.lastLoginDate).getTime()) / 1000 >
 			2_592_000, // 30 jours en secondes
-		image: '/images/achievements/king_bunny.svg',
+		image: '/images/achievements/reveneant.png',
 		category: 'duration',
 	},
 ];
