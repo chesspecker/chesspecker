@@ -1,33 +1,39 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
-import type {GetServerSidePropsContext} from 'next';
 import Layout from '@/layouts/main';
 import {ButtonLink} from '@/components/button';
 import Card from '@/components/card-achievement';
-import {Data as UserData} from '@/api/user/[id]';
 import {achievements} from '@/data/achievements';
 import type {AchievementInterface, UserInterface} from '@/types/models';
+import useUser from '@/hooks/use-user';
 
-type Props = {
-	user: UserInterface;
-};
-
-const Profile = ({user}: Props) => {
-	const itemAchievements = user.validatedAchievements;
-	const [userAchievements, setUserAchievement] =
-		useState<AchievementInterface[]>();
+const User = () => {
+	const data = useUser();
+	const [user, setUser] = useState<UserInterface>();
+	const [achievementsList, setList] = useState<AchievementInterface[]>();
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		if (!itemAchievements) return;
-		const array = [];
-		for (const item of itemAchievements) {
-			array.push(achievements.find(achivement => achivement.id === item.id));
-		}
+		if (!data) return;
+		setUser(data.user);
+	}, [data]);
 
-		const userAchievements_ = array;
-		setUserAchievement(userAchievements_);
-	}, [itemAchievements]);
+	useEffect(() => {
+		if (!user) return;
+		const itemAchievements = user.validatedAchievements;
+		setList(() => {
+			const array: AchievementInterface[] = [];
+			for (const item of itemAchievements) {
+				array.push(achievements.find(achivement => achivement.id === item.id));
+			}
 
+			return array;
+		});
+
+		setIsLoading(() => false);
+	}, [user]);
+
+	if (isLoading) return null;
 	return (
 		<div className='flex min-h-screen w-screen flex-col px-10 pt-32 pb-24 text-slate-800'>
 			<div className='flex flex-wrap items-center'>
@@ -41,9 +47,7 @@ const Profile = ({user}: Props) => {
 					<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
 				</div>
 				<div className='m-2'>
-					<ButtonLink href={`/achievements/${user?._id.toString()}`}>
-						See all avalaible achievements
-					</ButtonLink>
+					<ButtonLink href={'/achievements'}>See all achievements</ButtonLink>
 				</div>
 			</div>
 
@@ -52,14 +56,13 @@ const Profile = ({user}: Props) => {
 				<div className='flex w-full items-center justify-center'>
 					<div className='flex w-full max-w-screen-xl items-center justify-center'>
 						<div className='flex w-full flex-wrap items-center justify-center'>
-							{userAchievements && userAchievements.length === 0 && (
+							{achievementsList.length === 0 && (
 								<p className='text-center text-white'>
 									You don&apos;t have any achievement yet
 								</p>
 							)}
-							{userAchievements &&
-								userAchievements.length > 0 &&
-								userAchievements.map(achievement => (
+							{achievementsList.length > 0 &&
+								achievementsList.map(achievement => (
 									<Card key={achievement.id} achievement={achievement} />
 								))}
 						</div>
@@ -71,20 +74,5 @@ const Profile = ({user}: Props) => {
 	);
 };
 
-Profile.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
-export default Profile;
-
-interface SSRProps extends GetServerSidePropsContext {
-	params: {id: string | undefined};
-}
-
-export const getServerSideProps = async ({req, params}: SSRProps) => {
-	const id: string = params.id;
-	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-	const data = await fetch(`${baseUrl}/api/user/${id}`).then(
-		async response => response.json() as Promise<UserData>,
-	);
-	if (!data.success) return {notFound: true};
-	return {props: {user: data.user}};
-};
+User.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
+export default User;
