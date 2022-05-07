@@ -20,7 +20,6 @@ import useModal from '@/hooks/use-modal';
 import useUser from '@/hooks/use-user';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
-import type {HistoryProps} from '@/components/play/bottom-bar/history';
 import {ButtonLink as Button} from '@/components/button';
 import {checkForAchievement} from '@/lib/achievements';
 import Notification from '@/components/notification';
@@ -30,6 +29,7 @@ import {get as get_, update as update_, UpdateUser} from '@/lib/play';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
 import BottomBar from '@/components/play/bottom-bar';
+import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -56,9 +56,7 @@ const PlayingPage = ({set}: Props) => {
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
-	const [previousPuzzle, setPreviousPuzzle] = useState<HistoryProps['puzzles']>(
-		[],
-	);
+	const [previousPuzzle, setPreviousPuzzle] = useState<PreviousPuzzle[]>([]);
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);

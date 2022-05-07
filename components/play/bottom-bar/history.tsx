@@ -1,8 +1,10 @@
-export type HistoryProps = {
-	puzzles: Array<{
-		grade: number;
-		PuzzleId: string;
-	}>;
+export type PreviousPuzzle = {
+	grade: number;
+	PuzzleId: string;
+};
+
+type HistoryProps = {
+	puzzles: PreviousPuzzle[];
 };
 
 const getClasses = (grade: number) => {
