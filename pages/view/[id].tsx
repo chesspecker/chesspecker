@@ -1,63 +1,24 @@
-/* eslint-disable new-cap */
-import {ReactElement} from 'react';
+/* eslint-disable unicorn/no-array-reduce */
+/* eslint-disable unicorn/no-array-callback-reference */
 import {GetServerSideProps} from 'next';
-import ChartOneLine from '@/components/chart-one-line';
-import Layout from '@/layouts/main';
-import {PuzzleSetInterface} from '@/types/models';
-import useClock from '@/hooks/use-clock';
-import Donnuts from '@/components/doughnuts';
-import ChartMultipleLine from '@/components/chart-multiple-line';
+import {ReactElement} from 'react';
 import type {Data as SetData} from '@/api/set/[id]';
+import Donnuts from '@/components/doughnuts';
+import useClock from '@/hooks/use-clock';
+import Layout from '@/layouts/main';
+import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
 
-const getRapidity = (set: PuzzleSetInterface) => {
-	const bestTime = 5;
-	const wortTime = 50;
-	const scale = wortTime - bestTime;
-	const step = 100 / scale;
-	const length = set.puzzles ? set.puzzles.filter(p => p.played).length : 0;
-	const averageTime = set.currentTime / length;
-	const rapidity = 100 - (averageTime - bestTime) * step;
-	return rapidity < 0 ? 0 : rapidity;
+const INFINITY = Number.POSITIVE_INFINITY;
+const reducer = (accumulator: number, current: number) => accumulator + current;
+
+const getTotalTime = (set: PuzzleSetInterface): number => {
+	const t = set.times.reduce(reducer, 0);
+	return t === 0 ? set.currentTime : t + set.currentTime;
 };
 
-const armonizedData = (array: number[]): number[] => {
-	const numberOfLine = 10;
-	if (array.length < numberOfLine) return array;
-	const length = array.length;
-	const iterator = numberOfLine;
-	const packBy = Math.round(length / iterator);
-
-	const newArray: number[] = [];
-	for (let i = 0; i < iterator; i++) {
-		const _oldArray = [...array];
-		const _array = _oldArray.slice(i * packBy, i * packBy + packBy);
-		newArray.push(_array.reduce((a, b) => a + b, 0) / _array.length);
-	}
-
-	return newArray;
-};
-
-const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface): number[] =>
-	armonizedData(
-		set.puzzles
-			.filter(puzzle => puzzle.played)
-			.map(puzzle => puzzle.timeTaken[puzzle.timeTaken.length - 1]),
-	);
-
-const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface): number[] =>
-	armonizedData(
-		set.puzzles
-			.filter(puzzle => puzzle.played)
-			.map(puzzle => puzzle.mistakes[puzzle.mistakes.length - 1]),
-	);
-
-const GetTotalTime = (set: PuzzleSetInterface): JSX.Element => {
-	const totalTime = set.times.reduce(
-		(previous, current) => previous + current,
-		0,
-	);
-	const toFormatTime = totalTime === 0 ? set.currentTime : totalTime;
-	const [days, hours, minutes, secondes] = useClock(toFormatTime);
+const ParsedTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
+	const totalTime = getTotalTime(set);
+	const [days, hours, minutes, secondes] = useClock(totalTime);
 	return (
 		<p className='align-self-center text-2xl font-bold text-white'>
 			{days !== 0 && `${days} days `}
@@ -68,88 +29,132 @@ const GetTotalTime = (set: PuzzleSetInterface): JSX.Element => {
 	);
 };
 
-const getAtonAp = (set: PuzzleSetInterface): string => {
-	if (!set.cycles || set.cycles === 0 || set.cycles === 0) return '0%';
-
-	const arrayOfPreviousTime = [];
-	for (let i = 0; i < set.times.length; i++) {
-		for (const puzzle of set.puzzles) {
-			arrayOfPreviousTime.push(puzzle.timeTaken[i]);
-		}
-	}
-
-	const averagePreviousTime =
-		arrayOfPreviousTime.reduce(
-			(previous: number, current: number) => previous + current,
-			0,
-		) / arrayOfPreviousTime.length;
-
-	const arrayOfActualTime = set.puzzles
-		.filter(puzzle => puzzle.timeTaken.length >= set.times.length)
-		.map(puzzle => puzzle.timeTaken[puzzle.timeTaken.length - 1]);
-
-	const averageActualTime =
-		arrayOfActualTime.reduce((previous, current) => previous + current, 0) /
-		arrayOfActualTime.length;
-
-	return `${Math.round((1 - averageActualTime / averagePreviousTime) * 100)} %`;
+const parseGrade: Record<number, string> = {
+	0: 'F',
+	1: 'E',
+	2: 'D',
+	3: 'C',
+	4: 'B',
+	5: 'A',
+	6: 'A+',
 };
 
-const getAgonAg = (set: PuzzleSetInterface): string => {
-	if (!set.cycles || set.cycles === 0) return '0%';
-	const arrayOfPreviousMistakes: number[] = [];
-	for (let i = 0; i < set.times.length; i++) {
-		for (const puzzle of set.puzzles) {
-			arrayOfPreviousMistakes.push(puzzle.mistakes[i]);
-		}
-	}
-
-	const averagePreviousMistakes =
-		arrayOfPreviousMistakes.reduce(
-			(previous, current) => previous + current,
-			0,
-		) / arrayOfPreviousMistakes.length;
-	const puzzlePlayedInLastTry = set.puzzles.filter(
-		puzzle => puzzle.mistakes.length >= set.times.length,
-	);
-	const arrayOfActualMistakes = puzzlePlayedInLastTry.map(
-		puzzle => puzzle.mistakes[puzzle.mistakes.length - 1],
-	);
-	const averageActualTime =
-		arrayOfActualMistakes.reduce((previous, current) => previous + current, 0) /
-		arrayOfActualMistakes.length;
-
-	return `${Math.round(
-		(1 - averageActualTime / averagePreviousMistakes) * 100,
-	)} %`;
-};
-
-const GetActualTime = (set: PuzzleSetInterface): JSX.Element => {
-	const [days, hours, minutes, secondes] = useClock(set.currentTime);
-
-	return (
-		<p className='align-self-center text-2xl font-bold text-white'>
-			{days !== 0 && `${days} days `}
-			{hours !== 0 && `${hours} hours `}
-			{minutes !== 0 && `${minutes} minutes `}
-			{secondes !== 0 && `${secondes} secondes `}
-		</p>
-	);
-};
-
-const getTotalAverageGrade = (set: PuzzleSetInterface): string => {
-	const arrayOfGrade = set.puzzles
+const getAverageGrade = (set: PuzzleSetInterface): string => {
+	const grades = set.puzzles
 		.map(puzzle => puzzle.grades)
-		.flat(Number.POSITIVE_INFINITY) as number[];
-	const sum = arrayOfGrade.reduce((previous, current) => previous + current, 0);
-	const average = sum / arrayOfGrade.length;
-	if (average > 5.5) return 'A';
-	if (average > 4.5) return 'B';
-	if (average > 3.5) return 'C';
-	if (average > 2.5) return 'D';
-	if (average > 1.5) return 'E';
-	if (average <= 1.5) return 'F';
+		.flat(INFINITY) as number[];
+	const sum = grades.reduce(reducer, 0);
+	const average = Math.round(sum / grades.length);
+	return parseGrade[average];
 };
+
+const lastOverFirstTime = (set: PuzzleSetInterface): string => {
+	if (!set.cycles || set.cycles < 2) return '/';
+
+	const last = set.puzzles
+		.map(puzzle => puzzle.timeTaken[set.cycles - 1])
+		.reduce(reducer, 0);
+
+	const first = set.puzzles
+		.map(puzzle => puzzle.timeTaken[0])
+		.reduce(reducer, 0);
+
+	return `${last}s / ${first}s`;
+};
+
+const lastOverFirstGrade = (set: PuzzleSetInterface): string => {
+	if (!set.cycles || set.cycles < 2) return '/';
+
+	const last = set.puzzles.map(puzzle => puzzle.grades[set.cycles - 1]);
+	const sumLast = last.reduce(reducer, 0);
+	const averageLast = Math.round(sumLast / last.length);
+
+	const first = set.puzzles.map(puzzle => puzzle.grades[0]);
+	const sumFirst = first.reduce(reducer, 0);
+	const averageFirst = Math.round(sumFirst / first.length);
+
+	return `${parseGrade[averageLast]} / ${parseGrade[averageFirst]}`;
+};
+
+const lastOverAverageTime = (set: PuzzleSetInterface): string => {
+	if (!set.cycles || set.cycles < 2) return '/';
+
+	const last = set.puzzles
+		.map(puzzle => puzzle.timeTaken[set.cycles - 1])
+		.reduce(reducer, 0);
+
+	const previousTimes = set.puzzles
+		.map(puzzle => puzzle.timeTaken)
+		.flat(INFINITY)
+		.reduce(reducer, 0);
+	const average = Math.round((previousTimes as number) / set.cycles);
+
+	return `${last}s / ${average}s`;
+};
+
+const lastOverAverageGrade = (set: PuzzleSetInterface): string => {
+	if (!set.cycles || set.cycles < 2) return '/';
+
+	const last = set.puzzles.map(puzzle => puzzle.grades[set.cycles - 1]);
+	const sumLast = last.reduce(reducer, 0);
+	const averageLast = Math.round(sumLast / last.length);
+
+	return `${parseGrade[averageLast]} / ${getAverageGrade(set)}`;
+};
+
+const GetCurrentTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
+	const [days, hours, minutes, secondes] = useClock(set.currentTime);
+	if (!set?.currentTime || set.currentTime === 0) return <p>0</p>;
+
+	return (
+		<p className='align-self-center text-2xl font-bold text-white'>
+			{days !== 0 && `${days} days `}
+			{hours !== 0 && `${hours} hours `}
+			{minutes !== 0 && `${minutes} minutes `}
+			{secondes !== 0 && `${secondes} secondes `}
+		</p>
+	);
+};
+
+const getCurrentGrade = (set: PuzzleSetInterface): string => {
+	const last = set.puzzles
+		.filter(puzzle => puzzle.played)
+		.map(puzzle => puzzle.grades[puzzle.grades.length - 1]);
+	const sumLast = last.reduce(reducer, 0);
+	const averageLast = Math.round(sumLast / last.length);
+	return parseGrade[averageLast];
+};
+
+type BlockProps = {title: string; data: string | number | JSX.Element};
+
+const Block = ({title, data}: BlockProps): JSX.Element => (
+	<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center rounded-xl border-4 border-white p-4'>
+		<h3 className='h3 text-center'>{title}</h3>
+		<div className='flex h-full w-full items-center justify-center'>
+			<p className='justify-self-center text-5xl font-bold text-white'>
+				{data}
+			</p>
+		</div>
+	</div>
+);
+
+const getClasses = (grade: number) => {
+	const result = 'h-3 w-5 cursor-pointer rounded-sm mb-1 ';
+	if (grade < 3) return result + 'bg-red-500';
+	if (grade < 5) return result + 'bg-orange-500';
+	if (grade < 7) return result + 'bg-green-500';
+};
+
+const getAverage = (array: number[]): number =>
+	array.reduce(reducer, 0) / array.length;
+
+const PuzzleComponent = (puzzle: PuzzleItemInterface): JSX.Element => (
+	<a
+		key={puzzle.PuzzleId}
+		href={`https://lichess.org/training/${puzzle.PuzzleId}`}
+		className={getClasses(getAverage(puzzle.grades))}
+	/>
+);
 
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
@@ -163,89 +168,57 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 			<div className='mt-4 w-full'>
 				<h2 className='h2'>Puzzle set state</h2>
 				<div className='mt-4 flex w-full flex-wrap'>
-					<div className=' m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Time you complete this set</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className='justify-self-center text-5xl font-bold text-white'>
-								{set.cycles ? set.cycles : 0}
-							</p>
-						</div>
-					</div>
-					<div className=' m-3 flex min-h-[10rem] w-1/3 min-w-[20rem] flex-auto  flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Total average grade</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className=' justify-self-center text-5xl font-bold text-white'>
-								{getTotalAverageGrade(set)}
-							</p>
-						</div>
-					</div>
-					<div className=' m-3 flex min-h-[10rem] w-1/3 min-w-[20rem] flex-auto  flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Total time spent on this set</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							{GetTotalTime(set)}
-						</div>
-					</div>
+					<Block title='Time you completed this set' data={set.cycles} />
+					<Block title='Total average grade' data={getAverageGrade(set)} />
+					<Block
+						title='Total time spent on this set'
+						data={<ParsedTime set={set} />}
+					/>
 				</div>
 			</div>
 			<div className='mt-4 w-full'>
-				<h2 className='h2'>Global Progression</h2>
+				<h2 className='h2'>Global progression</h2>
 				<div className='mt-4 flex w-full flex-wrap'>
-					<div className=' m-3 flex  min-h-[10rem]  min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>
-							Actual time / Average previous time
-						</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className=' justify-self-center text-5xl font-bold text-white'>
-								{getAtonAp(set)}
-							</p>
-						</div>
-					</div>
-					<div className=' m-3 flex min-h-[10rem]   min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>
-							Actual grade / Average previous grade
-						</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className='align-self-center text-5xl font-bold text-white'>
-								{getAgonAg(set)}
-							</p>
-						</div>
-					</div>
+					<Block title='Last time / First time' data={lastOverFirstTime(set)} />
+					<Block
+						title='Last time / Average time'
+						data={lastOverAverageTime(set)}
+					/>
+					<Block
+						title='Last grade / First grade'
+						data={lastOverFirstGrade(set)}
+					/>
+					<Block
+						title='Last grade / Average grade'
+						data={lastOverAverageGrade(set)}
+					/>
 				</div>
 			</div>
 			<div className='mt-4 w-full flex-wrap'>
-				<h2 className='h2'>Actual Progression</h2>
+				<h2 className='h2'>Current progression</h2>
 				<div className='mt-4 flex w-full flex-wrap justify-around'>
-					<div className=' m-3 flex flex-auto flex-col items-center  rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Progress</h3>
-						<div className='flex h-full items-center justify-center'>
+					<Block
+						title='Current progress'
+						data={
 							<Donnuts
 								played={set.puzzles?.filter(p => p.played).length}
 								totalSet={set.length}
 							/>
-						</div>
-					</div>
-					<div className='m-3 flex min-h-[10rem]  min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Actual time</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							{GetActualTime(set)}
-						</div>
-					</div>
-					<div className=' m-3 flex  flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Average Grade</h3>
-						<div className='flex h-full items-center justify-center'>
-							<ChartOneLine rapidity={getRapidity(set)} />
-						</div>
-					</div>
+						}
+					/>
+
+					<Block title='Current time' data={<GetCurrentTime set={set} />} />
+					<Block title='Current grade' data={getCurrentGrade(set)} />
 				</div>
 			</div>
 
-			<div className='mt-10 pt-10'>
-				<ChartMultipleLine
-					array1={getArrayOfTimeByPuzzle(set)}
-					array2={getArrayOfMistakeByPuzzle(set)}
-					name1='time evolution'
-					name2='mistake evolution'
-				/>
+			<div className='mt-4 w-full flex-wrap'>
+				<h2 className='h2'>All puzzles</h2>
+				<div className='flex w-full flex-row flex-wrap gap-1'>
+					{set.puzzles.map(puzzle => (
+						<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
+					))}
+				</div>
 			</div>
 		</div>
 	);
