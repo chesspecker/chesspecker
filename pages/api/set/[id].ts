@@ -50,7 +50,7 @@ const put_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	const set = await update(id as string, request.body);
+	const set = await update(id as string, JSON.parse(request.body));
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
 		return;

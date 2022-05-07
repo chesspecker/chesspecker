@@ -64,6 +64,7 @@ const PlayingPage = ({set}: Props) => {
 	const [hasSound] = useAtom(soundAtom);
 	const [isSolutionClicked, setIsSolutionClicked] = useState(false);
 	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
+	const [timerSum, setTimerSum] = useState<number>(0);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useState<number>(
 		Date.now(),
 	);
@@ -165,24 +166,29 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
-		let timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
-		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
+		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
+		const timeWithMistakes = timeTaken + 3 * mistakes;
+		setTimerSum(previous => previous + timeWithMistakes);
 
 		const oldThemes = user.puzzleSolvedByCategories;
 
-		type UpdateUser = {
-			$inc?: {
-				totalPuzzleSolved: number;
-				puzzleSolvedByCategories?: Record<number, ThemeItem>;
-			};
-			$push?: {
-				puzzleSolvedByCategories: {
-					$each: ThemeItem[];
-				};
-			};
-		};
+		type UpdateUser =
+			| {
+					$inc: {
+						totalPuzzleSolved: number;
+						puzzleSolvedByCategories?: Record<number, ThemeItem>;
+					};
+			  }
+			| {
+					$push: {
+						puzzleSolvedByCategories: {
+							$each: ThemeItem[];
+						};
+					};
+			  };
 
 		let updateUser: UpdateUser = {
 			$inc: {
@@ -247,7 +253,7 @@ const PlayingPage = ({set}: Props) => {
 		const body: AchivementsArgs = {
 			streakMistakes,
 			streakTime,
-			completionTime: timeTaken,
+			completionTime: timeWithoutMistakes,
 			completionMistakes: mistakes,
 			totalPuzzleSolved: user.totalPuzzleSolved
 				? user.totalPuzzleSolved + 1
@@ -274,19 +280,19 @@ const PlayingPage = ({set}: Props) => {
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
-			timeTaken,
+			timeTaken: timeWithoutMistakes,
 			streak: puzzleItem.streak,
 		});
 
 		const update = {
 			$inc: {
 				'puzzles.$.count': 1,
-				currentTime: timeTaken + 3 * mistakes,
+				currentTime: timeWithMistakes,
 				progression: 1,
 			},
 			$push: {
 				'puzzles.$.mistakes': mistakes,
-				'puzzles.$.timeTaken': timeTaken,
+				'puzzles.$.timeTaken': timeWithoutMistakes,
 				'puzzles.$.grades': newGrade,
 			},
 			$set: {
@@ -342,12 +348,19 @@ const PlayingPage = ({set}: Props) => {
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
 	}, [updateFinishedPuzzle]);
 
+	const changeSet = useCallback(
+		async () => router.push(`/view/${set._id.toString()}`),
+		[set._id],
+	);
+
 	/**
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
 		let timeTaken = (Date.now() - initialSetTimer) / 1000;
-		timeTaken += mistakes * 3; // Add 3sec malus for each mistake
+		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
+		timeTaken += timerSum;
+
 		const update = {
 			$inc: {
 				cycles: 1,
@@ -361,29 +374,26 @@ const PlayingPage = ({set}: Props) => {
 				progression: 0,
 			},
 		};
+
 		try {
 			await fetch(`/api/set/${set._id.toString()}`, {
 				method: 'PUT',
 				body: JSON.stringify(update),
 			});
-			await router.push(`/view/${set._id.toString()}`);
 		} catch (error: unknown) {
 			console.log(error);
 		}
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [initialSetTimer, mistakes, set]);
+	}, [initialSetTimer, mistakes, set, timerSum]);
 
 	/**
 	 * Called after each correct move.
 	 */
 	const checkSetComplete = useCallback(async () => {
-		if (puzzleIndex + 1 === puzzleList.length) {
-			await audio('VICTORY', hasSound);
-			await updateFinishedSet();
-			return true;
-		}
-
-		return false;
+		if (puzzleIndex + 1 !== puzzleList.length) return false;
+		await audio('VICTORY', hasSound);
+		await updateFinishedSet();
+		return true;
 	}, [puzzleIndex, hasSound, puzzleList.length, updateFinishedSet]);
 
 	/**
@@ -397,7 +407,7 @@ const PlayingPage = ({set}: Props) => {
 					setAnimation(() => '');
 				}, 600);
 				const isSetComplete = await checkSetComplete();
-				if (isSetComplete) return true;
+				if (isSetComplete) return changeSet();
 				setIsComplete(() => true);
 				await audio('GENERIC', hasSound, 0.3);
 				if (hasAutoMove) {
