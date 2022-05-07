@@ -27,8 +27,7 @@ export const achievementsCategorys: AchievementsCategorys[] = [
 	},
 	{
 		name: 'type',
-		description:
-			"Achievement related to the categories you've been working on",
+		description: "Achievement related to the categories you've been working on",
 	},
 ];
 
@@ -51,7 +50,7 @@ export const achievements: AchievementInterface[] = [
 		category: 'random',
 	},
 
-	// advancement
+	// Advancement
 	{
 		id: 'first-puzzle',
 		name: 'First Puzzle',
@@ -63,8 +62,7 @@ export const achievements: AchievementInterface[] = [
 	{
 		id: 'sponsor',
 		name: 'Sponsor',
-		description:
-			"Because you're a sponsor, you've won those beautiful socks",
+		description: "Because you're a sponsor, you've won those beautiful socks",
 		isValidated: (args: AchivementsArgs) => args.isSponsor,
 		image: '/images/achievements/socks.png',
 		category: 'advancement',

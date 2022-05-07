@@ -56,9 +56,11 @@ const BecomeSponsor = ({
 				Become sponsor
 			</h1>
 			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
-				This website is free and ads-less and we are having fun coding it.<br/>
+				This website is free and ads-less and we are having fun coding it.
+				<br />
 				However, it still has a cost. Become a sponsor today to help us paying
-				server costs.<br/> It will also unlock a great badge! 🎉
+				server costs.
+				<br /> It will also unlock a great badge! 🎉
 			</p>
 			<iframe
 				allowFullScreen
