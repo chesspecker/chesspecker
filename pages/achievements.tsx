@@ -57,7 +57,7 @@ const Achievements = () => {
 										achievement =>
 											achievement.category === category.name && (
 												<Card
-													key={achievement.name}
+													key={achievement.id}
 													achievement={achievement}
 													isClaimed={checkIfWon(achievement)}
 												/>
