@@ -58,7 +58,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 
 const EmptyPuzzleSetComponent = ({image, text}) => (
 	<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
-		<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center border border-transparent bg-white bg-opacity-60 text-3xl font-medium text-sky-800 shadow-md backdrop-blur-xl backdrop-filter'>
+		<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center border border-transparent bg-white bg-opacity-60 text-3xl font-medium text-sky-800 shadow-md backdrop-blur-xl backdrop-filter rounded-xl'>
 			{image}
 			{text}
 		</div>

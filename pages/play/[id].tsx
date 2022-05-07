@@ -161,33 +161,9 @@ const PlayingPage = ({set}: Props) => {
 		const timeWithMistakes = timeTaken + 3 * mistakes;
 		setTimerSum(previous => previous + timeWithMistakes);
 		const oldThemes = user.puzzleSolvedByCategories;
-
-		let updateUserData: UpdateUser = {
-			$inc: {
-				totalPuzzleSolved: 1,
-			},
-		};
-
-		// Is there some puzzles in common in the old and new themes?
 		const newThemesIds = puzzle.Themes;
-		const themesInCommon = oldThemes.filter(t =>
-			newThemesIds.includes(t.title),
-		);
 
-		if (themesInCommon.length > 0) {
-			// If there are, we update the user's themes
-			for (const theme of themesInCommon) {
-				updateUserData.$inc[
-					`puzzleSolvedByCategories.${oldThemes.indexOf(theme)}.count`
-				] = 1;
-			}
-		}
-
-		try {
-			await update_.user(user._id.toString(), updateUserData);
-		} catch (error: unknown) {
-			console.log(error);
-		}
+		const promises: Array<Promise<any>> = [];
 
 		// Is there some themes not in common?
 		const oldThemesIds = new Set(oldThemes.map(t => t.title));
@@ -195,7 +171,7 @@ const PlayingPage = ({set}: Props) => {
 
 		if (themesNotInCommon.length > 0) {
 			// If there are, we add them to the user's themes
-			updateUserData = {
+			const updateUserData: UpdateUser = {
 				$push: {
 					puzzleSolvedByCategories: {
 						$each: [],
@@ -209,12 +185,42 @@ const PlayingPage = ({set}: Props) => {
 				});
 			}
 
-			try {
-				await update_.user(user._id.toString(), updateUserData);
-			} catch (error: unknown) {
-				console.log(error);
+			promises.push(
+				update_.user(user._id.toString(), updateUserData).catch(error => {
+					console.log(error);
+				}),
+			);
+		}
+
+		// Is there some puzzles in common in the old and new themes?
+		const themesInCommon = oldThemes.filter(t =>
+			newThemesIds.includes(t.title),
+		);
+
+		const incrementUser: UpdateUser = {
+			$inc: {
+				totalPuzzleSolved: 1,
+			},
+		};
+
+		if (themesInCommon.length > 0) {
+			// If there are, we update the user's themes
+			for (const theme of themesInCommon) {
+				incrementUser.$inc[
+					`puzzleSolvedByCategories.${oldThemes.indexOf(theme)}.count`
+				] = 1;
 			}
 		}
+
+		promises.push(
+			update_.user(user._id.toString(), incrementUser).catch(error => {
+				console.log(error);
+			}),
+		);
+
+		await Promise.all(promises).catch(error => {
+			console.log(error);
+		});
 
 		const body: AchivementsArgs = {
 			streakMistakes,
@@ -267,31 +273,26 @@ const PlayingPage = ({set}: Props) => {
 			},
 		};
 
-		try {
-			const result = await update_.puzzle(
-				set._id.toString(),
-				puzzleItem._id.toString(),
-				update,
-			);
-			/* eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare */
-			if (result.success === false) {
-				console.log(result.error);
-				return;
-			}
+		const result = await update_
+			.puzzle(set._id.toString(), puzzleItem._id.toString(), update)
+			.catch((error: unknown) => {
+				console.log(error);
+			});
 
-			const grades = result.puzzle.grades;
-			setPreviousPuzzle(previous => [
-				...previous,
-				{
-					grade: grades[grades.length - 1],
-					PuzzleId: result.puzzle._id.toString(),
-				},
-			]);
+		if (!result) return;
+		if (!result.success) return;
 
-			await mutate();
-		} catch (error: unknown) {
+		const grades = result.puzzle.grades;
+		setPreviousPuzzle(previous => [
+			...previous,
+			{
+				grade: grades[grades.length - 1],
+				PuzzleId: result.puzzle._id.toString(),
+			},
+		]);
+		await mutate().catch((error: unknown) => {
 			console.log(error);
-		}
+		});
 	}, [
 		puzzleIndex,
 		mistakes,
