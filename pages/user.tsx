@@ -47,7 +47,7 @@ const User = () => {
 					<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
 				</div>
 				<div className='m-2'>
-					<ButtonLink href={'/achievements'}>See all achievements</ButtonLink>
+					<ButtonLink href='/achievements'>See all achievements</ButtonLink>
 				</div>
 			</div>
 

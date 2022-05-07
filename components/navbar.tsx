@@ -37,7 +37,7 @@ const Navbar = () => {
 				</div>
 				<div className='mr-8 self-center text-lg text-white'>
 					<div className='flex'>
-						<Link passHref href={'/user/'}>
+						<Link passHref href='/user/'>
 							<a className='mr-5 flex items-center justify-center'>
 								{user?.isSponsor && <span>👑&nbsp;</span>}
 								{user?.username}
