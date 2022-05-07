@@ -10,6 +10,7 @@ import type {PuzzleSetInterface} from '@/types/models';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {DataMany} from '@/pages/api/set';
 import RemoveModal from '@/components/dashboard/remove-modal';
+import audio from '@/lib/sound';
 
 type PropsComponent = {
 	set: PuzzleSetInterface;
@@ -29,6 +30,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const onPlayClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
+		await audio('VICTORY', true, 0);
 		await router.push(`/play/${set._id.toString()}`);
 	};
 

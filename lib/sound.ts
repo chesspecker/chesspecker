@@ -13,8 +13,10 @@ const isIOS = (): boolean => {
 	return isIPad || isIPhone;
 };
 
+const isSafari = (): boolean => /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 const play = async (src: string, volume: HTMLMediaElement['volume']) => {
-	if (isIOS()) return;
+	if (isIOS() || isSafari()) return;
 	const audio = new Audio(src);
 	audio.volume = volume;
 	return audio.play();
