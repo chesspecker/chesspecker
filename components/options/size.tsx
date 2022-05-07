@@ -1,9 +1,9 @@
 import Slider from 'react-input-slider';
 import {useAtom} from 'jotai';
-import {optionsSizeAtom} from '@/lib/atoms';
+import {optionsµ} from '@/lib/atoms';
 
 const OptionSize = () => {
-	const [size, setSize] = useAtom(optionsSizeAtom);
+	const [size, setSize] = useAtom(optionsµ.size);
 	const handleChange = (values: {x: number; y: number}) => {
 		setSize(() => values.x);
 	};

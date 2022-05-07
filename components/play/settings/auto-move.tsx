@@ -1,8 +1,8 @@
 import {useAtom} from 'jotai';
-import {autoMoveAtom} from '@/lib/atoms';
+import {configµ} from '@/lib/atoms';
 
 const AutoMoveSettings = () => {
-	const [autoMove, setAutoMove] = useAtom(autoMoveAtom);
+	const [autoMove, setAutoMove] = useAtom(configµ.autoMove);
 	return (
 		<>
 			<span>Auto move to next puzzle</span>

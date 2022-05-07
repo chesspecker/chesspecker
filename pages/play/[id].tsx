@@ -5,50 +5,49 @@ import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
-import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
-import type {Data as SetData} from '@/api/set/[id]';
 import {
 	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
 	AchivementsArgs,
-	ThemeItem,
 } from '@/types/models';
 import Layout from '@/layouts/main';
-import Chessboard from '@/components/play/chessboard';
 import {sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
 import audio from '@/lib/sound';
-import {
-	soundAtom,
-	orientationAtom,
-	animationAtom,
-	autoMoveAtom,
-} from '@/lib/atoms';
+import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import useUser from '@/hooks/use-user';
-import Flip from '@/components/play/flip';
-import Settings from '@/components/play/settings';
-import Promotion from '@/components/play/promotion';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
-import WithoutSsr from '@/components/without-ssr';
-import History from '@/components/play/history';
+import type {HistoryProps} from '@/components/play/bottom-bar/history';
 import {ButtonLink as Button} from '@/components/button';
-import Progress from '@/components/play/progress';
-import Solution from '@/components/play/solution';
-import MoveToNext from '@/components/play/move-to-next';
 import {checkForAchievement} from '@/lib/achievements';
 import Notification from '@/components/notification';
 import useStreak from '@/hooks/use-streak';
 import {withSessionSsr} from '@/lib/session';
+import {get as get_, update as update_, UpdateUser} from '@/lib/play';
+import Board from '@/components/play/board';
+import RightBar from '@/components/play/right-bar';
+import BottomBar from '@/components/play/bottom-bar';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 
-type HistoryProps = Array<{grade: number; PuzzleId: string}>;
 type Props = {set: PuzzleSetInterface};
 const PlayingPage = ({set}: Props) => {
+	const [hasAutoMove] = useAtom(configµ.autoMove);
+	const [hasSound] = useAtom(configµ.sound);
+
+	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
+	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
+	const [, setTotalPuzzles] = useAtom(playµ.totalPuzzles);
+	const [isComplete, setIsComplete] = useAtom(playµ.isComplete);
+	const [, setCompletedPuzzles] = useAtom(playµ.completed);
+
+	const [orientation, setOrientation] = useAtom(orientationµ);
+	const [, setAnimation] = useAtom(animationµ);
+
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
 	const [puzzleList, setPuzzleList] = useState<PuzzleItemInterface[]>([]);
@@ -57,24 +56,16 @@ const PlayingPage = ({set}: Props) => {
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
-	const [previousPuzzle, setPreviousPuzzle] = useState<HistoryProps>([]);
+	const [previousPuzzle, setPreviousPuzzle] = useState<HistoryProps['puzzles']>(
+		[],
+	);
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
-	const [hasAutoMove] = useAtom(autoMoveAtom);
-	const [hasSound] = useAtom(soundAtom);
-	const [isSolutionClicked, setIsSolutionClicked] = useState(false);
 	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
 	const [timerSum, setTimerSum] = useState<number>(0);
-	const [initialPuzzleTimer, setInitialPuzzleTimer] = useState<number>(
-		Date.now(),
-	);
-	const [isComplete, setIsComplete] = useState(false);
 	const [isRunning, setIsRunning] = useState(true);
-	const [completedPuzzles, setCompletedPuzzles] = useState(0);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const {isOpen, show, hide} = useModal();
-	const [, setAnimation] = useAtom(animationAtom);
-	const [orientation, setOrientation] = useAtom(orientationAtom);
 	const router = useRouter();
 	const {user, mutate} = useUser();
 	const streak = useStreak(user._id.toString(), user.streak);
@@ -92,6 +83,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		setInitialSetTimer(() => set.currentTime);
 		setCompletedPuzzles(() => set.progression);
+		setTotalPuzzles(() => set.length);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
@@ -103,9 +95,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffectAsync(async () => {
 		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
 		const nextPuzzle = puzzleList[puzzleIndex];
-		const data = await fetch(`/api/puzzle/${nextPuzzle._id.toString()}`).then(
-			async response => response.json() as Promise<PuzzleData>,
-		);
+		const data = await get_.puzzle(nextPuzzle._id.toString());
 		if (data.success) setPuzzle(() => data.puzzle);
 	}, [puzzleList, puzzleIndex]);
 
@@ -172,25 +162,9 @@ const PlayingPage = ({set}: Props) => {
 		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
 		const timeWithMistakes = timeTaken + 3 * mistakes;
 		setTimerSum(previous => previous + timeWithMistakes);
-
 		const oldThemes = user.puzzleSolvedByCategories;
 
-		type UpdateUser =
-			| {
-					$inc: {
-						totalPuzzleSolved: number;
-						puzzleSolvedByCategories?: Record<number, ThemeItem>;
-					};
-			  }
-			| {
-					$push: {
-						puzzleSolvedByCategories: {
-							$each: ThemeItem[];
-						};
-					};
-			  };
-
-		let updateUser: UpdateUser = {
+		let updateUserData: UpdateUser = {
 			$inc: {
 				totalPuzzleSolved: 1,
 			},
@@ -205,17 +179,14 @@ const PlayingPage = ({set}: Props) => {
 		if (themesInCommon.length > 0) {
 			// If there are, we update the user's themes
 			for (const theme of themesInCommon) {
-				updateUser.$inc[
+				updateUserData.$inc[
 					`puzzleSolvedByCategories.${oldThemes.indexOf(theme)}.count`
 				] = 1;
 			}
 		}
 
 		try {
-			await fetch(`/api/user/${user._id.toString()}`, {
-				method: 'PUT',
-				body: JSON.stringify(updateUser),
-			});
+			await update_.user(user._id.toString(), updateUserData);
 		} catch (error: unknown) {
 			console.log(error);
 		}
@@ -226,7 +197,7 @@ const PlayingPage = ({set}: Props) => {
 
 		if (themesNotInCommon.length > 0) {
 			// If there are, we add them to the user's themes
-			updateUser = {
+			updateUserData = {
 				$push: {
 					puzzleSolvedByCategories: {
 						$each: [],
@@ -234,17 +205,14 @@ const PlayingPage = ({set}: Props) => {
 				},
 			};
 			for (const theme of themesNotInCommon) {
-				updateUser.$push.puzzleSolvedByCategories.$each.push({
+				updateUserData.$push.puzzleSolvedByCategories.$each.push({
 					title: theme,
 					count: 1,
 				});
 			}
 
 			try {
-				await fetch(`/api/user/${user._id.toString()}`, {
-					method: 'PUT',
-					body: JSON.stringify(updateUser),
-				});
+				await update_.user(user._id.toString(), updateUserData);
 			} catch (error: unknown) {
 				console.log(error);
 			}
@@ -302,11 +270,11 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		try {
-			const result = await fetch(`/api/puzzle/${puzzleItem._id.toString()}`, {
-				method: 'PUT',
-				body: JSON.stringify({_id: set._id, update}),
-			}).then(async response => response.json() as Promise<UpdateData>);
-
+			const result = await update_.puzzle(
+				set._id.toString(),
+				puzzleItem._id.toString(),
+				update,
+			);
 			/* eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare */
 			if (result.success === false) {
 				console.log(result.error);
@@ -357,16 +325,16 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
-		let timeTaken = (Date.now() - initialSetTimer) / 1000;
-		timeTaken = Number.parseInt(timeTaken.toFixed(2), 10);
-		timeTaken += timerSum;
+		const timeTaken = (Date.now() - initialSetTimer) / 1000;
+		const formattedTime = Number.parseInt(timeTaken.toFixed(2), 10);
+		const totalTime = formattedTime + timerSum + 1;
 
 		const update = {
 			$inc: {
 				cycles: 1,
 			},
 			$push: {
-				times: timeTaken + 1,
+				times: totalTime,
 			},
 			$set: {
 				'puzzles.$[].played': false,
@@ -376,10 +344,7 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		try {
-			await fetch(`/api/set/${set._id.toString()}`, {
-				method: 'PUT',
-				body: JSON.stringify(update),
-			});
+			await update_.set(set._id.toString(), update);
 		} catch (error: unknown) {
 			console.log(error);
 		}
@@ -633,48 +598,21 @@ const PlayingPage = ({set}: Props) => {
 				<div className='flex w-full flex-col items-center justify-center md:flex-row  '>
 					<div className='hidden w-36 md:invisible md:block ' />
 					<div className='max-w-[33rem] w-11/12 md:w-full  flex-auto  '>
-						<WithoutSsr>
-							<Chessboard
-								config={{...config, orientation, events: {move: onMove}}}
-							/>
-						</WithoutSsr>
-
-						<Promotion
+						<Board
+							config={{...config, orientation, events: {move: onMove}}}
 							isOpen={isOpen}
 							hide={hide}
 							color={getColor(chess.turn())}
 							onPromote={promotion}
 						/>
-						<div className='flex flex-row-reverse items-end gap-2 py-1.5 text-gray-400'>
-							<div className='flex h-full items-start justify-start'>
-								<Settings />
-								<Flip />
-							</div>
-							<History puzzles={previousPuzzle} />
-						</div>
+
+						<BottomBar puzzles={previousPuzzle} />
 					</div>
-					<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
-						<div className='mt-2'>
-							<Progress
-								totalPuzzles={set.length}
-								completedPuzzles={completedPuzzles}
-							/>
-						</div>
-						<div className='mt-2'>
-							<Solution
-								time={initialPuzzleTimer}
-								isSolutionClicked={isSolutionClicked}
-								setSolution={setIsSolutionClicked}
-								isComplete={isComplete}
-								answer={moveHistory[moveNumber]}
-							/>
-							<MoveToNext
-								isComplete={isComplete}
-								changePuzzle={changePuzzle}
-								launchTimer={launchTimer}
-							/>
-						</div>
-					</div>
+					<RightBar
+						answer={moveHistory[moveNumber]}
+						changePuzzle={changePuzzle}
+						launchTimer={launchTimer}
+					/>
 				</div>
 			</div>
 			<Notification
@@ -704,9 +642,7 @@ export const getServerSideProps = withSessionSsr(
 		const id: string = params.id;
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-		const data = await fetch(`${baseUrl}/api/set/${id}`).then(
-			async response => response.json() as Promise<SetData>,
-		);
+		const data = await get_.set(baseUrl, id);
 		if (!data.success) return {notFound: true};
 		if (data.set.user.toString() !== req.session.userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};

@@ -1,8 +1,8 @@
 import {useAtom} from 'jotai';
-import {soundAtom} from '@/lib/atoms';
+import {configµ} from '@/lib/atoms';
 
 const SoundSettings = () => {
-	const [sound, setSound] = useAtom(soundAtom);
+	const [sound, setSound] = useAtom(configµ.sound);
 	return (
 		<>
 			<span>Sound effects</span>

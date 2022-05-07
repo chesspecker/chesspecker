@@ -3,12 +3,7 @@ import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
 import Image from 'next/image';
-import {
-	optionsTitleAtom,
-	optionsSizeAtom,
-	optionsLevelAtom,
-	ratingAtom,
-} from '@/lib/atoms';
+import {optionsµ, ratingAtom} from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import OptionTextInput from '@/components/options/text-input';
@@ -23,10 +18,10 @@ import loading from '@/public/images/spinner.svg';
 const OptionsPage = () => {
 	const router = useRouter();
 	const [isDisabled, setIsDisabled] = useState(false);
-	const [title] = useAtom<string>(optionsTitleAtom);
-	const [size] = useAtom<number>(optionsSizeAtom);
+	const [title] = useAtom<string>(optionsµ.title);
+	const [size] = useAtom<number>(optionsµ.size);
+	const [level] = useAtom<Difficulty>(optionsµ.level);
 	const [rating] = useAtom(ratingAtom);
-	const [level] = useAtom<Difficulty>(optionsLevelAtom);
 	const [themeArray, setThemeArray] = useState<string[]>(['healthyMix']);
 	const {isOpen, show} = useModal(false);
 

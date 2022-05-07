@@ -1,4 +1,4 @@
-type Props = {
+export type HistoryProps = {
 	puzzles: Array<{
 		grade: number;
 		PuzzleId: string;
@@ -21,7 +21,7 @@ const getClasses = (grade: number) => {
 	}
 };
 
-const History = ({puzzles}: Props) => {
+const History = ({puzzles}: HistoryProps) => {
 	return (
 		<div className='flex w-full flex-row flex-wrap gap-1'>
 			{puzzles.map(puzzle => (

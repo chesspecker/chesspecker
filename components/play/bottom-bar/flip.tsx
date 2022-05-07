@@ -1,10 +1,10 @@
 import {RefreshIcon} from '@heroicons/react/solid';
 import {useAtom} from 'jotai';
 import {memo} from 'react';
-import {orientationAtom} from '@/lib/atoms';
+import {orientationµ} from '@/lib/atoms';
 
 const Flip = () => {
-	const [, setOrientation] = useAtom(orientationAtom);
+	const [, setOrientation] = useAtom(orientationµ);
 	const handleClick = () => {
 		setOrientation(state => (state === 'white' ? 'black' : 'white'));
 	};

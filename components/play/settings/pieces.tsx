@@ -1,8 +1,8 @@
 import {useAtom} from 'jotai';
-import {Pieces, piecesAtom} from '@/lib/atoms';
+import {Pieces, configµ} from '@/lib/atoms';
 
 const PiecesSettings = () => {
-	const [pieces, setPieces] = useAtom(piecesAtom);
+	const [pieces, setPieces] = useAtom(configµ.pieces);
 	return (
 		<>
 			<div>Pieces</div>

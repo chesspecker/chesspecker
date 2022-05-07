@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import {UserIcon, HomeIcon, LightningBoltIcon} from '@heroicons/react/solid';
 import Link from 'next/link';
 import {UserInterface} from '@/types/models';

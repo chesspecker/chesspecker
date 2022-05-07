@@ -1,31 +1,20 @@
-import {Dispatch, memo, SetStateAction, useCallback, useEffect} from 'react';
-import {Button} from '../button';
+import {memo, useEffect} from 'react';
+import {useAtom} from 'jotai';
+import {Button} from '../../button';
 import useTimer from '@/hooks/use-timer';
+import {playµ} from '@/lib/atoms';
 
-type Props = {
-	time: number;
-	answer: string;
-	isComplete: boolean;
-	isSolutionClicked: boolean;
-	setSolution: Dispatch<SetStateAction<boolean>>;
-};
+type Props = {answer: string};
 
 const defaultClasses =
 	'mx-auto md:mx-2 w-36 rounded-md bg-gray-800 text-white leading-8';
 const disabledClasses = `block cursor-default self-center border border-none border-transparent bg-opacity-70 px-2.5 py-2 text-center font-merriweather text-sm md:text-lg font-bold shadow-sm ${defaultClasses}`;
 
-const Solution = ({
-	time,
-	answer,
-	isComplete,
-	isSolutionClicked,
-	setSolution,
-}: Props) => {
+const Solution = ({answer}: Props) => {
+	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
+	const [time] = useAtom(playµ.timer);
+	const [isComplete] = useAtom(playµ.isComplete);
 	const {timer, updateTimer} = useTimer(time - time);
-
-	const handleClick = useCallback(() => {
-		setSolution(() => true);
-	}, [setSolution]);
 
 	useEffect(() => {
 		updateTimer(time - time);
@@ -40,7 +29,12 @@ const Solution = ({
 		return <span className={disabledClasses}>{answer}</span>;
 
 	return (
-		<Button className={defaultClasses} onClick={handleClick}>
+		<Button
+			className={defaultClasses}
+			onClick={() => {
+				setIsSolutionClicked(() => true);
+			}}
+		>
 			VIEW SOLUTION
 		</Button>
 	);

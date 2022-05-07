@@ -3,16 +3,16 @@ import {Chessground as nativeChessground} from 'chessground';
 import {Config} from 'chessground/config';
 import {Api} from 'chessground/api';
 import {useAtom} from 'jotai';
-import {animationAtom, boardAtom, piecesAtom, get_} from '@/lib/atoms';
+import {animationµ, configµ, get_} from '@/lib/atoms';
 
 interface Props {
 	config?: Partial<Config>;
 }
 
 const Chessground = ({config = {}}: Props) => {
-	const [board, setBoard] = useAtom(boardAtom);
-	const [pieces, setPieces] = useAtom(piecesAtom);
-	const [animation] = useAtom(animationAtom);
+	const [board, setBoard] = useAtom(configµ.board);
+	const [pieces, setPieces] = useAtom(configµ.pieces);
+	const [animation] = useAtom(animationµ);
 	const [api, setApi] = useState<Api | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
 
