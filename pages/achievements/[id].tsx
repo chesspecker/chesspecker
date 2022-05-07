@@ -1,39 +1,41 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
-import {GetServerSidePropsContext} from 'next';
 import Layout from '@/layouts/main';
 import Card from '@/components/card-achievement';
-import {Data as UserData} from '@/api/user/[id]';
 import {achievements, achievementsCategorys} from '@/data/achievements';
 import type {AchievementInterface, UserInterface} from '@/types/models';
+import useUser from '@/hooks/use-user';
 
-type Props = {
-	user: UserInterface;
-};
+const Achievements = () => {
+	const data = useUser();
+	const [user, setUser] = useState<UserInterface>();
+	const [achievementsList, setList] = useState<AchievementInterface[]>();
+	const [isLoading, setIsLoading] = useState(true);
 
-const Achievements = ({user}: Props) => {
-	const itemAchievements = user.validatedAchievements;
-	const [userAchievements, setUserAchievement] =
-		useState<AchievementInterface[]>();
 	useEffect(() => {
-		if (!itemAchievements) return;
-		const array = [];
-		for (const item of itemAchievements) {
-			array.push(achievements.find(achivement => achivement.id === item.id));
-		}
+		if (!data) return;
+		setUser(data.user);
+	}, [data]);
 
-		const userAchievements_ = array;
-		setUserAchievement(userAchievements_);
-	}, [itemAchievements]);
+	useEffect(() => {
+		if (!user) return;
+		const itemAchievements = user.validatedAchievements;
+		setList(() => {
+			const array: AchievementInterface[] = [];
+			for (const item of itemAchievements) {
+				array.push(achievements.find(achivement => achivement.id === item.id));
+			}
 
-	const checkIfWon = (achievement: AchievementInterface) => {
-		const isWon = userAchievements?.find(
-			achievement_ => achievement_.id === achievement?.id,
-		);
-		if (isWon) return true;
-		return false;
-	};
+			return array;
+		});
 
+		setIsLoading(() => false);
+	}, [user]);
+
+	const checkIfWon = (achievement: AchievementInterface) =>
+		achievementsList.some(achievement_ => achievement_.id === achievement?.id);
+
+	if (isLoading) return null;
 	return (
 		<div className='flex min-h-screen flex-col items-center justify-center pt-32 pb-24'>
 			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white sm:text-4xl md:text-5xl'>
@@ -55,7 +57,7 @@ const Achievements = ({user}: Props) => {
 										achievement =>
 											achievement.category === category.name && (
 												<Card
-													key={achievement.id}
+													key={achievement.name}
 													achievement={achievement}
 													isClaimed={checkIfWon(achievement)}
 												/>
@@ -73,18 +75,3 @@ const Achievements = ({user}: Props) => {
 
 Achievements.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default Achievements;
-
-interface SSRProps extends GetServerSidePropsContext {
-	params: {id: string | undefined};
-}
-
-export const getServerSideProps = async ({req, params}: SSRProps) => {
-	const id: string = params.id;
-	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-	const data = await fetch(`${baseUrl}/api/user/${id}`).then(
-		async response => response.json() as Promise<UserData>,
-	);
-	if (!data.success) return {notFound: true};
-	return {props: {user: data.user}};
-};
