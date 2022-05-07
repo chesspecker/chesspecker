@@ -13,7 +13,7 @@ export const achievementsCategorys: AchievementsCategorys[] = [
 		description: 'Achievements awarded in a perfectly random way',
 	},
 	{
-		name: 'avancement',
+		name: 'advancement',
 		description: 'Achievements related to your progress on this site',
 	},
 	{
@@ -50,23 +50,15 @@ export const achievements: AchievementInterface[] = [
 		image: '/images/achievements/plunger.png',
 		category: 'random',
 	},
-	{
-		id: 'clown',
-		name: 'Clown',
-		description: 'We think you are THE funniest user, no kidding!',
-		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 181,
-		image: '/images/achievements/clown.png',
-		category: 'random',
-	},
 
-	// AVANCEMENT
+	// advancement
 	{
 		id: 'first-puzzle',
 		name: 'First Puzzle',
 		description: 'You completed your first puzzle!',
 		isValidated: (args: AchivementsArgs) => args.totalPuzzleSolved === 1,
 		image: '/images/achievements/accordeon.png',
-		category: 'avancement',
+		category: 'advancement',
 	},
 	{
 		id: 'sponsor',
@@ -75,7 +67,7 @@ export const achievements: AchievementInterface[] = [
 			"Because you're a sponsor, you've won those beautiful socks",
 		isValidated: (args: AchivementsArgs) => args.isSponsor,
 		image: '/images/achievements/socks.png',
-		category: 'avancement',
+		category: 'advancement',
 	},
 
 	// PERFORMANCE
@@ -175,7 +167,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'King goat',
 		description: 'Solve a puzzle with more than 30 mistakes...',
 		isValidated: (args: AchivementsArgs) => args.completionMistakes > 30,
-		image: '/images/achievements/gaot-2.png',
+		image: '/images/achievements/goat-2.png',
 		category: 'performance',
 	},
 	// DURATION
@@ -201,7 +193,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'King chess-addict',
 		description: 'Play at least 15mn each day for a month',
 		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 30,
-		image: '/images/achievements/flame-3.png',
+		image: '/images/achievements/flame-2.png',
 		category: 'duration',
 	},
 	{
@@ -221,8 +213,8 @@ for (const theme of THEMES) {
 	achievements.push(
 		{
 			id: `NM-${theme.title}`,
-			name: `National Master of ${theme.title}`,
-			description: `Your are now a NM of ${theme.title}`,
+			name: `NM of ${theme.title}`,
+			description: `Your are now a National Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
 				args.themes.some(t => t.title === theme.id && t.count === 400),
 			image: '/images/achievements/shield-0.png',
@@ -230,8 +222,8 @@ for (const theme of THEMES) {
 		},
 		{
 			id: `IM-${theme.title}`,
-			name: `International Master of ${theme.title}`,
-			description: `Your are now a IM of ${theme.title}`,
+			name: `IM of ${theme.title}`,
+			description: `Your are now a International Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
 				args.themes.some(t => t.title === theme.id && t.count === 800),
 			image: '/images/achievements/shield-1.png',
@@ -239,8 +231,8 @@ for (const theme of THEMES) {
 		},
 		{
 			id: `GM-${theme.title}`,
-			name: `Grand Master of ${theme.title}`,
-			description: `Your are now a GM of ${theme.title}`,
+			name: `GM of ${theme.title}`,
+			description: `Your are now a Grand Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
 				args.themes.some(t => t.title === theme.id && t.count === 1200),
 			image: '/images/achievements/shield-2.png',
