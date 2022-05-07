@@ -56,9 +56,9 @@ const BecomeSponsor = ({
 				Become sponsor
 			</h1>
 			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
-				We love to code on this site. Become a sponsor to help us pay for the
-				server costs and to have the chance to unlock a great (really nice)
-				badge !
+				This website is free and ads-less and we are having fun coding it.<br/>
+				However, it still has a cost. Become a sponsor today to help us paying
+				server costs.<br/> It will also unlock a great badge! 🎉
 			</p>
 			<iframe
 				allowFullScreen
@@ -69,7 +69,7 @@ const BecomeSponsor = ({
 				className='giphy-embed'
 			/>
 			<p className='mb-6 mt-7 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
-				How much does it cost? Just one small coffee per month !
+				How much does it cost? Just about a small coffee per month!
 			</p>
 
 			<div className='flex w-2/3 flex-col lg:flex-row'>
@@ -79,7 +79,7 @@ const BecomeSponsor = ({
 						handleClick('price_1KrH3UGL9hdiIkIS71GBjPNS');
 					}}
 				>
-					1 Coffee ☕️ (3€)
+					☕️ 3€
 				</Button>
 				<Button
 					className='m-2'
@@ -87,7 +87,7 @@ const BecomeSponsor = ({
 						handleClick('price_1KrH9zGL9hdiIkISPg2FKEBD');
 					}}
 				>
-					2 Coffee (5€) ☕️☕️
+					☕️☕️ 5€
 				</Button>
 				<Button
 					className='m-2'
@@ -95,7 +95,7 @@ const BecomeSponsor = ({
 						handleClick('price_1KrH5yGL9hdiIkIShHkBKgPN');
 					}}
 				>
-					Lots of coffee (15€)
+					☕️☕️☕️ 15€
 				</Button>
 			</div>
 		</div>
