@@ -300,6 +300,7 @@ const PlayingPage = ({set}: Props) => {
 		});
 	}, [
 		puzzleIndex,
+		puzzle,
 		mistakes,
 		puzzleList,
 		initialPuzzleTimer,
@@ -307,7 +308,6 @@ const PlayingPage = ({set}: Props) => {
 		isSolutionClicked,
 		getGrade,
 		mutate,
-		puzzle.Themes,
 		streak,
 		streakMistakes,
 		streakTime,
