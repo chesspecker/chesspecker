@@ -14,6 +14,7 @@ const Timer = ({value, mistakes, isRunning}: Props) => {
 
 	useEffect(() => {
 		toggleTimer(isRunning);
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [isRunning]);
 
 	useEffect(() => {

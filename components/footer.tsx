@@ -8,12 +8,13 @@ const Footer = () => (
 	<footer className='flex-row items-center justify-center hidden w-full h-24 shadow sm:flex bg-slate-900 sm:visible '>
 		<div className='flex content-center justify-between w-full'>
 			<div className='flex flex-col items-center justify-center mx-1 sm:mx-5'>
-				{/* TODO: add link to sponsor page */}
 				<Link href='/sponsor'>
 					<a>
-						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
-							<HeartIcon className='w-6 h-6 text-white' />
-							<p className='ml-3 text-xl text-white cursor-pointer'>Support</p>
+						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer group'>
+							<HeartIcon className='w-6 h-6 text-white group-hover:text-pink-600' />
+							<p className='ml-3 text-xl text-white cursor-pointer group-hover:text-pink-600'>
+								Support
+							</p>
 						</div>
 					</a>
 				</Link>
@@ -22,7 +23,7 @@ const Footer = () => (
 				<Link href='https://github.com/chesspecker'>
 					<a>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
-							<div className='hidden md:mt-1 md:block'>
+							<div className='hidden md:block'>
 								{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 								<Image src={github} width={30} height={30} />
 							</div>
@@ -32,7 +33,7 @@ const Footer = () => (
 						</div>
 					</a>
 				</Link>
-				<Link href='https://discord.gg/AaaAuUZK'>
+				<Link href='https://discord.gg/qDftJZBBHa'>
 					<a>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
 							<div className='hidden md:block'>

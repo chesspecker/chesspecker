@@ -24,7 +24,9 @@ const RemoveModal = ({onClick}: Props) => {
 
 			<Modal header='Delete' isOpen={isOpen} onClose={hide}>
 				<div className='flex flex-col items-center text-sm'>
-					<p className='pb-3'>Are you shure to cancel subscription</p>
+					<p className='pb-3'>
+						Are you sure you want to cancel your subscription?
+					</p>
 					<iframe
 						allowFullScreen
 						src='https://giphy.com/embed/CT5Ye7uVJLFtu'
@@ -36,7 +38,6 @@ const RemoveModal = ({onClick}: Props) => {
 
 					<div className='p-2 m-2'>
 						<Button onClick={onClick}>Yes</Button>
-
 						<Button onClick={hide}>No</Button>
 					</div>
 				</div>
@@ -136,9 +137,7 @@ const SponsorPage = () => {
 	useEffect(() => {
 		if (!data) return;
 		setUser(data.user);
-		if (user?.isSponsor) {
-			// TODO: Retrive contract
-		}
+		// TODO: Retrive contract
 	}, [data]);
 
 	useEffectAsync(async () => {

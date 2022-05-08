@@ -9,18 +9,30 @@ import {
 	LightningBoltIcon,
 } from '@heroicons/react/solid';
 import Link from 'next/link';
-import {UserInterface} from '@/types/models';
 
-type BurgerProps = {
-	user: UserInterface;
+type BurgerItemProps = {
+	href: string;
+	icon: JSX.Element;
+	text: string;
 };
 
-type MenuProps = {
-	/* eslint-disable-next-line react/no-unused-prop-types */
-	active: boolean;
-};
+const BurgerItem = ({href, icon, text}: BurgerItemProps) => (
+	<Link href={href}>
+		<a>
+			<Menu.Item>
+				<button
+					type='button'
+					className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group'
+				>
+					{icon}
+					{text}
+				</button>
+			</Menu.Item>
+		</a>
+	</Link>
+);
 
-const Burger = ({user}: BurgerProps) => {
+const Burger = () => {
 	return (
 		<div className='fixed z-20 flex items-end justify-end visible w-56 safe-top top-5 right-5 sm:hidden'>
 			<Menu as='div' className='relative inline-block text-left'>
@@ -42,83 +54,35 @@ const Burger = ({user}: BurgerProps) => {
 					leaveTo='transform opacity-0 scale-95'
 				>
 					<Menu.Items className='absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
-						<Link passHref href={`/user/${user?._id.toString()}`}>
-							<Menu.Item>
-								{({active}: MenuProps) => (
-									<button
-										type='button'
-										className={`${
-											active ? ' text-white bg-blue-200' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<UserIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Profil
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
-						<Link passHref href='/dashboard'>
-							<Menu.Item>
-								{({active}: MenuProps) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<HomeIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Dashboard
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
+						<BurgerItem
+							href='/user'
+							icon={<UserIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Profil'
+						/>
 
-						<Link passHref href='/api/auth/logout'>
-							<Menu.Item>
-								{({active}: MenuProps) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<LogoutIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Logout
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
-						<Link passHref href='/create'>
-							<Menu.Item>
-								{({active}: MenuProps) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<PlusIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										New set
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
+						<BurgerItem
+							href='/dashboard'
+							icon={<HomeIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Dashboard'
+						/>
 
-						<Link passHref href={`/achievements/${user?._id.toString()}`}>
-							<Menu.Item>
-								{({active}: MenuProps) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<LightningBoltIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Achievements
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
+						<BurgerItem
+							href='/api/auth/logout'
+							icon={<LogoutIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Logout'
+						/>
+
+						<BurgerItem
+							href='/create'
+							icon={<PlusIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='New set'
+						/>
+
+						<BurgerItem
+							href='/achievements'
+							icon={<LightningBoltIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Achievements'
+						/>
 					</Menu.Items>
 				</Transition>
 			</Menu>

@@ -58,7 +58,11 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	);
 };
 
-const EmptyPuzzleSetComponent = ({image, text}) => (
+type EmptyComponentProps = {
+	image: JSX.Element;
+	text: JSX.Element;
+};
+const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
 	<div className='relative flex flex-col w-64 h-64 p-4 m-4 overflow-hidden text-white rounded-xl'>
 		<div className='absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full text-3xl font-medium bg-white border border-transparent shadow-md cursor-pointer bg-opacity-60 text-sky-800 backdrop-blur-xl backdrop-filter rounded-xl'>
 			{image}
@@ -84,6 +88,7 @@ const PuzzleSetMap = () => {
 		<div className='flex flex-wrap items-center justify-center'>
 			{isLoading ? (
 				<EmptyPuzzleSetComponent
+					/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
 					image={<Image src={spinner} className='animate-spin' />}
 					text={<p className='mt-4 animate-pulse'>Loading...</p>}
 				/>
@@ -94,6 +99,7 @@ const PuzzleSetMap = () => {
 			<Link href='/create'>
 				<a>
 					<EmptyPuzzleSetComponent
+						/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
 						image={<Image src={plus} />}
 						text={<p className='mt-4'>Create a set</p>}
 					/>

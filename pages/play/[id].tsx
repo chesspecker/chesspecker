@@ -283,13 +283,18 @@ const PlayingPage = ({set}: Props) => {
 		if (!result.success) return;
 
 		const grades = result.puzzle.grades;
-		setPreviousPuzzle(previous => [
-			...previous,
-			{
-				grade: grades[grades.length - 1],
-				PuzzleId: result.puzzle._id.toString(),
-			},
-		]);
+		setPreviousPuzzle(previous => {
+			if (previous.length >= 12) previous.shift();
+
+			return [
+				...previous,
+				{
+					grade: grades[grades.length - 1],
+					PuzzleId: result.puzzle._id.toString(),
+				},
+			];
+		});
+
 		await mutate().catch((error: unknown) => {
 			console.log(error);
 		});
@@ -301,6 +306,12 @@ const PlayingPage = ({set}: Props) => {
 		set._id,
 		isSolutionClicked,
 		getGrade,
+		mutate,
+		puzzle.Themes,
+		streak,
+		streakMistakes,
+		streakTime,
+		user,
 	]);
 
 	/**
@@ -313,11 +324,12 @@ const PlayingPage = ({set}: Props) => {
 		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [updateFinishedPuzzle]);
 
 	const changeSet = useCallback(
 		async () => router.push(`/view/${set._id.toString()}`),
-		[set._id],
+		[set._id, router],
 	);
 
 	/**
