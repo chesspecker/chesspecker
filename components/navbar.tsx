@@ -19,7 +19,7 @@ const Navbar = () => {
 	return (
 		<>
 			<Burger user={user} />
-			<div className='fixed top-0 z-10 sm:flex w-full items-center justify-between bg-sky-700 font-merriweather shadow hidden sm:visible'>
+			<div className='fixed top-0 z-10 items-center justify-between hidden w-full font-sans shadow sm:flex bg-sky-700 sm:visible'>
 				<div className='flex cursor-pointer'>
 					<Link passHref href='/dashboard'>
 						<a>
@@ -28,24 +28,24 @@ const Navbar = () => {
 									{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 									<Image src={logo} />
 								</div>
-								<p className='ml-1 mr-4 hidden self-center text-sm text-white sm:block md:text-lg'>
+								<p className='self-center hidden ml-1 mr-4 text-sm text-white sm:block md:text-lg'>
 									— Chesspecker
 								</p>
 							</div>
 						</a>
 					</Link>
 				</div>
-				<div className='mr-8 self-center text-lg text-white'>
+				<div className='self-center mr-8 text-lg text-white'>
 					<div className='flex'>
 						<Link passHref href='/user/'>
-							<a className='mr-5 flex items-center justify-center'>
+							<a className='flex items-center justify-center mr-5'>
 								{user?.isSponsor && <span>👑&nbsp;</span>}
 								{user?.username}
 							</a>
 						</Link>
 						<Link passHref href='/api/auth/logout'>
 							<a className='flex'>
-								<LogoutIcon className='mr-2 mt-1 h-3 w-3 text-white md:h-5 md:w-5' />
+								<LogoutIcon className='w-3 h-3 mt-1 mr-2 text-white md:h-5 md:w-5' />
 								Logout
 							</a>
 						</Link>

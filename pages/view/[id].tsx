@@ -20,7 +20,7 @@ const ParsedTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
 	const totalTime = getTotalTime(set);
 	const [days, hours, minutes, secondes] = useClock(totalTime);
 	return (
-		<p className='align-self-center text-2xl font-bold text-white'>
+		<p className='text-2xl font-bold text-white align-self-center'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}
@@ -107,7 +107,7 @@ const GetCurrentTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
 	if (!set?.currentTime || set.currentTime === 0) return <p>0</p>;
 
 	return (
-		<p className='align-self-center text-2xl font-bold text-white'>
+		<p className='text-2xl font-bold text-white align-self-center'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}
@@ -129,9 +129,9 @@ type BlockProps = {title: string; data: string | number | JSX.Element};
 
 const Block = ({title, data}: BlockProps): JSX.Element => (
 	<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center rounded-xl border-4 border-white p-4'>
-		<h3 className='h3 text-center'>{title}</h3>
-		<div className='flex h-full w-full items-center justify-center'>
-			<p className='justify-self-center text-5xl font-bold text-white'>
+		<h3 className='text-center h3'>{title}</h3>
+		<div className='flex items-center justify-center w-full h-full'>
+			<p className='text-5xl font-bold text-white justify-self-center'>
 				{data}
 			</p>
 		</div>
@@ -160,14 +160,14 @@ type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
-		<div className='m-0 flex min-h-screen w-screen flex-col px-2 pt-32 pb-24 sm:px-12 '>
-			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
+		<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
+			<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold text-white md:text-5xl'>
 				{set.title}
 			</h1>
 
-			<div className='mt-4 w-full'>
+			<div className='w-full mt-4'>
 				<h2 className='h2'>Puzzle set state</h2>
-				<div className='mt-4 flex w-full flex-wrap'>
+				<div className='flex flex-wrap w-full mt-4'>
 					<Block title='Time you completed this set' data={set.cycles} />
 					<Block title='Total average grade' data={getAverageGrade(set)} />
 					<Block
@@ -176,9 +176,9 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					/>
 				</div>
 			</div>
-			<div className='mt-4 w-full'>
+			<div className='w-full mt-4'>
 				<h2 className='h2'>Global progression</h2>
-				<div className='mt-4 flex w-full flex-wrap'>
+				<div className='flex flex-wrap w-full mt-4'>
 					<Block title='Last time / First time' data={lastOverFirstTime(set)} />
 					<Block
 						title='Last time / Average time'
@@ -194,9 +194,9 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					/>
 				</div>
 			</div>
-			<div className='mt-4 w-full flex-wrap'>
+			<div className='flex-wrap w-full mt-4'>
 				<h2 className='h2'>Current progression</h2>
-				<div className='mt-4 flex w-full flex-wrap justify-around'>
+				<div className='flex flex-wrap justify-around w-full mt-4'>
 					<Block
 						title='Current progress'
 						data={
@@ -212,9 +212,9 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				</div>
 			</div>
 
-			<div className='mt-4 w-full flex-wrap'>
+			<div className='flex-wrap w-full mt-4'>
 				<h2 className='h2'>All puzzles</h2>
-				<div className='flex w-full flex-row flex-wrap gap-1'>
+				<div className='flex flex-row flex-wrap w-full gap-1'>
 					{set.puzzles.map(puzzle => (
 						<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
 					))}

@@ -14,12 +14,12 @@ const IndexPage = () => {
 	};
 
 	return (
-		<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
+		<div className='flex flex-col items-center justify-center h-screen m-0 text-slate-800'>
 			{useConffeti()}
-			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white'>
 				Hello {useUser()?.user?.username} 👋 <br /> Welcome to chesspecker
 			</h1>
-			<div className='my-3 mx-0 w-full text-center text-white'>
+			<div className='w-full mx-0 my-3 text-center text-white'>
 				<Button className='py-4' onClick={handleClick}>
 					LET&apos;S GO! 🔥
 				</Button>

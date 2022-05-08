@@ -1,5 +1,6 @@
 /* eslint-disable no-dupe-keys */
 const plugin = require('tailwindcss/plugin');
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
 	content: [
@@ -11,7 +12,7 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				merriweather: ['"Merriweather Sans"'],
+				sans: ['"Merriweather Sans"', ...defaultTheme.fontFamily.sans],
 			},
 			keyframes: {
 				wrongMove: {

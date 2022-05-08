@@ -580,7 +580,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
-			<div className='m-0 flex min-h-screen w-screen flex-col justify-center pt-32 pb-24 text-slate-800'>
+			<div className='flex flex-col justify-center w-screen min-h-screen pt-32 pb-24 m-0 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
 					<Timer
 						value={initialSetTimer}
@@ -588,15 +588,15 @@ const PlayingPage = ({set}: Props) => {
 						isRunning={isRunning}
 					/>
 					<Button
-						className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8 text-white'
+						className='items-center my-2 leading-8 text-white bg-gray-800 rounded-md w-36'
 						href='/dashboard'
 					>
 						LEAVE 🧨
 					</Button>
 				</div>
-				<div className='flex w-full flex-col items-center justify-center md:flex-row  '>
-					<div className='hidden w-36 md:invisible md:block ' />
-					<div className='max-w-[33rem] w-11/12 md:w-full  flex-auto  '>
+				<div className='flex flex-col items-center justify-center w-full md:flex-row'>
+					<div className='hidden w-36 md:invisible md:block' />
+					<div className='max-w-[33rem] w-11/12 md:w-full flex-auto'>
 						<Board
 							config={{...config, orientation, events: {move: onMove}}}
 							isOpen={isOpen}

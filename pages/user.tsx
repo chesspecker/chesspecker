@@ -35,9 +35,9 @@ const User = () => {
 
 	if (isLoading) return null;
 	return (
-		<div className='flex min-h-screen w-screen flex-col px-10 pt-32 pb-24 text-slate-800'>
+		<div className='flex flex-col w-screen min-h-screen px-10 pt-32 pb-24 text-slate-800'>
 			<div className='flex flex-wrap items-center'>
-				<p className=' mr-5 text-6xl text-white'>{user.username}</p>
+				<p className='mr-5 text-6xl text-white '>{user.username}</p>
 				{user?.isSponsor ? (
 					<p className='text-white'>Official Sponsor</p>
 				) : (
@@ -53,9 +53,9 @@ const User = () => {
 
 			<div className='borded-white m-2 mt-6 min-h-[5rem] rounded-xl border p-2'>
 				<p className='text-xl text-white'>My badges</p>
-				<div className='flex w-full items-center justify-center'>
-					<div className='flex w-full max-w-screen-xl items-center justify-center'>
-						<div className='flex w-full flex-wrap items-center justify-center'>
+				<div className='flex items-center justify-center w-full'>
+					<div className='flex items-center justify-center w-full max-w-screen-xl'>
+						<div className='flex flex-wrap items-center justify-center w-full'>
 							{achievementsList.length === 0 && (
 								<p className='text-center text-white'>
 									You don&apos;t have any achievement yet

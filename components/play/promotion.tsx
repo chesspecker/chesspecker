@@ -15,7 +15,7 @@ const SelectPiece = ({color, handleClick, role}: PieceProps) => {
 	const [pieces] = useAtom(configµ.pieces);
 	return (
 		<div
-			className='edit-square rounded border border-gray-300'
+			className='border border-gray-300 rounded edit-square'
 			onClick={handleClick}
 		>
 			<div className={`promotion-piece ${pieces} ${role} ${color}`} />

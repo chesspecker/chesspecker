@@ -9,7 +9,7 @@ const AutoMoveSettings = () => {
 			<div className='flex'>
 				<input
 					type='checkbox'
-					className='rounded border border-gray-300'
+					className='border border-gray-300 rounded'
 					defaultChecked={autoMove}
 					onChange={() => {
 						setAutoMove((state: boolean) => !state);

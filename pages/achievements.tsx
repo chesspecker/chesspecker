@@ -37,22 +37,22 @@ const Achievements = () => {
 
 	if (isLoading) return null;
 	return (
-		<div className='flex min-h-screen flex-col items-center justify-center pt-32 pb-24'>
-			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white sm:text-4xl md:text-5xl'>
+		<div className='flex flex-col items-center justify-center min-h-screen pt-32 pb-24'>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white sm:text-4xl md:text-5xl'>
 				Achievements
 			</h1>
 			{achievementsCategorys.map(category => {
 				return (
 					<div key={category.name as React.Key}>
-						<h1 className='mx-auto mt-8  px-5 text-center font-merriweather text-xl font-bold text-white sm:text-2xl md:text-3xl'>
+						<h1 className='px-5 mx-auto mt-8 font-sans text-xl font-bold text-center text-white sm:text-2xl md:text-3xl'>
 							{category.name}
 						</h1>
-						<h2 className='mx-auto  mb-6 p-5 text-center font-merriweather text-lg font-bold text-white sm:text-lg md:text-xl'>
+						<h2 className='p-5 mx-auto mb-6 font-sans text-lg font-bold text-center text-white sm:text-lg md:text-xl'>
 							{category.description}
 						</h2>
-						<div className='flex w-full items-center justify-center'>
-							<div className='flex w-full max-w-screen-xl items-center justify-center'>
-								<div className='flex w-full flex-wrap items-center justify-center'>
+						<div className='flex items-center justify-center w-full'>
+							<div className='flex items-center justify-center w-full max-w-screen-xl'>
+								<div className='flex flex-wrap items-center justify-center w-full'>
 									{achievements.map(
 										achievement =>
 											achievement.category === category.name && (

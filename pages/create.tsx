@@ -24,19 +24,19 @@ const CreatePage = () => {
 	};
 
 	return (
-		<div className=' flex flex-col items-center justify-center pt-32 pb-24'>
-			<h2 className=' text-xl font-bold text-white sm:text-3xl'>
+		<div className='flex flex-col items-center justify-center pt-32 pb-24'>
+			<h2 className='text-xl font-bold text-white sm:text-3xl'>
 				Select one or more category to create your set!
 			</h2>
-			<div className='jus flex flex-col'>
+			<div className='flex flex-col jus'>
 				{CATEGORIES.map((category: Category) => (
 					<div key={category.id}>
-						<h3 className='mx-2 mt-4 mb-3 pb-8 text-3xl text-white'>
+						<h3 className='pb-8 mx-2 mt-4 mb-3 text-3xl text-white'>
 							{category.name}
 						</h3>
-						<div className='flex w-full items-center justify-center'>
-							<div className='flex w-full max-w-screen-xl items-center justify-center'>
-								<div className='flex w-full flex-wrap  justify-center'>
+						<div className='flex items-center justify-center w-full'>
+							<div className='flex items-center justify-center w-full max-w-screen-xl'>
+								<div className='flex flex-wrap justify-center w-full'>
 									{THEMES.filter(
 										(theme: Theme) => theme.category.name === category.name,
 									).map((theme: Theme) => (
@@ -48,7 +48,7 @@ const CreatePage = () => {
 					</div>
 				))}
 			</div>
-			<div className='sticky bottom-20 right-0 w-6/12'>
+			<div className='sticky right-0 w-6/12 bottom-20'>
 				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>

@@ -17,7 +17,7 @@ const BottomTab = () => {
 			<Link passHref href={`/achievements/${user?._id.toString()}`}>
 				<div className='border-b-2 border-white hover:border-sky-700 focus:border-sky-700'>
 					<LightningBoltIcon
-						className='w-8 h-8   text-sky-700 '
+						className='w-8 h-8 text-sky-700'
 						aria-hidden='true'
 					/>
 				</div>
@@ -25,12 +25,12 @@ const BottomTab = () => {
 
 			<Link passHref href='/dashboard'>
 				<div className='border-b-2 border-white hover:border-sky-700 focus:border-sky-700'>
-					<HomeIcon className='w-8 h-8   text-sky-700 ' aria-hidden='true' />
+					<HomeIcon className='w-8 h-8 text-sky-700' aria-hidden='true' />
 				</div>
 			</Link>
 			<Link passHref href={`/user/${user?._id.toString()}`}>
 				<div className='border-b-2 border-white hover:border-sky-700 focus:border-sky-700'>
-					<UserIcon className='w-8 h-8   text-sky-700 ' aria-hidden='true' />
+					<UserIcon className='w-8 h-8 text-sky-700' aria-hidden='true' />
 				</div>
 			</Link>
 		</div>

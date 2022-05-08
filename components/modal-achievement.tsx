@@ -41,16 +41,16 @@ const Modal = ({
 			leaveFrom='opacity-100'
 			leaveTo='opacity-0'
 		>
-			<div className='absolute z-40 -mt-10 flex min-h-screen w-screen flex-col items-center justify-center bg-black bg-opacity-80'>
+			<div className='absolute z-40 flex flex-col items-center justify-center w-screen min-h-screen -mt-10 bg-black bg-opacity-80'>
 				<Transition.Child
 					enter='transform transition duration-[400ms]'
 					enterFrom='opacity-0 scale-0'
 					enterTo='opacity-100 rotate-0 scale-100'
 					leave='transform duration-200 transition ease-in-out'
-					leaveFrom='opacity-100 rotate-0 scale-100 '
-					leaveTo='opacity-0 scale-95 '
+					leaveFrom='opacity-100 rotate-0 scale-100'
+					leaveTo='opacity-0 scale-95'
 				>
-					<h3 className='mb-5 text-6xl text-center font-bold text-white'>
+					<h3 className='mb-5 text-6xl font-bold text-center text-white'>
 						New achievement 🎉🔥
 					</h3>
 				</Transition.Child>
@@ -59,12 +59,12 @@ const Modal = ({
 					enterFrom='opacity-0 scale-0'
 					enterTo='opacity-100 rotate-0 scale-100'
 					leave='transform duration-200 transition ease-in-out'
-					leaveFrom='opacity-100 rotate-0 scale-100 '
-					leaveTo='opacity-0 scale-95 '
+					leaveFrom='opacity-100 rotate-0 scale-100'
+					leaveTo='opacity-0 scale-95'
 				>
 					<Card achievement={achievement} />
 				</Transition.Child>
-				<div className='mt-4 w-1/3'>
+				<div className='w-1/3 mt-4'>
 					<Button
 						onClick={() => {
 							handleClick(currentAchievementItem.id);

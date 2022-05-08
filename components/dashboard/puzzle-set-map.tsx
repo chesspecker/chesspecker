@@ -41,8 +41,8 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	};
 
 	return (
-		<div className='m-2 flex h-64 w-64 flex-col overflow-hidden rounded-xl border-2 border-white p-4 text-white'>
-			<div className='flex w-full justify-end'>
+		<div className='flex flex-col w-64 h-64 p-4 m-2 overflow-hidden text-white border-2 border-white rounded-xl'>
+			<div className='flex justify-end w-full'>
 				<RemoveModal onClick={removeSet} />
 			</div>
 			<h3 className='mx-4 mt-0 mb-4 text-4xl font-medium'>
@@ -59,8 +59,8 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 };
 
 const EmptyPuzzleSetComponent = ({image, text}) => (
-	<div className='relative m-4 flex h-64 w-64 flex-col overflow-hidden rounded-xl p-4 text-white'>
-		<div className='absolute top-0 left-0 flex h-full w-full cursor-pointer flex-col items-center justify-center border border-transparent bg-white bg-opacity-60 text-3xl font-medium text-sky-800 shadow-md backdrop-blur-xl backdrop-filter rounded-xl'>
+	<div className='relative flex flex-col w-64 h-64 p-4 m-4 overflow-hidden text-white rounded-xl'>
+		<div className='absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full text-3xl font-medium bg-white border border-transparent shadow-md cursor-pointer bg-opacity-60 text-sky-800 backdrop-blur-xl backdrop-filter rounded-xl'>
 			{image}
 			{text}
 		</div>

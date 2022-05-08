@@ -45,7 +45,7 @@ const Chessground = ({config = {}}: Props) => {
 		<div className='w-full'>
 			<div className={mainStyle}>
 				<div className={themeStyle}>
-					<div ref={ref} className='table h-full w-full' />
+					<div ref={ref} className='table w-full h-full' />
 				</div>
 			</div>
 		</div>

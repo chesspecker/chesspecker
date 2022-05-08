@@ -34,7 +34,7 @@ const RemoveModal = ({onClick}: Props) => {
 						className='giphy-embed'
 					/>
 
-					<div className='m-2 p-2'>
+					<div className='p-2 m-2'>
 						<Button onClick={onClick}>Yes</Button>
 
 						<Button onClick={hide}>No</Button>
@@ -51,11 +51,11 @@ const BecomeSponsor = ({
 	handleClick: (string: string) => void;
 }) => {
 	return (
-		<div className=' flex min-h-screen flex-col items-center  justify-center pb-40 pt-24 text-slate-800'>
-			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
+		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-40 text-slate-800'>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white'>
 				Become sponsor
 			</h1>
-			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
+			<p className='w-11/12 mb-6 text-2xl text-center text-gray-100 md:text-2xl'>
 				This website is free and ads-less and we are having fun coding it.
 				<br />
 				However, it still has a cost. Become a sponsor today to help us paying
@@ -70,11 +70,11 @@ const BecomeSponsor = ({
 				frameBorder='0'
 				className='giphy-embed'
 			/>
-			<p className='mb-6 mt-7 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
+			<p className='w-11/12 mb-6 text-2xl text-center text-gray-100 mt-7 md:text-2xl'>
 				How much does it cost? Just about a small coffee per month!
 			</p>
 
-			<div className='flex w-2/3 flex-col lg:flex-row'>
+			<div className='flex flex-col w-2/3 lg:flex-row'>
 				<Button
 					className='m-2'
 					onClick={() => {
@@ -112,11 +112,11 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	};
 
 	return (
-		<div className=' flex min-h-screen flex-col items-center  justify-center pb-20 pt-24 text-slate-800'>
-			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
+		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 text-slate-800'>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white'>
 				Manage sponsorship
 			</h1>
-			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
+			<p className='w-11/12 mb-6 text-2xl text-center text-gray-100 md:text-2xl'>
 				Thank you for supporting us.
 			</p>
 			<p className='pb-6 text-white'>{`Your actual subscription is ${

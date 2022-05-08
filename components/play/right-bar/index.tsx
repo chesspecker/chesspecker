@@ -10,7 +10,7 @@ type Props = {
 
 const RightBar = ({answer, changePuzzle, launchTimer}: Props) => {
 	return (
-		<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
+		<div className='flex flex-row justify-center w-5/6 md:w-fit md:flex-col'>
 			<div className='mt-2'>
 				<Progress />
 			</div>

@@ -22,12 +22,12 @@ type MenuProps = {
 
 const Burger = ({user}: BurgerProps) => {
 	return (
-		<div className='safe-top w-56 flex items-end justify-end fixed top-5 right-5 visible sm:hidden z-20'>
-			<Menu as='div' className='relative inline-block text-left '>
+		<div className='fixed z-20 flex items-end justify-end visible w-56 safe-top top-5 right-5 sm:hidden'>
+			<Menu as='div' className='relative inline-block text-left'>
 				<div>
-					<Menu.Button className=' p-2 inline-flex justify-center w-full text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75'>
+					<Menu.Button className='inline-flex justify-center w-full p-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75'>
 						<MenuIcon
-							className='w-5 h-5   text-white hover:text-violet-100'
+							className='w-5 h-5 text-white hover:text-violet-100'
 							aria-hidden='true'
 						/>
 					</Menu.Button>
