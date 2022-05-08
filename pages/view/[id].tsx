@@ -11,6 +11,18 @@ import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
 const INFINITY = Number.POSITIVE_INFINITY;
 const reducer = (accumulator: number, current: number) => accumulator + current;
 
+const parseGrade: Record<number, string> = {
+	0: 'F',
+	1: 'E',
+	2: 'D',
+	3: 'C',
+	4: 'B',
+	5: 'A',
+	6: 'A+',
+};
+
+Object.freeze(parseGrade);
+
 const getTotalTime = (set: PuzzleSetInterface): number => {
 	const t = set.times.reduce(reducer, 0);
 	return t === 0 ? set.currentTime : t + set.currentTime;
@@ -27,16 +39,6 @@ const ParsedTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
 			{secondes !== 0 && `${secondes} secondes `}
 		</p>
 	);
-};
-
-const parseGrade: Record<number, string> = {
-	0: 'F',
-	1: 'E',
-	2: 'D',
-	3: 'C',
-	4: 'B',
-	5: 'A',
-	6: 'A+',
 };
 
 const getAverageGrade = (set: PuzzleSetInterface): string => {
@@ -139,10 +141,10 @@ const Block = ({title, data}: BlockProps): JSX.Element => (
 );
 
 const getClasses = (grade: number) => {
-	const result = 'h-3 w-5 cursor-pointer rounded-sm mb-1 ';
-	if (grade < 3) return result + 'bg-red-500';
-	if (grade < 5) return result + 'bg-orange-500';
-	if (grade < 7) return result + 'bg-green-500';
+	const base = 'h-5 w-10 cursor-pointer rounded-sm mb-1';
+	if (grade < 3) return `${base} bg-red-500`;
+	if (grade < 5) return `${base} bg-orange-500`;
+	if (grade < 7) return `${base} bg-green-500`;
 };
 
 const getAverage = (array: number[]): number =>
@@ -213,7 +215,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 			</div>
 
 			<div className='flex-wrap w-full mt-4'>
-				<h2 className='h2'>All puzzles</h2>
+				<h2 className='mb-4 h2'>All puzzles</h2>
 				<div className='flex flex-row flex-wrap w-full gap-1'>
 					{set.puzzles.map(puzzle => (
 						<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
