@@ -118,6 +118,7 @@ export const create = async (
 	puzzleSet.length = puzzlesCount;
 	puzzleSet.title = options.title;
 	puzzleSet.spacedRepetition = false;
+	puzzleSet.cycles = 0;
 	puzzleSet.currentTime = 0;
 	puzzleSet.times = [];
 	puzzleSet.rating = Math.round(futurePuzzleSetRating / puzzlesCount);

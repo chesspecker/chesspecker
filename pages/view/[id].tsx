@@ -216,7 +216,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 
 			<div className='flex-wrap w-full mt-4'>
 				<h2 className='mb-4 h2'>All puzzles</h2>
-				<div className='flex flex-row flex-wrap w-full gap-1'>
+				<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
 					{set.puzzles.map(puzzle => (
 						<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
 					))}
