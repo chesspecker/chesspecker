@@ -46,11 +46,8 @@ const RemoveModal = ({onClick}: Props) => {
 	);
 };
 
-const BecomeSponsor = ({
-	handleClick,
-}: {
-	handleClick: (string: string) => void;
-}) => {
+type PageProps = {handleClick: (string: string) => void};
+const BecomeSponsor = ({handleClick}: PageProps) => {
 	return (
 		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-40 text-slate-800'>
 			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white'>
@@ -79,7 +76,7 @@ const BecomeSponsor = ({
 				<Button
 					className='m-2'
 					onClick={() => {
-						handleClick('price_1KrH3UGL9hdiIkIS71GBjPNS');
+						handleClick('price_1KxCYVGL9hdiIkISDFBzzU6Z');
 					}}
 				>
 					☕️ 3€
@@ -87,7 +84,7 @@ const BecomeSponsor = ({
 				<Button
 					className='m-2'
 					onClick={() => {
-						handleClick('price_1KrH9zGL9hdiIkISPg2FKEBD');
+						handleClick('price_1KxCa8GL9hdiIkISXvkAuA4F');
 					}}
 				>
 					☕️☕️ 5€
@@ -95,7 +92,7 @@ const BecomeSponsor = ({
 				<Button
 					className='m-2'
 					onClick={() => {
-						handleClick('price_1KrH5yGL9hdiIkIShHkBKgPN');
+						handleClick('price_1KxCafGL9hdiIkISewaLCtNO');
 					}}
 				>
 					☕️☕️☕️ 15€
