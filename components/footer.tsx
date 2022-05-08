@@ -21,7 +21,7 @@ const Footer = () => (
 			</div>
 			<div className='flex flex-row mx-1 sm:mx-5 '>
 				<Link href='https://github.com/chesspecker'>
-					<a>
+					<a target='_blank'>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
 							<div className='hidden md:block'>
 								{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
@@ -34,7 +34,7 @@ const Footer = () => (
 					</a>
 				</Link>
 				<Link href='https://discord.gg/qDftJZBBHa'>
-					<a>
+					<a target='_blank'>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
 							<div className='hidden md:block'>
 								<Image
