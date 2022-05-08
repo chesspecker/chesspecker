@@ -1,15 +1,21 @@
 /* eslint-disable unicorn/no-array-reduce */
 /* eslint-disable unicorn/no-array-callback-reference */
 import {GetServerSideProps} from 'next';
-import {ReactElement} from 'react';
+import {ReactElement, SVGProps, useEffect, useState} from 'react';
 import type {Data as SetData} from '@/api/set/[id]';
 import Donnuts from '@/components/doughnuts';
 import useClock from '@/hooks/use-clock';
 import Layout from '@/layouts/main';
 import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
+import {
+	ArrowSmDownIcon,
+	ArrowSmUpIcon,
+	UsersIcon,
+} from '@heroicons/react/solid';
 
 const INFINITY = Number.POSITIVE_INFINITY;
 const reducer = (accumulator: number, current: number) => accumulator + current;
+const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
 const parseGrade: Record<number, string> = {
 	0: 'F',
@@ -28,17 +34,21 @@ const getTotalTime = (set: PuzzleSetInterface): number => {
 	return t === 0 ? set.currentTime : t + set.currentTime;
 };
 
-const ParsedTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
-	const totalTime = getTotalTime(set);
-	const [days, hours, minutes, secondes] = useClock(totalTime);
+const DisplayTime = ({time}: {time: number}) => {
+	const [days, hours, minutes, secondes] = useClock(time);
 	return (
-		<p className='text-2xl font-bold text-white align-self-center'>
+		<p className='text-2xl font-semibold text-gray-900 justify-self-center'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}
 			{secondes !== 0 && `${secondes} secondes `}
 		</p>
 	);
+};
+
+const parsedTime = (set: PuzzleSetInterface): JSX.Element => {
+	const totalTime = getTotalTime(set);
+	return <DisplayTime time={totalTime} />;
 };
 
 const getAverageGrade = (set: PuzzleSetInterface): string => {
@@ -78,8 +88,9 @@ const lastOverFirstGrade = (set: PuzzleSetInterface): string => {
 	return `${parseGrade[averageLast]} / ${parseGrade[averageFirst]}`;
 };
 
-const lastOverAverageTime = (set: PuzzleSetInterface): string => {
-	if (!set.cycles || set.cycles < 2) return '/';
+const getLastOverAverageTime = (set: PuzzleSetInterface): Data => {
+	if (!set.cycles || set.cycles < 2)
+		return {stat: '/', change: '', type: 'none'};
 
 	const last = set.puzzles
 		.map(puzzle => puzzle.timeTaken[set.cycles - 1])
@@ -91,7 +102,10 @@ const lastOverAverageTime = (set: PuzzleSetInterface): string => {
 		.reduce(reducer, 0);
 	const average = Math.round((previousTimes as number) / set.cycles);
 
-	return `${last}s / ${average}s`;
+	const type = last < average ? 'up' : 'down';
+	const change = type === 'up' ? `${last - average}s` : `${last - average}s`;
+
+	return {stat: `${last}s / ${average}s`, change, type};
 };
 
 const lastOverAverageGrade = (set: PuzzleSetInterface): string => {
@@ -104,18 +118,9 @@ const lastOverAverageGrade = (set: PuzzleSetInterface): string => {
 	return `${parseGrade[averageLast]} / ${getAverageGrade(set)}`;
 };
 
-const GetCurrentTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
-	const [days, hours, minutes, secondes] = useClock(set.currentTime);
+const getCurrentTime = (set: PuzzleSetInterface): JSX.Element => {
 	if (!set?.currentTime || set.currentTime === 0) return <p>0</p>;
-
-	return (
-		<p className='text-2xl font-bold text-white align-self-center'>
-			{days !== 0 && `${days} days `}
-			{hours !== 0 && `${hours} hours `}
-			{minutes !== 0 && `${minutes} minutes `}
-			{secondes !== 0 && `${secondes} secondes `}
-		</p>
-	);
+	return <DisplayTime time={set.currentTime} />;
 };
 
 const getCurrentGrade = (set: PuzzleSetInterface): string => {
@@ -130,15 +135,70 @@ const getCurrentGrade = (set: PuzzleSetInterface): string => {
 type BlockProps = {title: string; data: string | number | JSX.Element};
 
 const Block = ({title, data}: BlockProps): JSX.Element => (
-	<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center rounded-xl border-4 border-white p-4'>
-		<h3 className='text-center h3'>{title}</h3>
+	<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
+		<h3 className='text-sm font-medium text-center text-gray-500 truncate'>
+			{title}
+		</h3>
 		<div className='flex items-center justify-center w-full h-full'>
-			<p className='text-5xl font-bold text-white justify-self-center'>
+			<p className='text-2xl font-semibold text-gray-900 justify-self-center'>
 				{data}
 			</p>
 		</div>
 	</div>
 );
+
+type StatBlockProps = {
+	title: string;
+	stat: Data['stat'];
+	type: Data['type'];
+	change: Data['change'];
+	Icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+};
+
+const StatBlock = ({
+	title,
+	stat,
+	type,
+	change,
+	Icon,
+}: StatBlockProps): JSX.Element =>
+	type === 'none' ? null : (
+		<div className='relative px-4 py-5 overflow-hidden bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
+			<div>
+				<div className='absolute p-3 rounded-md bg-sky-700'>
+					<Icon className='w-6 h-6 text-white' aria-hidden='true' />
+				</div>
+				<p className='ml-16 text-sm font-medium text-gray-500 truncate'>
+					{title}
+				</p>
+			</div>
+			<div className='flex items-baseline ml-16'>
+				<p className='text-2xl font-semibold text-gray-900'>{stat}</p>
+				<p
+					className={classNames(
+						type === 'up' ? 'text-green-600' : 'text-red-600',
+						'ml-2 flex items-baseline text-sm font-semibold',
+					)}
+				>
+					{type === 'up' ? (
+						<ArrowSmUpIcon
+							className='self-center flex-shrink-0 w-5 h-5 text-green-500'
+							aria-hidden='true'
+						/>
+					) : (
+						<ArrowSmDownIcon
+							className='self-center flex-shrink-0 w-5 h-5 text-red-500'
+							aria-hidden='true'
+						/>
+					)}
+					<span className='sr-only'>
+						{type === 'up' ? 'Increased' : 'Decreased'} by
+					</span>
+					{change}
+				</p>
+			</div>
+		</div>
+	);
 
 const getClasses = (grade: number) => {
 	const base = 'h-5 w-10 cursor-pointer rounded-sm mb-1';
@@ -155,12 +215,26 @@ const PuzzleComponent = (puzzle: PuzzleItemInterface): JSX.Element => (
 		key={puzzle.PuzzleId}
 		href={`https://lichess.org/training/${puzzle.PuzzleId}`}
 		className={getClasses(getAverage(puzzle.grades))}
+		target='_blank'
 	/>
 );
 
+type Data = {
+	stat: string;
+	change: string;
+	type: 'up' | 'down' | 'none';
+};
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
+	const none: Data = {stat: '/', change: '', type: 'none'};
+	const [lastOverAverageTime, setLastOverAverageTime] = useState<Data>(none);
+
+	useEffect(() => {
+		if (!set) return;
+		setLastOverAverageTime(getLastOverAverageTime(set));
+	}, [set]);
+
 	return (
 		<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
 			<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold text-white md:text-5xl'>
@@ -172,20 +246,13 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				<div className='flex flex-wrap w-full mt-4'>
 					<Block title='Time you completed this set' data={set.cycles} />
 					<Block title='Total average grade' data={getAverageGrade(set)} />
-					<Block
-						title='Total time spent on this set'
-						data={<ParsedTime set={set} />}
-					/>
+					<Block title='Total time spent on this set' data={parsedTime(set)} />
 				</div>
 			</div>
 			<div className='w-full mt-4'>
 				<h2 className='h2'>Global progression</h2>
 				<div className='flex flex-wrap w-full mt-4'>
 					<Block title='Last time / First time' data={lastOverFirstTime(set)} />
-					<Block
-						title='Last time / Average time'
-						data={lastOverAverageTime(set)}
-					/>
 					<Block
 						title='Last grade / First grade'
 						data={lastOverFirstGrade(set)}
@@ -194,6 +261,23 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						title='Last grade / Average grade'
 						data={lastOverAverageGrade(set)}
 					/>
+
+					<div className='grid grid-cols-1 gap-5 mt-5 sm:grid-cols-2 lg:grid-cols-3'>
+						<StatBlock
+							title='Last time vs. Average time'
+							stat={lastOverAverageTime.stat}
+							type={lastOverAverageTime.type}
+							change={lastOverAverageTime.change}
+							Icon={UsersIcon}
+						/>
+						<StatBlock
+							title='Last grade / Average grade'
+							stat={lastOverAverageGrade(set)}
+							type='up'
+							change='122%'
+							Icon={UsersIcon}
+						/>
+					</div>
 				</div>
 			</div>
 			<div className='flex-wrap w-full mt-4'>
@@ -209,7 +293,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						}
 					/>
 
-					<Block title='Current time' data={<GetCurrentTime set={set} />} />
+					<Block title='Current time' data={getCurrentTime(set)} />
 					<Block title='Current grade' data={getCurrentGrade(set)} />
 				</div>
 			</div>
