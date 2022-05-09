@@ -9,6 +9,7 @@ import Choice from '@/components/choice';
 import {selectedAtom} from '@/lib/atoms';
 import type {Category} from '@/data/categories';
 import type {Theme} from '@/data/themes';
+import {ArrowRightIcon} from '@heroicons/react/solid';
 
 const CreatePage = () => {
 	const router = useRouter();
@@ -28,6 +29,12 @@ const CreatePage = () => {
 			<h2 className='text-xl font-bold text-white sm:text-3xl'>
 				Select one or more category to create your set!
 			</h2>
+			<div className='fixed w-36 right-10 top-40'>
+				<Button onClick={handleClick} className='flex'>
+					<span>NEXT</span>
+					<ArrowRightIcon className='w-5 h-5 my-auto ml-4 align-middle' />
+				</Button>
+			</div>
 			<div className='flex flex-col jus'>
 				{CATEGORIES.map((category: Category) => (
 					<div key={category.id}>
@@ -47,9 +54,6 @@ const CreatePage = () => {
 						</div>
 					</div>
 				))}
-			</div>
-			<div className='sticky right-0 w-6/12 bottom-20'>
-				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>
 	);
