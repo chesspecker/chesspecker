@@ -1,6 +1,7 @@
 import {useAtom} from 'jotai';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
+import {ArrowRightIcon} from '@heroicons/react/solid';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import CATEGORIES from '@/data/categories';
@@ -9,7 +10,6 @@ import Choice from '@/components/choice';
 import {selectedAtom} from '@/lib/atoms';
 import type {Category} from '@/data/categories';
 import type {Theme} from '@/data/themes';
-import {ArrowRightIcon} from '@heroicons/react/solid';
 
 const CreatePage = () => {
 	const router = useRouter();
@@ -30,7 +30,7 @@ const CreatePage = () => {
 				Select one or more category to create your set!
 			</h2>
 			<div className='fixed w-36 right-10 top-40'>
-				<Button onClick={handleClick} className='flex'>
+				<Button className='flex' onClick={handleClick}>
 					<span>NEXT</span>
 					<ArrowRightIcon className='w-5 h-5 my-auto ml-4 align-middle' />
 				</Button>
