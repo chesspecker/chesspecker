@@ -22,6 +22,7 @@ const History = ({puzzles}: HistoryProps) => {
 					key={puzzle.PuzzleId}
 					href={`https://lichess.org/training/${puzzle.PuzzleId}`}
 					className={getClasses(puzzle.grade)}
+					target='_blank'
 				/>
 			))}
 		</div>

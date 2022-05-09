@@ -288,7 +288,7 @@ const PlayingPage = ({set}: Props) => {
 				...previous,
 				{
 					grade: grades[grades.length - 1],
-					PuzzleId: result.puzzle._id.toString(),
+					PuzzleId: result.puzzle.PuzzleId,
 				},
 			]);
 			await mutate();
