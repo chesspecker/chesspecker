@@ -134,7 +134,6 @@ const SponsorPage = () => {
 	useEffect(() => {
 		if (!data) return;
 		setUser(data.user);
-		// TODO: Retrive contract
 	}, [data]);
 
 	useEffectAsync(async () => {
