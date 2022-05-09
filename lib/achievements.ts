@@ -24,7 +24,7 @@ export const checkForAchievement = async (
 			fetch(`/api/achievement`, {
 				method: 'POST',
 				body: JSON.stringify({achievementId: achievement.id}),
-			}).then(async response => response.json()),
+			}),
 		);
 		result.push(achievement);
 	}

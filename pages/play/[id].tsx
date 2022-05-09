@@ -63,6 +63,7 @@ const PlayingPage = ({set}: Props) => {
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
+	const [initialSetDate, setInitialSetDate] = useState<number>();
 	const [timerSum, setTimerSum] = useState<number>(0);
 	const [isRunning, setIsRunning] = useState(true);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
@@ -95,6 +96,7 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	useEffect(() => {
 		setInitialSetTimer(() => set.currentTime);
+		setInitialSetDate(() => Date.now());
 		setCompletedPuzzles(() => set.progression);
 		setTotalPuzzles(() => set.length);
 		const puzzleList = set.puzzles.filter(p => !p.played);
@@ -202,7 +204,6 @@ const PlayingPage = ({set}: Props) => {
 
 		// Is there some puzzles in common in the old and new themes?
 		const themesInCommon = oldThemes_.filter(t => newThemes.includes(t.title));
-
 		const incrementUser: UpdateUser = {$inc: {totalPuzzleSolved: 1}};
 
 		// If there are, we update the user's themes
@@ -288,7 +289,7 @@ const PlayingPage = ({set}: Props) => {
 				...previous,
 				{
 					grade: grades[grades.length - 1],
-					PuzzleId: result.puzzle._id.toString(),
+					PuzzleId: result.puzzle.PuzzleId,
 				},
 			]);
 			await mutate();
@@ -333,16 +334,16 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
-		const timeTaken = (Date.now() - initialSetTimer) / 1000;
-		const formattedTime = Number.parseInt(timeTaken.toFixed(2), 10);
-		const totalTime = formattedTime + timerSum + 1;
+		const timeTaken = (Date.now() - initialSetDate) / 1000;
+		const totalTime = timeTaken + set.currentTime;
+		const formattedTime = Number.parseInt(totalTime.toFixed(2), 10);
 
 		const update = {
 			$inc: {
 				cycles: 1,
 			},
 			$push: {
-				times: totalTime,
+				times: formattedTime,
 			},
 			$set: {
 				'puzzles.$[].played': false,
@@ -389,7 +390,6 @@ const PlayingPage = ({set}: Props) => {
 			await audio('GENERIC', hasSound, 0.3);
 			if (hasAutoMove) return changePuzzle();
 			setIsRunning(() => false);
-			return true;
 		},
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[hasAutoMove, hasSound, changePuzzle, checkSetComplete, moveHistory.length],
