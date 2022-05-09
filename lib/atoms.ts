@@ -4,7 +4,7 @@ import {atomWithStorage} from 'jotai/utils';
 import type {Category} from 'data/categories';
 import type {Difficulty} from '@/types/models';
 
-export const darkModeState = atom<boolean>(false);
+export const darkModeµ = atomWithStorage<boolean>('cp-dark-mode', false);
 
 export const selectedAtom = atom<Array<Category['id']>>([]);
 export const ratingAtom = atom<number>(1500);

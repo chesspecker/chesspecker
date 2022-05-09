@@ -7,10 +7,10 @@ import Burger from './mobile-assets/burger';
 import logo from '@/public/images/logo.svg';
 import useUser from '@/hooks/use-user';
 import {UserInterface} from '@/types/models';
-import {darkModeState} from '@/lib/atoms';
+import {darkModeµ} from '@/lib/atoms';
 
 export const BtnToggle = () => {
-	const [darkMode, setDarkMode] = useAtom(darkModeState);
+	const [darkMode, setDarkMode] = useAtom(darkModeµ);
 
 	return (
 		<div className='flex items-center justify-center pl-2'>
@@ -18,7 +18,6 @@ export const BtnToggle = () => {
 				<MoonIcon
 					className='w-5 h-5 text-white '
 					onClick={() => {
-						console.log('ma bite');
 						setDarkMode(!darkMode);
 					}}
 				/>
@@ -26,7 +25,6 @@ export const BtnToggle = () => {
 				<SunIcon
 					className='w-5 h-5 text-yellow-400 '
 					onClick={() => {
-						console.log('ma bite');
 						setDarkMode(!darkMode);
 					}}
 				/>
