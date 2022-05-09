@@ -23,7 +23,6 @@ const get_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
-	// TODO:	donst customer = await stripe.customers.retrieve(id);
 	const {id} = request.query as {id: string};
 	const {data} = await stripe.subscriptions.list({customer: id});
 	response.status(200).json({success: true, subscription: data[0]});

@@ -64,7 +64,6 @@ const PlayingPage = ({set}: Props) => {
 	const [mistakes, setMistakes] = useState(0);
 	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
 	const [initialSetDate, setInitialSetDate] = useState<number>();
-	const [timerSum, setTimerSum] = useState<number>(0);
 	const [isRunning, setIsRunning] = useState(true);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const {isOpen, show, hide} = useModal();
@@ -79,17 +78,16 @@ const PlayingPage = ({set}: Props) => {
 	const [notificationMessage, setNotificationMessage] = useState('');
 	const [notificationUrl, setNotificationUrl] = useState('');
 
-	const cleanAnimation = async () =>
-		sleep(600)
-			.then(() => {
-				setAnimation(() => '');
-			})
-			.catch(console.log);
-
-	const playFromComputer = async (move: number) =>
-		sleep(300)
-			.then(async () => computerMove(move))
-			.catch(console.log);
+	const cleanAnimation = useCallback(
+		async () =>
+			sleep(600)
+				.then(() => {
+					setAnimation(() => '');
+				})
+				.catch(console.log),
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
+		[],
+	);
 
 	/**
 	 * Extract the list of puzzles.
@@ -102,7 +100,7 @@ const PlayingPage = ({set}: Props) => {
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [set.puzzles, set.currentTime]);
+	}, [set]);
 
 	/**
 	 * Retrieve current puzzle.
@@ -176,9 +174,8 @@ const PlayingPage = ({set}: Props) => {
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
 		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
 		const timeWithMistakes = timeTaken + 3 * mistakes;
-		setTimerSum(previous => previous + timeWithMistakes);
-		const oldThemes_ = user.puzzleSolvedByCategories;
-		const oldThemes = new Set(oldThemes_.map(t => t.title));
+		const userThemes = user.puzzleSolvedByCategories;
+		const oldThemes = new Set(userThemes.map(t => t.title));
 		const newThemes = puzzle.Themes;
 
 		const promises: Array<Promise<any>> = [];
@@ -203,14 +200,14 @@ const PlayingPage = ({set}: Props) => {
 		}
 
 		// Is there some puzzles in common in the old and new themes?
-		const themesInCommon = oldThemes_.filter(t => newThemes.includes(t.title));
+		const themesInCommon = userThemes.filter(t => newThemes.includes(t.title));
 		const incrementUser: UpdateUser = {$inc: {totalPuzzleSolved: 1}};
 
 		// If there are, we update the user's themes
 		if (themesInCommon.length > 0)
 			for (const theme of themesInCommon)
 				incrementUser.$inc[
-					`puzzleSolvedByCategories.${oldThemes_.indexOf(theme)}.count`
+					`puzzleSolvedByCategories.${userThemes.indexOf(theme)}.count`
 				] = 1;
 
 		promises.push(update_.user(user._id.toString(), incrementUser));
@@ -230,7 +227,7 @@ const PlayingPage = ({set}: Props) => {
 				? user.totalPuzzleSolved + 1
 				: 1,
 			themes: puzzle.Themes.map(t => {
-				const a = oldThemes_.find(c => t === c.title);
+				const a = userThemes.find(c => t === c.title);
 				const count = a ? a.count + 1 : 1;
 				return {title: t, count};
 			}),
@@ -357,8 +354,7 @@ const PlayingPage = ({set}: Props) => {
 		} catch (error: unknown) {
 			console.log(error);
 		}
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [initialSetTimer, mistakes, set, timerSum]);
+	}, [initialSetDate, set]);
 
 	/**
 	 * Called after each correct move.
@@ -369,40 +365,20 @@ const PlayingPage = ({set}: Props) => {
 			.then(updateFinishedPuzzle)
 			.then(updateFinishedSet)
 			.then(changeSet);
-	}, [puzzleIndex, hasSound, puzzleList.length, updateFinishedSet]);
-
-	/**
-	 * Called after each correct move.
-	 */
-	const checkPuzzleComplete = useCallback(
-		async moveNumber => {
-			const isComplete = moveNumber === moveHistory.length;
-
-			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
-			setAnimation(() => animation);
-			await cleanAnimation();
-
-			if (!isComplete) return playFromComputer(moveNumber);
-
-			await checkSetComplete();
-			setIsComplete(() => true);
-
-			await audio('GENERIC', hasSound, 0.3);
-			if (hasAutoMove) return changePuzzle();
-			setIsRunning(() => false);
-		},
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-		[hasAutoMove, hasSound, changePuzzle, checkSetComplete, moveHistory.length],
-	);
+	}, [
+		puzzleIndex,
+		hasSound,
+		puzzleList.length,
+		updateFinishedPuzzle,
+		updateFinishedSet,
+		changeSet,
+	]);
 
 	/**
 	 * Allow only legal moves.
 	 */
 	const calcMovable = useCallback((): Partial<Config['movable']> => {
 		const dests = new Map();
-		// FIXME: not working
-		/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-		const color = getColor(chess.turn());
 		for (const s of chess.SQUARES) {
 			const ms = chess.moves({square: s, verbose: true});
 			if (ms.length > 0)
@@ -444,6 +420,46 @@ const PlayingPage = ({set}: Props) => {
 		[chess, moveHistory, calcMovable, hasSound],
 	);
 
+	const playFromComputer = useCallback(
+		async (move: number) =>
+			sleep(300)
+				.then(async () => computerMove(move))
+				.catch(console.log),
+		[computerMove],
+	);
+
+	/**
+	 * Called after each correct move.
+	 */
+	const checkPuzzleComplete = useCallback(
+		async moveNumber => {
+			const isComplete = moveNumber === moveHistory.length;
+
+			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
+			setAnimation(() => animation);
+			await cleanAnimation();
+
+			if (!isComplete) return playFromComputer(moveNumber);
+
+			await checkSetComplete();
+			setIsComplete(() => true);
+
+			await audio('GENERIC', hasSound, 0.3);
+			if (hasAutoMove) return changePuzzle();
+			setIsRunning(() => false);
+		},
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
+		[
+			hasAutoMove,
+			hasSound,
+			changePuzzle,
+			checkSetComplete,
+			cleanAnimation,
+			playFromComputer,
+			moveHistory.length,
+		],
+	);
+
 	/**
 	 * When the board is setup, make the first move.
 	 */
@@ -451,7 +467,7 @@ const PlayingPage = ({set}: Props) => {
 		if (!moveHistory) return;
 		if (moveNumber !== 0) return;
 		playFromComputer(0).catch(console.error);
-	}, [moveHistory, computerMove, moveNumber]);
+	}, [moveHistory, computerMove, moveNumber, playFromComputer]);
 
 	useEffect(() => {
 		setConfig(config => ({...config, lastMove}));
@@ -471,8 +487,7 @@ const PlayingPage = ({set}: Props) => {
 			setMoveNumber(previousMove => previousMove + 1);
 			await checkPuzzleComplete(currentMoveNumber);
 		},
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-		[chess, moveNumber, checkPuzzleComplete, calcMovable, computerMove],
+		[chess, moveNumber, checkPuzzleComplete, calcMovable],
 	);
 
 	const onWrongMove = useCallback(async () => {
@@ -483,7 +498,7 @@ const PlayingPage = ({set}: Props) => {
 		await cleanAnimation();
 		await audio('ERROR', hasSound);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [chess, hasSound]);
+	}, [chess, hasSound, cleanAnimation]);
 
 	/**
 	 * Function called when the user plays.

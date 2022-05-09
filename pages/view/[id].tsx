@@ -152,7 +152,9 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 
 			{set?.cycles < 2 && set?.currentTime === 0 && (
 				<div className='w-full'>
-					<p className='p-5 mt-8 mb-6 font-sans text-xl font-bold md:text-3xl'>No data yet, start playing!</p>
+					<p className='p-5 mt-8 mb-6 font-sans text-xl font-bold md:text-3xl'>
+						No data yet, start playing!
+					</p>
 				</div>
 			)}
 
