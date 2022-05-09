@@ -12,6 +12,7 @@ type PuzzleUpdate = {
 		'puzzles.$.count': number;
 		currentTime: number;
 		progression: number;
+		'puzzles.$.streak'?: number;
 	};
 	$push: {
 		'puzzles.$.mistakes': number;
@@ -20,7 +21,7 @@ type PuzzleUpdate = {
 	};
 	$set: {
 		'puzzles.$.played': boolean;
-		'puzzles.$.streak': number;
+		'puzzles.$.streak'?: number;
 	};
 };
 
