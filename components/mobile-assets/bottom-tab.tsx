@@ -7,7 +7,7 @@ const BottomTab = () => (
 			<a>
 				<div className='border-b-2 dark:border-white border-slate-900 hover:dark:border-sky-700 hover:border-white focus:dark:border-sky-700 focus:border-white'>
 					<LightningBoltIcon
-						className='w-8 h-8 dark:text-sky-700 text-white'
+						className='w-8 h-8 text-white dark:text-sky-700'
 						aria-hidden='true'
 					/>
 				</div>
@@ -18,7 +18,7 @@ const BottomTab = () => (
 			<a>
 				<div className='border-b-2 dark:border-white border-slate-900 hover:dark:border-sky-700 hover:border-white focus:dark:border-sky-700 focus:border-white'>
 					<HomeIcon
-						className='w-8 h-8 dark:text-sky-700 text-white'
+						className='w-8 h-8 text-white dark:text-sky-700'
 						aria-hidden='true'
 					/>
 				</div>
@@ -28,7 +28,7 @@ const BottomTab = () => (
 			<a>
 				<div className='border-b-2 dark:border-white border-slate-900 hover:dark:border-sky-700 hover:border-white focus:dark:border-sky-700 focus:border-white'>
 					<UserIcon
-						className='w-8 h-8 dark:text-sky-700 text-white'
+						className='w-8 h-8 text-white dark:text-sky-700'
 						aria-hidden='true'
 					/>
 				</div>

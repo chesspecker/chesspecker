@@ -37,7 +37,7 @@ const User = () => {
 	return (
 		<div className='flex flex-col w-screen min-h-screen px-10 pt-32 pb-24 '>
 			<div className='flex flex-wrap items-center'>
-				<p className='mr-5 text-6xl  '>{user.username}</p>
+				<p className='mr-5 text-6xl '>{user.username}</p>
 				{user?.isSponsor ? (
 					<p className=''>Official Sponsor</p>
 				) : (

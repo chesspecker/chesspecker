@@ -26,7 +26,7 @@ const CreatePage = () => {
 
 	return (
 		<div className='flex flex-col items-center justify-center pt-32 pb-24'>
-			<h2 className='text-xl font-bold  sm:text-3xl'>
+			<h2 className='text-xl font-bold sm:text-3xl'>
 				Select one or more category to create your set!
 			</h2>
 			<div className='fixed w-36 right-10 top-40'>

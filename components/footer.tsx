@@ -11,8 +11,8 @@ const Footer = () => (
 				<Link href='/sponsor'>
 					<a>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer group'>
-							<HeartIcon className='w-6 h-6  group-hover:text-pink-600' />
-							<p className='ml-3 text-xl  cursor-pointer group-hover:text-pink-600'>
+							<HeartIcon className='w-6 h-6 group-hover:text-pink-600' />
+							<p className='ml-3 text-xl cursor-pointer group-hover:text-pink-600'>
 								Support
 							</p>
 						</div>
@@ -23,11 +23,11 @@ const Footer = () => (
 				<Link href='https://github.com/chesspecker'>
 					<a target='_blank'>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
-							<div className='hidden md:flex p-1 rounded-lg bg-sky-800 dark:bg-transparent items-center justify-center '>
+							<div className='items-center justify-center hidden p-1 rounded-lg md:flex bg-sky-800 dark:bg-transparent '>
 								{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 								<Image src={github} width={30} height={30} />
 							</div>
-							<p className='ml-3 text-xl  border-solid cursor-pointer'>
+							<p className='ml-3 text-xl border-solid cursor-pointer'>
 								Github
 							</p>
 						</div>
@@ -36,7 +36,7 @@ const Footer = () => (
 				<Link href='https://discord.gg/qDftJZBBHa'>
 					<a target='_blank'>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
-							<div className='hidden md:flex p-1 rounded-lg bg-sky-800 dark:bg-transparent items-center justify-center '>
+							<div className='items-center justify-center hidden p-1 rounded-lg md:flex bg-sky-800 dark:bg-transparent '>
 								<Image
 									/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
 									src={discord}
@@ -45,7 +45,7 @@ const Footer = () => (
 									className='hidden md:block'
 								/>
 							</div>
-							<p className='ml-3 text-xl  border-solid cursor-pointer'>
+							<p className='ml-3 text-xl border-solid cursor-pointer'>
 								Discord
 							</p>
 						</div>

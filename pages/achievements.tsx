@@ -38,16 +38,16 @@ const Achievements = () => {
 	if (isLoading) return null;
 	return (
 		<div className='flex flex-col items-center justify-center min-h-screen pt-32 pb-24'>
-			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center  sm:text-4xl md:text-5xl'>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
 				Achievements
 			</h1>
 			{achievementsCategorys.map(category => {
 				return (
 					<div key={category.name as React.Key}>
-						<h1 className='px-5 mx-auto mt-8 font-sans text-xl font-bold text-center  sm:text-2xl md:text-3xl'>
+						<h1 className='px-5 mx-auto mt-8 font-sans text-xl font-bold text-center sm:text-2xl md:text-3xl'>
 							{category.name}
 						</h1>
-						<h2 className='p-5 mx-auto mb-6 font-sans text-lg font-bold text-center  sm:text-lg md:text-xl'>
+						<h2 className='p-5 mx-auto mb-6 font-sans text-lg font-bold text-center sm:text-lg md:text-xl'>
 							{category.description}
 						</h2>
 						<div className='flex items-center justify-center w-full'>

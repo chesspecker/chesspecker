@@ -64,7 +64,7 @@ type EmptyComponentProps = {
 };
 const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
 	<div className='relative flex flex-col w-64 h-64 p-4 m-4 overflow-hidden rounded-xl'>
-		<div className='absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full text-3xl font-medium dark:bg-white bg-transparent  border-2 border-sky-800 dark:border-transparent shadow-md cursor-pointer bg-opacity-60 text-sky-800 backdrop-blur-xl backdrop-filter rounded-xl'>
+		<div className='absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full text-3xl font-medium bg-transparent border-2 shadow-md cursor-pointer dark:bg-white border-sky-800 dark:border-transparent bg-opacity-60 text-sky-800 backdrop-blur-xl backdrop-filter rounded-xl'>
 			{image}
 			{text}
 		</div>
