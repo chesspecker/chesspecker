@@ -30,7 +30,7 @@ const CreatePage = () => {
 				Select one or more category to create your set!
 			</h2>
 			<div className='fixed w-36 right-10 top-40'>
-				<Button className='flex' onClick={handleClick}>
+				<Button className='flex justify-around' onClick={handleClick}>
 					<span>NEXT</span>
 					<ArrowRightIcon className='w-5 h-5 my-auto ml-4 align-middle' />
 				</Button>

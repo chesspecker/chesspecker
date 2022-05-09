@@ -77,17 +77,19 @@ const OptionsPage = () => {
 							}`}
 							onClick={validate}
 						>
-							<div
-								className={`relative mr-3 h-9 w-9 animate-spin ${
-									isDisabled ? 'visible' : 'invisible'
-								}`}
-							>
-								<Image
-									src={loading as string}
-									objectFit='contain'
-									layout='fill'
-								/>
-							</div>
+							{isDisabled && (
+								<div
+									className={`relative mr-3 h-9 w-9 animate-spin ${
+										isDisabled ? 'visible' : 'invisible'
+									}`}
+								>
+									<Image
+										src={loading as string}
+										objectFit='contain'
+										layout='fill'
+									/>
+								</div>
+							)}
 							{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
 						</Button>
 					</div>
