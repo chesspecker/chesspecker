@@ -46,7 +46,6 @@ const CustomApp = ({
 
 			<SWRConfig>
 				<Loader isVisible={loading} />
-
 				<Component {...pageProps} />
 			</SWRConfig>
 		</>,

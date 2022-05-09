@@ -13,23 +13,27 @@ export const BtnToggle = () => {
 	const [darkMode, setDarkMode] = useAtom(darkModeµ);
 
 	return (
-		<div className='flex items-center justify-center pl-2'>
+		<button
+			className='flex items-center justify-center pl-2 transition-all'
+			aria-label='Toggle Dark Mode'
+			type='button'
+		>
 			{darkMode ? (
-				<MoonIcon
-					className='w-5 h-5 text-white '
+				<SunIcon
+					className='w-5 h-5 text-yellow-400'
 					onClick={() => {
-						setDarkMode(!darkMode);
+						setDarkMode(() => false);
 					}}
 				/>
 			) : (
-				<SunIcon
-					className='w-5 h-5 text-yellow-400 '
+				<MoonIcon
+					className='w-5 h-5 text-yellow-400'
 					onClick={() => {
-						setDarkMode(!darkMode);
+						setDarkMode(() => true);
 					}}
 				/>
 			)}
-		</div>
+		</button>
 	);
 };
 
@@ -51,8 +55,7 @@ const Navbar = () => {
 						<a>
 							<div className='flex'>
 								<div className='m-2 max-w-[3.5rem]'>
-									{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
-									<Image src={logo} />
+									<Image src={logo as string} />
 								</div>
 								<p className='self-center hidden ml-1 mr-4 text-sm sm:block md:text-lg'>
 									— Chesspecker

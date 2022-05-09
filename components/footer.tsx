@@ -24,8 +24,7 @@ const Footer = () => (
 					<a target='_blank'>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
 							<div className='items-center justify-center hidden p-1 rounded-lg md:flex bg-sky-800 dark:bg-transparent '>
-								{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
-								<Image src={github} width={30} height={30} />
+								<Image src={github as string} width={30} height={30} />
 							</div>
 							<p className='ml-3 text-xl border-solid cursor-pointer'>Github</p>
 						</div>
@@ -34,10 +33,9 @@ const Footer = () => (
 				<Link href='https://discord.gg/qDftJZBBHa'>
 					<a target='_blank'>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
-							<div className='items-center justify-center hidden p-1 rounded-lg md:flex bg-sky-800 dark:bg-transparent '>
+							<div className='items-center justify-center hidden p-1 rounded-lg md:flex bg-sky-800 dark:bg-transparent'>
 								<Image
-									/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-									src={discord}
+									src={discord as string}
 									width={30}
 									height={30}
 									className='hidden md:block'
