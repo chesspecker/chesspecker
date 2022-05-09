@@ -2,7 +2,6 @@ import Image from 'next/image.js';
 import Link from 'next/link';
 import {LogoutIcon, MoonIcon, SunIcon} from '@heroicons/react/solid';
 import {useState, useEffect} from 'react';
-import {useTheme} from 'next-themes';
 import {useAtom} from 'jotai';
 import Burger from './mobile-assets/burger';
 import logo from '@/public/images/logo.svg';
@@ -14,7 +13,7 @@ export const BtnToggle = () => {
 	const [darkMode, setDarkMode] = useAtom(darkModeState);
 
 	return (
-		<div className='flex justify-center items-center pl-2'>
+		<div className='flex items-center justify-center pl-2'>
 			{darkMode ? (
 				<MoonIcon
 					className='w-5 h-5 text-white '
@@ -39,7 +38,6 @@ export const BtnToggle = () => {
 const Navbar = () => {
 	const [user, setUser] = useState<UserInterface>();
 	const data = useUser();
-	const {theme, setTheme} = useTheme();
 
 	useEffect(() => {
 		if (!data) return;
@@ -49,7 +47,7 @@ const Navbar = () => {
 	return (
 		<>
 			<Burger />
-			<div className='fixed top-0 z-10 items-center justify-between hidden w-full font-sans shadow sm:flex bg-white dark:bg-sky-700 sm:visible'>
+			<div className='fixed top-0 z-10 items-center justify-between hidden w-full font-sans bg-white shadow sm:flex dark:bg-sky-700 sm:visible'>
 				<div className='flex cursor-pointer'>
 					<Link href='/dashboard'>
 						<a>
@@ -58,7 +56,7 @@ const Navbar = () => {
 									{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 									<Image src={logo} />
 								</div>
-								<p className='self-center hidden ml-1 mr-4 text-sm  sm:block md:text-lg'>
+								<p className='self-center hidden ml-1 mr-4 text-sm sm:block md:text-lg'>
 									— Chesspecker
 								</p>
 							</div>
@@ -76,7 +74,7 @@ const Navbar = () => {
 
 						<Link href='/api/auth/logout'>
 							<a className='flex'>
-								<LogoutIcon className='w-3 h-3 mt-1 mr-2  md:h-5 md:w-5' />
+								<LogoutIcon className='w-3 h-3 mt-1 mr-2 md:h-5 md:w-5' />
 								Logout
 							</a>
 						</Link>

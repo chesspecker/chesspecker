@@ -58,7 +58,7 @@ const getAverageGrade = (set: PuzzleSetInterface): number => {
 
 const totalCycles = (set: PuzzleSetInterface): ViewData => ({
 	title: 'How many times you completed this set',
-	stat: set.cycles.toString(),
+	stat: <p>{set?.cycles}</p>,
 	hasChange: false,
 	Icon: FireIcon,
 });

@@ -32,7 +32,7 @@ const Block = ({
 				</h3>
 				<div className='flex items-center justify-center w-full h-full'>
 					{Icon && (
-						<div className=' p-3 rounded-md bg-white dark:bg-sky-700 mr-2'>
+						<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
 							<Icon
 								className='w-6 h-6 text-sky-700 dark:text-white'
 								aria-hidden='true'
@@ -47,31 +47,38 @@ const Block = ({
 		);
 
 	return (
-		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-white dark:bg-sky-700 rounded-lg shadow sm:pt-6 sm:px-6'>
-			{Icon && (
-				<div className='absolute p-3 rounded-md bg-sky-700'>
-					<Icon className='w-6 h-6 text-white' aria-hidden='true' />
-				</div>
-			)}
-			<h3 className='text-sm font-medium text-center text-gray-500'>{title}</h3>
+		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white  rounded-lg shadow sm:pt-6 sm:px-6'>
+			<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
+				{title}
+			</h3>
 			<div className='flex items-center justify-center w-full h-full'>
+				{Icon && (
+					<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
+						<Icon
+							className='w-6 h-6 text-sky-700 dark:text-white'
+							aria-hidden='true'
+						/>
+					</div>
+				)}
 				<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
 					{stat}
 				</p>
 				<p
 					className={classNames(
-						type === 'up' ? 'text-green-600' : 'text-red-600',
+						type === 'up'
+							? 'text-green-400 dark:text-green-600'
+							: 'text-red-400 dark:text-red-500',
 						'ml-2 flex items-baseline text-sm font-semibold',
 					)}
 				>
 					{type === 'up' ? (
 						<ArrowSmUpIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-green-500'
+							className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
 							aria-hidden='true'
 						/>
 					) : (
 						<ArrowSmDownIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-red-500'
+							className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
 							aria-hidden='true'
 						/>
 					)}
@@ -132,22 +139,34 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				{set.title}
 			</h1>
 
-			<div className='w-full mt-4'>
-				<h2 className='h2'>Set overview</h2>
-				<div className='flex flex-wrap w-full mt-4'>
-					{overviewStats.map(stat => (
-						<Block key={stat.title} {...stat} />
-					))}
+			{set?.cycles >= 1 && (
+				<div className='w-full mt-4'>
+					<h2 className='h2'>Set overview</h2>
+					<div className='flex flex-wrap w-full mt-4'>
+						{overviewStats.map(stat => (
+							<Block key={stat.title} {...stat} />
+						))}
+					</div>
 				</div>
-			</div>
-			<div className='w-full mt-4'>
-				<h2 className='h2'>Global progress</h2>
-				<div className='flex flex-wrap w-full mt-4'>
-					{progressStats.map(stat => (
-						<Block key={stat.title} {...stat} />
-					))}
+			)}
+
+			{set?.cycles < 2 && set?.currentTime === 0 && (
+				<div className='w-full'>
+					<p className='p-5 mt-8 mb-6 font-sans text-xl font-bold md:text-3xl'>No data yet, start playing!</p>
 				</div>
-			</div>
+			)}
+
+			{set?.cycles >= 2 && (
+				<div className='w-full mt-4'>
+					<h2 className='h2'>Global progress</h2>
+					<div className='flex flex-wrap w-full mt-4'>
+						{progressStats.map(stat => (
+							<Block key={stat.title} {...stat} />
+						))}
+					</div>
+				</div>
+			)}
+
 			{set?.currentTime > 0 && (
 				<div className='flex-wrap w-full mt-4'>
 					<h2 className='h2'>Current run</h2>
@@ -159,14 +178,16 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				</div>
 			)}
 
-			<div className='flex-wrap w-full mt-4'>
-				<h2 className='mb-4 h2'>All puzzles</h2>
-				<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
-					{set.puzzles.map(puzzle => (
-						<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
-					))}
+			{set?.currentTime > 0 && (
+				<div className='flex-wrap w-full mt-4'>
+					<h2 className='mb-4 h2'>All puzzles</h2>
+					<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
+						{set.puzzles.map(puzzle => (
+							<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
+						))}
+					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 };

@@ -450,7 +450,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		if (!moveHistory) return;
 		if (moveNumber !== 0) return;
-		playFromComputer(0);
+		playFromComputer(0).catch(console.error);
 	}, [moveHistory, computerMove, moveNumber]);
 
 	useEffect(() => {
@@ -582,7 +582,7 @@ const PlayingPage = ({set}: Props) => {
 						isRunning={isRunning}
 					/>
 					<Button
-						className='items-center my-2 leading-8  bg-gray-800 rounded-md w-36'
+						className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'
 						href='/dashboard'
 					>
 						LEAVE 🧨
