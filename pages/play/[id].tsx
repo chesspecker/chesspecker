@@ -78,6 +78,18 @@ const PlayingPage = ({set}: Props) => {
 	const [notificationMessage, setNotificationMessage] = useState('');
 	const [notificationUrl, setNotificationUrl] = useState('');
 
+	const cleanAnimation = async () =>
+		sleep(600)
+			.then(() => {
+				setAnimation(() => '');
+			})
+			.catch(console.log);
+
+	const playFromComputer = async (move: number) =>
+		sleep(300)
+			.then(async () => computerMove(move))
+			.catch(console.log);
+
 	/**
 	 * Extract the list of puzzles.
 	 */
@@ -364,15 +376,12 @@ const PlayingPage = ({set}: Props) => {
 	const checkPuzzleComplete = useCallback(
 		async moveNumber => {
 			const isComplete = moveNumber === moveHistory.length;
+
 			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
-
 			setAnimation(() => animation);
-			await sleep(600).then(() => {
-				setAnimation(() => '');
-			});
+			await cleanAnimation();
 
-			if (!isComplete)
-				return sleep(300).then(async () => computerMove(moveNumber));
+			if (!isComplete) return playFromComputer(moveNumber);
 
 			await checkSetComplete();
 			setIsComplete(() => true);
@@ -441,9 +450,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		if (!moveHistory) return;
 		if (moveNumber !== 0) return;
-		sleep(300)
-			.then(async () => computerMove(0))
-			.catch(console.log);
+		playFromComputer(0);
 	}, [moveHistory, computerMove, moveNumber]);
 
 	useEffect(() => {
@@ -465,10 +472,8 @@ const PlayingPage = ({set}: Props) => {
 			const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
 			if (isPuzzleComplete) return;
 			setAnimation(() => 'animate-rightMove');
-			await sleep(600).then(() => {
-				setAnimation(() => '');
-			});
-			await sleep(300).then(async () => computerMove(currentMoveNumber));
+			await cleanAnimation();
+			return playFromComputer(currentMoveNumber);
 		},
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[chess, moveNumber, checkPuzzleComplete, calcMovable, computerMove],
@@ -478,10 +483,8 @@ const PlayingPage = ({set}: Props) => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
 		setTotalMistakes(previous => previous + 1);
-		setAnimation('animate-wrongMove');
-		setTimeout(() => {
-			setAnimation(() => '');
-		}, 600);
+		setAnimation(() => 'animate-wrongMove');
+		await cleanAnimation();
 		await audio('ERROR', hasSound);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound]);
