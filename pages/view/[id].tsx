@@ -26,17 +26,20 @@ const Block = ({
 }: ViewData): JSX.Element => {
 	if (!hasChange)
 		return (
-			<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
-				{Icon && (
-					<div className='absolute p-3 rounded-md bg-sky-700'>
-						<Icon className='w-6 h-6 text-white' aria-hidden='true' />
-					</div>
-				)}
-				<h3 className='text-sm font-medium text-center text-gray-500'>
+			<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
+				<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
 					{title}
 				</h3>
 				<div className='flex items-center justify-center w-full h-full'>
-					<p className='text-2xl font-semibold text-gray-900 justify-self-center'>
+					{Icon && (
+						<div className=' p-3 rounded-md bg-white dark:bg-sky-700 mr-2'>
+							<Icon
+								className='w-6 h-6 text-sky-700 dark:text-white'
+								aria-hidden='true'
+							/>
+						</div>
+					)}
+					<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
 						{stat}
 					</p>
 				</div>
@@ -52,7 +55,7 @@ const Block = ({
 			)}
 			<h3 className='text-sm font-medium text-center text-gray-500'>{title}</h3>
 			<div className='flex items-center justify-center w-full h-full'>
-				<p className='text-2xl font-semibold text-gray-900 justify-self-center'>
+				<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
 					{stat}
 				</p>
 				<p

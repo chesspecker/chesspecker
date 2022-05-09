@@ -1,8 +1,8 @@
+import {useAtom} from 'jotai';
+import {darkModeState} from '../lib/atoms';
 import Footer from '@/components/footer';
 import BottomTab from '@/components/mobile-assets/bottom-tab';
 import Navbar from '@/components/navbar';
-import {useAtom} from 'jotai';
-import {darkModeState} from '../lib/atoms';
 
 const MainLayout = ({children}: {children: React.ReactNode}) => {
 	const [isDarkMode] = useAtom(darkModeState);

@@ -23,6 +23,7 @@ const History = ({puzzles}: HistoryProps) => {
 					href={`https://lichess.org/training/${puzzle.PuzzleId}`}
 					className={getClasses(puzzle.grade)}
 					target='_blank'
+					rel='noreferrer'
 				/>
 			))}
 		</div>

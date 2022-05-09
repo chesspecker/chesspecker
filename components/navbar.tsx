@@ -1,15 +1,14 @@
 import Image from 'next/image.js';
 import Link from 'next/link';
-import {LogoutIcon} from '@heroicons/react/solid';
+import {LogoutIcon, MoonIcon, SunIcon} from '@heroicons/react/solid';
 import {useState, useEffect} from 'react';
+import {useTheme} from 'next-themes';
+import {useAtom} from 'jotai';
 import Burger from './mobile-assets/burger';
 import logo from '@/public/images/logo.svg';
 import useUser from '@/hooks/use-user';
 import {UserInterface} from '@/types/models';
-import {useTheme} from 'next-themes';
-import {MoonIcon, SunIcon} from '@heroicons/react/solid';
 import {darkModeState} from '@/lib/atoms';
-import {useAtom} from 'jotai';
 
 export const BtnToggle = () => {
 	const [darkMode, setDarkMode] = useAtom(darkModeState);
@@ -21,7 +20,7 @@ export const BtnToggle = () => {
 					className='w-5 h-5 text-white '
 					onClick={() => {
 						console.log('ma bite');
-						setDarkMode(darkMode ? false : true);
+						setDarkMode(!darkMode);
 					}}
 				/>
 			) : (
@@ -29,7 +28,7 @@ export const BtnToggle = () => {
 					className='w-5 h-5 text-yellow-400 '
 					onClick={() => {
 						console.log('ma bite');
-						setDarkMode(darkMode ? false : true);
+						setDarkMode(!darkMode);
 					}}
 				/>
 			)}

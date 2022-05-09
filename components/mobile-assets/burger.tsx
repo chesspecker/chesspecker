@@ -7,11 +7,12 @@ import {
 	LogoutIcon,
 	PlusIcon,
 	LightningBoltIcon,
+	MoonIcon,
+	SunIcon,
 } from '@heroicons/react/solid';
 import Link from 'next/link';
 import {useAtom} from 'jotai';
 import {darkModeState} from '@/lib/atoms';
-import {MoonIcon, SunIcon} from '@heroicons/react/solid';
 
 type BurgerItemProps = {
 	href: string;
@@ -89,24 +90,24 @@ const Burger = () => {
 						/>
 						<Menu.Item>
 							<button
-								onClick={() => {
-									setDarkMode(isDarkMode ? false : true);
-								}}
 								type='button'
 								className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group'
+								onClick={() => {
+									setDarkMode(!isDarkMode);
+								}}
 							>
 								{isDarkMode ? (
 									<MoonIcon
 										className='w-5 mr-2 h-5 text-sky-700 '
 										onClick={() => {
-											setDarkMode(isDarkMode ? false : true);
+											setDarkMode(!isDarkMode);
 										}}
 									/>
 								) : (
 									<SunIcon
 										className='w-5 mr-2 h-5 text-yellow-400 '
 										onClick={() => {
-											setDarkMode(isDarkMode ? false : true);
+											setDarkMode(!isDarkMode);
 										}}
 									/>
 								)}
