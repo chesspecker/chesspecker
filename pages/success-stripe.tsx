@@ -68,10 +68,10 @@ const SuccessPage = () => {
 	return (
 		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 text-slate-800'>
 			{useConffeti()}
-			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white'>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
 				Thanks for helping chesspecker grow!
 			</h1>
-			<div className='w-full mx-0 my-3 text-center text-white'>
+			<div className='w-full mx-0 my-3 text-center '>
 				<Button href='/dashboard'>LET&apos;S GO! 🔥</Button>
 			</div>
 		</div>

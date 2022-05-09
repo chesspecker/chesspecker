@@ -26,7 +26,7 @@ const CreatePage = () => {
 
 	return (
 		<div className='flex flex-col items-center justify-center pt-32 pb-24'>
-			<h2 className='text-xl font-bold text-white sm:text-3xl'>
+			<h2 className='text-xl font-bold  sm:text-3xl'>
 				Select one or more category to create your set!
 			</h2>
 			<div className='fixed w-36 right-10 top-40'>
@@ -38,9 +38,7 @@ const CreatePage = () => {
 			<div className='flex flex-col jus'>
 				{CATEGORIES.map((category: Category) => (
 					<div key={category.id}>
-						<h3 className='pb-8 mx-2 mt-4 mb-3 text-3xl text-white'>
-							{category.name}
-						</h3>
+						<h3 className='pb-8 mx-2 mt-4 mb-3 text-3xl '>{category.name}</h3>
 						<div className='flex items-center justify-center w-full'>
 							<div className='flex items-center justify-center w-full max-w-screen-xl'>
 								<div className='flex flex-wrap justify-center w-full'>

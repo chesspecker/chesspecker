@@ -32,7 +32,7 @@ const ParsedTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
 	const totalTime = getTotalTime(set);
 	const [days, hours, minutes, secondes] = useClock(totalTime);
 	return (
-		<p className='text-2xl font-bold text-white align-self-center'>
+		<p className='text-2xl font-bold  align-self-center'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}
@@ -109,7 +109,7 @@ const GetCurrentTime = ({set}: {set: PuzzleSetInterface}): JSX.Element => {
 	if (!set?.currentTime || set.currentTime === 0) return <p>0</p>;
 
 	return (
-		<p className='text-2xl font-bold text-white align-self-center'>
+		<p className='text-2xl font-bold  align-self-center'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}
@@ -130,12 +130,10 @@ const getCurrentGrade = (set: PuzzleSetInterface): string => {
 type BlockProps = {title: string; data: string | number | JSX.Element};
 
 const Block = ({title, data}: BlockProps): JSX.Element => (
-	<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center rounded-xl border-4 border-white p-4'>
+	<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center rounded-xl border-4 border-sky-800 dark:border-white p-4'>
 		<h3 className='text-center h3'>{title}</h3>
 		<div className='flex items-center justify-center w-full h-full'>
-			<p className='text-5xl font-bold text-white justify-self-center'>
-				{data}
-			</p>
+			<p className='text-5xl font-bold  justify-self-center'>{data}</p>
 		</div>
 	</div>
 );
@@ -163,7 +161,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
 		<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
-			<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold text-white md:text-5xl'>
+			<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold  md:text-5xl'>
 				{set.title}
 			</h1>
 

@@ -50,11 +50,11 @@ const DashbaordPage = () => {
 				currentAchievementItem={achievementsList[0]}
 				handleClick={updateValidatedAchievement}
 			/>
-			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 text-slate-800'>
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white sm:text-4xl md:text-5xl'>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center  sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>
-				<p className='w-11/12 text-gray-100 text-md sm:text-2xl '>
+				<p className='w-11/12  text-md sm:text-2xl '>
 					Solve the same puzzles again and again, only faster. It’s not a lazy
 					shortcut to success – hard work is required. But the reward can be
 					re-programming your unconscious mind. Benefits include sharper

@@ -62,7 +62,7 @@ const OptionsPage = () => {
 	return (
 		<div className='flex flex-col items-center justify-center w-11/12 min-h-screen pt-32 pb-24 text-center'>
 			<div>
-				<h1 className='mb-8 text-5xl text-white'>One last thing...</h1>
+				<h1 className='mb-8 text-5xl '>One last thing...</h1>
 				<Alert type='error' isVisible={isOpen} message='Title is needed!' />
 				<div className='flex flex-col items-center justify-center w-5/6 mx-12'>
 					<OptionTextInput>Give your set a name</OptionTextInput>

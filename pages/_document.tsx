@@ -57,7 +57,7 @@ const Document = () => {
 					src='https://plausible.io/js/plausible.js'
 				/>
 			</Head>
-			<body className='min-h-screen min-w-screen bg-sky-700'>
+			<body className={`min-h-screen min-w-screen bg-sky-700 `}>
 				<Main />
 				<NextScript />
 			</body>

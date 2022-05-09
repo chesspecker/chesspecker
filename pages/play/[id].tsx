@@ -582,7 +582,7 @@ const PlayingPage = ({set}: Props) => {
 						isRunning={isRunning}
 					/>
 					<Button
-						className='items-center my-2 leading-8 text-white bg-gray-800 rounded-md w-36'
+						className='items-center my-2 leading-8  bg-gray-800 rounded-md w-36'
 						href='/dashboard'
 					>
 						LEAVE 🧨
