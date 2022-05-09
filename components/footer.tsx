@@ -27,9 +27,7 @@ const Footer = () => (
 								{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
 								<Image src={github} width={30} height={30} />
 							</div>
-							<p className='ml-3 text-xl border-solid cursor-pointer'>
-								Github
-							</p>
+							<p className='ml-3 text-xl border-solid cursor-pointer'>Github</p>
 						</div>
 					</a>
 				</Link>

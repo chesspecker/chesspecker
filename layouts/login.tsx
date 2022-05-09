@@ -1,7 +1,7 @@
 import {useAtom} from 'jotai';
 import {darkModeµ} from '../lib/atoms';
 
-const loginLayout = ({children}: {children: React.ReactNode}) => {
+const LoginLayout = ({children}: {children: React.ReactNode}) => {
 	const [isDarkMode] = useAtom(darkModeµ);
 	return (
 		<main className={` ${isDarkMode && 'dark'}`}>
@@ -12,4 +12,4 @@ const loginLayout = ({children}: {children: React.ReactNode}) => {
 	);
 };
 
-export default loginLayout;
+export default LoginLayout;

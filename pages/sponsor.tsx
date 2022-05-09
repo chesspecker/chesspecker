@@ -1,3 +1,4 @@
+import process from 'process';
 import Stripe from 'stripe';
 import type {ReactElement} from 'react';
 import {useEffect, useState} from 'react';
@@ -12,7 +13,6 @@ import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
 import type {UserInterface} from '@/types/models';
 import useEffectAsync from '@/hooks/use-effect-async';
-import process from 'process';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
