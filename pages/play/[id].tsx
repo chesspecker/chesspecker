@@ -34,6 +34,9 @@ import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 
+/* eslint-disable-next-line no-promise-executor-return */
+const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
+
 type Props = {set: PuzzleSetInterface};
 const PlayingPage = ({set}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
@@ -60,6 +63,7 @@ const PlayingPage = ({set}: Props) => {
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
+	const [initialSetDate, setInitialSetDate] = useState<number>();
 	const [timerSum, setTimerSum] = useState<number>(0);
 	const [isRunning, setIsRunning] = useState(true);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
@@ -75,11 +79,24 @@ const PlayingPage = ({set}: Props) => {
 	const [notificationMessage, setNotificationMessage] = useState('');
 	const [notificationUrl, setNotificationUrl] = useState('');
 
+	const cleanAnimation = async () =>
+		sleep(600)
+			.then(() => {
+				setAnimation(() => '');
+			})
+			.catch(console.log);
+
+	const playFromComputer = async (move: number) =>
+		sleep(300)
+			.then(async () => computerMove(move))
+			.catch(console.log);
+
 	/**
 	 * Extract the list of puzzles.
 	 */
 	useEffect(() => {
 		setInitialSetTimer(() => set.currentTime);
+		setInitialSetDate(() => Date.now());
 		setCompletedPuzzles(() => set.progression);
 		setTotalPuzzles(() => set.length);
 		const puzzleList = set.puzzles.filter(p => !p.played);
@@ -160,24 +177,21 @@ const PlayingPage = ({set}: Props) => {
 		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
 		const timeWithMistakes = timeTaken + 3 * mistakes;
 		setTimerSum(previous => previous + timeWithMistakes);
-		const oldThemes = user.puzzleSolvedByCategories;
-		const newThemesIds = puzzle.Themes;
+		const oldThemes_ = user.puzzleSolvedByCategories;
+		const oldThemes = new Set(oldThemes_.map(t => t.title));
+		const newThemes = puzzle.Themes;
 
 		const promises: Array<Promise<any>> = [];
 
 		// Is there some themes not in common?
-		const oldThemesIds = new Set(oldThemes.map(t => t.title));
-		const themesNotInCommon = newThemesIds.filter(id => !oldThemesIds.has(id));
+		const themesNotInCommon = newThemes.filter(id => !oldThemes.has(id));
 
+		// If there are, we add them to the user's themes
 		if (themesNotInCommon.length > 0) {
-			// If there are, we add them to the user's themes
 			const updateUserData: UpdateUser = {
-				$push: {
-					puzzleSolvedByCategories: {
-						$each: [],
-					},
-				},
+				$push: {puzzleSolvedByCategories: {$each: []}},
 			};
+
 			for (const theme of themesNotInCommon) {
 				updateUserData.$push.puzzleSolvedByCategories.$each.push({
 					title: theme,
@@ -185,42 +199,27 @@ const PlayingPage = ({set}: Props) => {
 				});
 			}
 
-			promises.push(
-				update_.user(user._id.toString(), updateUserData).catch(error => {
-					console.log(error);
-				}),
-			);
+			promises.push(update_.user(user._id.toString(), updateUserData));
 		}
 
 		// Is there some puzzles in common in the old and new themes?
-		const themesInCommon = oldThemes.filter(t =>
-			newThemesIds.includes(t.title),
-		);
+		const themesInCommon = oldThemes_.filter(t => newThemes.includes(t.title));
+		const incrementUser: UpdateUser = {$inc: {totalPuzzleSolved: 1}};
 
-		const incrementUser: UpdateUser = {
-			$inc: {
-				totalPuzzleSolved: 1,
-			},
-		};
-
-		if (themesInCommon.length > 0) {
-			// If there are, we update the user's themes
-			for (const theme of themesInCommon) {
+		// If there are, we update the user's themes
+		if (themesInCommon.length > 0)
+			for (const theme of themesInCommon)
 				incrementUser.$inc[
-					`puzzleSolvedByCategories.${oldThemes.indexOf(theme)}.count`
+					`puzzleSolvedByCategories.${oldThemes_.indexOf(theme)}.count`
 				] = 1;
-			}
-		}
 
-		promises.push(
-			update_.user(user._id.toString(), incrementUser).catch(error => {
-				console.log(error);
-			}),
-		);
+		promises.push(update_.user(user._id.toString(), incrementUser));
 
-		await Promise.all(promises).catch(error => {
+		try {
+			await Promise.all(promises);
+		} catch (error: unknown) {
 			console.log(error);
-		});
+		}
 
 		const body: AchivementsArgs = {
 			streakMistakes,
@@ -231,7 +230,7 @@ const PlayingPage = ({set}: Props) => {
 				? user.totalPuzzleSolved + 1
 				: 1,
 			themes: puzzle.Themes.map(t => {
-				const a = oldThemes.find(c => t === c.title);
+				const a = oldThemes_.find(c => t === c.title);
 				const count = a ? a.count + 1 : 1;
 				return {title: t, count};
 			}),
@@ -269,35 +268,34 @@ const PlayingPage = ({set}: Props) => {
 			},
 			$set: {
 				'puzzles.$.played': true,
-				'puzzles.$.streak': puzzleItem.streak ? puzzleItem.streak + 1 : 0,
 			},
 		};
 
-		const result = await update_
-			.puzzle(set._id.toString(), puzzleItem._id.toString(), update)
-			.catch((error: unknown) => {
-				console.log(error);
-			});
+		if (newGrade >= 5) {
+			update.$inc['puzzles.$.streak'] = 1;
+		} else {
+			update.$set['puzzles.$.streak'] = 0;
+		}
 
-		if (!result) return;
-		if (!result.success) return;
-
-		const grades = result.puzzle.grades;
-		setPreviousPuzzle(previous => {
-			if (previous.length >= 12) previous.shift();
-
-			return [
+		try {
+			const result = await update_.puzzle(
+				set._id.toString(),
+				puzzleItem._id.toString(),
+				update,
+			);
+			if (!result || !result.success) throw new Error("Couldn't update puzzle");
+			const grades = result.puzzle.grades;
+			setPreviousPuzzle(previous => [
 				...previous,
 				{
 					grade: grades[grades.length - 1],
-					PuzzleId: result.puzzle._id.toString(),
+					PuzzleId: result.puzzle.PuzzleId,
 				},
-			];
-		});
-
-		await mutate().catch((error: unknown) => {
+			]);
+			await mutate();
+		} catch (error: unknown) {
 			console.log(error);
-		});
+		}
 	}, [
 		puzzleIndex,
 		puzzle,
@@ -336,16 +334,16 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
-		const timeTaken = (Date.now() - initialSetTimer) / 1000;
-		const formattedTime = Number.parseInt(timeTaken.toFixed(2), 10);
-		const totalTime = formattedTime + timerSum + 1;
+		const timeTaken = (Date.now() - initialSetDate) / 1000;
+		const totalTime = timeTaken + set.currentTime;
+		const formattedTime = Number.parseInt(totalTime.toFixed(2), 10);
 
 		const update = {
 			$inc: {
 				cycles: 1,
 			},
 			$push: {
-				times: totalTime,
+				times: formattedTime,
 			},
 			$set: {
 				'puzzles.$[].played': false,
@@ -366,10 +364,11 @@ const PlayingPage = ({set}: Props) => {
 	 * Called after each correct move.
 	 */
 	const checkSetComplete = useCallback(async () => {
-		if (puzzleIndex + 1 !== puzzleList.length) return false;
-		await audio('VICTORY', hasSound);
-		await updateFinishedSet();
-		return true;
+		if (puzzleIndex + 1 !== puzzleList.length) return;
+		await audio('VICTORY', hasSound)
+			.then(updateFinishedPuzzle)
+			.then(updateFinishedSet)
+			.then(changeSet);
 	}, [puzzleIndex, hasSound, puzzleList.length, updateFinishedSet]);
 
 	/**
@@ -377,25 +376,20 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	const checkPuzzleComplete = useCallback(
 		async moveNumber => {
-			if (moveNumber === moveHistory.length) {
-				setAnimation(() => 'animate-finishMove');
-				setTimeout(() => {
-					setAnimation(() => '');
-				}, 600);
-				const isSetComplete = await checkSetComplete();
-				if (isSetComplete) return changeSet();
-				setIsComplete(() => true);
-				await audio('GENERIC', hasSound, 0.3);
-				if (hasAutoMove) {
-					await changePuzzle();
-					return true;
-				}
+			const isComplete = moveNumber === moveHistory.length;
 
-				setIsRunning(() => false);
-				return true;
-			}
+			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
+			setAnimation(() => animation);
+			await cleanAnimation();
 
-			return false;
+			if (!isComplete) return playFromComputer(moveNumber);
+
+			await checkSetComplete();
+			setIsComplete(() => true);
+
+			await audio('GENERIC', hasSound, 0.3);
+			if (hasAutoMove) return changePuzzle();
+			setIsRunning(() => false);
 		},
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[hasAutoMove, hasSound, changePuzzle, checkSetComplete, moveHistory.length],
@@ -456,9 +450,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		if (!moveHistory) return;
 		if (moveNumber !== 0) return;
-		setTimeout(async () => {
-			await computerMove(0);
-		}, 300);
+		playFromComputer(0);
 	}, [moveHistory, computerMove, moveNumber]);
 
 	useEffect(() => {
@@ -477,15 +469,7 @@ const PlayingPage = ({set}: Props) => {
 			}));
 			const currentMoveNumber = moveNumber + 1;
 			setMoveNumber(previousMove => previousMove + 1);
-			const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
-			if (isPuzzleComplete) return;
-			setAnimation(() => 'animate-rightMove');
-			setTimeout(() => {
-				setAnimation(() => '');
-			}, 600);
-			setTimeout(async () => {
-				await computerMove(moveNumber + 1);
-			}, 300);
+			await checkPuzzleComplete(currentMoveNumber);
 		},
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[chess, moveNumber, checkPuzzleComplete, calcMovable, computerMove],
@@ -495,10 +479,8 @@ const PlayingPage = ({set}: Props) => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
 		setTotalMistakes(previous => previous + 1);
-		setAnimation('animate-wrongMove');
-		setTimeout(() => {
-			setAnimation(() => '');
-		}, 600);
+		setAnimation(() => 'animate-wrongMove');
+		await cleanAnimation();
 		await audio('ERROR', hasSound);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound]);
@@ -600,7 +582,7 @@ const PlayingPage = ({set}: Props) => {
 						isRunning={isRunning}
 					/>
 					<Button
-						className='items-center my-2 leading-8 text-white bg-gray-800 rounded-md w-36'
+						className='items-center my-2 leading-8  bg-gray-800 rounded-md w-36'
 						href='/dashboard'
 					>
 						LEAVE 🧨

@@ -1,6 +1,7 @@
 import {useAtom} from 'jotai';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
+import {ArrowRightIcon} from '@heroicons/react/solid';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import CATEGORIES from '@/data/categories';
@@ -25,15 +26,19 @@ const CreatePage = () => {
 
 	return (
 		<div className='flex flex-col items-center justify-center pt-32 pb-24'>
-			<h2 className='text-xl font-bold text-white sm:text-3xl'>
+			<h2 className='text-xl font-bold  sm:text-3xl'>
 				Select one or more category to create your set!
 			</h2>
+			<div className='fixed w-36 right-10 top-40'>
+				<Button className='flex justify-around' onClick={handleClick}>
+					<span>NEXT</span>
+					<ArrowRightIcon className='w-5 h-5 my-auto ml-4 align-middle' />
+				</Button>
+			</div>
 			<div className='flex flex-col jus'>
 				{CATEGORIES.map((category: Category) => (
 					<div key={category.id}>
-						<h3 className='pb-8 mx-2 mt-4 mb-3 text-3xl text-white'>
-							{category.name}
-						</h3>
+						<h3 className='pb-8 mx-2 mt-4 mb-3 text-3xl '>{category.name}</h3>
 						<div className='flex items-center justify-center w-full'>
 							<div className='flex items-center justify-center w-full max-w-screen-xl'>
 								<div className='flex flex-wrap justify-center w-full'>
@@ -47,9 +52,6 @@ const CreatePage = () => {
 						</div>
 					</div>
 				))}
-			</div>
-			<div className='sticky right-0 w-6/12 bottom-20'>
-				<Button onClick={handleClick}>NEXT</Button>
 			</div>
 		</div>
 	);

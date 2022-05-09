@@ -41,7 +41,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	};
 
 	return (
-		<div className='flex flex-col w-64 h-64 p-4 m-2 overflow-hidden text-white border-2 border-white rounded-xl'>
+		<div className='flex flex-col w-64 h-64 p-4 m-2 overflow-hidden border-2 border-sky-800 dark:border-white rounded-xl'>
 			<div className='flex justify-end w-full'>
 				<RemoveModal onClick={removeSet} />
 			</div>
@@ -63,8 +63,8 @@ type EmptyComponentProps = {
 	text: JSX.Element;
 };
 const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
-	<div className='relative flex flex-col w-64 h-64 p-4 m-4 overflow-hidden text-white rounded-xl'>
-		<div className='absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full text-3xl font-medium bg-white border border-transparent shadow-md cursor-pointer bg-opacity-60 text-sky-800 backdrop-blur-xl backdrop-filter rounded-xl'>
+	<div className='relative flex flex-col w-64 h-64 p-4 m-4 overflow-hidden rounded-xl'>
+		<div className='absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full text-3xl font-medium dark:bg-white bg-transparent  border-2 border-sky-800 dark:border-transparent shadow-md cursor-pointer bg-opacity-60 text-sky-800 backdrop-blur-xl backdrop-filter rounded-xl'>
 			{image}
 			{text}
 		</div>

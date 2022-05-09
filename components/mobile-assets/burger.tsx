@@ -9,6 +9,9 @@ import {
 	LightningBoltIcon,
 } from '@heroicons/react/solid';
 import Link from 'next/link';
+import {useAtom} from 'jotai';
+import {darkModeState} from '@/lib/atoms';
+import {MoonIcon, SunIcon} from '@heroicons/react/solid';
 
 type BurgerItemProps = {
 	href: string;
@@ -33,13 +36,14 @@ const BurgerItem = ({href, icon, text}: BurgerItemProps) => (
 );
 
 const Burger = () => {
+	const [isDarkMode, setDarkMode] = useAtom(darkModeState);
 	return (
 		<div className='fixed z-20 flex items-end justify-end visible w-56 safe-top top-5 right-5 sm:hidden'>
 			<Menu as='div' className='relative inline-block text-left'>
 				<div>
-					<Menu.Button className='inline-flex justify-center w-full p-2 text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75'>
+					<Menu.Button className='inline-flex justify-center w-full p-2 text-sm font-medium  bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75'>
 						<MenuIcon
-							className='w-5 h-5 text-white hover:text-violet-100'
+							className='w-5 h-5  hover:text-violet-100'
 							aria-hidden='true'
 						/>
 					</Menu.Button>
@@ -83,6 +87,32 @@ const Burger = () => {
 							icon={<LightningBoltIcon className='w-5 h-5 mr-2 text-sky-700' />}
 							text='Achievements'
 						/>
+						<Menu.Item>
+							<button
+								onClick={() => {
+									setDarkMode(isDarkMode ? false : true);
+								}}
+								type='button'
+								className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group'
+							>
+								{isDarkMode ? (
+									<MoonIcon
+										className='w-5 mr-2 h-5 text-sky-700 '
+										onClick={() => {
+											setDarkMode(isDarkMode ? false : true);
+										}}
+									/>
+								) : (
+									<SunIcon
+										className='w-5 mr-2 h-5 text-yellow-400 '
+										onClick={() => {
+											setDarkMode(isDarkMode ? false : true);
+										}}
+									/>
+								)}
+								{isDarkMode ? 'Dark mode' : 'Light Mode'}
+							</button>
+						</Menu.Item>
 					</Menu.Items>
 				</Transition>
 			</Menu>

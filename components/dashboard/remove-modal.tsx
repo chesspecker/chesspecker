@@ -5,7 +5,7 @@ import useModal from '@/hooks/use-modal';
 import {Button} from '@/components/button';
 
 const defaultClasses =
-	'block cursor-default self-center border border-none border-transparent bg-opacity-70 px-2.5 py-2 text-center font-sans text-sm md:text-lg font-bold shadow-sm mx-auto md:mx-2 w-36 rounded-md bg-gray-800 text-white leading-8 m-2';
+	'block cursor-default self-center border border-none border-transparent bg-opacity-70 px-2.5 py-2 text-center font-sans text-sm md:text-lg font-bold shadow-sm mx-auto md:mx-2 w-36 rounded-md bg-gray-800 leading-8 m-2';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {

@@ -18,17 +18,17 @@ const Choice = ({theme}: Props) => {
 
 	const getBorderColor = (): string => {
 		if (isDisabled() && !isSelected) return 'border-gray-700';
-		return 'border-white';
+		return 'border-sky-700 dark:border-white';
 	};
 
 	const getTextColor = (): string => {
-		if (isSelected) return 'text-sky-700';
+		if (isSelected) return 'text-white dark:text-sky-700';
 		if (isDisabled()) return 'text-gray-400';
-		return 'text-white';
+		return '';
 	};
 
 	const getBgColor = (): string => {
-		if (isSelected) return 'bg-white';
+		if (isSelected) return 'bg-sky-700 dark:bg-white';
 		if (isDisabled()) return 'bg-gray-700';
 		return '';
 	};
@@ -54,8 +54,10 @@ const Choice = ({theme}: Props) => {
 			className={`m-4 h-fit w-64 ${getCursor()} flex-wrap rounded-lg border-2 ${getBorderColor()} ${getBgColor()}`}
 			onClick={handleClick}
 		>
-			<h4 className={`m-4 text-2xl ${getTextColor()}`}>{theme.title}</h4>
-			<p className={`m-4 text-xl font-light ${getTextColor()}`}>
+			<h4 className={`m-4 text-xl font-semibold ${getTextColor()}`}>
+				{theme.title}
+			</h4>
+			<p className={`m-4 text-lg font-medium ${getTextColor()}`}>
 				{theme.description}
 			</p>
 		</div>

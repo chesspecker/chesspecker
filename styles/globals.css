@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 .h2 {
-	@apply text-3xl text-white;
+	@apply text-3xl;
 }
 
 .h3 {
-	@apply text-xl text-white;
+	@apply text-xl;
 }

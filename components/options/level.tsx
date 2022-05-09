@@ -23,10 +23,7 @@ const OptionLevel = () => {
 	return (
 		<div className='flex flex-col items-stretch justify-between w-full my-8 text-left'>
 			<div className='flex flex-col justify-between md:flex-row'>
-				<label
-					htmlFor='number_game'
-					className='self-center m-0 mr-4 text-2xl text-white'
-				>
+				<label htmlFor='number_game' className='self-center m-0 mr-4 text-2xl '>
 					Difficulty level
 				</label>
 				<div className='w-4/6 h-12 mx-auto mt-2 md:mx-0 md:mt-0 md:w-2/6'>

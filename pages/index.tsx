@@ -13,12 +13,12 @@ const IndexPage = () => (
 			width='160px'
 			height='160px'
 		/>
-		<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center text-white'>
+		<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
 			Happy to see you
 			<br />
 			newcomer 👋
 		</h1>
-		<div className='w-full mx-0 my-3 text-center text-white'>
+		<div className='w-full mx-0 my-3 text-center '>
 			<Button className='py-4' href='/api/auth/login'>
 				SIGN IN WITH LICHESS
 			</Button>

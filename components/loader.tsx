@@ -24,7 +24,7 @@ const Loader = ({isVisible}: {isVisible: boolean}) => {
 						leaveFrom='opacity-100'
 						leaveTo='opacity-0'
 					>
-						<div className='flex flex-col items-center justify-center w-full h-full m-0 text-slate-800 bg-sky-700 bg-gradient-to-t from-slate-900 to-sky-700'>
+						<div className='flex flex-col items-center justify-center w-full h-full m-0   bg-gradient-to-t from-white dark:from-slate-900 to-white dark:to-sky-700'>
 							<Transition.Child
 								as={Fragment}
 								enter='transform transition duration-[200ms]'

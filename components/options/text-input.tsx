@@ -14,10 +14,7 @@ const OptionTextInput = ({children}: Props) => {
 
 	return (
 		<div className='flex flex-col items-center justify-between w-full pb-4 my-8 overflow-hidden text-left md:flex-row'>
-			<label
-				htmlFor='number_game'
-				className='self-center m-0 mr-4 text-2xl text-white'
-			>
+			<label htmlFor='number_game' className='self-center m-0 mr-4 text-2xl '>
 				{children}
 			</label>
 			<input

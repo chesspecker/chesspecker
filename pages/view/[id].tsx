@@ -44,7 +44,7 @@ const Block = ({
 		);
 
 	return (
-		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
+		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-white dark:bg-sky-700 rounded-lg shadow sm:pt-6 sm:px-6'>
 			{Icon && (
 				<div className='absolute p-3 rounded-md bg-sky-700'>
 					<Icon className='w-6 h-6 text-white' aria-hidden='true' />
@@ -125,7 +125,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
 		<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
-			<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold text-white md:text-5xl'>
+			<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold md:text-5xl'>
 				{set.title}
 			</h1>
 
