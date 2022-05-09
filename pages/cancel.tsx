@@ -2,31 +2,26 @@ import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
 import Layout from '@/layouts/login';
 import {Button} from '@/components/button';
-import useConffeti from '@/hooks/use-conffeti';
-import useUser from '@/hooks/use-user';
-import audio from '@/lib/sound';
 
-const IndexPage = () => {
+const CancelPage = () => {
 	const router = useRouter();
 	const handleClick = async () => {
-		await audio('VICTORY', true, 0);
 		await router.push('/dashboard');
 	};
 
 	return (
 		<div className='flex flex-col items-center justify-center h-screen m-0 '>
-			{useConffeti()}
 			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
-				Hello {useUser()?.user?.username} 👋 <br /> Welcome to chesspecker
+				Sorry operation canceled 🧐
 			</h1>
 			<div className='w-full mx-0 my-3 text-center '>
 				<Button className='py-4' onClick={handleClick}>
-					LET&apos;S GO! 🔥
+					Ok
 				</Button>
 			</div>
 		</div>
 	);
 };
 
-IndexPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
-export default IndexPage;
+CancelPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
+export default CancelPage;

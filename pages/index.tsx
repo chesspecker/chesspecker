@@ -6,7 +6,7 @@ import {ButtonLink as Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
 
 const IndexPage = () => (
-	<div className='flex flex-col items-center justify-center h-screen m-0 text-slate-800'>
+	<div className='flex flex-col items-center justify-center h-screen m-0 '>
 		<Image
 			className='block w-40 h-40 mx-auto mt-8'
 			src='/images/logo.svg'

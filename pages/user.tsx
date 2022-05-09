@@ -39,13 +39,16 @@ const User = () => {
 			<div className='flex flex-wrap items-center'>
 				<p className='mr-5 text-6xl '>{user.username}</p>
 				{user?.isSponsor ? (
-					<p className=''>Official Sponsor</p>
+					<>
+						<p className=''>Official Sponsor</p>
+						<div className='m-2'>
+							<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
+						</div>
+					</>
 				) : (
 					<ButtonLink href='/sponsor'>Become sponsor </ButtonLink>
 				)}
-				<div className='m-2'>
-					<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
-				</div>
+
 				<div className='m-2'>
 					<ButtonLink href='/achievements'>See all achievements</ButtonLink>
 				</div>
