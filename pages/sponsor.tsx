@@ -12,13 +12,14 @@ import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
 import type {UserInterface} from '@/types/models';
 import useEffectAsync from '@/hooks/use-effect-async';
+import process from 'process';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
 	const {isOpen, hide, toggle} = useModal(false);
 	return (
 		<>
-			<Button className='mx-2 max-w-lg' onClick={toggle}>
+			<Button className='max-w-lg mx-2' onClick={toggle}>
 				cancel 😥
 			</Button>
 
@@ -55,7 +56,7 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
 				Become sponsor
 			</h1>
-			<p className='w-11/12 mb-6 text-2xl text-center  md:text-2xl'>
+			<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
 				This website is free and ads-less and we are having fun coding it.
 				<br />
 				However, it still has a cost. Become a sponsor today to help us paying
@@ -70,7 +71,7 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 				frameBorder='0'
 				className='giphy-embed'
 			/>
-			<p className='w-11/12 mb-6 text-2xl text-center  mt-7 md:text-2xl'>
+			<p className='w-11/12 mb-6 text-2xl text-center mt-7 md:text-2xl'>
 				How much does it cost? Just about a small coffee per month!
 			</p>
 
@@ -116,7 +117,7 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
 				Manage sponsorship
 			</h1>
-			<p className='w-11/12 mb-6 text-2xl text-center  md:text-2xl'>
+			<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
 				Thank you for supporting us.
 			</p>
 			<p className='pb-6 '>{`Your actual subscription is ${
@@ -158,7 +159,9 @@ const SponsorPage = () => {
 
 		if (data.success) {
 			const {id: sessionId} = data.session;
-			const stripe = await getStripe();
+			const stripe = await getStripe(
+				process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+			);
 			const {error} = await stripe.redirectToCheckout({sessionId});
 			if (error) console.log(error);
 		}
