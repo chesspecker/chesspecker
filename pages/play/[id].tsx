@@ -469,11 +469,7 @@ const PlayingPage = ({set}: Props) => {
 			}));
 			const currentMoveNumber = moveNumber + 1;
 			setMoveNumber(previousMove => previousMove + 1);
-			const isPuzzleComplete = await checkPuzzleComplete(currentMoveNumber);
-			if (isPuzzleComplete) return;
-			setAnimation(() => 'animate-rightMove');
-			await cleanAnimation();
-			return playFromComputer(currentMoveNumber);
+			await checkPuzzleComplete(currentMoveNumber);
 		},
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[chess, moveNumber, checkPuzzleComplete, calcMovable, computerMove],
