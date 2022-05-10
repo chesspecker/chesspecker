@@ -1,33 +1,17 @@
-import {useState, Fragment} from 'react';
+import {Dispatch, Fragment, SetStateAction} from 'react';
 import {Transition} from '@headlessui/react';
-import useEffectAsync from '@/hooks/use-effect-async';
+import {useRouter} from 'next/router';
 import {Button} from '@/components/button';
-import {achievements as achievementsList} from '@/data/achievements';
-import type {AchievementItem, AchievementInterface} from '@/types/models';
-import Card from '@/components/card-achievement';
 
+export type Stat = {time: number; mistakes: number; grade: string};
 type Props = {
+	stat: Stat;
 	/* eslint-disable-next-line react/boolean-prop-naming */
 	showModal: boolean;
-	currentAchievementItem: AchievementItem;
-	handleClick: (id: string) => void;
+	setShowModal: Dispatch<SetStateAction<boolean>>;
 };
-
-const Modal = ({
-	showModal,
-	currentAchievementItem,
-	handleClick,
-}: Props): JSX.Element => {
-	const [achievement, setAchievement] = useState<AchievementInterface>();
-	useEffectAsync(async () => {
-		if (!currentAchievementItem) return;
-		const array = achievementsList.find(
-			item => item.id === currentAchievementItem.id,
-		);
-
-		setAchievement(() => array);
-	}, [currentAchievementItem]);
-
+const ModalPuzzle = ({showModal, stat, setShowModal}: Props): JSX.Element => {
+	const router = useRouter();
 	return (
 		<Transition
 			as={Fragment}
@@ -49,7 +33,7 @@ const Modal = ({
 					leaveTo='opacity-0 scale-95'
 				>
 					<h3 className='mb-5 text-6xl font-bold text-center '>
-						New achievement 🎉🔥
+						Congrats 🎉🔥
 					</h3>
 				</Transition.Child>
 				<Transition.Child
@@ -60,15 +44,29 @@ const Modal = ({
 					leaveFrom='opacity-100 rotate-0 scale-100'
 					leaveTo='opacity-0 scale-95'
 				>
-					<Card achievement={achievement} />
+					<p className='text-center text-md sm:text-xl'>
+						Your grade is {stat.grade} <br />
+						You spent {stat.time} seconds. <br />
+						You completed it with {stat.mistakes} mistakes.
+					</p>
 				</Transition.Child>
 				<div className='w-1/3 mt-4'>
 					<Button
+						className='mb-4'
 						onClick={() => {
-							handleClick(currentAchievementItem.id);
+							setShowModal(() => false);
+							router.reload();
 						}}
 					>
-						Claim
+						PLAY AGAIN ⚔️
+					</Button>
+					<Button
+						onClick={async () => {
+							setShowModal(() => false);
+							return router.push('/dashboard');
+						}}
+					>
+						LEAVE 🧨
 					</Button>
 				</div>
 			</div>
@@ -76,4 +74,4 @@ const Modal = ({
 	);
 };
 
-export default Modal;
+export default ModalPuzzle;
