@@ -200,7 +200,7 @@ export const achievements: AchievementInterface[] = [
 		description: 'Come back after a month of inactivity',
 		// TODO: test, not sure if it works
 		isValidated: (args: AchivementsArgs) =>
-			(Date.now() - new Date(args.streak.lastLoginDate).getTime()) / 1000 >
+			(Date.now() - new Date(args.streak.lastLoginDate).getTime()) * 1000 >
 			2_592_000, // 30 jours en secondes
 		image: '/images/achievements/ghost.png',
 		category: 'duration',
@@ -214,7 +214,7 @@ for (const theme of THEMES) {
 			name: `NM of ${theme.title}`,
 			description: `Your are now a National Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 400),
+				args.themes.some(t => t.title === theme.id && t.count === 500),
 			image: '/images/achievements/shield-0.png',
 			category: 'type',
 		},
@@ -223,7 +223,7 @@ for (const theme of THEMES) {
 			name: `IM of ${theme.title}`,
 			description: `Your are now a International Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 800),
+				args.themes.some(t => t.title === theme.id && t.count === 1500),
 			image: '/images/achievements/shield-1.png',
 			category: 'type',
 		},
@@ -232,7 +232,7 @@ for (const theme of THEMES) {
 			name: `GM of ${theme.title}`,
 			description: `Your are now a Grand Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 1200),
+				args.themes.some(t => t.title === theme.id && t.count === 3000),
 			image: '/images/achievements/shield-2.png',
 			category: 'type',
 		},

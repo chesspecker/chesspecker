@@ -10,7 +10,7 @@ const Card = ({
 }) => {
 	return (
 		<div
-			className={` m-2 flex h-96 w-64 flex-col rounded-lg border dark:border-white bg-sky-700 dark:bg-white p-2 ${
+			className={`m-2 flex h-96 w-64 flex-col rounded-lg bg-sky-700 dark:bg-white p-2 ${
 				!isClaimed && 'grayscale'
 			} relative overflow-hidden`}
 		>

@@ -52,7 +52,7 @@ const Achievements = () => {
 						</h2>
 						<div className='flex items-center justify-center w-full'>
 							<div className='flex items-center justify-center w-full max-w-screen-xl'>
-								<div className='flex flex-wrap items-center justify-center w-full'>
+								<div className='flex flex-wrap items-center justify-center max-w-5xl'>
 									{achievements.map(
 										achievement =>
 											achievement.category === category.name && (
