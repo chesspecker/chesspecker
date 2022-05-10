@@ -63,7 +63,7 @@ const ModalPuzzle = ({showModal, stat, setShowModal}: Props): JSX.Element => {
 					<Button
 						onClick={async () => {
 							setShowModal(() => false);
-							return router.back();
+							router.back();
 						}}
 					>
 						GO BACK 🧨

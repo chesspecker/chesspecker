@@ -21,9 +21,11 @@ const User = () => {
 	useEffect(() => {
 		if (!user) return;
 		const itemAchievements = user.validatedAchievements;
-		setList(() => itemAchievements.map(item =>
-			achievements.find(achievement => item.id === achievement.id),
-		));
+		setList(() =>
+			itemAchievements.map(item =>
+				achievements.find(achievement => item.id === achievement.id),
+			),
+		);
 
 		setIsLoading(() => false);
 	}, [user]);
