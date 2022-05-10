@@ -4,8 +4,18 @@ import type {Data as SetData} from '@/api/set/[id]';
 import type {Data as UserData} from '@/api/user/[id]';
 import {ThemeItem} from '@/types/models';
 
-const getPuzzleById = async (id: string): Promise<PuzzleData> =>
-	fetch(`/api/puzzle/${id}`).then(async response => response.json());
+const getPuzzleById = async ({
+	baseUrl,
+	id,
+}: {
+	baseUrl?: string;
+	id: string;
+}): Promise<PuzzleData> => {
+	const response = await fetch(
+		`${baseUrl ? baseUrl : ''}/api/puzzle/${id}`,
+	).then(async response => response.json());
+	return response;
+};
 
 type PuzzleUpdate = {
 	$inc: {

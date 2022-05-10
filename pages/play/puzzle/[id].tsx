@@ -37,8 +37,8 @@ const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 /* eslint-disable-next-line no-promise-executor-return */
 const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
 
-type Props = {set: PuzzleSetInterface};
-const PlayingPage = ({set}: Props) => {
+type Props = {puzzle: PuzzleInterface};
+const PlayingPage = ({puzzle}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
 
@@ -55,7 +55,7 @@ const PlayingPage = ({set}: Props) => {
 	const [config, setConfig] = useState<Partial<Config>>();
 	const [puzzleList, setPuzzleList] = useState<PuzzleItemInterface[]>([]);
 	const [puzzleIndex, setPuzzleIndex] = useState<number>(0);
-	const [puzzle, setPuzzle] = useState<PuzzleInterface>();
+
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
@@ -92,25 +92,24 @@ const PlayingPage = ({set}: Props) => {
 	/**
 	 * Extract the list of puzzles.
 	 */
-	useEffect(() => {
+	/* 	useEffect(() => {
 		setInitialSetTimer(() => set.currentTime);
 		setInitialSetDate(() => Date.now());
 		setCompletedPuzzles(() => set.progression);
 		setTotalPuzzles(() => set.length);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [set]);
+	}, [set]); */
 
 	/**
 	 * Retrieve current puzzle.
 	 */
-	useEffectAsync(async () => {
+	/* 	useEffectAsync(async () => {
 		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
 		const nextPuzzle = puzzleList[puzzleIndex];
-		const data = await get_.puzzle(nextPuzzle._id.toString());
+		const data = await get_.puzzle({id: nextPuzzle._id.toString()});
 		if (data.success) setPuzzle(() => data.puzzle);
-	}, [puzzleList, puzzleIndex]);
+	}, [puzzleList, puzzleIndex]); */
 
 	/**
 	 * Setup the board.
@@ -168,7 +167,7 @@ const PlayingPage = ({set}: Props) => {
 	/**
 	 * Push the data of the current puzzle when complete.
 	 */
-	const updateFinishedPuzzle = useCallback(async () => {
+	/* const updateFinishedPuzzle = useCallback(async () => {
 		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
@@ -307,30 +306,34 @@ const PlayingPage = ({set}: Props) => {
 		streakMistakes,
 		streakTime,
 		user,
-	]);
+	]); */
+
+	const updateFinishedPuzzle = () => {
+		console.log('finished');
+	};
 
 	/**
 	 * Called when puzzle is completed, switch to the next one.
 	 */
-	const changePuzzle = useCallback(async () => {
+	/* 	const changePuzzle = useCallback(async () => {
 		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
 		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [updateFinishedPuzzle]);
 
-	const changeSet = useCallback(
+	}, [updateFinishedPuzzle]); */
+
+	/* const changeSet = useCallback(
 		async () => router.push(`/view/${set._id.toString()}`),
 		[set._id, router],
-	);
+	); */
 
 	/**
 	 * Push the data of the current set when complete.
 	 */
-	const updateFinishedSet = useCallback(async () => {
+	/* const updateFinishedSet = useCallback(async () => {
 		const timeTaken = (Date.now() - initialSetDate) / 1000;
 		const totalTime = timeTaken + set.currentTime;
 		const formattedTime = Number.parseInt(totalTime.toFixed(2), 10);
@@ -354,12 +357,12 @@ const PlayingPage = ({set}: Props) => {
 		} catch (error: unknown) {
 			console.log(error);
 		}
-	}, [initialSetDate, set]);
+	}, [initialSetDate, set]); */
 
 	/**
 	 * Called after each correct move.
 	 */
-	const checkSetComplete = useCallback(async () => {
+	/* 	const checkSetComplete = useCallback(async () => {
 		if (puzzleIndex + 1 !== puzzleList.length) return;
 		await audio('VICTORY', hasSound)
 			.then(updateFinishedPuzzle)
@@ -372,7 +375,7 @@ const PlayingPage = ({set}: Props) => {
 		updateFinishedPuzzle,
 		updateFinishedSet,
 		changeSet,
-	]);
+	]); */
 
 	/**
 	 * Allow only legal moves.
@@ -440,20 +443,15 @@ const PlayingPage = ({set}: Props) => {
 			await cleanAnimation();
 
 			if (!isComplete) return playFromComputer(moveNumber);
-
-			await checkSetComplete();
 			setIsComplete(() => true);
 
 			await audio('GENERIC', hasSound, 0.3);
-			if (hasAutoMove) return changePuzzle();
 			setIsRunning(() => false);
 		},
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[
 			hasAutoMove,
 			hasSound,
-			changePuzzle,
-			checkSetComplete,
 			cleanAnimation,
 			playFromComputer,
 			moveHistory.length,
@@ -572,8 +570,8 @@ const PlayingPage = ({set}: Props) => {
 
 	const fn = useCallback(async () => {
 		if (!isComplete) return;
-		await changePuzzle();
-	}, [isComplete, changePuzzle]);
+		//	await changePuzzle();
+	}, [isComplete]);
 
 	const launchTimer = useCallback(() => {
 		setIsRunning(() => true);
@@ -618,7 +616,7 @@ const PlayingPage = ({set}: Props) => {
 					</div>
 					<RightBar
 						answer={moveHistory[moveNumber]}
-						changePuzzle={changePuzzle}
+						changePuzzle={() => {}}
 						launchTimer={launchTimer}
 					/>
 				</div>
@@ -650,13 +648,14 @@ export const getServerSideProps = withSessionSsr(
 		const id: string = params.id;
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-		const data = await get_.set(baseUrl, id);
+		const data = await get_.puzzle({baseUrl, id});
+
 		if (!data.success) return {notFound: true};
-		if (data.set.user.toString() !== req.session.userID) {
+		/* if (data.set.user.toString() !== req.session.userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
 			return {redirect};
-		}
+		} */
 
-		return {props: {set: data.set}};
+		return {props: {puzzle: data.puzzle}};
 	},
 );

@@ -108,7 +108,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffectAsync(async () => {
 		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
 		const nextPuzzle = puzzleList[puzzleIndex];
-		const data = await get_.puzzle(nextPuzzle._id.toString());
+		const data = await get_.puzzle({id: nextPuzzle.PuzzleId.toString()});
 		if (data.success) setPuzzle(() => data.puzzle);
 	}, [puzzleList, puzzleIndex]);
 
