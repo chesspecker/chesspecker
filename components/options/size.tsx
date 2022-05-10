@@ -11,8 +11,10 @@ const OptionSize = () => {
 	return (
 		<div className='flex flex-col w-full my-8 md:flex-row'>
 			<div className='flex flex-col justify-center w-full md:flex-row md:justify-between'>
-				<label htmlFor='number_game' className='self-center m-0 mr-4 text-2xl '>
-					Number of puzzles <span className='text-lg italic'>({size})</span>
+				<label htmlFor='number_game' className='self-center m-0 mr-4 text-2xl'>
+					Number of puzzles
+					<br />
+					<span className='text-lg italic'>({size})</span>
 				</label>
 				<div className='mx-auto mt-2 md:mx-0 md:mt-0'>
 					<Slider
