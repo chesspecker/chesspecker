@@ -15,6 +15,8 @@ import {
 	ViewData,
 } from '@/lib/view';
 import EditModal from '@/components/view/edit-modal';
+import SpacedModal from '@/components/play/modal-spaced-on';
+import useModal from '@/hooks/use-modal';
 
 const reducer = (accumulator: number, current: number) => accumulator + current;
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
@@ -121,6 +123,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	const [setTitle, setSetTitle] = useState<string>();
 
 	const router = useRouter();
+	const {isOpen, hide, toggle} = useModal(false);
 
 	useEffect(() => {
 		if (!set) return;
@@ -152,15 +155,39 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
 		<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
-			<div className='flex items-center '>
-				<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold md:text-5xl'>
-					{set.title}
-				</h1>
-				<EditModal
-					setTitle={setTitle}
-					setSetTitle={setSetTitle}
-					onValidate={onChangeName}
+			<div>
+				<div className='flex items-center '>
+					<h1 className='py-5 mt-8 mr-4 font-sans text-3xl font-bold md:text-5xl'>
+						{set.title}
+					</h1>
+					<EditModal
+						setTitle={setTitle}
+						setSetTitle={setSetTitle}
+						onValidate={onChangeName}
+					/>
+				</div>
+				<SpacedModal
+					isOpen={isOpen}
+					hide={hide}
+					onClick={() => {
+						console.log('clicked');
+					}}
 				/>
+				<p
+					className='p-4 mb-6 rounded-lg cursor-pointer no-wrap w-fit hover:bg-gray-100'
+					onClick={() => {
+						toggle();
+					}}
+				>
+					Spaced-repetition:
+					<span
+						className={`${
+							set.spacedRepetition ? 'bg-green-500' : 'bg-red-500'
+						} text-white py-2 px-4 rounded-full ml-3`}
+					>
+						{set.spacedRepetition ? 'on' : 'off'}
+					</span>
+				</p>
 			</div>
 
 			{set?.cycles >= 1 && (

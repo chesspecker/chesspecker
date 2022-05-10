@@ -19,7 +19,7 @@ const Settings = () => {
 				<CogIcon className='w-5 h-5' />
 			</button>
 			<GenericModal title='Settings' hide={hide} isOpen={isOpen}>
-				<div className='grid items-center grid-cols-2 gap-3 text-sm mt-5'>
+				<div className='grid items-center grid-cols-2 gap-3 mt-5 text-sm'>
 					<SoundSettings />
 					<BoardSettings />
 					<PiecesSettings />
