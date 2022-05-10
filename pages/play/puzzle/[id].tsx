@@ -648,14 +648,9 @@ export const getServerSideProps = withSessionSsr(
 		const id: string = params.id;
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-		const data = await get_.puzzle({baseUrl, id});
+		const data = await get_.puzzle(id, baseUrl);
 
 		if (!data.success) return {notFound: true};
-		/* if (data.set.user.toString() !== req.session.userID) {
-			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
-			return {redirect};
-		} */
-
 		return {props: {puzzle: data.puzzle}};
 	},
 );

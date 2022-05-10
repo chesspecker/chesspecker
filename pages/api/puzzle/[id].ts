@@ -23,7 +23,6 @@ const get_ = async (
 ) => {
 	const {id} = request.query;
 	const puzzle = await retrieve(id as string);
-	console.log('the puzzle', puzzle);
 	if (puzzle === null) {
 		response.status(404).json({success: false, error: 'Puzzle not found'});
 		return;

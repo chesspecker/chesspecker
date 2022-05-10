@@ -108,7 +108,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffectAsync(async () => {
 		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
 		const nextPuzzle = puzzleList[puzzleIndex];
-		const data = await get_.puzzle({id: nextPuzzle.PuzzleId.toString()});
+		const data = await get_.puzzle(nextPuzzle.PuzzleId.toString());
 		if (data.success) setPuzzle(() => data.puzzle);
 	}, [puzzleList, puzzleIndex]);
 
@@ -650,7 +650,7 @@ export const getServerSideProps = withSessionSsr(
 		const id: string = params.id;
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-		const data = await get_.set(baseUrl, id);
+		const data = await get_.set(id, baseUrl);
 		if (!data.success) return {notFound: true};
 		if (data.set.user.toString() !== req.session.userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
