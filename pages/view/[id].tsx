@@ -3,6 +3,7 @@
 import {GetServerSideProps} from 'next';
 import {ReactElement, useEffect, useState} from 'react';
 import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
+import Link from 'next/link';
 import type {Data as SetData} from '@/api/set/[id]';
 import Layout from '@/layouts/main';
 import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
@@ -103,13 +104,9 @@ const getAverage = (array: number[]): number =>
 	array.reduce(reducer, 0) / array.length;
 
 const PuzzleComponent = (puzzle: PuzzleItemInterface): JSX.Element => (
-	<a
-		key={puzzle.PuzzleId}
-		href={`https://lichess.org/training/${puzzle.PuzzleId}`}
-		className={getClasses(getAverage(puzzle.grades))}
-		target='_blank'
-		rel='noreferrer'
-	/>
+	<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
+		<a className={getClasses(getAverage(puzzle.grades))} />
+	</Link>
 );
 
 type Props = {currentSetProps: PuzzleSetInterface};

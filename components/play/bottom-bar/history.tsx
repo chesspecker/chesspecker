@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export type PreviousPuzzle = {
 	grade: number;
 	PuzzleId: string;
@@ -18,13 +20,9 @@ const History = ({puzzles}: HistoryProps) => {
 	return (
 		<div className='flex flex-row flex-wrap w-full gap-1'>
 			{puzzles.map(puzzle => (
-				<a
-					key={puzzle.PuzzleId}
-					href={`https://lichess.org/training/${puzzle.PuzzleId}`}
-					className={getClasses(puzzle.grade)}
-					target='_blank'
-					rel='noreferrer'
-				/>
+				<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
+					<a className={getClasses(puzzle.grade)} />
+				</Link>
 			))}
 		</div>
 	);
