@@ -54,7 +54,7 @@ const User = () => {
 				</div>
 			</div>
 
-			<div className='border-sky-800 dark:borded-white m-2 mt-6 min-h-[5rem] rounded-xl border p-2'>
+			<div className=' m-2 mt-6 min-h-[5rem]   p-2'>
 				<p className='text-xl '>My badges</p>
 				<div className='flex items-center justify-center w-full'>
 					<div className='flex items-center justify-center w-full max-w-screen-xl'>

@@ -43,7 +43,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 			<div className='flex justify-end w-full'>
 				<RemoveModal onClick={removeSet} />
 			</div>
-			<h3 className='mx-4 mt-0 mb-4 text-4xl font-medium'>
+			<h3 className='mx-4 mt-0 mb-4 text-2xl font-medium'>
 				{set.title.length > 12 ? set.title.slice(0, 11) + ' ...' : set.title}
 			</h3>
 			<div className='m-2'>
