@@ -56,7 +56,13 @@ const post_ = async (
 
 	const body = (await JSON.parse(request.body)) as PostRequestBody;
 	const newUser = (await User.findByIdAndUpdate(userID, {
-		$push: {validatedAchievements: {id: body.achievementId, claimed: false}},
+		$push: {
+			validatedAchievements: {
+				id: body.achievementId,
+				claimed: false,
+				date: new Date(),
+			},
+		},
 	}).exec()) as UserInterface;
 	response.json({success: true, user: newUser});
 };

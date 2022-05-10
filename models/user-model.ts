@@ -12,6 +12,7 @@ const schema = new Schema<UserInterface>({
 		{
 			id: String,
 			claimed: Boolean,
+			date: Date,
 		},
 	],
 	totalPuzzleSolved: Number,

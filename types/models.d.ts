@@ -44,6 +44,7 @@ export interface PuzzleInterface extends Document {
 export interface AchievementItem {
 	id: AchievementInterface['id'];
 	claimed: boolean;
+	date: Date;
 }
 
 export interface UserInterface extends Document {
