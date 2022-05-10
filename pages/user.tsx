@@ -40,8 +40,8 @@ const User = () => {
 				<p className='mr-5 text-6xl '>{user.username}</p>
 				{user?.isSponsor ? (
 					<>
-						<p className=''>Official Sponsor</p>
-						<div className='m-2'>
+						<p className='mr-2'>Official Sponsor</p>
+						<div>
 							<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
 						</div>
 					</>
@@ -49,7 +49,7 @@ const User = () => {
 					<ButtonLink href='/sponsor'>Become sponsor </ButtonLink>
 				)}
 
-				<div className='m-2'>
+				<div className='md:ml-2'>
 					<ButtonLink href='/achievements'>See all achievements</ButtonLink>
 				</div>
 			</div>

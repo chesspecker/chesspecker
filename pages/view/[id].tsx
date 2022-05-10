@@ -3,6 +3,7 @@
 import {GetServerSideProps} from 'next';
 import {ReactElement, useEffect, useState} from 'react';
 import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
+import {useRouter} from 'next/router';
 import type {Data as SetData} from '@/api/set/[id]';
 import Layout from '@/layouts/main';
 import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
@@ -12,6 +13,7 @@ import {
 	getProgressStats,
 	ViewData,
 } from '@/lib/view';
+import EditModal from '@/components/view/edit-modal';
 
 const reducer = (accumulator: number, current: number) => accumulator + current;
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
@@ -48,9 +50,11 @@ const Block = ({
 
 	return (
 		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white  rounded-lg shadow sm:pt-6 sm:px-6'>
-			<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
-				{title}
-			</h3>
+			<div>
+				<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
+					{title}
+				</h3>
+			</div>
 			<div className='flex items-center justify-center w-full h-full'>
 				{Icon && (
 					<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
@@ -117,27 +121,54 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	const [overviewStats, setOverviewStats] = useState<ViewData[]>([]);
 	const [progressStats, setProgressStats] = useState<ViewData[]>([]);
 	const [currentRunStats, setCurrentRunStats] = useState<ViewData[]>([]);
+	const [setTitle, setSetTitle] = useState<string>();
+
+	const router = useRouter();
 
 	useEffect(() => {
 		if (!set) return;
 		const overviewStats: ViewData[] = getOverviewStats(set);
 		setOverviewStats(() => overviewStats);
-		console.log('overviewStats', overviewStats);
 
 		const globalProgressStats: ViewData[] = getProgressStats(set);
 		setProgressStats(() => globalProgressStats);
-		console.log('globalProgressStats', globalProgressStats);
 
 		const currentRunStats: ViewData[] = getCurrentRunStats(set);
 		setCurrentRunStats(() => currentRunStats);
+
+		setSetTitle(set.title);
 	}, [set]);
+
+	const onChangeName = async () => {
+		const body = {
+			$set: {
+				title: setTitle,
+			},
+		};
+		try {
+			await fetch(`/api/set/${set._id.toString()}`, {
+				method: 'PUT',
+				body: JSON.stringify(body),
+			});
+			router.reload();
+		} catch (error: unknown) {
+			console.log(error);
+		}
+	};
 
 	if (!set || !set.puzzles) return null;
 	return (
 		<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
-			<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold md:text-5xl'>
-				{set.title}
-			</h1>
+			<div className='flex items-center '>
+				<h1 className='p-5 mt-8 mb-6 font-sans text-3xl font-bold md:text-5xl'>
+					{set.title}
+				</h1>
+				<EditModal
+					setTitle={setTitle}
+					setSetTitle={setSetTitle}
+					onValidate={onChangeName}
+				/>
+			</div>
 
 			{set?.cycles >= 1 && (
 				<div className='w-full mt-4'>
