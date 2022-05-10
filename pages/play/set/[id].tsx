@@ -32,6 +32,10 @@ import BottomBar from '@/components/play/bottom-bar';
 import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
 import ModalSpacedOn from '@/components/play/modal-spaced-on';
 import ModalSpacedOff from '@/components/play/modal-spaced-off';
+import {
+	activateSpacedRepetion,
+	updateSpacedRepetition,
+} from '@/lib/spaced-repetition';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -362,7 +366,8 @@ const PlayingPage = ({set}: Props) => {
 		await audio('VICTORY', hasSound)
 			.then(updateFinishedPuzzle)
 			.then(updateFinishedSet)
-			.then(showSpacedOff);
+			.then(showSpacedOn);
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [
 		puzzleIndex,
 		hasSound,
@@ -430,9 +435,10 @@ const PlayingPage = ({set}: Props) => {
 			puzzle._id.toString() === puzzleList[20]._id.toString();
 
 		if (!set.spacedRepetition || !isChunkComplete) return false;
-		await updateSpacedRepetition();
+		await updateSpacedRepetition(set, showSpacedOff);
 		return true;
-	}, []);
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
+	}, [puzzle._id, puzzleList, set]);
 
 	/**
 	 * Called after each correct move.
@@ -602,7 +608,7 @@ const PlayingPage = ({set}: Props) => {
 			<ModalSpacedOn
 				isOpen={isOpenSpacedOn}
 				hide={hideSpacedOn}
-				onClick={activateSpacedRepetion}
+				onClick={async () => activateSpacedRepetion(set)}
 			/>
 			<div className='flex flex-col justify-start w-screen min-h-screen pt-32 pb-24 m-0 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>

@@ -1,7 +1,7 @@
 import {memo} from 'react';
+import {useRouter} from 'next/router';
 import {Button} from '@/components/button';
 import GenericModal from '@/components/modal';
-import {useRouter} from 'next/router';
 
 type Props = {
 	isOpen: boolean;
@@ -35,7 +35,9 @@ const ModalSpacedOff = ({isOpen = false, hide}: Props) => {
 					<Button
 						type='button'
 						className='inline-flex justify-center px-4 py-2 ml-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
-						onClick={() => router.reload()}
+						onClick={() => {
+							router.reload();
+						}}
 					>
 						Play again
 					</Button>

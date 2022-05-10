@@ -1,7 +1,15 @@
+import {update as update_} from './play';
+import {PuzzleSetInterface} from '@/types/models';
+
 /**
  * Handle spaced-repetition.
  */
-const updateSpacedRepetition = async (set: PuzzleSetInterface) => {
+export const updateSpacedRepetition = async (
+	set: PuzzleSetInterface,
+	showSpacedOff = () => {
+		('');
+	},
+) => {
 	const puzzleOrder = [];
 	const chunks = {};
 
@@ -20,7 +28,7 @@ const updateSpacedRepetition = async (set: PuzzleSetInterface) => {
 			},
 		};
 
-		// @ts-ignore
+		// @ts-expect-error to create a mongoose update type
 		await update_.set(set._id.toString(), update).catch(console.error);
 
 		showSpacedOff();
@@ -53,13 +61,13 @@ const updateSpacedRepetition = async (set: PuzzleSetInterface) => {
 		},
 	};
 
-	// @ts-ignore
+	// @ts-expect-error Need to create a mongoose update type
 	await update_.set(set._id.toString(), update).catch(console.error);
 };
 
 export const activateSpacedRepetion = async (set: PuzzleSetInterface) => {
 	await updateSpacedRepetition(set);
 	const update = {$set: {spacedRepetition: true}};
-	// @ts-ignore
+	// @ts-expect-error to create a mongoose update type
 	await update_.set(set._id.toString(), update).catch(console.error);
 };

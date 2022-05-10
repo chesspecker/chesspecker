@@ -1,11 +1,5 @@
-import {TrashIcon} from '@heroicons/react/solid';
-import Modal from 'react-pure-modal';
 import {memo} from 'react';
-import useModal from '@/hooks/use-modal';
 import {Button} from '@/components/button';
-import {Dialog, Transition} from '@headlessui/react';
-import {Fragment, useState} from 'react';
-
 import GenericModal from '@/components/modal';
 
 type Props = {
