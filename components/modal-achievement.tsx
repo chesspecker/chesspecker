@@ -48,7 +48,7 @@ const Modal = ({
 					leaveFrom='opacity-100 rotate-0 scale-100'
 					leaveTo='opacity-0 scale-95'
 				>
-					<h3 className='mb-5 text-6xl font-bold text-center '>
+					<h3 className='mb-5 text-6xl font-bold text-center text-white '>
 						New achievement 🎉🔥
 					</h3>
 				</Transition.Child>
@@ -62,7 +62,7 @@ const Modal = ({
 				>
 					<Card achievement={achievement} />
 				</Transition.Child>
-				<div className='w-1/3 mt-4'>
+				<div className='w-1/3 mt-4 text-white'>
 					<Button
 						onClick={() => {
 							handleClick(currentAchievementItem.id);

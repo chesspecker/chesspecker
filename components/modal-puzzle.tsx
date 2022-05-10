@@ -32,7 +32,7 @@ const ModalPuzzle = ({showModal, stat, setShowModal}: Props): JSX.Element => {
 					leaveFrom='opacity-100 rotate-0 scale-100'
 					leaveTo='opacity-0 scale-95'
 				>
-					<h3 className='mb-5 text-6xl font-bold text-center '>
+					<h3 className='mb-5 text-6xl text-white font-bold text-center '>
 						Congrats 🎉🔥
 					</h3>
 				</Transition.Child>
@@ -44,7 +44,7 @@ const ModalPuzzle = ({showModal, stat, setShowModal}: Props): JSX.Element => {
 					leaveFrom='opacity-100 rotate-0 scale-100'
 					leaveTo='opacity-0 scale-95'
 				>
-					<p className='text-center text-md sm:text-xl'>
+					<p className='text-center text-md sm:text-xl text-white'>
 						Your grade is {stat.grade} <br />
 						You spent {stat.time} seconds. <br />
 						You completed it with {stat.mistakes} mistakes.
