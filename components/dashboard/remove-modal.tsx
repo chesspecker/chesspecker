@@ -4,9 +4,6 @@ import {memo} from 'react';
 import useModal from '@/hooks/use-modal';
 import {Button} from '@/components/button';
 
-const defaultClasses =
-	'block cursor-default self-center border border-none border-transparent bg-opacity-70 px-2.5 py-2 text-center font-sans text-sm md:text-lg font-bold shadow-sm mx-auto md:mx-2 w-36 rounded-md bg-gray-800 leading-8 m-2';
-
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
 	const {isOpen, hide, toggle} = useModal(false);
@@ -21,14 +18,20 @@ const RemoveModal = ({onClick}: Props) => {
 			</button>
 
 			<Modal header='Delete' isOpen={isOpen} onClose={hide}>
-				<div className='flex flex-col items-center text-sm'>
+				<div className='flex flex-col w-full h-full items-center text-sm'>
 					<p className='pb-3'>Do you want to remove this set?</p>
 					<div className='p-2 m-2'>
-						<Button className={defaultClasses} onClick={onClick}>
+						<Button
+							className='bg-sky-800 dark:bg-sky-800 text-white dark:text-white'
+							onClick={onClick}
+						>
 							Yes
 						</Button>
 
-						<Button className={defaultClasses} onClick={hide}>
+						<Button
+							className='bg-sky-800 dark:bg-sky-800 text-white dark:text-white'
+							onClick={hide}
+						>
 							No
 						</Button>
 					</div>
