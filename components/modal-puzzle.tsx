@@ -63,10 +63,10 @@ const ModalPuzzle = ({showModal, stat, setShowModal}: Props): JSX.Element => {
 					<Button
 						onClick={async () => {
 							setShowModal(() => false);
-							return router.push('/dashboard');
+							return router.back();
 						}}
 					>
-						LEAVE 🧨
+						GO BACK 🧨
 					</Button>
 				</div>
 			</div>
