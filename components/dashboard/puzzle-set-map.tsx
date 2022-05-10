@@ -23,9 +23,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 			.then(() => {
 				router.reload();
 			})
-			.catch(error => {
-				console.error(error);
-			});
+			.catch(console.error);
 
 	const onPlayClick = async (event: MouseEvent) => {
 		event.preventDefault();
@@ -86,13 +84,13 @@ const PuzzleSetMap = () => {
 
 	return (
 		<div className='flex flex-wrap items-center justify-center'>
-			{isLoading ? (
+			{isLoading && (
 				<EmptyPuzzleSetComponent
 					/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
 					image={<Image src={spinner} className='animate-spin' />}
 					text={<p className='mt-4 animate-pulse'>Loading...</p>}
 				/>
-			) : null}
+			)}
 			{sets.map(set => (
 				<PuzzleSetComponent key={set._id.toString()} set={set} />
 			))}

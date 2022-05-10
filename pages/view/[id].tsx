@@ -142,15 +142,11 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				title: setTitle,
 			},
 		};
-		try {
-			await fetch(`/api/set/${set._id.toString()}`, {
-				method: 'PUT',
-				body: JSON.stringify(body),
-			});
-			router.reload();
-		} catch (error: unknown) {
-			console.log(error);
-		}
+		await fetch(`/api/set/${set._id.toString()}`, {
+			method: 'PUT',
+			body: JSON.stringify(body),
+		}).catch(console.error);
+		router.reload();
 	};
 
 	if (!set || !set.puzzles) return null;

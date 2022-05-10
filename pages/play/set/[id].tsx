@@ -84,7 +84,7 @@ const PlayingPage = ({set}: Props) => {
 				.then(() => {
 					setAnimation(() => '');
 				})
-				.catch(console.log),
+				.catch(console.error),
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[],
 	);
@@ -211,12 +211,7 @@ const PlayingPage = ({set}: Props) => {
 				] = 1;
 
 		promises.push(update_.user(user._id.toString(), incrementUser));
-
-		try {
-			await Promise.all(promises);
-		} catch (error: unknown) {
-			console.log(error);
-		}
+		await Promise.all(promises).catch(console.error);
 
 		const body: AchivementsArgs = {
 			streakMistakes,
@@ -291,7 +286,7 @@ const PlayingPage = ({set}: Props) => {
 			]);
 			await mutate();
 		} catch (error: unknown) {
-			console.log(error);
+			console.error(error);
 		}
 	}, [
 		puzzleIndex,
@@ -349,11 +344,7 @@ const PlayingPage = ({set}: Props) => {
 			},
 		};
 
-		try {
-			await update_.set(set._id.toString(), update);
-		} catch (error: unknown) {
-			console.log(error);
-		}
+		await update_.set(set._id.toString(), update).catch(console.error);
 	}, [initialSetDate, set]);
 
 	/**
@@ -424,7 +415,7 @@ const PlayingPage = ({set}: Props) => {
 		async (move: number) =>
 			sleep(300)
 				.then(async () => computerMove(move))
-				.catch(console.log),
+				.catch(console.error),
 		[computerMove],
 	);
 

@@ -54,9 +54,7 @@ const OptionsPage = () => {
 			body: JSON.stringify(options),
 		})
 			.then(async () => router.push('/dashboard'))
-			.catch(error => {
-				console.error(error);
-			});
+			.catch(console.error);
 	};
 
 	return (

@@ -163,7 +163,7 @@ const SponsorPage = () => {
 				process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 			);
 			const {error} = await stripe.redirectToCheckout({sessionId});
-			if (error) console.log(error);
+			if (error) console.error(error);
 		}
 	};
 

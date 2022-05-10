@@ -76,7 +76,7 @@ const PlayingPage = ({puzzle}: Props) => {
 				.then(() => {
 					setAnimation(() => '');
 				})
-				.catch(console.log),
+				.catch(console.error),
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[],
 	);
@@ -164,7 +164,7 @@ const PlayingPage = ({puzzle}: Props) => {
 		async (move: number) =>
 			sleep(300)
 				.then(async () => computerMove(move))
-				.catch(console.log),
+				.catch(console.error),
 		[computerMove],
 	);
 
