@@ -3,6 +3,10 @@ import Modal from 'react-pure-modal';
 import {memo} from 'react';
 import useModal from '@/hooks/use-modal';
 import {Button} from '@/components/button';
+import {Dialog, Transition} from '@headlessui/react';
+import {Fragment, useState} from 'react';
+
+import GenericModal from '@/components/modal';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
@@ -16,27 +20,31 @@ const RemoveModal = ({onClick}: Props) => {
 			>
 				<TrashIcon className='w-5 h-5' />
 			</button>
-
-			<Modal header='Delete' isOpen={isOpen} onClose={hide}>
-				<div className='flex flex-col w-full h-full items-center text-sm'>
-					<p className='pb-3'>Do you want to remove this set?</p>
-					<div className='p-2 m-2'>
+			<GenericModal title='Test' hide={hide} isOpen={isOpen}>
+				<div className='mt-2 w-full'>
+					<p className='text-sm  text-gray-500'>
+						Do you want to remove thise set ?
+					</p>
+				</div>
+				<div className='mt-4'>
+					<div className='w-full flex justify-start'>
 						<Button
-							className='bg-sky-800 dark:bg-sky-800 text-white dark:text-white'
-							onClick={onClick}
-						>
-							Yes
-						</Button>
-
-						<Button
-							className='bg-sky-800 dark:bg-sky-800 text-white dark:text-white'
+							type='button'
+							className='mr-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
 							onClick={hide}
 						>
 							No
 						</Button>
+						<Button
+							type='button'
+							className='ml-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+							onClick={onClick}
+						>
+							Yes
+						</Button>
 					</div>
 				</div>
-			</Modal>
+			</GenericModal>
 		</>
 	);
 };
