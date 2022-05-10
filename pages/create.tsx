@@ -13,16 +13,16 @@ import type {Theme} from '@/data/themes';
 
 const CreatePage = () => {
 	const router = useRouter();
-	const [choicesSelected, setChoicesSelected] = useAtom(selectedAtom);
+	const [choicesSelected] = useAtom(selectedAtom);
 
-	const handleClick = async () => {
-		if (choicesSelected.length === 0) setChoicesSelected(() => ['healthyMix']);
-		await router.push(
+	const handleClick = async () =>
+		router.push(
 			`/options?category=${encodeURIComponent(
-				JSON.stringify(choicesSelected),
+				JSON.stringify(
+					choicesSelected.length === 0 ? ['healthyMix'] : choicesSelected,
+				),
 			)}`,
 		);
-	};
 
 	return (
 		<div className='flex flex-col items-center justify-center pt-32 pb-24'>
