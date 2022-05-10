@@ -1,6 +1,5 @@
-import {memo, ReactNode} from 'react';
+import {memo, ReactNode, Fragment} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
-import {Fragment} from 'react';
 
 type Props = {
 	isOpen: boolean;
