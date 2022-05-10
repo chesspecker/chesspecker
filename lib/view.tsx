@@ -39,12 +39,12 @@ Object.freeze(parseGrade);
 const ParseTime = ({time}: {time: number}): JSX.Element => {
 	const [days, hours, minutes, secondes] = useClock(time);
 	return (
-		<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
+		<span className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}
 			{secondes !== 0 && `${secondes} secondes `}
-		</p>
+		</span>
 	);
 };
 
@@ -58,7 +58,7 @@ const getAverageGrade = (set: PuzzleSetInterface): number => {
 
 const totalCycles = (set: PuzzleSetInterface): ViewData => ({
 	title: 'How many times you completed this set',
-	stat: <p>{set?.cycles}</p>,
+	stat: <span>{set?.cycles}</span>,
 	hasChange: false,
 	Icon: FireIcon,
 });
