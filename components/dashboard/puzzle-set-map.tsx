@@ -31,7 +31,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 		event.preventDefault();
 		event.stopPropagation();
 		await audio('VICTORY', true, 0);
-		await router.push(`/play/${set._id.toString()}`);
+		await router.push(`/play/set/${set._id.toString()}`);
 	};
 
 	const onViewClick = async (event: MouseEvent) => {

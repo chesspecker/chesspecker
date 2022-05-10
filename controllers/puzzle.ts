@@ -13,10 +13,8 @@ export const create = async (
 	return puzzle.save();
 };
 
-export const retrieve = async (
-	id: PuzzleInterface['id'],
-): Promise<PuzzleInterface> =>
-	Puzzle.findById(id).exec() as Promise<PuzzleInterface>;
+export const retrieve = async (id: string): Promise<PuzzleInterface> =>
+	Puzzle.findOne({PuzzleId: id}).exec() as Promise<PuzzleInterface>;
 
 export const update = async (
 	puzzleId: PuzzleItemInterface['_id'],
