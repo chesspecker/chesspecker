@@ -5,7 +5,7 @@ const getTerminatedUpdate = () => ({
 	$set: {
 		'puzzles.$[].played': false,
 		currentTime: 0,
-		progression: 0,
+		progress: 0,
 		spacedRepetition: false,
 	},
 });
@@ -27,7 +27,7 @@ const getActivatedUpdate = (puzzleSet: PuzzleSetInterface) => {
 	const update = [
 		{
 			'$set': {
-				progression: 0,
+				progress: 0,
 				spacedRepetition: true,
 				puzzles: {
 					'$map': {
