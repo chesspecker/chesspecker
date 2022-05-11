@@ -7,18 +7,44 @@ import {
 	LogoutIcon,
 	PlusIcon,
 	LightningBoltIcon,
+	MoonIcon,
+	SunIcon,
 } from '@heroicons/react/solid';
 import Link from 'next/link';
-import {UserInterface} from '@/types/models';
+import {useAtom} from 'jotai';
+import {darkModeµ} from '@/lib/atoms';
 
-const Burger = ({user}: {user: UserInterface}) => {
+type BurgerItemProps = {
+	href: string;
+	icon: JSX.Element;
+	text: string;
+};
+
+const BurgerItem = ({href, icon, text}: BurgerItemProps) => (
+	<Link href={href}>
+		<a>
+			<Menu.Item>
+				<button
+					type='button'
+					className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group'
+				>
+					{icon}
+					{text}
+				</button>
+			</Menu.Item>
+		</a>
+	</Link>
+);
+
+const Burger = () => {
+	const [isDarkMode, setDarkMode] = useAtom(darkModeµ);
 	return (
-		<div className='w-56 flex items-end justify-end fixed top-3 right-5 visible sm:hidden z-20'>
-			<Menu as='div' className='relative inline-block text-left '>
+		<div className='fixed z-20 flex items-end justify-end visible w-56 safe-top top-5 right-5 sm:hidden'>
+			<Menu as='div' className='relative inline-block text-left'>
 				<div>
-					<Menu.Button className=' p-2 inline-flex justify-center w-full text-sm font-medium text-white bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75'>
+					<Menu.Button className='inline-flex justify-center w-full p-2 text-sm font-medium bg-black rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75'>
 						<MenuIcon
-							className='w-5 h-5   text-white hover:text-violet-100'
+							className='w-5 h-5 hover:text-violet-100'
 							aria-hidden='true'
 						/>
 					</Menu.Button>
@@ -33,83 +59,61 @@ const Burger = ({user}: {user: UserInterface}) => {
 					leaveTo='transform opacity-0 scale-95'
 				>
 					<Menu.Items className='absolute right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
-						<Link passHref href={`/user/${user?._id.toString()}`}>
-							<Menu.Item>
-								{({active}: {active: boolean}) => (
-									<button
-										type='button'
-										className={`${
-											active ? ' text-white bg-blue-200' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<UserIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Profil
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
-						<Link passHref href='/dashboard'>
-							<Menu.Item>
-								{({active}: {active: boolean}) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<HomeIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Dashboard
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
+						<BurgerItem
+							href='/user'
+							icon={<UserIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Profil'
+						/>
 
-						<Link passHref href='/api/auth/logout'>
-							<Menu.Item>
-								{({active}: {active: boolean}) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<LogoutIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Logout
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
-						<Link passHref href='/create'>
-							<Menu.Item>
-								{({active}: {active: boolean}) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<PlusIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										New set
-									</button>
-								)}
-							</Menu.Item>
-						</Link>
+						<BurgerItem
+							href='/dashboard'
+							icon={<HomeIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Dashboard'
+						/>
 
-						<Link passHref href={`/achievements/${user?._id.toString()}`}>
-							<Menu.Item>
-								{({active}: {active: boolean}) => (
-									<button
-										type='button'
-										className={`${
-											active ? 'bg-blue-200 text-white' : 'text-gray-900'
-										} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-									>
-										<LightningBoltIcon className='w-5 h-5 mr-2 text-sky-700 ' />
-										Achievements
-									</button>
+						<BurgerItem
+							href='/api/auth/logout'
+							icon={<LogoutIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Logout'
+						/>
+
+						<BurgerItem
+							href='/create'
+							icon={<PlusIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='New set'
+						/>
+
+						<BurgerItem
+							href='/achievements'
+							icon={<LightningBoltIcon className='w-5 h-5 mr-2 text-sky-700' />}
+							text='Achievements'
+						/>
+						<Menu.Item>
+							<button
+								type='button'
+								className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group'
+								onClick={() => {
+									setDarkMode(!isDarkMode);
+								}}
+							>
+								{isDarkMode ? (
+									<MoonIcon
+										className='w-5 h-5 mr-2 text-sky-700 '
+										onClick={() => {
+											setDarkMode(!isDarkMode);
+										}}
+									/>
+								) : (
+									<SunIcon
+										className='w-5 h-5 mr-2 text-yellow-400 '
+										onClick={() => {
+											setDarkMode(!isDarkMode);
+										}}
+									/>
 								)}
-							</Menu.Item>
-						</Link>
+								{isDarkMode ? 'Dark mode' : 'Light Mode'}
+							</button>
+						</Menu.Item>
 					</Menu.Items>
 				</Transition>
 			</Menu>

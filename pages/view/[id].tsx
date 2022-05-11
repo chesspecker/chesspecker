@@ -1,252 +1,274 @@
-/* eslint-disable new-cap */
-import {ReactElement} from 'react';
+/* eslint-disable unicorn/no-array-reduce */
+/* eslint-disable unicorn/no-array-callback-reference */
 import {GetServerSideProps} from 'next';
-import ChartOneLine from '@/components/chart-one-line';
+import {ReactElement, useCallback, useEffect, useState} from 'react';
+import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
+import {useRouter} from 'next/router';
+import Link from 'next/link';
+import {NextSeo} from 'next-seo';
+import type {Data as SetData} from '@/api/set/[id]';
 import Layout from '@/layouts/main';
-import {PuzzleSetInterface} from '@/types/models';
-import useClock from '@/hooks/use-clock';
-import Donnuts from '@/components/doughnuts';
-import ChartMultipleLine from '@/components/chart-multiple-line';
+import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
+import {
+	getCurrentRunStats,
+	getOverviewStats,
+	getProgressStats,
+	ViewData,
+} from '@/lib/view';
+import EditModal from '@/components/view/edit-modal';
+import ModalSpacedOn from '@/components/play/modal-spaced-on';
+import useModal from '@/hooks/use-modal';
+import {
+	activateSpacedRepetion,
+	turnOffSpacedRepetition,
+} from '@/lib/spaced-repetition';
+import ModalSpacedOff from '@/components/play/modal-spaced-off';
+import {Tooltip} from '@/components/tooltip';
 
-const getRapidity = (set: PuzzleSetInterface) => {
-	const bestTime = 5;
-	const wortTime = 50;
-	const scale = wortTime - bestTime;
-	const step = 100 / scale;
-	const length = set.puzzles ? set.puzzles.filter(p => p.played).length : 0;
-	const averageTime = set.currentTime / length;
-	const rapidity = 100 - (averageTime - bestTime) * step;
-	return rapidity < 0 ? 0 : rapidity;
-};
+const reducer = (accumulator: number, current: number) => accumulator + current;
+const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
-const armonizedData = (array: number[]): number[] => {
-	const numberOfLine = 10;
-	if (array.length < numberOfLine) return array;
-	const length = array.length;
-	const iterator = numberOfLine;
-	const packBy = Math.round(length / iterator);
+const Block = ({
+	title,
+	stat,
+	type,
+	change,
+	Icon,
+	hasChange,
+	tooltip,
+}: ViewData): JSX.Element => {
+	if (!hasChange)
+		return (
+			<Tooltip label={tooltip}>
+				<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
+					<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
+						{title}
+					</h3>
 
-	const newArray: number[] = [];
-	for (let i = 0; i < iterator; i++) {
-		const _oldArray = [...array];
-		const _array = _oldArray.slice(i * packBy, i * packBy + packBy);
-		newArray.push(_array.reduce((a, b) => a + b, 0) / _array.length);
-	}
-
-	return newArray;
-};
-
-const getArrayOfTimeByPuzzle = (set: PuzzleSetInterface): number[] =>
-	armonizedData(
-		set.puzzles
-			.filter(puzzle => puzzle.played)
-			.map(puzzle => puzzle.timeTaken[puzzle.timeTaken.length - 1]),
-	);
-
-const getArrayOfMistakeByPuzzle = (set: PuzzleSetInterface): number[] =>
-	armonizedData(
-		set.puzzles
-			.filter(puzzle => puzzle.played)
-			.map(puzzle => puzzle.mistakes[puzzle.mistakes.length - 1]),
-	);
-
-const GetTotalTime = (set: PuzzleSetInterface): JSX.Element => {
-	const totalTime = set.times.reduce(
-		(previous, current) => previous + current,
-		0,
-	);
-	const toFormatTime = totalTime === 0 ? set.currentTime : totalTime;
-	const [days, hours, minutes, secondes] = useClock(toFormatTime);
-	return (
-		<p className='align-self-center text-2xl font-bold text-white'>
-			{days !== 0 && `${days} days `}
-			{hours !== 0 && `${hours} hours `}
-			{minutes !== 0 && `${minutes} minutes `}
-			{secondes !== 0 && `${secondes} secondes `}
-		</p>
-	);
-};
-
-const getAtonAp = (set: PuzzleSetInterface): string => {
-	if (!set.cycles || set.cycles === 0 || set.cycles === 0) return '0%';
-
-	const arrayOfPreviousTime = [];
-	for (let i = 0; i < set.times.length; i++) {
-		for (const puzzle of set.puzzles) {
-			arrayOfPreviousTime.push(puzzle.timeTaken[i]);
-		}
-	}
-
-	const averagePreviousTime =
-		arrayOfPreviousTime.reduce(
-			(previous: number, current: number) => previous + current,
-			0,
-		) / arrayOfPreviousTime.length;
-
-	const arrayOfActualTime = set.puzzles
-		.filter(puzzle => puzzle.timeTaken.length >= set.times.length)
-		.map(puzzle => puzzle.timeTaken[puzzle.timeTaken.length - 1]);
-
-	const averageActualTime =
-		arrayOfActualTime.reduce((previous, current) => previous + current, 0) /
-		arrayOfActualTime.length;
-
-	return `${Math.round((1 - averageActualTime / averagePreviousTime) * 100)} %`;
-};
-
-const getAgonAg = (set: PuzzleSetInterface): string => {
-	if (!set.cycles || set.cycles === 0) return '0%';
-	const arrayOfPreviousMistakes: number[] = [];
-	for (let i = 0; i < set.times.length; i++) {
-		for (const puzzle of set.puzzles) {
-			arrayOfPreviousMistakes.push(puzzle.mistakes[i]);
-		}
-	}
-
-	const averagePreviousMistakes =
-		arrayOfPreviousMistakes.reduce(
-			(previous, current) => previous + current,
-			0,
-		) / arrayOfPreviousMistakes.length;
-	const puzzlePlayedInLastTry = set.puzzles.filter(
-		puzzle => puzzle.mistakes.length >= set.times.length,
-	);
-	const arrayOfActualMistakes = puzzlePlayedInLastTry.map(
-		puzzle => puzzle.mistakes[puzzle.mistakes.length - 1],
-	);
-	const averageActualTime =
-		arrayOfActualMistakes.reduce((previous, current) => previous + current, 0) /
-		arrayOfActualMistakes.length;
-
-	return `${Math.round(
-		(1 - averageActualTime / averagePreviousMistakes) * 100,
-	)} %`;
-};
-
-const GetActualTime = (set: PuzzleSetInterface): JSX.Element => {
-	const [days, hours, minutes, secondes] = useClock(set.currentTime);
+					<div className='flex items-center justify-center w-full h-full'>
+						{Icon && (
+							<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
+								<Icon
+									className='w-6 h-6 text-sky-700 dark:text-white'
+									aria-hidden='true'
+								/>
+							</div>
+						)}
+						<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
+							{stat}
+						</p>
+					</div>
+				</div>
+			</Tooltip>
+		);
 
 	return (
-		<p className='align-self-center text-2xl font-bold text-white'>
-			{days !== 0 && `${days} days `}
-			{hours !== 0 && `${hours} hours `}
-			{minutes !== 0 && `${minutes} minutes `}
-			{secondes !== 0 && `${secondes} secondes `}
-		</p>
+		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white  rounded-lg shadow sm:pt-6 sm:px-6'>
+			<div>
+				<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
+					{title}
+				</h3>
+			</div>
+			<div className='flex items-center justify-center w-full h-full'>
+				{Icon && (
+					<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
+						<Icon
+							className='w-6 h-6 text-sky-700 dark:text-white'
+							aria-hidden='true'
+						/>
+					</div>
+				)}
+				<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
+					{stat}
+				</p>
+				<p
+					className={classNames(
+						type === 'up'
+							? 'text-green-400 dark:text-green-600'
+							: 'text-red-400 dark:text-red-500',
+						'ml-2 flex items-baseline text-sm font-semibold',
+					)}
+				>
+					{type === 'up' ? (
+						<ArrowSmUpIcon
+							className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
+							aria-hidden='true'
+						/>
+					) : (
+						<ArrowSmDownIcon
+							className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
+							aria-hidden='true'
+						/>
+					)}
+					<span className='sr-only'>
+						{type === 'up' ? 'Increased' : 'Decreased'} by
+					</span>
+					{change}
+				</p>
+			</div>
+		</div>
 	);
 };
 
-const getTotalAverageGrade = (set: PuzzleSetInterface): string => {
-	const arrayOfGrade = set.puzzles
-		.map(puzzle => puzzle.grades)
-		.flat(Number.POSITIVE_INFINITY) as number[];
-	const sum = arrayOfGrade.reduce((previous, current) => previous + current, 0);
-	const average = sum / arrayOfGrade.length;
-	if (average > 5.5) return 'A';
-	if (average > 4.5) return 'B';
-	if (average > 3.5) return 'C';
-	if (average > 2.5) return 'D';
-	if (average > 1.5) return 'E';
-	if (average <= 1.5) return 'F';
+const getClasses = (grade: number) => {
+	const base = 'h-5 w-10 cursor-pointer rounded-sm mb-1';
+	if (grade < 3) return `${base} bg-red-500`;
+	if (grade < 5) return `${base} bg-orange-500`;
+	if (grade < 7) return `${base} bg-green-500`;
 };
+
+const getAverage = (array: number[]): number =>
+	array.reduce(reducer, 0) / array.length;
+
+const PuzzleComponent = (puzzle: PuzzleItemInterface): JSX.Element => (
+	<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
+		<a className={getClasses(getAverage(puzzle.grades))} />
+	</Link>
+);
 
 type Props = {currentSetProps: PuzzleSetInterface};
 const ViewingPage = ({currentSetProps: set}: Props) => {
+	const [overviewStats, setOverviewStats] = useState<ViewData[]>([]);
+	const [progressStats, setProgressStats] = useState<ViewData[]>([]);
+	const [currentRunStats, setCurrentRunStats] = useState<ViewData[]>([]);
+	const [setTitle, setSetTitle] = useState<string>();
+	const router = useRouter();
+	const {isOpen, hide, toggle} = useModal(false);
+
+	useEffect(() => {
+		if (!set) return;
+		setSetTitle(set.title);
+		setOverviewStats(() => getOverviewStats(set));
+		setProgressStats(() => getProgressStats(set));
+		setCurrentRunStats(() => getCurrentRunStats(set));
+	}, [set]);
+
+	const onChangeName = useCallback(async () => {
+		const body = {$set: {title: setTitle}};
+		await fetch(`/api/set/${set._id.toString()}`, {
+			method: 'PUT',
+			body: JSON.stringify(body),
+		}).catch(console.error);
+		router.reload();
+	}, [setTitle, router, set]);
+
 	if (!set || !set.puzzles) return null;
 	return (
-		<div className='m-0 flex min-h-screen w-screen flex-col px-2 pt-32 pb-24 sm:px-12 '>
-			<h1 className=' mt-8 mb-6 p-5  font-merriweather text-3xl font-bold text-white md:text-5xl'>
-				{set.title}
-			</h1>
+		<>
+			<NextSeo
+				title='ChessPecker | Statistic'
+				description='Analyze your performance and do better next time '
+			/>
+			<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
+				<div>
+					<div className='flex items-center '>
+						<h1 className='py-5 mt-8 mr-4 font-sans text-3xl font-bold md:text-5xl'>
+							{set.title}
+						</h1>
+						<EditModal
+							setTitle={setTitle}
+							setSetTitle={setSetTitle}
+							onValidate={onChangeName}
+						/>
+					</div>
+					{set.spacedRepetition ? (
+						<ModalSpacedOff
+							isOpen={isOpen}
+							hide={hide}
+							onClick={async () => {
+								await turnOffSpacedRepetition(set);
+								hide();
+								router.reload();
+							}}
+						/>
+					) : (
+						<ModalSpacedOn
+							isOpen={isOpen}
+							hide={hide}
+							onClick={async () => {
+								await activateSpacedRepetion(set);
+								hide();
+								router.reload();
+							}}
+						/>
+					)}
 
-			<div className='mt-4 w-full'>
-				<h2 className='h2'>Puzzle set state</h2>
-				<div className='mt-4 flex w-full flex-wrap'>
-					<div className=' m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Time you complete this set</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className='justify-self-center text-5xl font-bold text-white'>
-								{set.cycles ? set.cycles : 0}
-							</p>
-						</div>
-					</div>
-					<div className=' m-3 flex min-h-[10rem] w-1/3 min-w-[20rem] flex-auto  flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Total average grade</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className=' justify-self-center text-5xl font-bold text-white'>
-								{getTotalAverageGrade(set)}
-							</p>
-						</div>
-					</div>
-					<div className=' m-3 flex min-h-[10rem] w-1/3 min-w-[20rem] flex-auto  flex-col items-center justify-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Total time spent on this set</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							{GetTotalTime(set)}
-						</div>
-					</div>
+					<button
+						className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 dark:text-sky-600 hover:bg-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-sky-600 bg-sky-700   dark:bg-gray-100 dark:hover:bg-gray-200'
+						disabled={set.cycles < 1 && !set.spacedRepetition}
+						type='button'
+						onClick={toggle}
+					>
+						<p>
+							Spaced-repetition:
+							<span
+								className={`${
+									set.cycles < 1 && !set.spacedRepetition
+										? 'bg-slate-600'
+										: set.spacedRepetition
+										? 'bg-green-500'
+										: 'bg-red-500'
+								} text-white py-2 px-4 rounded-full ml-3`}
+							>
+								{set.spacedRepetition ? 'on' : 'off'}
+							</span>
+						</p>
+					</button>
 				</div>
-			</div>
-			<div className='mt-4 w-full'>
-				<h2 className='h2'>Global Progression</h2>
-				<div className='mt-4 flex w-full flex-wrap'>
-					<div className=' m-3 flex  min-h-[10rem]  min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>
-							Actual time / Average previous time
-						</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className=' justify-self-center text-5xl font-bold text-white'>
-								{getAtonAp(set)}
-							</p>
-						</div>
-					</div>
-					<div className=' m-3 flex min-h-[10rem]   min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>
-							Actual grade / Average previous grade
-						</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							<p className='align-self-center text-5xl font-bold text-white'>
-								{getAgonAg(set)}
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div className='mt-4 w-full flex-wrap'>
-				<h2 className='h2'>Actual Progression</h2>
-				<div className='mt-4 flex w-full flex-wrap justify-around'>
-					<div className=' m-3 flex flex-auto flex-col items-center  rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Progress</h3>
-						<div className='flex h-full items-center justify-center'>
-							<Donnuts
-								played={set.puzzles?.filter(p => p.played).length}
-								totalSet={set.length}
-							/>
-						</div>
-					</div>
-					<div className='m-3 flex min-h-[10rem]  min-w-[20rem] flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Actual time</h3>
-						<div className='flex h-full w-full items-center justify-center'>
-							{GetActualTime(set)}
-						</div>
-					</div>
-					<div className=' m-3 flex  flex-auto flex-col  items-center rounded-xl border-4 border-white p-4  '>
-						<h3 className='h3 text-center'>Average Grade</h3>
-						<div className='flex h-full items-center justify-center'>
-							<ChartOneLine rapidity={getRapidity(set)} />
-						</div>
-					</div>
-				</div>
-			</div>
 
-			<div className='mt-10 pt-10'>
-				<ChartMultipleLine
-					array1={getArrayOfTimeByPuzzle(set)}
-					array2={getArrayOfMistakeByPuzzle(set)}
-					name1='time evolution'
-					name2='mistake evolution'
-				/>
+				{set?.cycles >= 1 && (
+					<div className='w-full mt-4'>
+						<h2 className='h2'>Set overview</h2>
+						<div className='flex flex-wrap w-full mt-4'>
+							{overviewStats.map(stat => (
+								<Block key={stat.title} {...stat} />
+							))}
+						</div>
+					</div>
+				)}
+
+				{set?.cycles < 2 && set?.currentTime === 0 && (
+					<div className='w-full'>
+						<p className='p-5 mt-8 mb-6 font-sans text-xl font-bold md:text-3xl'>
+							No data yet, start playing!
+						</p>
+					</div>
+				)}
+
+				{set?.cycles >= 2 && (
+					<div className='w-full mt-4'>
+						<h2 className='h2'>Global progress</h2>
+						<div className='flex flex-wrap w-full mt-4'>
+							{progressStats.map(stat => (
+								<Block key={stat.title} {...stat} />
+							))}
+						</div>
+					</div>
+				)}
+
+				{set?.currentTime > 0 && (
+					<div className='flex-wrap w-full mt-4'>
+						<h2 className='h2'>Current run</h2>
+						<div className='flex flex-wrap justify-around w-full mt-4'>
+							{currentRunStats.map(stat => (
+								<Block key={stat.title} {...stat} />
+							))}
+						</div>
+					</div>
+				)}
+
+				{set?.currentTime > 0 && (
+					<div className='flex-wrap w-full mt-4'>
+						<h2 className='mb-4 h2'>All puzzles</h2>
+						<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
+							{set.puzzles.map(puzzle => (
+								<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
+							))}
+						</div>
+					</div>
+				)}
 			</div>
-		</div>
+		</>
 	);
 };
 
@@ -255,11 +277,13 @@ ViewingPage.getLayout = (page: ReactElement): JSX.Element => (
 );
 export default ViewingPage;
 
-export const getServerSideProps: GetServerSideProps = async ({params}) => {
-	const {id} = params;
-	const data = await fetch(`/api/set/${id as string}`).then(
-		async response => response.json() as Promise<PuzzleSetInterface>,
+export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
+	const id: string = params.id as string;
+	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
+	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
+	const data = await fetch(`${baseUrl}/api/set/${id}`).then(
+		async response => response.json() as Promise<SetData>,
 	);
-	if (!data) return {notFound: true};
+	if (!data?.success) return {notFound: true};
 	return {props: {currentSetProps: data.set}};
 };

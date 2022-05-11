@@ -2,6 +2,8 @@ import {AchievementInterface, AchivementsArgs} from '@/types/models';
 import THEMES from '@/data/themes';
 import {getRandomInt} from '@/lib/utils';
 
+const ONE_MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000;
+
 export type AchievementsCategorys = {
 	name: string;
 	description: string;
@@ -13,22 +15,21 @@ export const achievementsCategorys: AchievementsCategorys[] = [
 		description: 'Achievements awarded in a perfectly random way',
 	},
 	{
-		name: 'avancement',
-		description: 'Achievements related to your general progress on this site',
+		name: 'advancement',
+		description: 'Achievements related to your progress on this site',
 	},
 	{
 		name: 'performance',
-		description: 'Achievements related to your ability in solving problems',
+		description: 'Achievements related to your solving skills',
 	},
 	{
 		name: 'duration',
 		description:
-			'Achievements related to to your diligence in working on problems',
+			'Achievements related to your hard work and time spent on this site',
 	},
 	{
 		name: 'type',
-		description:
-			'Achievement related to the categories you have been working on',
+		description: "Achievement related to the categories you've been working on",
 	},
 ];
 
@@ -39,7 +40,7 @@ export const achievements: AchievementInterface[] = [
 		name: 'Pizza',
 		description: 'Great, you won a slice of pizza...',
 		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 42,
-		image: 'http://localhost:3000/images/achievements/pizza.png',
+		image: '/images/achievements/pizza.png',
 		category: 'random',
 	},
 	{
@@ -47,187 +48,162 @@ export const achievements: AchievementInterface[] = [
 		name: 'Toilet plunger',
 		description: 'Great, you won a toilet plunger...',
 		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 666,
-		image: 'http://localhost:3000/images/achievements/plunger.jpg',
-		category: 'random',
-	},
-	{
-		id: 'unicorn',
-		name: 'Nice unicorn',
-		description: 'I love unicorns and their beautiful horns',
-		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 999,
-		image: 'http://localhost:3000/images/achievements/unicorn.png',
-		category: 'random',
-	},
-	{
-		id: 'clown',
-		name: 'Funny clown',
-		description: 'Funny joke goes here',
-		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 181,
-		image: 'http://localhost:3000/images/achievements/clown.png',
+		image: '/images/achievements/plunger.png',
 		category: 'random',
 	},
 
-	// AVANCEMENT
+	// Advancement
 	{
 		id: 'first-puzzle',
 		name: 'First Puzzle',
-		description: 'You completed your first puzzle.',
-		isValidated: (args: AchivementsArgs) => args.totalPuzzleSolved === 1,
-		image: 'http://localhost:3000/images/achievements/baby_bunny.svg', // Change
-		category: 'avancement',
-	},
-	{
-		id: 'first-set',
-		name: 'First Set',
-		description: 'You completed your first set.',
-		isValidated: (args: AchivementsArgs) => args.totalSetSolved === 1,
-		image: 'http://localhost:3000/images/achievements/socks.png', // Change
-		category: 'avancement',
+		description: 'You completed your first puzzle!',
+		isValidated: (args: AchivementsArgs) => args.totalPuzzleSolved > 0,
+		image: '/images/achievements/accordeon.png',
+		category: 'advancement',
 	},
 	{
 		id: 'sponsor',
 		name: 'Sponsor',
-		description: 'because you are a sponsor, you have won this beautiful sock ',
+		description: "Because you're a sponsor, you've won those beautiful socks",
 		isValidated: (args: AchivementsArgs) => args.isSponsor,
-		image: 'http://localhost:3000/images/achievements/socks.png', // Change
-		category: 'avancement',
+		image: '/images/achievements/socks.png',
+		category: 'advancement',
 	},
 
 	// PERFORMANCE
 	{
 		id: 'baby-bunny',
 		name: 'Baby Bunny',
-		description: 'Solve 10 consecutive puzzles in less than 5 seconds',
+		description: 'Solve 20 consecutive puzzles in less than 5 seconds',
 		isValidated: (args: AchivementsArgs) => args.streakTime > 20,
-		image: 'http://localhost:3000/images/achievements/baby_bunny.svg',
+		image: '/images/achievements/bunny-0.png',
 		category: 'performance',
 	},
 	{
 		id: 'bunny',
 		name: 'Bunny',
-		description: 'Solve 25 consecutive puzzles in less than 5 seconds',
-		isValidated: (args: AchivementsArgs) => args.streakTime > 30,
-		image: 'http://localhost:3000/images/achievements/bunny.svg',
+		description: 'Solve 40 consecutive puzzles in less than 5 seconds',
+		isValidated: (args: AchivementsArgs) => args.streakTime > 40,
+		image: '/images/achievements/bunny-1.png',
 		category: 'performance',
 	},
 	{
 		id: 'king-bunny',
 		name: 'King Bunny',
-		description: 'Solve 50 consecutive puzzles in less than 5 seconds',
-		isValidated: (args: AchivementsArgs) => args.streakTime > 50,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		description: 'Solve 70 consecutive puzzles in less than 5 seconds',
+		isValidated: (args: AchivementsArgs) => args.streakTime > 70,
+		image: '/images/achievements/bunny-2.png',
 		category: 'performance',
 	},
 
 	{
 		id: 'baby-turtle',
 		name: 'Baby turtle',
-		description: 'Solve a puzzle after 2 minutes',
+		description: 'Solve a puzzle after 2 minutes of thinking',
 		isValidated: (args: AchivementsArgs) => args.completionTime > 120,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		image: '/images/achievements/turtle-0.png',
 		category: 'performance',
 	},
 	{
 		id: 'turtle',
-		name: 'turtle',
-		description: 'Solve a puzzle after 5 minutes',
+		name: 'Turtle',
+		description: 'Solve a puzzle after 5 minutes of thinking',
 		isValidated: (args: AchivementsArgs) => args.completionTime > 300,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		image: '/images/achievements/turtle-1.png',
 		category: 'performance',
 	},
 	{
 		id: 'king-turtle',
 		name: 'King turtle',
-		description: 'Solve a puzzle after 15 minutes',
+		description: 'Solve a puzzle after 15 minutes of thinking',
 		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		image: '/images/achievements/turtle-2.png',
 		category: 'performance',
 	},
 
 	{
-		id: 'baby-watchmaker',
-		name: 'Baby watchmaker',
-		description: 'Solve 20 consecutive puzzles with no mistakes',
+		id: 'baby-archer',
+		name: 'Baby archer',
+		description: 'Solve 20 consecutive puzzles without error',
 		isValidated: (args: AchivementsArgs) => args.streakMistakes > 20,
-		image: 'http://localhost:3000/images/achievements/baby_watchmaker.svg',
+		image: '/images/achievements/archer-0.png',
 		category: 'performance',
 	},
 	{
-		id: 'watchmaker',
-		name: 'watchmaker',
-		description: 'Solve 30 consecutive puzzles with no mistakes',
-		isValidated: (args: AchivementsArgs) => args.streakMistakes > 3,
-		image: 'http://localhost:3000/images/achievements/watchmaker.svg',
+		id: 'archer',
+		name: 'archer',
+		description: 'Solve 30 consecutive puzzles without error',
+		isValidated: (args: AchivementsArgs) => args.streakMistakes > 30,
+		image: '/images/achievements/archer-1.png',
 		category: 'performance',
 	},
 	{
-		id: 'king-watchmaker',
-		name: 'King watchmaker',
-		description: 'Solve 50 consecutive puzzles with no mistakes',
+		id: 'king-archer',
+		name: 'King archer',
+		description: 'Solve 50 consecutive puzzles without error',
 		isValidated: (args: AchivementsArgs) => args.streakMistakes > 50,
-		image: 'http://localhost:3000/images/achievements/king_watchmaker.svg',
+		image: '/images/achievements/archer-2.png',
 		category: 'performance',
 	},
 
 	{
 		id: 'baby-goat',
 		name: 'Baby goat',
-		description: 'Solve a puzzle after more than 5 mistakes',
-		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		description: 'Solve a puzzle with more than 5 mistakes...',
+		isValidated: (args: AchivementsArgs) => args.completionMistakes > 5,
+		image: '/images/achievements/goat-0.png',
 		category: 'performance',
 	},
 	{
 		id: 'goat',
 		name: 'Goat',
-		description: 'Solve a puzzle after more than 15 mistakes',
-		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		description: 'Solve a puzzle with more than 15 mistakes...',
+		isValidated: (args: AchivementsArgs) => args.completionMistakes > 15,
+		image: '/images/achievements/goat-1.png',
 		category: 'performance',
 	},
 	{
 		id: 'king-goat',
 		name: 'King goat',
-		description: 'Solve a puzzle after more than 30 mistakes',
-		isValidated: (args: AchivementsArgs) => args.completionTime > 900,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		description: 'Solve a puzzle with more than 30 mistakes...',
+		isValidated: (args: AchivementsArgs) => args.completionMistakes > 30,
+		image: '/images/achievements/goat-2.png',
 		category: 'performance',
 	},
 	// DURATION
 
 	{
-		id: 'baby-chessaolic',
-		name: 'Baby chessaolic',
-		description: 'Play more than 15 mn in last 7 days',
+		id: 'baby-chess-addict',
+		name: 'Baby chess-addict',
+		description: 'Play at least 15mn each day for a week',
 		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 7,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		image: '/images/achievements/flame-0.png',
 		category: 'duration',
 	},
 	{
-		id: 'chessaolic',
-		name: 'Chessaolic',
-		description: 'Play more than 15 mn in last 15 days',
+		id: 'chess-addict',
+		name: 'Chess-addict',
+		description: 'Play at least 15mn each day for 2 weeks',
 		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 15,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		image: '/images/achievements/flame-1.png',
 		category: 'duration',
 	},
 	{
-		id: 'king-chessaolic',
-		name: 'King chessaolic',
-		description: 'Play more than 15 mn in last 30 days',
+		id: 'king-chess-addict',
+		name: 'King chess-addict',
+		description: 'Play at least 15mn each day for a month',
 		isValidated: (args: AchivementsArgs) => args.streak.currentCount > 30,
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+		image: '/images/achievements/flame-2.png',
 		category: 'duration',
 	},
 	{
 		id: 'revenant',
 		name: 'Revenant',
-		description: 'Come back after more than 30 days of inactivity',
-		// TODO: test, not sure if it works
+		description: 'Come back after a month of inactivity',
 		isValidated: (args: AchivementsArgs) =>
-			(Date.now() - new Date(args.streak.lastLoginDate).getTime()) / 1000 >
-			2_592_000, // 30 jours en secondes
-		image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+			Date.now() - new Date(args.streak.lastLoginDate).getTime() >
+			ONE_MONTH_IN_MS,
+		image: '/images/achievements/ghost.png',
 		category: 'duration',
 	},
 ];
@@ -235,30 +211,30 @@ export const achievements: AchievementInterface[] = [
 for (const theme of THEMES) {
 	achievements.push(
 		{
-			id: theme.id,
-			name: `National master of ${theme.title}`,
-			description: `Your are now national master of ${theme.title}`,
+			id: `NM-${theme.title}`,
+			name: `NM of ${theme.title}`,
+			description: `Your are now a National Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 400),
-			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+				args.themes.some(t => t.title === theme.id && t.count > 500),
+			image: '/images/achievements/shield-0.png',
 			category: 'type',
 		},
 		{
-			id: theme.id,
-			name: `International master of ${theme.title}`,
-			description: `Your are now international master of ${theme.title}`,
+			id: `IM-${theme.title}`,
+			name: `IM of ${theme.title}`,
+			description: `Your are now a International Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 800),
-			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+				args.themes.some(t => t.title === theme.id && t.count > 1500),
+			image: '/images/achievements/shield-1.png',
 			category: 'type',
 		},
 		{
-			id: theme.id,
-			name: `Great-master of ${theme.title}`,
-			description: `Your are now great master of ${theme.title}`,
+			id: `GM-${theme.title}`,
+			name: `GM of ${theme.title}`,
+			description: `Your are now a Grand Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count === 1200),
-			image: 'http://localhost:3000/images/achievements/king_bunny.svg',
+				args.themes.some(t => t.title === theme.id && t.count > 3000),
+			image: '/images/achievements/shield-2.png',
 			category: 'type',
 		},
 	);

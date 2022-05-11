@@ -1,10 +1,9 @@
-import process from 'process';
 import {Stripe, loadStripe} from '@stripe/stripe-js';
 
 let stripePromise: Promise<Stripe | null>;
-const getStripe = async () => {
+const getStripe = async (key: string) => {
 	if (await stripePromise) return stripePromise;
-	stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+	stripePromise = loadStripe(key);
 	return stripePromise;
 };
 

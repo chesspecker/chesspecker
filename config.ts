@@ -8,6 +8,11 @@ export const redisConfig = {
 	uri: env.REDIS_URI,
 };
 
+export const stripeConfig = {
+	publishableKey: env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+	secretKey: env.STRIPE_SECRET_KEY,
+};
+
 export const lichess = {
 	clientId: env.LICHESS_CLIENT_ID,
 	clientSecret: env.LICHESS_CLIENT_SECRET,

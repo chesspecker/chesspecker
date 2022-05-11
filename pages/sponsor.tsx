@@ -1,8 +1,10 @@
+import process from 'process';
 import Stripe from 'stripe';
 import type {ReactElement} from 'react';
 import {useEffect, useState} from 'react';
 import Modal from 'react-pure-modal';
 import {useRouter} from 'next/router';
+import {NextSeo} from 'next-seo';
 import type {Data as SubscriptionData} from '@/api/subscription/[id]';
 import type {SubBody, Data as SessionData} from '@/api/subscription/index';
 import useModal from '@/hooks/use-modal';
@@ -18,13 +20,15 @@ const RemoveModal = ({onClick}: Props) => {
 	const {isOpen, hide, toggle} = useModal(false);
 	return (
 		<>
-			<Button className='mx-2' onClick={toggle}>
+			<Button className='max-w-lg mx-2' onClick={toggle}>
 				cancel 😥
 			</Button>
 
 			<Modal header='Delete' isOpen={isOpen} onClose={hide}>
 				<div className='flex flex-col items-center text-sm'>
-					<p className='pb-3'>Are you shure to cancel subscription</p>
+					<p className='pb-3'>
+						Are you sure you want to cancel your subscription?
+					</p>
 					<iframe
 						allowFullScreen
 						src='https://giphy.com/embed/CT5Ye7uVJLFtu'
@@ -34,9 +38,10 @@ const RemoveModal = ({onClick}: Props) => {
 						className='giphy-embed'
 					/>
 
-					<div className='m-2 p-2'>
-						<Button onClick={onClick}>Yes</Button>
-
+					<div className='p-2 m-2'>
+						<Button className='px-8 my-2 ' onClick={onClick}>
+							Yes
+						</Button>
 						<Button onClick={hide}>No</Button>
 					</div>
 				</div>
@@ -45,20 +50,19 @@ const RemoveModal = ({onClick}: Props) => {
 	);
 };
 
-const BecomeSponsor = ({
-	handleClick,
-}: {
-	handleClick: (string: string) => void;
-}) => {
+type PageProps = {handleClick: (string: string) => void};
+const BecomeSponsor = ({handleClick}: PageProps) => {
 	return (
-		<div className='mx-10 flex h-screen flex-col items-center justify-center text-slate-800'>
-			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
+		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-40 '>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
 				Become sponsor
 			</h1>
-			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
-				We love to code on this site. Become a sponsor to help us pay for the
-				server costs and to have the chance to unlock a great (really nice)
-				badge !
+			<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
+				This website is free and ads-less and we are having fun coding it.
+				<br />
+				However, it still has a cost. Become a sponsor today to help us paying
+				server costs.
+				<br /> It will also unlock a great badge! 🎉
 			</p>
 			<iframe
 				allowFullScreen
@@ -68,36 +72,34 @@ const BecomeSponsor = ({
 				frameBorder='0'
 				className='giphy-embed'
 			/>
-			<p className='mb-6 mt-7 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
-				How much does it cost? Just one small coffee per month !
+			<p className='w-11/12 mb-6 text-2xl text-center mt-7 md:text-2xl'>
+				How much does it cost? Just about a small coffee per month!
 			</p>
-			<p>
-				<a href='https://giphy.com/gifs/lCbSAbRrFEfkY'>via GIPHY</a>
-			</p>
-			<div className='flex w-2/3'>
+
+			<div className='flex flex-col w-2/3 lg:flex-row'>
 				<Button
-					className='mx-2'
+					className='m-2'
 					onClick={() => {
-						handleClick('price_1KrH3UGL9hdiIkIS71GBjPNS');
+						handleClick('price_1KxCYVGL9hdiIkISDFBzzU6Z');
 					}}
 				>
-					1 Coffee ☕️ (3€)
+					☕️ 3€
 				</Button>
 				<Button
-					className='mx-2'
+					className='m-2'
 					onClick={() => {
-						handleClick('price_1KrH9zGL9hdiIkISPg2FKEBD');
+						handleClick('price_1KxCa8GL9hdiIkISXvkAuA4F');
 					}}
 				>
-					2 Coffee (5€) ☕️☕️
+					☕️☕️ 5€
 				</Button>
 				<Button
-					className='mx-2'
+					className='m-2'
 					onClick={() => {
-						handleClick('price_1KrH5yGL9hdiIkIShHkBKgPN');
+						handleClick('price_1KxCafGL9hdiIkISewaLCtNO');
 					}}
 				>
-					Lots of coffee (15€)
+					☕️☕️☕️ 15€
 				</Button>
 			</div>
 		</div>
@@ -112,19 +114,25 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	};
 
 	return (
-		<div className='mx-10 flex min-h-screen flex-col items-center justify-center pt-32 pb-24 text-slate-800'>
-			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
-				Manage sponsorship
-			</h1>
-			<p className='mb-6 w-11/12 text-center text-2xl text-gray-100 md:text-2xl'>
-				Thank you for supporting us.
-			</p>
-			<p className='pb-6 text-white'>{`Your actual subscription is ${
-				((subscription as any)?.plan.amount as number) / 100
-			} € per month`}</p>
+		<>
+			<NextSeo
+				title='ChessPecker | Sponsor'
+				description='Become a sponsor to help us make chessPecker grow !'
+			/>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+					Manage sponsorship
+				</h1>
+				<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
+					Thank you for supporting us.
+				</p>
+				<p className='pb-6 '>{`Your actual subscription is ${
+					((subscription as any)?.plan.amount as number) / 100
+				} € per month`}</p>
 
-			<RemoveModal onClick={async () => cancelSubscription()} />
-		</div>
+				<RemoveModal onClick={async () => cancelSubscription()} />
+			</div>
+		</>
 	);
 };
 
@@ -136,9 +144,6 @@ const SponsorPage = () => {
 	useEffect(() => {
 		if (!data) return;
 		setUser(data.user);
-		if (user?.isSponsor) {
-			// TODO: Retrive contract
-		}
 	}, [data]);
 
 	useEffectAsync(async () => {
@@ -161,9 +166,11 @@ const SponsorPage = () => {
 
 		if (data.success) {
 			const {id: sessionId} = data.session;
-			const stripe = await getStripe();
+			const stripe = await getStripe(
+				process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+			);
 			const {error} = await stripe.redirectToCheckout({sessionId});
-			if (error) console.log(error);
+			if (error) console.error(error);
 		}
 	};
 

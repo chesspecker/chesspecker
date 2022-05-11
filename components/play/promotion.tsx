@@ -3,7 +3,7 @@ import {Color} from 'chessground/types';
 import {useAtom} from 'jotai';
 import Modal from 'react-pure-modal';
 import {memo} from 'react';
-import {piecesAtom} from '@/lib/atoms';
+import {configµ} from '@/lib/atoms';
 
 type PieceProps = {
 	color: Color;
@@ -12,10 +12,10 @@ type PieceProps = {
 };
 
 const SelectPiece = ({color, handleClick, role}: PieceProps) => {
-	const [pieces] = useAtom(piecesAtom);
+	const [pieces] = useAtom(configµ.pieces);
 	return (
 		<div
-			className='edit-square rounded border border-gray-300'
+			className='border border-gray-300 rounded edit-square'
 			onClick={handleClick}
 		>
 			<div className={`promotion-piece ${pieces} ${role} ${color}`} />

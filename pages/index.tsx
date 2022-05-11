@@ -1,31 +1,51 @@
 import type {ReactElement} from 'react';
 import Image from 'next/image.js';
+import {GetServerSidePropsContext, Redirect} from 'next';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
+import {withSessionSsr} from '@/lib/session';
 
 const IndexPage = () => (
-	<div className='m-0 flex h-screen flex-col items-center justify-center text-slate-800'>
-		<Image
-			className='mx-auto mt-8 block h-40 w-40'
-			src='/images/logo.svg'
-			width='160px'
-			height='160px'
+	<>
+		<NextSeo
+			title='ChessPecker | Login'
+			description='Login to start playing woodPecker chess methode on ChessPecker website'
 		/>
-		<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white'>
-			Happy to see you
-			<br />
-			newcomer 👋
-		</h1>
-		<div className='my-3 mx-0 w-full text-center text-white'>
+		<div className='flex flex-col items-center justify-center h-screen m-0 '>
+			<Image
+				className='block w-40 h-40 mx-auto mt-8'
+				src='/images/logo.svg'
+				width='160px'
+				height='160px'
+			/>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+				Happy to see you
+				<br />
+				newcomer 👋
+			</h1>
+			<div className='w-full mx-0 my-3 text-center '>
 			<Button className='py-4' href='/api/auth/lichess/login'>
 				SIGN IN WITH LICHESS
 			</Button>
-			<Button className='mt-4 py-4' href='/api/auth/chesscom/login'>
+			<Button className='py-4 mt-4' href='/api/auth/chesscom/login'>
 				SIGN IN WITH CHESS.COM
 			</Button>
+			</div>
 		</div>
-	</div>
+	</>
 );
 
 IndexPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default IndexPage;
+
+export const getServerSideProps = withSessionSsr(
+	async ({req}: GetServerSidePropsContext) => {
+		if (req?.session?.userID) {
+			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
+			return {redirect};
+		}
+
+		return {props: {}};
+	},
+);

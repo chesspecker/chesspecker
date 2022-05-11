@@ -6,22 +6,22 @@ const schema = new Schema<UserInterface>({
 	lichessId: String,
 	stripeId: String,
 	username: String,
-	url: String,
 	isSponsor: Boolean,
 	validatedAchievements: [
 		{
 			id: String,
 			claimed: Boolean,
+			date: Date,
 		},
 	],
 	totalPuzzleSolved: Number,
 	totalSetCompleted: Number,
+	totalTimePlayed: Number,
 	streak: {
 		currentCount: Number,
 		startDate: String, // 11/11/2019
 		lastLoginDate: String, // 14/11/2019
 	},
-	totalTimePlayed: Number,
 	puzzleSolvedByCategories: [{title: String, count: Number}],
 });
 

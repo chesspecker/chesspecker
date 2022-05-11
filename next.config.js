@@ -1,9 +1,6 @@
 /**
  * @type {import('next').NextConfig}
  **/
-
-const withPWA = require('next-pwa');
-
 const nextConfig = {
 	pwa: {
 		dest: 'public',
@@ -25,7 +22,7 @@ const nextConfig = {
 		};
 		return config;
 	},
-	webpack(config) {
+	webpack: (config, {dev, isServer}) => {
 		config.module.rules.push({
 			test: /\.(ogg|mp3|wav|mpe?g)$/i,
 			use: [
@@ -37,10 +34,21 @@ const nextConfig = {
 				},
 			],
 		});
+
+		// Replace React with Preact only in client production build
+		if (!dev && !isServer) {
+			Object.assign(config.resolve.alias, {
+				react: 'preact/compat',
+				'react-dom/test-utils': 'preact/test-utils',
+				'react-dom': 'preact/compat',
+			});
+		}
+
 		return config;
 	},
 };
 
+const withPWA = require('next-pwa');
 const withTM = require('next-transpile-modules')([]);
 
 module.exports = withPWA(withTM(nextConfig));

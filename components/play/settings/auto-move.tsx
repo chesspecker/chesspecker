@@ -1,15 +1,15 @@
 import {useAtom} from 'jotai';
-import {autoMoveAtom} from '@/lib/atoms';
+import {configµ} from '@/lib/atoms';
 
 const AutoMoveSettings = () => {
-	const [autoMove, setAutoMove] = useAtom(autoMoveAtom);
+	const [autoMove, setAutoMove] = useAtom(configµ.autoMove);
 	return (
 		<>
 			<span>Auto move to next puzzle</span>
 			<div className='flex'>
 				<input
 					type='checkbox'
-					className='rounded border border-gray-300'
+					className='border border-gray-300 rounded'
 					defaultChecked={autoMove}
 					onChange={() => {
 						setAutoMove((state: boolean) => !state);

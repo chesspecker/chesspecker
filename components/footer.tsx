@@ -5,46 +5,43 @@ import github from '@/public/images/github.svg';
 import discord from '@/public/images/discord.svg';
 
 const Footer = () => (
-	<footer className='sm:flex h-24 w-full flex-row items-center justify-center bg-slate-900 shadow hidden sm:visible '>
-		<div className='flex w-full content-center justify-between'>
-			<div className='mx-1 flex flex-col items-center justify-center sm:mx-5'>
-				{/* TODO: add link to sponsor page */}
+	<footer className='flex-row items-center justify-center hidden w-full h-24 shadow sm:flex dark:bg-slate-900 sm:visible '>
+		<div className='flex content-center justify-between w-full'>
+			<div className='flex flex-col items-center justify-center mx-1 sm:mx-5'>
 				<Link href='/sponsor'>
 					<a>
-						<div className='flex w-full cursor-pointer content-center items-center justify-between px-3'>
-							<HeartIcon className='h-6 w-6 text-white' />
-							<p className='ml-3 cursor-pointer text-xl text-white'>Support</p>
-						</div>
-					</a>
-				</Link>
-			</div>
-			<div className='mx-1 flex flex-row sm:mx-5 '>
-				<Link href='https://github.com/chesspecker'>
-					<a>
-						<div className='flex w-full cursor-pointer content-center items-center justify-between px-3'>
-							<div className='hidden md:mt-1 md:block'>
-								{/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
-								<Image src={github} width={30} height={30} />
-							</div>
-							<p className='ml-3 cursor-pointer border-solid text-xl text-white'>
-								Github
+						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer group'>
+							<HeartIcon className='w-6 h-6 group-hover:text-pink-600' />
+							<p className='ml-3 text-xl cursor-pointer group-hover:text-pink-600'>
+								Support
 							</p>
 						</div>
 					</a>
 				</Link>
-				<Link href='https://discord.gg/AaaAuUZK'>
-					<a>
-						<div className='flex w-full cursor-pointer content-center items-center justify-between px-3'>
-							<div className='hidden md:block'>
+			</div>
+			<div className='flex flex-row mx-1 sm:mx-5 '>
+				<Link href='https://github.com/chesspecker'>
+					<a target='_blank'>
+						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
+							<div className='items-center justify-center hidden p-1 rounded-lg md:flex bg-sky-800 dark:bg-transparent '>
+								<Image src={github as string} width={30} height={30} />
+							</div>
+							<p className='ml-3 text-xl border-solid cursor-pointer'>Github</p>
+						</div>
+					</a>
+				</Link>
+				<Link href='https://discord.gg/qDftJZBBHa'>
+					<a target='_blank'>
+						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer'>
+							<div className='items-center justify-center hidden p-1 rounded-lg md:flex bg-sky-800 dark:bg-transparent'>
 								<Image
-									/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-									src={discord}
+									src={discord as string}
 									width={30}
 									height={30}
 									className='hidden md:block'
 								/>
 							</div>
-							<p className='ml-3 cursor-pointer border-solid text-xl text-white'>
+							<p className='ml-3 text-xl border-solid cursor-pointer'>
 								Discord
 							</p>
 						</div>

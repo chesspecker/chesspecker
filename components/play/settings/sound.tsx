@@ -1,15 +1,15 @@
 import {useAtom} from 'jotai';
-import {soundAtom} from '@/lib/atoms';
+import {configµ} from '@/lib/atoms';
 
 const SoundSettings = () => {
-	const [sound, setSound] = useAtom(soundAtom);
+	const [sound, setSound] = useAtom(configµ.sound);
 	return (
 		<>
 			<span>Sound effects</span>
 			<div className='flex'>
 				<input
 					type='checkbox'
-					className='rounded border border-gray-300'
+					className='border border-gray-300 rounded'
 					defaultChecked={sound}
 					onChange={() => {
 						setSound((state: boolean) => !state);

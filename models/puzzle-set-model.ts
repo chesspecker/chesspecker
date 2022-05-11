@@ -23,7 +23,7 @@ const schema = new Schema<PuzzleSetInterface>({
 	currentTime: {type: Number},
 	times: {type: [Number]},
 	rating: {type: Number},
-	progression: {type: Number},
+	progress: {type: Number},
 	level: {
 		type: String,
 		enum: [

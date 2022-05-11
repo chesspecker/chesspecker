@@ -1,3 +1,4 @@
+import {UpdateQuery} from 'mongoose';
 import PuzzleSet from '@/models/puzzle-set-model';
 import type {UserInterface, PuzzleSetInterface} from '@/types/models';
 
@@ -15,7 +16,7 @@ export const retrieveByUser = async (
 
 export const update = async (
 	id: PuzzleSetInterface['id'],
-	body: Partial<PuzzleSetInterface>,
+	body: UpdateQuery<Partial<PuzzleSetInterface>>,
 ): Promise<PuzzleSetInterface> =>
 	PuzzleSet.findByIdAndUpdate(id, body, {
 		new: true,

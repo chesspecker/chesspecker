@@ -1,8 +1,8 @@
 import {useAtom} from 'jotai';
-import {Board, boardAtom} from '@/lib/atoms';
+import {Board, configµ} from '@/lib/atoms';
 
 const BoardSettings = () => {
-	const [board, setBoard] = useAtom(boardAtom);
+	const [board, setBoard] = useAtom(configµ.board);
 	return (
 		<>
 			<div>Board</div>

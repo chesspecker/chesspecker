@@ -1,11 +1,11 @@
 import {CogIcon} from '@heroicons/react/solid';
-import Modal from 'react-pure-modal';
 import {memo} from 'react';
 import AutoMoveSettings from './auto-move';
 import BoardSettings from './board';
 import PiecesSettings from './pieces';
 import SoundSettings from './sound';
 import useModal from '@/hooks/use-modal';
+import GenericModal from '@/components/modal';
 
 const Settings = () => {
 	const {isOpen, hide, toggle} = useModal(false);
@@ -13,20 +13,19 @@ const Settings = () => {
 		<>
 			<button
 				type='button'
-				className='cursor-pointer bg-transparent'
+				className='bg-transparent cursor-pointer'
 				onClick={toggle}
 			>
-				<CogIcon className='h-5 w-5' />
+				<CogIcon className='w-5 h-5' />
 			</button>
-
-			<Modal header='Settings' isOpen={isOpen} onClose={hide}>
-				<div className='grid grid-cols-2 items-center gap-3 text-sm'>
+			<GenericModal title='Settings' hide={hide} isOpen={isOpen}>
+				<div className='grid items-center grid-cols-2 gap-3 mt-5 text-sm'>
 					<SoundSettings />
 					<BoardSettings />
 					<PiecesSettings />
 					<AutoMoveSettings />
 				</div>
-			</Modal>
+			</GenericModal>
 		</>
 	);
 };

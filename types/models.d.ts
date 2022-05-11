@@ -13,7 +13,6 @@ export type AchivementsArgs = {
 	completionTime: number;
 	completionMistakes: number;
 	totalPuzzleSolved: number;
-	totalSetSolved: number;
 	themes: ThemeItem[];
 	streak: Streak;
 	isSponsor: boolean;
@@ -44,6 +43,7 @@ export interface PuzzleInterface extends Document {
 export interface AchievementItem {
 	id: AchievementInterface['id'];
 	claimed: boolean;
+	date: Date;
 }
 
 export interface UserInterface extends Document {
@@ -52,13 +52,12 @@ export interface UserInterface extends Document {
 	id: string;
 	lichessId: string;
 	username: string;
-	url: string;
 	isSponsor: boolean;
 	validatedAchievements: AchievementItem[];
 	totalPuzzleSolved: number;
 	totalSetCompleted: number;
-	streak: Streak;
 	totalTimePlayed: number;
+	streak: Streak;
 	puzzleSolvedByCategories: ThemeItem[];
 }
 
@@ -95,6 +94,6 @@ export interface PuzzleSetInterface extends Document {
 	currentTime: number;
 	times: number[];
 	rating: number;
-	progression: number;
+	progress: number;
 	level: Difficulty;
 }

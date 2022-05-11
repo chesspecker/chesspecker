@@ -1,49 +1,24 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
 import {GetServerSidePropsContext, Redirect} from 'next';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
-import {AchievementItem, AchivementsArgs, UserInterface} from '@/types/models';
+import {AchievementItem, UserInterface} from '@/types/models';
 import Modal from '@/components/modal-achievement';
-import {checkForAchievement} from '@/lib/achievements';
-import useEffectAsync from '@/hooks/use-effect-async';
 import {withSessionSsr} from '@/lib/session';
-import {formattedDate} from '@/lib/utils';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
 	const data = useUser();
 	const [user, setUser] = useState<UserInterface>();
-	const [achievementsList, setAchievementsList] = useState<AchievementItem[]>(
-		[],
-	);
+	const [achievementsList, setList] = useState<AchievementItem[]>([]);
 
-	const today = new Date();
-	const currentDate = formattedDate(today);
-
-	const body: AchivementsArgs = {
-		streakMistakes: 0,
-		streakTime: 0,
-		completionTime: 0,
-		completionMistakes: 0,
-		totalPuzzleSolved: 0,
-		themes: [],
-		totalSetSolved: 0,
-		// FIXME: incorrect type
-		streak: {
-			currentCount: 0,
-			startDate: currentDate, // 11/11/2019
-			lastLoginDate: currentDate, // 14/11/2019
-		},
-		isSponsor: user?.isSponsor,
-	};
-
-	useEffectAsync(async () => {
+	useEffect(() => {
 		if (!data) return;
-		setUser(data.user);
-		await checkForAchievement(body);
-	}, [data, body]);
+		setUser(() => data.user);
+	}, [data]);
 
 	useEffect(() => {
 		if (!user) return;
@@ -51,11 +26,10 @@ const DashbaordPage = () => {
 			achievement => !achievement.claimed,
 		);
 
-		setAchievementsList(() => list);
+		setList(() => list);
 		if (list.length > 0) setShowModal(() => true);
 	}, [user]);
 
-	// TODO: check achievements order
 	const updateValidatedAchievement = async (achievementId: string) => {
 		setShowModal(() => false);
 		await fetch(`/api/achievement`, {
@@ -64,27 +38,25 @@ const DashbaordPage = () => {
 		});
 		const list = achievementsList.filter(item => item.id !== achievementId);
 		if (list.length > 0) setShowModal(() => true);
-		setAchievementsList(() => list);
+		setList(() => list);
 	};
 
 	return (
 		<>
+			<NextSeo
+				title='ChessPecker | Dashboard'
+				description='Here are your sets'
+			/>
 			<Modal
 				showModal={showModal}
 				currentAchievementItem={achievementsList[0]}
 				handleClick={updateValidatedAchievement}
 			/>
-			<div className=' flex min-h-screen flex-col items-center  justify-center pb-20 pt-24 text-slate-800'>
-				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-merriweather text-3xl font-bold text-white sm:text-4xl md:text-5xl'>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>
-				<p className='text-md w-11/12 text-gray-100 sm:text-2xl '>
-					Solve the same puzzles again and again, only faster. It’s not a lazy
-					shortcut to success – hard work is required. But the reward can be
-					re-programming your unconscious mind. Benefits include sharper
-					tactical vision, fewer blunders, better play when in time trouble and
-					improved intuition.
-				</p>
+
 				<PuzzleSetMap />
 			</div>
 		</>
