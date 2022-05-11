@@ -1,12 +1,12 @@
 type Props = {title: string; progress: number};
 const ProgressBar = ({title, progress}: Props) => {
 	return (
-		<>
-			<div className='flex justify-between mb-1'>
-				<span className='text-base font-medium text-sky-700 dark:text-white'>
+		<div className='flex flex-col w-full items-center '>
+			<div className='flex justify-between mb-1 flex-col'>
+				<span className='text-base font-medium text-slate-800 dark:text-white'>
 					{title}
 				</span>
-				<span className='text-sm font-medium text-sky-700 dark:text-white'>
+				<span className='text-sm font-medium text-slate-800 dark:text-white'>
 					{progress}%
 				</span>
 			</div>
@@ -16,7 +16,7 @@ const ProgressBar = ({title, progress}: Props) => {
 					style={{width: `${progress}%`}}
 				/>
 			</div>
-		</>
+		</div>
 	);
 };
 
