@@ -28,6 +28,7 @@ const Modal = ({
 		setAchievement(() => array);
 	}, [currentAchievementItem]);
 
+	if (!achievement) return null;
 	return (
 		<Transition
 			as={Fragment}

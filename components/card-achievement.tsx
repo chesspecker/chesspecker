@@ -1,9 +1,5 @@
 import Image from 'next/image';
 import {AchievementInterface} from '@/types/models';
-import {ImageLoaderProps} from 'next/image';
-
-const myLoader = ({src, width, quality}: ImageLoaderProps) =>
-	`${window.location.origin}/${src}?w=${width}&q=${quality || 75}`;
 
 const Card = ({
 	achievement,
@@ -23,7 +19,6 @@ const Card = ({
 			)}
 			<div className='relative flex items-center justify-center w-full bg-white rounded-lg h-1/2 dark:bg-sky-700'>
 				<Image
-					loader={myLoader}
 					src={achievement.image}
 					layout='fill'
 					objectFit='contain'
