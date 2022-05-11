@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-array-reduce */
 /* eslint-disable unicorn/no-array-callback-reference */
 import {GetServerSideProps} from 'next';
-import {ReactElement, useEffect, useState} from 'react';
+import {ReactElement, useCallback, useEffect, useState} from 'react';
 import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
@@ -131,36 +131,25 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	const [progressStats, setProgressStats] = useState<ViewData[]>([]);
 	const [currentRunStats, setCurrentRunStats] = useState<ViewData[]>([]);
 	const [setTitle, setSetTitle] = useState<string>();
-
 	const router = useRouter();
 	const {isOpen, hide, toggle} = useModal(false);
 
 	useEffect(() => {
 		if (!set) return;
-		const overviewStats: ViewData[] = getOverviewStats(set);
-		setOverviewStats(() => overviewStats);
-
-		const globalProgressStats: ViewData[] = getProgressStats(set);
-		setProgressStats(() => globalProgressStats);
-
-		const currentRunStats: ViewData[] = getCurrentRunStats(set);
-		setCurrentRunStats(() => currentRunStats);
-
 		setSetTitle(set.title);
+		setOverviewStats(() => getOverviewStats(set));
+		setProgressStats(() => getProgressStats(set));
+		setCurrentRunStats(() => getCurrentRunStats(set));
 	}, [set]);
 
-	const onChangeName = async () => {
-		const body = {
-			$set: {
-				title: setTitle,
-			},
-		};
+	const onChangeName = useCallback(async () => {
+		const body = {$set: {title: setTitle}};
 		await fetch(`/api/set/${set._id.toString()}`, {
 			method: 'PUT',
 			body: JSON.stringify(body),
 		}).catch(console.error);
 		router.reload();
-	};
+	}, [setTitle, router, set]);
 
 	if (!set || !set.puzzles) return null;
 	return (

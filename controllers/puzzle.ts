@@ -1,3 +1,4 @@
+import {UpdateQuery} from 'mongoose';
 import Puzzle from '@/models/puzzle-model';
 import PuzzleSet from '@/models/puzzle-set-model';
 import type {
@@ -18,7 +19,10 @@ export const retrieve = async (id: string): Promise<PuzzleInterface> =>
 
 export const update = async (
 	puzzleId: PuzzleItemInterface['_id'],
-	body: {_id: PuzzleItemInterface; update: Partial<PuzzleItemInterface>},
+	body: {
+		_id: PuzzleItemInterface;
+		update: UpdateQuery<Partial<PuzzleItemInterface>>;
+	},
 ): Promise<PuzzleItemInterface> =>
 	PuzzleSet.findOneAndUpdate(
 		{_id: body._id, 'puzzles._id': puzzleId},
