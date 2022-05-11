@@ -61,9 +61,7 @@ const getActivatedUpdate = (puzzleSet: PuzzleSetInterface) => {
  */
 export const updateSpacedRepetition = async (
 	set: PuzzleSetInterface,
-	showSpacedOff = () => {
-		('');
-	},
+	showSpacedOff = () => null,
 ) => {
 	const areAllPerfect = set.puzzles
 		.map(puzzle => puzzle.grades[puzzle.grades.length - 1])
@@ -72,7 +70,8 @@ export const updateSpacedRepetition = async (
 
 	if (areAllPerfect) {
 		const update = getTerminatedUpdate();
-		update.$set.cycles = set.cycles + 1;
+		// eslint-disable-next-line @typescript-eslint/dot-notation
+		update['$inc'].cycles = 1;
 		await update_.set(set._id.toString(), update).catch(console.error);
 		showSpacedOff();
 		return;
