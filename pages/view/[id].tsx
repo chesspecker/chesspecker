@@ -17,7 +17,11 @@ import {
 import EditModal from '@/components/view/edit-modal';
 import SpacedModal from '@/components/play/modal-spaced-on';
 import useModal from '@/hooks/use-modal';
-import {activateSpacedRepetion} from '@/lib/spaced-repetition';
+import {
+	activateSpacedRepetion,
+	turnOffSpacedRepetition,
+} from '@/lib/spaced-repetition';
+import ModalSpacedOff from '@/components/play/modal-spaced-off';
 
 const reducer = (accumulator: number, current: number) => accumulator + current;
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
@@ -167,17 +171,29 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						onValidate={onChangeName}
 					/>
 				</div>
-				<SpacedModal
-					isOpen={isOpen}
-					hide={hide}
-					onClick={async () => {
-						await activateSpacedRepetion(set);
-						hide();
-						router.reload();
-					}}
-				/>
+				{set.spacedRepetition ? (
+					<ModalSpacedOff
+						isOpen={isOpen}
+						hide={hide}
+						onClick={async () => {
+							await turnOffSpacedRepetition(set);
+							hide();
+							router.reload();
+						}}
+					/>
+				) : (
+					<SpacedModal
+						isOpen={isOpen}
+						hide={hide}
+						onClick={async () => {
+							await activateSpacedRepetion(set);
+							hide();
+							router.reload();
+						}}
+					/>
+				)}
 				<p
-					className='p-4 mb-6 rounded-lg cursor-pointer no-wrap w-fit hover:bg-gray-100'
+					className='p-4 mb-6 rounded-lg cursor-pointer no-wrap w-fit hover:dark:text-sky-700 hover:bg-gray-100'
 					onClick={() => {
 						toggle();
 					}}
