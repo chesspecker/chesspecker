@@ -50,7 +50,6 @@ export interface UserInterface extends Document {
 	_id: Types.ObjectId;
 	stripeId: string;
 	id: string;
-	lichessId: string;
 	username: string;
 	isSponsor: boolean;
 	validatedAchievements: AchievementItem[];

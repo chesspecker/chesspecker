@@ -10,8 +10,8 @@ import type {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
 import Router from 'next/router';
 import {DefaultSeo} from 'next-seo';
-import Loader from '@/components/loader';
 import PlausibleProvider from 'next-plausible';
+import Loader from '@/components/loader';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;

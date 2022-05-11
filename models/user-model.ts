@@ -3,7 +3,6 @@ import {UserInterface} from '@/types/models';
 
 const schema = new Schema<UserInterface>({
 	id: String,
-	lichessId: String,
 	stripeId: String,
 	username: String,
 	isSponsor: Boolean,
