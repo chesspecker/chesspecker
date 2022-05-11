@@ -1,4 +1,4 @@
-import {cloneElement, Fragment, useState} from 'react';
+import {cloneElement, useState} from 'react';
 import {
 	Placement,
 	offset,
@@ -12,7 +12,6 @@ import {
 	useRole,
 	useDismiss,
 } from '@floating-ui/react-dom-interactions';
-import {Transition} from '@headlessui/react';
 
 interface Props {
 	label: string;

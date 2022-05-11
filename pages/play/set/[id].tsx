@@ -108,16 +108,11 @@ const PlayingPage = ({set}: Props) => {
 		const today = new Date();
 		const currentDate = formattedDate(today);
 
-		console.log('previousStreak', previousStreak);
-
 		// Check if we should increment or reset
 		const {shouldIncrement, shouldReset} = shouldInrementOrResetStreakCount(
 			currentDate,
 			previousStreak.lastLoginDate,
 		);
-
-		console.log('shouldIncrement', shouldIncrement);
-		console.log('shouldReset', shouldReset);
 
 		let updatedStreak: Streak = previousStreak;
 		if (shouldReset) updatedStreak = resetStreakCount(currentDate);
@@ -130,15 +125,12 @@ const PlayingPage = ({set}: Props) => {
 				},
 			});
 
-		console.log('updating streak', updatedStreak);
 		setStreak(() => updatedStreak);
 	}, [previousStreak, id]);
 
 	useEffect(() => {
 		if (!userData) return;
 		if (!userData.success) return;
-
-		console.log('update user', userData.user);
 
 		setUser(() => userData.user);
 		setId(() => userData.user._id.toString());
@@ -243,7 +235,6 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
-		console.log('updateFinishedPuzzle', streak);
 		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
