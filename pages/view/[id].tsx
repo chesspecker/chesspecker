@@ -22,6 +22,7 @@ import {
 	turnOffSpacedRepetition,
 } from '@/lib/spaced-repetition';
 import ModalSpacedOff from '@/components/play/modal-spaced-off';
+import {Tooltip} from '@/components/tooltip';
 
 const reducer = (accumulator: number, current: number) => accumulator + current;
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
@@ -33,27 +34,31 @@ const Block = ({
 	change,
 	Icon,
 	hasChange,
+	tooltip,
 }: ViewData): JSX.Element => {
 	if (!hasChange)
 		return (
-			<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
-				<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
-					{title}
-				</h3>
-				<div className='flex items-center justify-center w-full h-full'>
-					{Icon && (
-						<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
-							<Icon
-								className='w-6 h-6 text-sky-700 dark:text-white'
-								aria-hidden='true'
-							/>
-						</div>
-					)}
-					<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
-						{stat}
-					</p>
+			<Tooltip label={tooltip}>
+				<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
+					<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
+						{title}
+					</h3>
+
+					<div className='flex items-center justify-center w-full h-full'>
+						{Icon && (
+							<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
+								<Icon
+									className='w-6 h-6 text-sky-700 dark:text-white'
+									aria-hidden='true'
+								/>
+							</div>
+						)}
+						<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
+							{stat}
+						</p>
+					</div>
 				</div>
-			</div>
+			</Tooltip>
 		);
 
 	return (
@@ -192,21 +197,30 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 						}}
 					/>
 				)}
-				<p
-					className='p-4 mb-6 rounded-lg cursor-pointer no-wrap w-fit hover:dark:text-sky-700 hover:bg-gray-100'
-					onClick={() => {
-						toggle();
-					}}
+
+				<button
+					className={`p-4 mb-6 rounded-lg  cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:text-slate-200 hover:dark:text-sky-700  hover:bg-gray-100`}
+					disabled={set.cycles < 1}
 				>
-					Spaced-repetition:
-					<span
-						className={`${
-							set.spacedRepetition ? 'bg-green-500' : 'bg-red-500'
-						} text-white py-2 px-4 rounded-full ml-3`}
+					<p
+						onClick={() => {
+							toggle();
+						}}
 					>
-						{set.spacedRepetition ? 'on' : 'off'}
-					</span>
-				</p>
+						Spaced-repetition:
+						<span
+							className={`${
+								set.cycles < 1
+									? 'bg-slate-600'
+									: set.spacedRepetition
+									? 'bg-green-500'
+									: 'bg-red-500'
+							} text-white py-2 px-4 rounded-full ml-3`}
+						>
+							{set.spacedRepetition ? 'on' : 'off'}
+						</span>
+					</p>
+				</button>
 			</div>
 
 			{set?.cycles >= 1 && (

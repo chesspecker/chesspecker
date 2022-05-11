@@ -30,6 +30,7 @@
 		}
 	},
 	"dependencies": {
+		"@floating-ui/react-dom-interactions": "^0.5.0",
 		"@headlessui/react": "^1.5.0",
 		"@heroicons/react": "^1.0.5",
 		"@stripe/stripe-js": "^1.23.0",

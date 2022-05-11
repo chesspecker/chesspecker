@@ -19,6 +19,7 @@ export type ViewData = {
 	change?: string;
 	type?: 'up' | 'down';
 	hasChange: boolean;
+	tooltip: string;
 };
 
 const INFINITY = Number.POSITIVE_INFINITY;
@@ -61,12 +62,19 @@ const totalCycles = (set: PuzzleSetInterface): ViewData => ({
 	stat: <span>{set?.cycles}</span>,
 	hasChange: false,
 	Icon: FireIcon,
+	tooltip: '???????????????????????',
 });
 
 const totalAverageGrade = (set: PuzzleSetInterface): ViewData => {
 	const average = getAverageGrade(set);
 	const stat = parseGrade[average];
-	return {title: 'Average grade', stat, hasChange: false, Icon: LibraryIcon};
+	return {
+		title: 'Average grade',
+		stat,
+		hasChange: false,
+		Icon: LibraryIcon,
+		tooltip: '???????????????????????',
+	};
 };
 
 const totalTimeSpent = (set: PuzzleSetInterface): ViewData => {
@@ -78,6 +86,7 @@ const totalTimeSpent = (set: PuzzleSetInterface): ViewData => {
 		stat,
 		hasChange: false,
 		Icon: ClockIcon,
+		tooltip: '???????????????????????',
 	};
 };
 
@@ -88,6 +97,7 @@ const time = {
 			stat: '/',
 			hasChange: false,
 			Icon: LightningBoltIcon,
+			tooltip: '???????????????????????',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -114,6 +124,7 @@ const time = {
 			stat: '/',
 			hasChange: false,
 			Icon: LightningBoltIcon,
+			tooltip: '???????????????????????',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -146,6 +157,7 @@ const grade = {
 			stat: '/',
 			hasChange: false,
 			Icon: AcademicCapIcon,
+			tooltip: '???????????????????????',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -177,6 +189,7 @@ const grade = {
 			stat: '/',
 			hasChange: false,
 			Icon: AcademicCapIcon,
+			tooltip: '???????????????????????',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -213,6 +226,7 @@ const currentProgress = (set: PuzzleSetInterface): ViewData => {
 		title: 'Current progress',
 		stat: `${completedPuzzles}/${totalPuzzles} • ${percentage}%`,
 		hasChange: false,
+		tooltip: '???????????????????????',
 	};
 };
 
@@ -220,6 +234,7 @@ const currentTime = (set: PuzzleSetInterface): ViewData => ({
 	title: 'Current time',
 	stat: <ParseTime time={set.currentTime} />,
 	hasChange: false,
+	tooltip: '???????????????????????',
 });
 
 const currentGrade = (set: PuzzleSetInterface): ViewData => {
@@ -232,6 +247,7 @@ const currentGrade = (set: PuzzleSetInterface): ViewData => {
 		title: 'Current grade',
 		stat: parseGrade[averageLast],
 		hasChange: false,
+		tooltip: '???????????????????????',
 	};
 };
 
