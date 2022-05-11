@@ -52,7 +52,7 @@ const PlayingPage = ({set}: Props) => {
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
 	const [, setTotalPuzzles] = useAtom(playµ.totalPuzzles);
 	const [isComplete, setIsComplete] = useAtom(playµ.isComplete);
-	const [, setCompletedPuzzles] = useAtom(playµ.completed);
+	const [completedPuzzles, setCompletedPuzzles] = useAtom(playµ.completed);
 
 	const [orientation, setOrientation] = useAtom(orientationµ);
 	const [, setAnimation] = useAtom(animationµ);
@@ -427,15 +427,13 @@ const PlayingPage = ({set}: Props) => {
 	);
 
 	const checkChunkComplete = useCallback(async (): Promise<boolean> => {
-		const playedPuzzles = set.puzzles.filter(p => p.played);
-		const isChunkComplete = playedPuzzles.length > 20 || puzzleIndex > 20;
-		// TODO:	puzzle._id.toString() === puzzleList[20]._id.toString();
-
+		const isChunkComplete = completedPuzzles + 1 >= 20;
 		if (!set.spacedRepetition || !isChunkComplete) return false;
 		await updateSpacedRepetition(set, showSpacedOff);
+		router.reload();
 		return true;
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [puzzle, puzzleIndex, set]);
+	}, [completedPuzzles, set]);
 
 	/**
 	 * Called after each correct move.
@@ -639,6 +637,7 @@ const PlayingPage = ({set}: Props) => {
 						<BottomBar puzzles={previousPuzzle} />
 					</div>
 					<RightBar
+						hasSpacedRepetition={set.spacedRepetition}
 						answer={moveHistory[moveNumber]}
 						changePuzzle={changePuzzle}
 						launchTimer={launchTimer}

@@ -203,7 +203,10 @@ const grade = {
 };
 
 const currentProgress = (set: PuzzleSetInterface): ViewData => {
-	const completedPuzzles = set.puzzles.filter(puzzle => puzzle.played).length;
+	const completedPuzzlesArr = set.spacedRepetition
+		? set.puzzles.filter(puzzle => puzzle.grades[puzzle.grades.length - 1] >= 5)
+		: set.puzzles.filter(puzzle => puzzle.played);
+	const completedPuzzles = completedPuzzlesArr.length;
 	const totalPuzzles = set.puzzles.length;
 	const percentage = ((completedPuzzles / totalPuzzles) * 100).toFixed(2);
 	return {

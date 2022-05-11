@@ -4,15 +4,21 @@ import Solution from './solution';
 
 type Props = {
 	answer: string;
+	hasSpacedRepetition: boolean;
 	changePuzzle: () => void;
 	launchTimer: () => void;
 };
 
-const RightBar = ({answer, changePuzzle, launchTimer}: Props) => {
+const RightBar = ({
+	answer,
+	changePuzzle,
+	launchTimer,
+	hasSpacedRepetition,
+}: Props) => {
 	return (
 		<div className='flex flex-row justify-center w-5/6 md:w-fit md:flex-col'>
 			<div className='mt-2'>
-				<Progress />
+				<Progress hasSpacedRepetition={hasSpacedRepetition} />
 			</div>
 			<div className='mt-2'>
 				<Solution answer={answer} />
