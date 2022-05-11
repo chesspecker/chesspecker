@@ -1,7 +1,5 @@
-import {uptime} from 'process';
 import {NextApiRequest, NextApiResponse} from 'next';
-
-export type ResponseData = {uptime: number; message: string; timestamp: number};
+import withMongoRoute from 'providers/mongoose';
 
 // prettier-ignore
 const updateUser = [
@@ -15,7 +13,9 @@ const updateUser = [
       'isSponsor': false, 
       'validatedAchievements': [], 
       'puzzleSolvedByCategories': [], 
-      'totalPuzzleSolved': 0, 
+      'totalPuzzleSolved': 0,
+      'totalTimePlayed': 0,
+      'totalPuzzleCompleted': 0,
       'streak': {
         'currentCount': 0, 
         'startDate': '11/05/2022', 
@@ -25,6 +25,7 @@ const updateUser = [
   }
 ]
 
+// prettier-ignore
 const updatePuzzleSet =[
   {
     '$unset': [
@@ -40,16 +41,11 @@ const updatePuzzleSet =[
   }
 ]
 
-const healthcheckRoute = (
+const migrationRoute = (
 	_request: NextApiRequest,
-	response: NextApiResponse<ResponseData>,
+	response: NextApiResponse,
 ) => {
-	const healthcheck = {
-		uptime: uptime(),
-		message: 'OK',
-		timestamp: Date.now(),
-	};
-	response.send(healthcheck);
+	response.send({updatePuzzleSet, updateUser});
 };
 
-export default healthcheckRoute;
+export default withMongoRoute(migrationRoute);

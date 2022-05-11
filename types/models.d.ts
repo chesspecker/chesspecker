@@ -55,6 +55,8 @@ export interface UserInterface extends Document {
 	isSponsor: boolean;
 	validatedAchievements: AchievementItem[];
 	totalPuzzleSolved: number;
+	totalSetCompleted: number;
+	totalTimePlayed: number;
 	streak: Streak;
 	puzzleSolvedByCategories: ThemeItem[];
 }

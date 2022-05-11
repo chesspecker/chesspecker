@@ -200,7 +200,6 @@ export const achievements: AchievementInterface[] = [
 		id: 'revenant',
 		name: 'Revenant',
 		description: 'Come back after a month of inactivity',
-		// TODO: test, not sure if it works
 		isValidated: (args: AchivementsArgs) =>
 			Date.now() - new Date(args.streak.lastLoginDate).getTime() >
 			ONE_MONTH_IN_MS,

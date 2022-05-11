@@ -15,6 +15,8 @@ const schema = new Schema<UserInterface>({
 		},
 	],
 	totalPuzzleSolved: Number,
+	totalSetCompleted: Number,
+	totalTimePlayed: Number,
 	streak: {
 		currentCount: Number,
 		startDate: String, // 11/11/2019

@@ -39,6 +39,7 @@ export type UpdateUser =
 	| {
 			$inc: {
 				totalPuzzleSolved: number;
+				totalTimePlayed: number;
 				puzzleSolvedByCategories?: Record<number, ThemeItem>;
 			};
 	  }

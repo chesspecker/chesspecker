@@ -267,7 +267,9 @@ const PlayingPage = ({set}: Props) => {
 
 		// Is there some puzzles in common in the old and new themes?
 		const themesInCommon = userThemes.filter(t => newThemes.includes(t.title));
-		const incrementUser: UpdateUser = {$inc: {totalPuzzleSolved: 1}};
+		const incrementUser: UpdateUser = {
+			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeWithoutMistakes},
+		};
 
 		// If there are, we update the user's themes
 		if (themesInCommon.length > 0)
@@ -387,6 +389,7 @@ const PlayingPage = ({set}: Props) => {
 		const update = {
 			$inc: {
 				cycles: 1,
+				totalSetCompleted: 1,
 			},
 			$push: {
 				times: formattedTime,
