@@ -13,9 +13,9 @@ const updateUser = [
       'isSponsor': false, 
       'validatedAchievements': [], 
       'puzzleSolvedByCategories': [], 
-      'totalPuzzleSolved': 0,
-      'totalTimePlayed': 0,
-      'totalPuzzleCompleted': 0,
+      'totalPuzzleSolved': 0, 
+      'totalSetCompleted': 0, 
+      'totalTimePlayed': 0, 
       'streak': {
         'currentCount': 0, 
         'startDate': '11/05/2022', 
@@ -26,17 +26,22 @@ const updateUser = [
 ]
 
 // prettier-ignore
-const updatePuzzleSet =[
+const updatePuzzleSet = [
   {
     '$unset': [
-      'chunkLength', 'bestTime', 'totalMistakes', 'totalPuzzlesPlayed', 'accuracy'
+      'chunkLength', 'bestTime', 'totalMistakes', 'totalPuzzlesPlayed', 'accuracy', 'puzzles.grade', 'puzzles.mistakes', 'puzzles.timeTaken', 'puzzles.interval', 'puzzles.repetition', 'puzzles.easinessFactor'
     ]
   }, {
     '$set': {
       'times': [], 
       'cycles': 0, 
       'currentTime': 0, 
-      'progress': 0
+      'progress': 0, 
+      'puzzles.mistakes': [], 
+      'puzzles.grades': [], 
+      'puzzles.timeTaken': [], 
+      'puzzles.count': 0, 
+      'puzzles.streak': 0
     }
   }
 ]
