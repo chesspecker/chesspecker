@@ -17,7 +17,7 @@ const ModalSpacedEnd = ({isOpen = false, hide}: Props) => {
 		>
 			<div className='w-full mt-2'>
 				<p className='text-sm text-gray-500'>
-					Congrats you finished this set with spaced repetition mode. <br />
+					Congrats you finished this set with spaced repetition mode.
 				</p>
 			</div>
 			<div className='mt-4'>

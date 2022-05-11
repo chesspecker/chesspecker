@@ -38,11 +38,11 @@ const ModalSpacedOn = ({onClick, isOpen = false, hide}: Props) => {
 			isOpen={isOpen}
 		>
 			<div className='w-full mt-2'>
-				<p className='text-sm text-gray-500'>
-					Congrats on finishing the first step of your journey. <br />
-					You can now choose to activate the spaced-repetition mode for this
-					set. Instead of playing every puzzle, you will be facing the puzzle
-					you had difficulties with.
+				<p className='text-sm text-gray-500 leading-5'>
+					Congrats on finishing the first step of your journey. You can now
+					choose to activate the spaced-repetition mode for this set. Instead of
+					playing every puzzle, you will be facing the puzzle you had
+					difficulties with.
 				</p>
 			</div>
 			<div className='mt-4'>
