@@ -37,6 +37,16 @@ export const Tooltip = ({children, label, placement = 'top'}: Props) => {
 		useDismiss(context),
 	]);
 
+	if (!label)
+		return (
+			<>
+				{cloneElement(
+					children,
+					getReferenceProps({ref: reference, ...children.props}),
+				)}
+			</>
+		);
+
 	return (
 		<>
 			{cloneElement(
