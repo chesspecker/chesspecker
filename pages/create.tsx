@@ -2,6 +2,7 @@ import {useAtom} from 'jotai';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
 import {ArrowRightIcon} from '@heroicons/react/solid';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import CATEGORIES from '@/data/categories';
@@ -10,7 +11,6 @@ import Choice from '@/components/choice';
 import {selectedAtom} from '@/lib/atoms';
 import type {Category} from '@/data/categories';
 import type {Theme} from '@/data/themes';
-import {NextSeo} from 'next-seo';
 
 const CreatePage = () => {
 	const router = useRouter();

@@ -1,10 +1,10 @@
 import type {ReactElement} from 'react';
 import Image from 'next/image.js';
 import {GetServerSidePropsContext, Redirect} from 'next';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
-import {NextSeo} from 'next-seo';
 
 const IndexPage = () => (
 	<>

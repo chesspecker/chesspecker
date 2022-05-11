@@ -1,6 +1,7 @@
 import {ReactElement, useState, useEffect} from 'react';
 import Stripe from 'stripe';
 import {useRouter} from 'next/router';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button, ButtonLink} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
@@ -9,7 +10,6 @@ import useUser from '@/hooks/use-user';
 import {AchivementsArgs, UserInterface} from '@/types/models';
 import {checkForAchievement} from '@/lib/achievements';
 import {formattedDate} from '@/lib/utils';
-import {NextSeo} from 'next-seo';
 
 const SuccessPage = () => {
 	const router = useRouter();

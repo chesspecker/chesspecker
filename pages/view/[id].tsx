@@ -5,6 +5,7 @@ import {ReactElement, useCallback, useEffect, useState} from 'react';
 import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
+import {NextSeo} from 'next-seo';
 import type {Data as SetData} from '@/api/set/[id]';
 import Layout from '@/layouts/main';
 import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
@@ -23,7 +24,6 @@ import {
 } from '@/lib/spaced-repetition';
 import ModalSpacedOff from '@/components/play/modal-spaced-off';
 import {Tooltip} from '@/components/tooltip';
-import {NextSeo} from 'next-seo';
 
 const reducer = (accumulator: number, current: number) => accumulator + current;
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');

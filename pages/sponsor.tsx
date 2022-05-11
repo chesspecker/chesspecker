@@ -4,6 +4,7 @@ import type {ReactElement} from 'react';
 import {useEffect, useState} from 'react';
 import Modal from 'react-pure-modal';
 import {useRouter} from 'next/router';
+import {NextSeo} from 'next-seo';
 import type {Data as SubscriptionData} from '@/api/subscription/[id]';
 import type {SubBody, Data as SessionData} from '@/api/subscription/index';
 import useModal from '@/hooks/use-modal';
@@ -13,7 +14,6 @@ import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
 import type {UserInterface} from '@/types/models';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {NextSeo} from 'next-seo';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {

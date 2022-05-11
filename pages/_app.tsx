@@ -4,14 +4,13 @@ import '@/styles/cg-base.css';
 import '@/styles/cg-chess.css';
 import '@/styles/cg-board.css';
 import '@/styles/cg-pieces.css';
-import Head from 'next/head';
 import {ReactElement, ReactNode, useState} from 'react';
 import type {NextPage} from 'next';
 import type {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
 import Router from 'next/router';
-import Loader from '@/components/loader';
 import {DefaultSeo} from 'next-seo';
+import Loader from '@/components/loader';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;

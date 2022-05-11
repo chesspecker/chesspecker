@@ -1,11 +1,11 @@
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/login';
 import {Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useUser from '@/hooks/use-user';
 import audio from '@/lib/sound';
-import {NextSeo} from 'next-seo';
 
 const IndexPage = () => {
 	const router = useRouter();

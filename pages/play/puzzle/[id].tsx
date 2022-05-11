@@ -5,6 +5,7 @@ import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
+import {NextSeo} from 'next-seo';
 import {PuzzleInterface} from '@/types/models';
 import Layout from '@/layouts/main';
 import audio from '@/lib/sound';
@@ -21,7 +22,6 @@ import Solution from '@/components/play/right-bar/solution';
 import MoveToNext from '@/components/play/right-bar/move-to-next';
 import ModalPuzzle from '@/components/modal-puzzle';
 import type {Stat} from '@/components/modal-puzzle';
-import {NextSeo} from 'next-seo';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');

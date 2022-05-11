@@ -1,13 +1,13 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
 import {GetServerSidePropsContext, Redirect} from 'next';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
 import {AchievementItem, UserInterface} from '@/types/models';
 import Modal from '@/components/modal-achievement';
 import {withSessionSsr} from '@/lib/session';
-import {NextSeo} from 'next-seo';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);

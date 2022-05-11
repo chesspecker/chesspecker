@@ -6,6 +6,7 @@ import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import useSWR from 'swr';
+import {NextSeo} from 'next-seo';
 import {
 	PuzzleInterface,
 	PuzzleItemInterface,
@@ -44,7 +45,6 @@ import {
 	shouldInrementOrResetStreakCount,
 	updateStreak,
 } from '@/lib/streak';
-import {NextSeo} from 'next-seo';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');

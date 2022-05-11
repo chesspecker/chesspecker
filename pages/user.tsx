@@ -1,12 +1,12 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
+import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/main';
 import {ButtonLink} from '@/components/button';
 import Card from '@/components/card-achievement';
 import {achievements} from '@/data/achievements';
 import type {AchievementInterface, UserInterface} from '@/types/models';
 import useUser from '@/hooks/use-user';
-import {NextSeo} from 'next-seo';
 
 const User = () => {
 	const data = useUser();

@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
 import Image from 'next/image';
+import {NextSeo} from 'next-seo';
 import {optionsµ, ratingAtom} from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
@@ -14,7 +15,6 @@ import Alert from '@/components/alert';
 import {Options} from '@/controllers/set-create';
 import type {Difficulty} from '@/types/models';
 import loading from '@/public/images/spinner.svg';
-import {NextSeo} from 'next-seo';
 
 const OptionsPage = () => {
 	const router = useRouter();
