@@ -27,10 +27,7 @@ const CreatePage = () => {
 
 	return (
 		<>
-			<NextSeo
-				title='Chesspecker | Create a set'
-				description="Start improving your chess skills today with chesspecker's training."
-			/>
+			<NextSeo title='♟ Create' />
 			<div className='flex flex-col items-center justify-center pt-32 pb-24'>
 				<h2 className='text-xl font-bold sm:text-3xl'>
 					Select one or more category to create your set!

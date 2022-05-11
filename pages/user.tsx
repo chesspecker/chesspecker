@@ -34,10 +34,7 @@ const User = () => {
 	if (isLoading) return null;
 	return (
 		<>
-			<NextSeo
-				title='Chesspecker | Profile'
-				description="Start improving your chess skills today with chesspecker's training."
-			/>
+			<NextSeo title='♟ Profile' />
 			<div className='flex flex-col w-screen min-h-screen px-10 pt-32 pb-24'>
 				<div className='flex flex-wrap items-center'>
 					<p className='mr-5 text-6xl'>{user.username}</p>

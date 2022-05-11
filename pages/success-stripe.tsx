@@ -67,10 +67,7 @@ const SuccessPage = () => {
 
 	return (
 		<>
-			<NextSeo
-				title='Chesspecker | Success-sponsor'
-				description="Start improving your chess skills today with chesspecker's training."
-			/>
+			<NextSeo title='🎉 Success' />
 			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20'>
 				{useConffeti()}
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>

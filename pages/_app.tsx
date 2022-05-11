@@ -43,6 +43,12 @@ const CustomApp = ({
 					url: 'https://www.chesspecker.com/',
 					site_name: 'Chesspecker',
 				}}
+				titleTemplate='%s | Chesspecker'
+				description='Start improving your chess skills today with chesspecker’s training.'
+				additionalMetaTags={[
+					{name: 'robots', content: 'index, follow'},
+					{name: 'viewport', content: 'initial-scale=1.0, width=device-width'},
+				]}
 			/>
 
 			<SWRConfig>

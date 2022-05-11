@@ -362,10 +362,7 @@ const PlayingPage = ({puzzle}: Props) => {
 
 	return (
 		<>
-			<NextSeo
-				title='Chesspecker | Play'
-				description="Start improving your chess skills today with chesspecker's training."
-			/>
+			<NextSeo title='⚔️ Play' />
 			<ModalPuzzle
 				stat={stat}
 				showModal={showModal}

@@ -650,10 +650,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
-			<NextSeo
-				title='Chesspecker | Play'
-				description="Start improving your chess skills today with chesspecker's training."
-			/>
+			<NextSeo title='⚔️ Play' />
 			<ModalSpacedEnd isOpen={isOpenSpacedOff} hide={hideSpacedOff} />
 			<ModalSpacedOn
 				isOpen={isOpenSpacedOn}

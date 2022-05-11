@@ -155,10 +155,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
 		<>
-			<NextSeo
-				title='Chesspecker | Review'
-				description="Start improving your chess skills today with chesspecker's training."
-			/>
+			<NextSeo title='♟ Review' />
 			<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
 				<div>
 					<div className='flex items-center'>
