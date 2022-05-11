@@ -43,10 +43,7 @@ const DashbaordPage = () => {
 
 	return (
 		<>
-			<NextSeo
-				title='ChessPecker | Dashboard'
-				description='Here are your sets'
-			/>
+			<NextSeo title='♟ Dashboard' />
 			<Modal
 				showModal={showModal}
 				currentAchievementItem={achievementsList[0]}

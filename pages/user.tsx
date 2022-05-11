@@ -34,13 +34,10 @@ const User = () => {
 	if (isLoading) return null;
 	return (
 		<>
-			<NextSeo
-				title='ChessPecker | Profil'
-				description='ChessPecker super profil'
-			/>
-			<div className='flex flex-col w-screen min-h-screen px-10 pt-32 pb-24 '>
+			<NextSeo title='♟ Profile' />
+			<div className='flex flex-col w-screen min-h-screen px-10 pt-32 pb-24'>
 				<div className='flex flex-wrap items-center'>
-					<p className='mr-5 text-6xl '>{user.username}</p>
+					<p className='mr-5 text-6xl'>{user.username}</p>
 					{user?.isSponsor ? (
 						<>
 							<p className='mr-2'>Official Sponsor</p>
@@ -57,13 +54,13 @@ const User = () => {
 					</div>
 				</div>
 
-				<div className=' m-2 mt-6 min-h-[5rem]   p-2'>
-					<p className='text-xl '>My badges</p>
+				<div className='m-2 mt-6 min-h-[5rem] p-2'>
+					<p className='text-xl'>My badges</p>
 					<div className='flex items-center justify-center w-full'>
 						<div className='flex items-center justify-center w-full max-w-screen-xl'>
 							<div className='flex flex-wrap items-center justify-center w-full'>
 								{achievementsList.length === 0 && (
-									<p className='text-center '>
+									<p className='text-center'>
 										You don&apos;t have any achievement yet
 									</p>
 								)}

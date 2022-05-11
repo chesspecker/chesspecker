@@ -14,18 +14,16 @@ const Document = () => {
 				<meta property='og:title' content='Chesspecker' />
 				<meta
 					property='og:description'
-					content='Application to practice chess with the woodpecker method! Puzzles are from Lichess!'
+					content='Start improving your chess skills today with chesspecker’s training.'
 				/>
 				<link rel='manifest' href='/manifest.json' />
 				<link rel='apple-touch-icon' href='/icon.png' />
 				<meta name='theme-color' content='#fff' />
 				<meta
 					name='description'
-					content='Application to practice chess with the woodpecker method! Puzzles are from Lichess!'
+					content='Start improving your chess skills today with chesspecker’s training.'
 				/>
 				<link rel='canonical' href='https://www.chesspecker.com/' />
-				<meta name='viewport' content='initial-scale=1.0, width=device-width' />
-				<meta name='robots' content='index, nofollow' />
 				{/* Favicon */}
 				<link
 					rel='apple-touch-icon'

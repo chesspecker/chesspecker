@@ -16,10 +16,7 @@ const IndexPage = () => {
 
 	return (
 		<>
-			<NextSeo
-				title='ChessPecker | Success'
-				description='Welcome to chessPecker website, the only app to practice woodpecker methode !'
-			/>
+			<NextSeo title='🎉 Success' />
 			<div className='flex flex-col items-center justify-center h-screen m-0 '>
 				{useConffeti()}
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>

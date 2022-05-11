@@ -650,10 +650,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
-			<NextSeo
-				title='ChessPecker | Play'
-				description='Play again and again and maybe one day you will exceed 900 Elo... big loser '
-			/>
+			<NextSeo title='⚔️ Play' />
 			<ModalSpacedEnd isOpen={isOpenSpacedOff} hide={hideSpacedOff} />
 			<ModalSpacedOn
 				isOpen={isOpenSpacedOn}

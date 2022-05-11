@@ -362,10 +362,7 @@ const PlayingPage = ({puzzle}: Props) => {
 
 	return (
 		<>
-			<NextSeo
-				title='ChessPecker | Play'
-				description='Play again and again and maybe one day you will exceed 900 Elo... big loser '
-			/>
+			<NextSeo title='⚔️ Play' />
 			<ModalPuzzle
 				stat={stat}
 				showModal={showModal}

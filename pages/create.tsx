@@ -27,10 +27,7 @@ const CreatePage = () => {
 
 	return (
 		<>
-			<NextSeo
-				title='ChessPecker | Create a set'
-				description='Page to create a set on chessPecker website'
-			/>
+			<NextSeo title='♟ Create' />
 			<div className='flex flex-col items-center justify-center pt-32 pb-24'>
 				<h2 className='text-xl font-bold sm:text-3xl'>
 					Select one or more category to create your set!

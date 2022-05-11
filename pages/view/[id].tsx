@@ -155,13 +155,10 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	if (!set || !set.puzzles) return null;
 	return (
 		<>
-			<NextSeo
-				title='ChessPecker | Statistic'
-				description='Analyze your performance and do better next time '
-			/>
+			<NextSeo title='♟ Review' />
 			<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
 				<div>
-					<div className='flex items-center '>
+					<div className='flex items-center'>
 						<h1 className='py-5 mt-8 mr-4 font-sans text-3xl font-bold md:text-5xl'>
 							{set.title}
 						</h1>
@@ -194,7 +191,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					)}
 
 					<button
-						className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 dark:text-sky-600 hover:bg-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-sky-600 bg-sky-700   dark:bg-gray-100 dark:hover:bg-gray-200'
+						className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 dark:text-sky-600 hover:bg-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-sky-600 bg-sky-700 dark:bg-gray-100 dark:hover:bg-gray-200'
 						disabled={set.cycles < 1 && !set.spacedRepetition}
 						type='button'
 						onClick={toggle}
