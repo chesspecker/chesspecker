@@ -31,7 +31,7 @@ export const config = {
 
 export const origin =
 	env.NODE_ENV === 'production'
-		? 'https://beta.chesspecker.com'
+		? 'https://www.chesspecker.com'
 		: `http://localhost:3000`;
 
 export const cookiePassword = env.SECRET_COOKIE_PASSWORD;
