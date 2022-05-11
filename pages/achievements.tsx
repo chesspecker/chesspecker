@@ -40,7 +40,7 @@ const Achievements = () => {
 	return (
 		<>
 			<NextSeo
-				title='Achievements'
+				title='ChessPecker | Achievements'
 				description='List of all achievements avalaible on ChessPecker website'
 			/>
 			<div className='flex flex-col items-center justify-center min-h-screen pt-32 pb-24'>
