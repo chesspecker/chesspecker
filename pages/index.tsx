@@ -4,26 +4,33 @@ import {GetServerSidePropsContext, Redirect} from 'next';
 import Layout from '@/layouts/login';
 import {ButtonLink as Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
+import {NextSeo} from 'next-seo';
 
 const IndexPage = () => (
-	<div className='flex flex-col items-center justify-center h-screen m-0 '>
-		<Image
-			className='block w-40 h-40 mx-auto mt-8'
-			src='/images/logo.svg'
-			width='160px'
-			height='160px'
+	<>
+		<NextSeo
+			title='ChessPecker | Login'
+			description='Login to start playing woodPecker chess methode on ChessPecker website'
 		/>
-		<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
-			Happy to see you
-			<br />
-			newcomer 👋
-		</h1>
-		<div className='w-full mx-0 my-3 text-center '>
-			<Button className='py-4' href='/api/auth/login'>
-				SIGN IN WITH LICHESS
-			</Button>
+		<div className='flex flex-col items-center justify-center h-screen m-0 '>
+			<Image
+				className='block w-40 h-40 mx-auto mt-8'
+				src='/images/logo.svg'
+				width='160px'
+				height='160px'
+			/>
+			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+				Happy to see you
+				<br />
+				newcomer 👋
+			</h1>
+			<div className='w-full mx-0 my-3 text-center '>
+				<Button className='py-4' href='/api/auth/login'>
+					SIGN IN WITH LICHESS
+				</Button>
+			</div>
 		</div>
-	</div>
+	</>
 );
 
 IndexPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;

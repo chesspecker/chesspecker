@@ -23,6 +23,7 @@ import {
 } from '@/lib/spaced-repetition';
 import ModalSpacedOff from '@/components/play/modal-spaced-off';
 import {Tooltip} from '@/components/tooltip';
+import {NextSeo} from 'next-seo';
 
 const reducer = (accumulator: number, current: number) => accumulator + current;
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
@@ -153,115 +154,121 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 
 	if (!set || !set.puzzles) return null;
 	return (
-		<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
-			<div>
-				<div className='flex items-center '>
-					<h1 className='py-5 mt-8 mr-4 font-sans text-3xl font-bold md:text-5xl'>
-						{set.title}
-					</h1>
-					<EditModal
-						setTitle={setTitle}
-						setSetTitle={setSetTitle}
-						onValidate={onChangeName}
-					/>
+		<>
+			<NextSeo
+				title='ChessPecker | Statistic'
+				description='Analyze your performance and do better next time '
+			/>
+			<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
+				<div>
+					<div className='flex items-center '>
+						<h1 className='py-5 mt-8 mr-4 font-sans text-3xl font-bold md:text-5xl'>
+							{set.title}
+						</h1>
+						<EditModal
+							setTitle={setTitle}
+							setSetTitle={setSetTitle}
+							onValidate={onChangeName}
+						/>
+					</div>
+					{set.spacedRepetition ? (
+						<ModalSpacedOff
+							isOpen={isOpen}
+							hide={hide}
+							onClick={async () => {
+								await turnOffSpacedRepetition(set);
+								hide();
+								router.reload();
+							}}
+						/>
+					) : (
+						<ModalSpacedOn
+							isOpen={isOpen}
+							hide={hide}
+							onClick={async () => {
+								await activateSpacedRepetion(set);
+								hide();
+								router.reload();
+							}}
+						/>
+					)}
+
+					<button
+						className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 dark:text-sky-600 hover:bg-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-sky-600 bg-sky-700   dark:bg-gray-100 dark:hover:bg-gray-200'
+						disabled={set.cycles < 1 && !set.spacedRepetition}
+						type='button'
+						onClick={toggle}
+					>
+						<p>
+							Spaced-repetition:
+							<span
+								className={`${
+									set.cycles < 1 && !set.spacedRepetition
+										? 'bg-slate-600'
+										: set.spacedRepetition
+										? 'bg-green-500'
+										: 'bg-red-500'
+								} text-white py-2 px-4 rounded-full ml-3`}
+							>
+								{set.spacedRepetition ? 'on' : 'off'}
+							</span>
+						</p>
+					</button>
 				</div>
-				{set.spacedRepetition ? (
-					<ModalSpacedOff
-						isOpen={isOpen}
-						hide={hide}
-						onClick={async () => {
-							await turnOffSpacedRepetition(set);
-							hide();
-							router.reload();
-						}}
-					/>
-				) : (
-					<ModalSpacedOn
-						isOpen={isOpen}
-						hide={hide}
-						onClick={async () => {
-							await activateSpacedRepetion(set);
-							hide();
-							router.reload();
-						}}
-					/>
+
+				{set?.cycles >= 1 && (
+					<div className='w-full mt-4'>
+						<h2 className='h2'>Set overview</h2>
+						<div className='flex flex-wrap w-full mt-4'>
+							{overviewStats.map(stat => (
+								<Block key={stat.title} {...stat} />
+							))}
+						</div>
+					</div>
 				)}
 
-				<button
-					className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 dark:text-sky-600 hover:bg-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-sky-600 bg-sky-700   dark:bg-gray-100 dark:hover:bg-gray-200'
-					disabled={set.cycles < 1 && !set.spacedRepetition}
-					type='button'
-					onClick={toggle}
-				>
-					<p>
-						Spaced-repetition:
-						<span
-							className={`${
-								set.cycles < 1 && !set.spacedRepetition
-									? 'bg-slate-600'
-									: set.spacedRepetition
-									? 'bg-green-500'
-									: 'bg-red-500'
-							} text-white py-2 px-4 rounded-full ml-3`}
-						>
-							{set.spacedRepetition ? 'on' : 'off'}
-						</span>
-					</p>
-				</button>
+				{set?.cycles < 2 && set?.currentTime === 0 && (
+					<div className='w-full'>
+						<p className='p-5 mt-8 mb-6 font-sans text-xl font-bold md:text-3xl'>
+							No data yet, start playing!
+						</p>
+					</div>
+				)}
+
+				{set?.cycles >= 2 && (
+					<div className='w-full mt-4'>
+						<h2 className='h2'>Global progress</h2>
+						<div className='flex flex-wrap w-full mt-4'>
+							{progressStats.map(stat => (
+								<Block key={stat.title} {...stat} />
+							))}
+						</div>
+					</div>
+				)}
+
+				{set?.currentTime > 0 && (
+					<div className='flex-wrap w-full mt-4'>
+						<h2 className='h2'>Current run</h2>
+						<div className='flex flex-wrap justify-around w-full mt-4'>
+							{currentRunStats.map(stat => (
+								<Block key={stat.title} {...stat} />
+							))}
+						</div>
+					</div>
+				)}
+
+				{set?.currentTime > 0 && (
+					<div className='flex-wrap w-full mt-4'>
+						<h2 className='mb-4 h2'>All puzzles</h2>
+						<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
+							{set.puzzles.map(puzzle => (
+								<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
+							))}
+						</div>
+					</div>
+				)}
 			</div>
-
-			{set?.cycles >= 1 && (
-				<div className='w-full mt-4'>
-					<h2 className='h2'>Set overview</h2>
-					<div className='flex flex-wrap w-full mt-4'>
-						{overviewStats.map(stat => (
-							<Block key={stat.title} {...stat} />
-						))}
-					</div>
-				</div>
-			)}
-
-			{set?.cycles < 2 && set?.currentTime === 0 && (
-				<div className='w-full'>
-					<p className='p-5 mt-8 mb-6 font-sans text-xl font-bold md:text-3xl'>
-						No data yet, start playing!
-					</p>
-				</div>
-			)}
-
-			{set?.cycles >= 2 && (
-				<div className='w-full mt-4'>
-					<h2 className='h2'>Global progress</h2>
-					<div className='flex flex-wrap w-full mt-4'>
-						{progressStats.map(stat => (
-							<Block key={stat.title} {...stat} />
-						))}
-					</div>
-				</div>
-			)}
-
-			{set?.currentTime > 0 && (
-				<div className='flex-wrap w-full mt-4'>
-					<h2 className='h2'>Current run</h2>
-					<div className='flex flex-wrap justify-around w-full mt-4'>
-						{currentRunStats.map(stat => (
-							<Block key={stat.title} {...stat} />
-						))}
-					</div>
-				</div>
-			)}
-
-			{set?.currentTime > 0 && (
-				<div className='flex-wrap w-full mt-4'>
-					<h2 className='mb-4 h2'>All puzzles</h2>
-					<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
-						{set.puzzles.map(puzzle => (
-							<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
-						))}
-					</div>
-				</div>
-			)}
-		</div>
+		</>
 	);
 };
 

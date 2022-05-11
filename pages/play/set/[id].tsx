@@ -44,6 +44,7 @@ import {
 	shouldInrementOrResetStreakCount,
 	updateStreak,
 } from '@/lib/streak';
+import {NextSeo} from 'next-seo';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -649,6 +650,10 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
+			<NextSeo
+				title='ChessPecker | Play'
+				description='Play again and again and maybe one day you will exceed 900 Elo... big loser '
+			/>
 			<ModalSpacedEnd isOpen={isOpenSpacedOff} hide={hideSpacedOff} />
 			<ModalSpacedOn
 				isOpen={isOpenSpacedOn}

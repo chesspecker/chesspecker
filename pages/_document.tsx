@@ -24,6 +24,7 @@ const Document = () => {
 					content='Application to practice chess with the woodpecker method! Puzzles are from Lichess!'
 				/>
 				<link rel='canonical' href='https://www.chesspecker.com/' />
+				<meta name='viewport' content='initial-scale=1.0, width=device-width' />
 				<meta name='robots' content='index, nofollow' />
 				{/* Favicon */}
 				<link

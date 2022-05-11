@@ -9,6 +9,7 @@ import useUser from '@/hooks/use-user';
 import {AchivementsArgs, UserInterface} from '@/types/models';
 import {checkForAchievement} from '@/lib/achievements';
 import {formattedDate} from '@/lib/utils';
+import {NextSeo} from 'next-seo';
 
 const SuccessPage = () => {
 	const router = useRouter();
@@ -66,21 +67,27 @@ const SuccessPage = () => {
 	}, [sessionId, user]);
 
 	return (
-		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20  '>
-			{useConffeti()}
-			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
-				Thanks for helping chesspecker grow!
-			</h1>
-			<p className='mx-2 text-center'>
-				Join us on Discord to share your ideas and desires for Chesspecker 🎉
-			</p>
-			<div className='w-full mx-0 my-3 flex flex-col text-center items-center justify-center '>
-				<ButtonLink href='https://discord.gg/qDftJZBBHa'>
-					JOIN DISCORD ! 🔥{' '}
-				</ButtonLink>
-				<Button href='/dashboard'>BACK TO DASHBOAD 🏠 </Button>
+		<>
+			<NextSeo
+				title='ChessPecker | Success-sponsor'
+				description='Join us on Discord to share your ideas and desires for Chesspecker'
+			/>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20  '>
+				{useConffeti()}
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+					Thanks for helping chesspecker grow!
+				</h1>
+				<p className='mx-2 text-center'>
+					Join us on Discord to share your ideas and desires for Chesspecker 🎉
+				</p>
+				<div className='w-full mx-0 my-3 flex flex-col text-center items-center justify-center '>
+					<ButtonLink href='https://discord.gg/qDftJZBBHa'>
+						JOIN DISCORD ! 🔥{' '}
+					</ButtonLink>
+					<Button href='/dashboard'>BACK TO DASHBOAD 🏠 </Button>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

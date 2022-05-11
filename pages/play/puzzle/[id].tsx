@@ -21,6 +21,7 @@ import Solution from '@/components/play/right-bar/solution';
 import MoveToNext from '@/components/play/right-bar/move-to-next';
 import ModalPuzzle from '@/components/modal-puzzle';
 import type {Stat} from '@/components/modal-puzzle';
+import {NextSeo} from 'next-seo';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -361,6 +362,10 @@ const PlayingPage = ({puzzle}: Props) => {
 
 	return (
 		<>
+			<NextSeo
+				title='ChessPecker | Play'
+				description='Play again and again and maybe one day you will exceed 900 Elo... big loser '
+			/>
 			<ModalPuzzle
 				stat={stat}
 				showModal={showModal}

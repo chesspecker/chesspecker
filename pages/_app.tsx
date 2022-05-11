@@ -11,6 +11,7 @@ import type {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
 import Router from 'next/router';
 import Loader from '@/components/loader';
+import {DefaultSeo} from 'next-seo';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -36,13 +37,14 @@ const CustomApp = ({
 
 	return getLayout(
 		<>
-			<Head>
-				{/* Meta properties */}
-				<meta property='og:title' content='Chesspecker' />
-				<meta name='description' content='description' />
-				<meta name='robots' content='index, no-follow' />
-				<meta name='viewport' content='initial-scale=1.0, width=device-width' />
-			</Head>
+			<DefaultSeo
+				openGraph={{
+					type: 'website',
+					locale: 'en_IE',
+					url: 'https://www.chesspecker.com/',
+					site_name: 'ChessPecker',
+				}}
+			/>
 
 			<SWRConfig>
 				<Loader isVisible={loading} />

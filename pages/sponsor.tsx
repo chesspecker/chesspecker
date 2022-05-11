@@ -13,6 +13,7 @@ import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
 import type {UserInterface} from '@/types/models';
 import useEffectAsync from '@/hooks/use-effect-async';
+import {NextSeo} from 'next-seo';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
@@ -113,19 +114,25 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
-			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
-				Manage sponsorship
-			</h1>
-			<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
-				Thank you for supporting us.
-			</p>
-			<p className='pb-6 '>{`Your actual subscription is ${
-				((subscription as any)?.plan.amount as number) / 100
-			} € per month`}</p>
+		<>
+			<NextSeo
+				title='ChessPecker | Sponsor'
+				description='Become a sponsor to help us make chessPecker grow !'
+			/>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+					Manage sponsorship
+				</h1>
+				<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
+					Thank you for supporting us.
+				</p>
+				<p className='pb-6 '>{`Your actual subscription is ${
+					((subscription as any)?.plan.amount as number) / 100
+				} € per month`}</p>
 
-			<RemoveModal onClick={async () => cancelSubscription()} />
-		</div>
+				<RemoveModal onClick={async () => cancelSubscription()} />
+			</div>
+		</>
 	);
 };
 

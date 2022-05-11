@@ -14,6 +14,7 @@ import Alert from '@/components/alert';
 import {Options} from '@/controllers/set-create';
 import type {Difficulty} from '@/types/models';
 import loading from '@/public/images/spinner.svg';
+import {NextSeo} from 'next-seo';
 
 const OptionsPage = () => {
 	const router = useRouter();
@@ -58,42 +59,48 @@ const OptionsPage = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center w-11/12 min-h-screen pt-32 pb-24 text-center'>
-			<div>
-				<h1 className='mb-8 text-3xl lg:text-5xl'>One last thing...</h1>
-				<Alert type='error' isVisible={isOpen} message='Title is needed!' />
-				<div className='flex flex-col items-center justify-center w-5/6 mx-12'>
-					<OptionTextInput>Give your set a name</OptionTextInput>
-					<OptionDifficulty />
-					<OptionSize />
-					<div className='w-3/5 mt-20'>
-						<Button
-							className={`flex h-14 flex-row items-center justify-center ${
-								isDisabled
-									? 'font-sky-700 cursor-default hover:bg-white'
-									: 'cursor-pointer'
-							}`}
-							onClick={validate}
-						>
-							{isDisabled && (
-								<div
-									className={`relative mr-3 h-9 w-9 animate-spin ${
-										isDisabled ? 'visible' : 'invisible'
-									}`}
-								>
-									<Image
-										src={loading as string}
-										objectFit='contain'
-										layout='fill'
-									/>
-								</div>
-							)}
-							{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
-						</Button>
+		<>
+			<NextSeo
+				title='ChessPecker | Option'
+				description='Page to create set in order to practice woodPecker chess methode on ChessPecker website'
+			/>
+			<div className='flex flex-col items-center justify-center w-11/12 min-h-screen pt-32 pb-24 text-center'>
+				<div>
+					<h1 className='mb-8 text-3xl lg:text-5xl'>One last thing...</h1>
+					<Alert type='error' isVisible={isOpen} message='Title is needed!' />
+					<div className='flex flex-col items-center justify-center w-5/6 mx-12'>
+						<OptionTextInput>Give your set a name</OptionTextInput>
+						<OptionDifficulty />
+						<OptionSize />
+						<div className='w-3/5 mt-20'>
+							<Button
+								className={`flex h-14 flex-row items-center justify-center ${
+									isDisabled
+										? 'font-sky-700 cursor-default hover:bg-white'
+										: 'cursor-pointer'
+								}`}
+								onClick={validate}
+							>
+								{isDisabled && (
+									<div
+										className={`relative mr-3 h-9 w-9 animate-spin ${
+											isDisabled ? 'visible' : 'invisible'
+										}`}
+									>
+										<Image
+											src={loading as string}
+											objectFit='contain'
+											layout='fill'
+										/>
+									</div>
+								)}
+								{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

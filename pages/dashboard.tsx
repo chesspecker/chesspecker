@@ -7,6 +7,7 @@ import useUser from '@/hooks/use-user';
 import {AchievementItem, UserInterface} from '@/types/models';
 import Modal from '@/components/modal-achievement';
 import {withSessionSsr} from '@/lib/session';
+import {NextSeo} from 'next-seo';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
@@ -42,6 +43,10 @@ const DashbaordPage = () => {
 
 	return (
 		<>
+			<NextSeo
+				title='ChessPecker | Dashboard'
+				description='Here are your sets'
+			/>
 			<Modal
 				showModal={showModal}
 				currentAchievementItem={achievementsList[0]}
