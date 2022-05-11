@@ -31,7 +31,7 @@ import RightBar from '@/components/play/right-bar';
 import BottomBar from '@/components/play/bottom-bar';
 import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
 import ModalSpacedOn from '@/components/play/modal-spaced-on';
-import ModalSpacedOff from '@/components/play/modal-spaced-off';
+import ModalSpacedEnd from '@/components/play/modal-spaced-end';
 import {
 	activateSpacedRepetion,
 	updateSpacedRepetition,
@@ -599,7 +599,7 @@ const PlayingPage = ({set}: Props) => {
 
 	return (
 		<>
-			<ModalSpacedOff isOpen={isOpenSpacedOff} hide={hideSpacedOff} />
+			<ModalSpacedEnd isOpen={isOpenSpacedOff} hide={hideSpacedOff} />
 			<ModalSpacedOn
 				isOpen={isOpenSpacedOn}
 				hide={hideSpacedOn}
