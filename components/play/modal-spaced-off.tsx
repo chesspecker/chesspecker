@@ -38,9 +38,9 @@ const ModalSpacedOff = ({onClick, isOpen = false, hide}: Props) => {
 			isOpen={isOpen}
 		>
 			<div className='w-full mt-2'>
-				<p className='text-sm text-gray-500'>
-					Do you want to turn off spaced repetition ? <br />
-					You are going to loose all you progress in spaced-repetition mode.
+				<p className='text-sm text-gray-500 leading-5'>
+					Do you want to turn off spaced repetition ? You are going to loose all
+					you progress in spaced-repetition mode.
 				</p>
 			</div>
 			<div className='mt-4'>

@@ -188,11 +188,12 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				)}
 
 				<button
-					className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:dark:disabled:text-slate-200 dark:text-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-sky-600 bg-sky-700 hover:text-sky-700 hover:bg-gray-200 dark:bg-gray-100 dark:hover:bg-gray-200'
+					className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 dark:text-sky-600 hover:bg-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-sky-600 bg-sky-700   dark:bg-gray-100 dark:hover:bg-gray-200'
 					disabled={set.cycles < 1 && !set.spacedRepetition}
 					type='button'
+					onClick={toggle}
 				>
-					<p onClick={toggle}>
+					<p>
 						Spaced-repetition:
 						<span
 							className={`${
