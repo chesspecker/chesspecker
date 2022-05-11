@@ -85,3 +85,8 @@ export const activateSpacedRepetion = async (set: PuzzleSetInterface) => {
 	const update = getActivatedUpdate(set);
 	await update_.set(set._id.toString(), update).catch(console.error);
 };
+
+export const turnOffSpacedRepetition = async (set: PuzzleSetInterface) => {
+	const update = getTerminatedUpdate();
+	await update_.set(set._id.toString(), update).catch(console.error);
+};
