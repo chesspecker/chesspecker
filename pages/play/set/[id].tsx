@@ -5,25 +5,26 @@ import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
+import useSWR from 'swr';
 import {
 	PuzzleInterface,
 	PuzzleItemInterface,
 	PuzzleSetInterface,
 	AchivementsArgs,
+	UserInterface,
+	Streak,
 } from '@/types/models';
 import Layout from '@/layouts/main';
-import {sortBy} from '@/lib/utils';
+import {formattedDate, sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
 import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
-import useUser from '@/hooks/use-user';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import {ButtonLink as Button} from '@/components/button';
 import {checkForAchievement} from '@/lib/achievements';
 import Notification from '@/components/notification';
-import useStreak from '@/hooks/use-streak';
 import {withSessionSsr} from '@/lib/session';
 import {get as get_, update as update_, UpdateUser} from '@/lib/play';
 import Board from '@/components/play/board';
@@ -36,9 +37,18 @@ import {
 	activateSpacedRepetion,
 	updateSpacedRepetition,
 } from '@/lib/spaced-repetition';
+import type {Data as UserData} from '@/pages/api/user';
+import {
+	incrementStreakCount,
+	resetStreakCount,
+	shouldInrementOrResetStreakCount,
+	updateStreak,
+} from '@/lib/streak';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
+const fetcher = async (endpoint: string): Promise<UserData> =>
+	fetch(endpoint).then(async response => response.json() as Promise<UserData>);
 
 /* eslint-disable-next-line no-promise-executor-return */
 const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -84,8 +94,56 @@ const PlayingPage = ({set}: Props) => {
 		hide: hideSpacedOff,
 	} = useModal();
 	const router = useRouter();
-	const {user, mutate} = useUser();
-	const streak = useStreak(user._id.toString(), user.streak);
+
+	const {data: userData, mutate} = useSWR('/api/user', fetcher);
+	const [user, setUser] = useState<UserInterface>();
+
+	const [id, setId] = useState<string>();
+	const [streak, setStreak] = useState<Streak>();
+	const [previousStreak, setPreviousStreak] = useState<Streak>();
+
+	useEffectAsync(async () => {
+		if (!previousStreak || !id) return;
+
+		const today = new Date();
+		const currentDate = formattedDate(today);
+
+		console.log('previousStreak', previousStreak);
+
+		// Check if we should increment or reset
+		const {shouldIncrement, shouldReset} = shouldInrementOrResetStreakCount(
+			currentDate,
+			previousStreak.lastLoginDate,
+		);
+
+		console.log('shouldIncrement', shouldIncrement);
+		console.log('shouldReset', shouldReset);
+
+		let updatedStreak: Streak = previousStreak;
+		if (shouldReset) updatedStreak = resetStreakCount(currentDate);
+		if (shouldIncrement)
+			updatedStreak = incrementStreakCount(previousStreak, currentDate);
+		if (shouldReset || shouldIncrement)
+			await updateStreak(id, {
+				$set: {
+					streak: updatedStreak,
+				},
+			});
+
+		console.log('updating streak', updatedStreak);
+		setStreak(() => updatedStreak);
+	}, [previousStreak, id]);
+
+	useEffect(() => {
+		if (!userData) return;
+		if (!userData.success) return;
+
+		console.log('update user', userData.user);
+
+		setUser(() => userData.user);
+		setId(() => userData.user._id.toString());
+		setPreviousStreak(() => userData.user.streak);
+	}, [userData]);
 
 	// For achievement
 	const [streakMistakes, setStreakMistakes] = useState(0);
@@ -185,6 +243,7 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
+		console.log('updateFinishedPuzzle', streak);
 		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
