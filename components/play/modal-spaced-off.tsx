@@ -1,23 +1,23 @@
 import {memo} from 'react';
-import {useRouter} from 'next/router';
 import {Button} from '@/components/button';
 import GenericModal from '@/components/modal';
 
 type Props = {
+	onClick: () => Promise<void>;
 	isOpen: boolean;
 	hide: () => void;
 };
-const ModalSpacedOff = ({isOpen = false, hide}: Props) => {
-	const router = useRouter();
+const ModalSpacedOff = ({onClick, isOpen = false, hide}: Props) => {
 	return (
 		<GenericModal
-			title='Activate spaced repetition'
+			title='Turn off spaced repetition'
 			hide={hide}
 			isOpen={isOpen}
 		>
 			<div className='w-full mt-2'>
 				<p className='text-sm text-gray-500'>
-					Congrats you finished this set with spaced repetition mode. <br />
+					Do you want to turn off spaced repetition ? <br />
+					You are going to loose all you progress in spaced-repetition mode.
 				</p>
 			</div>
 			<div className='mt-4'>
@@ -25,21 +25,16 @@ const ModalSpacedOff = ({isOpen = false, hide}: Props) => {
 					<Button
 						type='button'
 						className='inline-flex justify-center px-4 py-2 mr-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
-						onClick={async () => {
-							hide();
-							return router.push('/dashboard');
-						}}
+						onClick={hide}
 					>
-						Dashboard 👉
+						Go back
 					</Button>
 					<Button
 						type='button'
 						className='inline-flex justify-center px-4 py-2 ml-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
-						onClick={() => {
-							router.reload();
-						}}
+						onClick={onClick}
 					>
-						Play again
+						Desactivate
 					</Button>
 				</div>
 			</div>
