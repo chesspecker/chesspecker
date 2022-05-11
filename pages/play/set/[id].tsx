@@ -279,11 +279,7 @@ const PlayingPage = ({set}: Props) => {
 			},
 		};
 
-		if (newGrade >= 5) {
-			update.$inc['puzzles.$.streak'] = 1;
-		} else {
-			update.$set['puzzles.$.streak'] = 0;
-		}
+		update.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
 
 		try {
 			const result = await update_.puzzle(
@@ -432,13 +428,14 @@ const PlayingPage = ({set}: Props) => {
 
 	const checkChunkComplete = useCallback(async (): Promise<boolean> => {
 		const playedPuzzles = set.puzzles.filter(p => p.played);
-		const isChunkComplete = playedPuzzles.length > 20;
+		const isChunkComplete = playedPuzzles.length > 20 || puzzleIndex > 20;
+		// TODO:	puzzle._id.toString() === puzzleList[20]._id.toString();
 
 		if (!set.spacedRepetition || !isChunkComplete) return false;
 		await updateSpacedRepetition(set, showSpacedOff);
 		return true;
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [puzzle, puzzleList, set]);
+	}, [puzzle, puzzleIndex, set]);
 
 	/**
 	 * Called after each correct move.

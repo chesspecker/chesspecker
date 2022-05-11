@@ -23,32 +23,35 @@ const getActivatedUpdate = (puzzleSet: PuzzleSetInterface) => {
 		puzzleOrder.push(chunks[lastGrade]);
 	}
 
-	const update = {
-		$set: {
-			progression: 0,
-			spacedRepetition: true,
-			puzzles: {
-				$map: {
-					input: {
-						$range: [0, '$length'],
-					},
-					in: {
-						$mergeObjects: [
-							{
-								$arrayElemAt: ['$puzzles', '$$this'],
-							},
-							{
-								played: false,
-								order: {
-									$arrayElemAt: [puzzleOrder, '$$this'],
+	// prettier-ignore
+	const update = [
+		{
+			'$set': {
+				progression: 0,
+				spacedRepetition: true,
+				puzzles: {
+					'$map': {
+						input: {
+							'$range': [0, '$length'],
+						},
+						in: {
+							'$mergeObjects': [
+								{
+									'$arrayElemAt': ['$puzzles', '$$this'],
 								},
-							},
-						],
+								{
+									played: false,
+									order: {
+										'$arrayElemAt': [puzzleOrder, '$$this'],
+									},
+								},
+							],
+						},
 					},
 				},
 			},
 		},
-	};
+	];
 
 	return update;
 };

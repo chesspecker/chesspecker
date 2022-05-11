@@ -1,6 +1,5 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {UpdateQuery} from 'mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {retrieve, remove, update} from '@/controllers/set';
 
@@ -51,9 +50,6 @@ const put_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {id} = request.query;
-	const body = JSON.parse(request.body) as UpdateQuery<
-		Partial<PuzzleSetInterface>
-	>;
 	const set = await update(id as string, JSON.parse(request.body));
 	if (set === null) {
 		response.status(404).json({success: false, error: 'Set not found'});
