@@ -161,7 +161,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		setInitialSetTimer(() => set.currentTime);
 		setInitialSetDate(() => Date.now());
-		setCompletedPuzzles(() => set.progression);
+		setCompletedPuzzles(() => set.progress);
 		setTotalPuzzles(() => set.length);
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		setPuzzleList(() => sortBy(puzzleList, 'order'));
@@ -267,7 +267,9 @@ const PlayingPage = ({set}: Props) => {
 
 		// Is there some puzzles in common in the old and new themes?
 		const themesInCommon = userThemes.filter(t => newThemes.includes(t.title));
-		const incrementUser: UpdateUser = {$inc: {totalPuzzleSolved: 1}};
+		const incrementUser: UpdateUser = {
+			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeWithoutMistakes},
+		};
 
 		// If there are, we update the user's themes
 		if (themesInCommon.length > 0)
@@ -284,15 +286,12 @@ const PlayingPage = ({set}: Props) => {
 			streakTime,
 			completionTime: timeWithoutMistakes,
 			completionMistakes: mistakes,
-			totalPuzzleSolved: user.totalPuzzleSolved
-				? user.totalPuzzleSolved + 1
-				: 1,
+			totalPuzzleSolved: user.totalPuzzleSolved,
 			themes: puzzle.Themes.map(t => {
 				const a = userThemes.find(c => t === c.title);
 				const count = a ? a.count + 1 : 1;
 				return {title: t, count};
 			}),
-			totalSetSolved: user.totalSetCompleted,
 			streak,
 			isSponsor: user.isSponsor,
 		};
@@ -317,7 +316,7 @@ const PlayingPage = ({set}: Props) => {
 			$inc: {
 				'puzzles.$.count': 1,
 				currentTime: timeWithMistakes,
-				progression: 1,
+				progress: 1,
 			},
 			$push: {
 				'puzzles.$.mistakes': mistakes,
@@ -390,6 +389,7 @@ const PlayingPage = ({set}: Props) => {
 		const update = {
 			$inc: {
 				cycles: 1,
+				totalSetCompleted: 1,
 			},
 			$push: {
 				times: formattedTime,
@@ -397,7 +397,7 @@ const PlayingPage = ({set}: Props) => {
 			$set: {
 				'puzzles.$[].played': false,
 				currentTime: 0,
-				progression: 0,
+				progress: 0,
 			},
 		};
 

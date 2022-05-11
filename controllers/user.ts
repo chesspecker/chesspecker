@@ -9,18 +9,17 @@ export const create = async (liUser: LichessUser): Promise<UserInterface> => {
 	const parameters: Partial<UserInterface> = {
 		id: liUser.id,
 		username: liUser.username,
-		url: liUser.url,
 		stripeId: null,
 		isSponsor: false,
 		validatedAchievements: [],
 		totalPuzzleSolved: 0,
 		totalSetCompleted: 0,
+		totalTimePlayed: 0,
 		streak: {
 			currentCount: 0,
 			startDate: today,
 			lastLoginDate: today,
 		},
-		totalTimePlayed: 0,
 		puzzleSolvedByCategories: [],
 	};
 	const user: UserInterface = new User(parameters) as UserInterface;

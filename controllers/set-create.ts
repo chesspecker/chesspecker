@@ -122,7 +122,7 @@ export const create = async (
 	puzzleSet.currentTime = 0;
 	puzzleSet.times = [];
 	puzzleSet.rating = Math.round(futurePuzzleSetRating / puzzlesCount);
-	puzzleSet.progression = 0;
+	puzzleSet.progress = 0;
 	puzzleSet.level = setLevel;
 	return puzzleSet.save();
 };
