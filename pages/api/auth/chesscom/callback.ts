@@ -1,11 +1,11 @@
 import {withSessionRoute} from 'lib/session';
-import withMongoRoute from 'providers/mongoose';
 import type {NextApiRequest, NextApiResponse} from 'next';
+import withMongoRoute from 'providers/mongoose';
 import {origin} from '@/config';
-import getLichess from '@/lib/get-lichess';
+import getChesscom from '@/lib/get-chesscom';
 import User from '@/models/user-model';
-import {create} from '@/controllers/user';
 import type {UserInterface} from '@/types/models';
+import {createChesscomUser} from '@/controllers/user';
 
 type ErrorData = {
 	success: false;
@@ -21,16 +21,23 @@ const callback = async (
 		return;
 	}
 
+	if (request.query.state !== request.session.state) {
+		response.status(500).json({success: false, error: 'Invalid state.'});
+		return;
+	}
+
 	try {
 		const {verifier} = request.session;
-		const lichessToken = await getLichess.token(request.query.code, verifier);
-		const oauthToken = lichessToken.access_token;
-		const lichessUser = await getLichess.account(oauthToken);
-		if (!lichessUser) throw new Error('user login failed');
+		const chesscomToken = await getChesscom.token(request.query.code, verifier);
+		const oauthToken = chesscomToken.access_token;
 
-		let user: UserInterface = await User.findOne({id: lichessUser.id});
-		if (!user) user = await create(lichessUser);
-		request.session.token = oauthToken;
+		const chesscomUser = await getChesscom.account(oauthToken, '');
+		if (!chesscomUser) throw new Error('user login failed');
+
+		let user: UserInterface = await User.findOne({id: chesscomUser.username});
+		if (!user) user = await createChesscomUser(chesscomUser);
+		request.session.type = 'chesscom';
+		request.session.chesscomToken = oauthToken;
 		request.session.userID = user._id.toString();
 		request.session.username = user.username;
 		await request.session.save();

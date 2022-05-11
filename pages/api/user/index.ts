@@ -2,7 +2,11 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import type {UserInterface} from '@/types/models';
 import {withSessionRoute} from '@/lib/session';
-import {retrieve, create} from '@/controllers/user';
+import {
+	createChesscomUser,
+	createLichessUser,
+	retrieve,
+} from '@/controllers/user';
 
 export type Data =
 	| {
@@ -32,7 +36,12 @@ const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
-	const user = await create(request.body);
+	let user: UserInterface;
+	if (request.session.type === 'chesscom')
+		user = await createChesscomUser(request.body);
+	if (request.session.type === 'lichess')
+		user = await createLichessUser(request.body);
+
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
 		throw new Error('User not found');

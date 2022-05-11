@@ -40,7 +40,7 @@ const loginRoute = async (
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',
 		client_id: lichess.clientId,
-		redirect_uri: `${origin}/api/auth/callback`,
+		redirect_uri: `${origin}/api/auth/lichess/callback`,
 		scope: 'preference:read',
 		code_challenge_method: 'S256',
 		code_challenge: challenge,

@@ -22,7 +22,7 @@ const IndexPage = () => (
 				newcomer 👋
 			</h1>
 			<div className='w-full mx-0 my-3 text-center '>
-				<Button className='py-4' href='/api/auth/login'>
+				<Button className='py-4' href='/api/auth/lichess/login'>
 					SIGN IN WITH LICHESS
 				</Button>
 			</div>

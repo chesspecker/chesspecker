@@ -21,7 +21,7 @@ const getToken = async (
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
 			grant_type: 'authorization_code',
-			redirect_uri: `${origin}/api/auth/callback`,
+			redirect_uri: `${origin}/api/auth/lichess/callback`,
 			client_id: lichess.clientId,
 			code: authCode,
 			code_verifier: verifier,

@@ -3,8 +3,23 @@ import {LichessUser} from '@/types/lichess';
 import User from '@/models/user-model';
 import type {UserInterface} from '@/types/models';
 import {formattedDate} from '@/lib/utils';
+import {ChesscomUser} from '@/types/chesscom';
 
-export const create = async (liUser: LichessUser): Promise<UserInterface> => {
+export const createChesscomUser = async (
+	chUser: ChesscomUser,
+): Promise<UserInterface> => {
+	const parameters: Partial<UserInterface> = {
+		id: chUser.username,
+		username: chUser.username,
+	};
+
+	const user: UserInterface = new User(parameters) as UserInterface;
+	return user.save();
+};
+
+export const createLichessUser = async (
+	liUser: LichessUser,
+): Promise<UserInterface> => {
 	const today = formattedDate(new Date());
 	const parameters: Partial<UserInterface> = {
 		id: liUser.id,
