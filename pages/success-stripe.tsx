@@ -71,7 +71,7 @@ const SuccessPage = () => {
 			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
 				Thanks for helping chesspecker grow!
 			</h1>
-			<p>
+			<p className='mx-2 text-center'>
 				Join us on Discord to share your ideas and desires for Chesspecker 🎉
 			</p>
 			<div className='w-full mx-0 my-3 flex flex-col text-center items-center justify-center '>
