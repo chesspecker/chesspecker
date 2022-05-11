@@ -31,7 +31,7 @@ const callback = async (
 		const chesscomToken = await getChesscom.token(request.query.code, verifier);
 		const oauthToken = chesscomToken.access_token;
 
-		const chesscomUser = await getChesscom.account(oauthToken);
+		const chesscomUser = await getChesscom.account(oauthToken, '');
 		if (!chesscomUser) throw new Error('user login failed');
 
 		let user: UserInterface = await User.findOne({id: chesscomUser.username});

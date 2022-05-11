@@ -11,7 +11,6 @@ export const createChesscomUser = async (
 	const parameters: Partial<UserInterface> = {
 		id: chUser.username,
 		username: chUser.username,
-		url: chUser.url,
 	};
 
 	const user: UserInterface = new User(parameters) as UserInterface;
