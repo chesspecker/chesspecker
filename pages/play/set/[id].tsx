@@ -431,14 +431,14 @@ const PlayingPage = ({set}: Props) => {
 	);
 
 	const checkChunkComplete = useCallback(async (): Promise<boolean> => {
-		const isChunkComplete =
-			puzzle._id.toString() === puzzleList[20]._id.toString();
+		const playedPuzzles = set.puzzles.filter(p => p.played);
+		const isChunkComplete = playedPuzzles.length > 20;
 
 		if (!set.spacedRepetition || !isChunkComplete) return false;
 		await updateSpacedRepetition(set, showSpacedOff);
 		return true;
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [puzzle._id, puzzleList, set]);
+	}, [puzzle, puzzleList, set]);
 
 	/**
 	 * Called after each correct move.
@@ -453,10 +453,9 @@ const PlayingPage = ({set}: Props) => {
 
 			if (!isComplete) return playFromComputer(moveNumber);
 
-			const isChunkComplete = await checkChunkComplete();
-			if (isChunkComplete) return;
+			if (set.spacedRepetition) await checkChunkComplete();
+			if (!set.spacedRepetition) await checkSetComplete();
 
-			await checkSetComplete();
 			setIsComplete(() => true);
 
 			await audio('GENERIC', hasSound, 0.3);
@@ -468,6 +467,7 @@ const PlayingPage = ({set}: Props) => {
 			hasAutoMove,
 			hasSound,
 			changePuzzle,
+			checkChunkComplete,
 			checkSetComplete,
 			cleanAnimation,
 			playFromComputer,
@@ -608,7 +608,11 @@ const PlayingPage = ({set}: Props) => {
 			<ModalSpacedOn
 				isOpen={isOpenSpacedOn}
 				hide={hideSpacedOn}
-				onClick={async () => activateSpacedRepetion(set)}
+				onClick={async () => {
+					await activateSpacedRepetion(set);
+					hideSpacedOn();
+					router.reload();
+				}}
 			/>
 			<div className='flex flex-col justify-start w-screen min-h-screen pt-32 pb-24 m-0 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>

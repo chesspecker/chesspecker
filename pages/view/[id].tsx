@@ -170,7 +170,11 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 				<SpacedModal
 					isOpen={isOpen}
 					hide={hide}
-					onClick={async () => activateSpacedRepetion(set)}
+					onClick={async () => {
+						await activateSpacedRepetion(set);
+						hide();
+						router.reload();
+					}}
 				/>
 				<p
 					className='p-4 mb-6 rounded-lg cursor-pointer no-wrap w-fit hover:bg-gray-100'
