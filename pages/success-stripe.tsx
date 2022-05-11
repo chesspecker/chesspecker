@@ -2,7 +2,7 @@ import {ReactElement, useState, useEffect} from 'react';
 import Stripe from 'stripe';
 import {useRouter} from 'next/router';
 import Layout from '@/layouts/login';
-import {ButtonLink as Button} from '@/components/button';
+import {ButtonLink as Button, ButtonLink} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
 import useUser from '@/hooks/use-user';
@@ -71,8 +71,14 @@ const SuccessPage = () => {
 			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
 				Thanks for helping chesspecker grow!
 			</h1>
-			<div className='w-full mx-0 my-3 flex text-center items-center justify-center '>
-				<Button href='/dashboard'>LET&apos;S GO! 🔥</Button>
+			<p>
+				Join us on Discord to share your ideas and desires for Chesspecker 🎉
+			</p>
+			<div className='w-full mx-0 my-3 flex flex-col text-center items-center justify-center '>
+				<ButtonLink href='https://discord.gg/qDftJZBBHa'>
+					JOIN DISCORD ! 🔥{' '}
+				</ButtonLink>
+				<Button href='/dashboard'>BACK TO DASHBOAD 🏠 </Button>
 			</div>
 		</div>
 	);
