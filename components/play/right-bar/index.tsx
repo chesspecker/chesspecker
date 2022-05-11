@@ -20,7 +20,7 @@ const RightBar = ({
 			<div className='mt-2'>
 				<Progress hasSpacedRepetition={hasSpacedRepetition} />
 			</div>
-			<div className='mt-2'>
+			<div className='mt-2 h-48'>
 				<Solution answer={answer} />
 				<MoveToNext changePuzzle={changePuzzle} launchTimer={launchTimer} />
 			</div>
