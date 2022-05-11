@@ -11,6 +11,7 @@ import {SWRConfig} from 'swr';
 import Router from 'next/router';
 import {DefaultSeo} from 'next-seo';
 import Loader from '@/components/loader';
+import PlausibleProvider from 'next-plausible';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -53,7 +54,9 @@ const CustomApp = ({
 
 			<SWRConfig>
 				<Loader isVisible={loading} />
-				<Component {...pageProps} />
+				<PlausibleProvider domain='chesspecker.com'>
+					<Component {...pageProps} />
+				</PlausibleProvider>
 			</SWRConfig>
 		</>,
 	);

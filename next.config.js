@@ -50,5 +50,6 @@ const nextConfig = {
 
 const withPWA = require('next-pwa');
 const withTM = require('next-transpile-modules')([]);
+const {withPlausibleProxy} = require('next-plausible');
 
-module.exports = withPWA(withTM(nextConfig));
+module.exports = withPlausibleProxy(withPWA(withTM(nextConfig)));

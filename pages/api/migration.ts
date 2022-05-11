@@ -1,3 +1,5 @@
+import puzzleSetModel from '@/models/puzzle-set-model';
+import userModel from '@/models/user-model';
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 
@@ -46,10 +48,36 @@ const updatePuzzleSet = [
   }
 ]
 
-const migrationRoute = (
+const migrationRoute = async (
 	_request: NextApiRequest,
 	response: NextApiResponse,
 ) => {
+	puzzleSetModel.updateMany(
+		{},
+		updatePuzzleSet,
+		{multi: true, upsert: true},
+		(err, res) => {
+			if (err) {
+				console.log(err);
+				response.status(500).json({error: err});
+			} else {
+				console.log('puzzleSetModel', res);
+			}
+		},
+	);
+	userModel.updateMany(
+		{},
+		updateUser,
+		{multi: true, upsert: true},
+		(err, res) => {
+			if (err) {
+				console.log(err);
+				response.status(500).json({error: err});
+			} else {
+				console.log('userModel', res);
+			}
+		},
+	);
 	response.send({updatePuzzleSet, updateUser});
 };
 

@@ -49,12 +49,6 @@ const Document = () => {
 					href='https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;700&display=swap'
 					rel='stylesheet'
 				/>
-				{/* Plausible */}
-				<script
-					defer
-					data-domain='chesspecker.com'
-					src='https://plausible.io/js/plausible.js'
-				/>
 			</Head>
 			<body className={`min-h-screen min-w-screen bg-sky-700 `}>
 				<Main />
