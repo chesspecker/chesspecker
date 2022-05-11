@@ -62,7 +62,7 @@ const Burger = () => {
 						<BurgerItem
 							href='/user'
 							icon={<UserIcon className='w-5 h-5 mr-2 text-sky-700' />}
-							text='Profil'
+							text='Profile'
 						/>
 
 						<BurgerItem
@@ -93,21 +93,21 @@ const Burger = () => {
 								type='button'
 								className='flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group'
 								onClick={() => {
-									setDarkMode(!isDarkMode);
+									setDarkMode(previous => !previous);
 								}}
 							>
 								{isDarkMode ? (
-									<MoonIcon
-										className='w-5 h-5 mr-2 text-sky-700 '
-										onClick={() => {
-											setDarkMode(!isDarkMode);
-										}}
-									/>
-								) : (
 									<SunIcon
 										className='w-5 h-5 mr-2 text-yellow-400 '
 										onClick={() => {
-											setDarkMode(!isDarkMode);
+											setDarkMode(() => false);
+										}}
+									/>
+								) : (
+									<MoonIcon
+										className='w-5 h-5 mr-2 text-sky-700 '
+										onClick={() => {
+											setDarkMode(() => true);
 										}}
 									/>
 								)}

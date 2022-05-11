@@ -41,7 +41,7 @@ const CustomApp = ({
 					type: 'website',
 					locale: 'en_IE',
 					url: 'https://www.chesspecker.com/',
-					site_name: 'ChessPecker',
+					site_name: 'Chesspecker',
 				}}
 			/>
 

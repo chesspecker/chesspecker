@@ -17,8 +17,8 @@ const IndexPage = () => {
 	return (
 		<>
 			<NextSeo
-				title='ChessPecker | Success'
-				description='Welcome to chessPecker website, the only app to practice woodpecker methode !'
+				title='Chesspecker | Success'
+				description="Start improving your chess skills today with chesspecker's training."
 			/>
 			<div className='flex flex-col items-center justify-center h-screen m-0 '>
 				{useConffeti()}

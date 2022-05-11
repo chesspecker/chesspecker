@@ -37,7 +37,7 @@ export const ButtonLink = ({
 	type,
 }: ButtonLinkProps) => (
 	<Link href={href}>
-		<a>
+		<a target='_blank'>
 			<button
 				className={overrideTailwindClasses(`${defaultClasses} ${className}`)}
 				/* eslint-disable-next-line react/button-has-type */

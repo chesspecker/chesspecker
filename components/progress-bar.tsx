@@ -1,8 +1,8 @@
 type Props = {title: string; progress: number};
 const ProgressBar = ({title, progress}: Props) => {
 	return (
-		<div className='flex flex-col w-full items-center '>
-			<div className='flex justify-center items-center mb-1 flex-col'>
+		<div className='flex flex-col items-center w-full'>
+			<div className='flex flex-col items-center justify-center mb-1'>
 				<span className='text-base font-medium text-slate-800 dark:text-white'>
 					{title}
 				</span>

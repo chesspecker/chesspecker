@@ -9,8 +9,8 @@ import {withSessionSsr} from '@/lib/session';
 const IndexPage = () => (
 	<>
 		<NextSeo
-			title='ChessPecker | Login'
-			description='Login to start playing woodPecker chess methode on ChessPecker website'
+			title='Chesspecker | Login'
+			description="Start improving your chess skills today with chesspecker's training."
 		/>
 		<div className='flex flex-col items-center justify-center h-screen m-0 '>
 			<Image

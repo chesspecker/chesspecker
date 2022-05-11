@@ -53,56 +53,62 @@ const RemoveModal = ({onClick}: Props) => {
 type PageProps = {handleClick: (string: string) => void};
 const BecomeSponsor = ({handleClick}: PageProps) => {
 	return (
-		<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-40 '>
-			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
-				Become sponsor
-			</h1>
-			<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
-				This website is free and ads-less and we are having fun coding it.
-				<br />
-				However, it still has a cost. Become a sponsor today to help us paying
-				server costs.
-				<br /> It will also unlock a great badge! 🎉
-			</p>
-			<iframe
-				allowFullScreen
-				src='https://giphy.com/embed/lCbSAbRrFEfkY'
-				width='480'
-				height='372'
-				frameBorder='0'
-				className='giphy-embed'
+		<>
+			<NextSeo
+				title='Chesspecker | Sponsor'
+				description="Start improving your chess skills today with chesspecker's training."
 			/>
-			<p className='w-11/12 mb-6 text-2xl text-center mt-7 md:text-2xl'>
-				How much does it cost? Just about a small coffee per month!
-			</p>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-40'>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
+					Become sponsor
+				</h1>
+				<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
+					This website is free and ads-less and we are having fun coding it.
+					<br />
+					However, it still has a cost. Become a sponsor today to help us paying
+					server costs.
+					<br /> It will also unlock a great badge! 🎉
+				</p>
+				<iframe
+					allowFullScreen
+					src='https://giphy.com/embed/lCbSAbRrFEfkY'
+					width='480'
+					height='372'
+					frameBorder='0'
+					className='giphy-embed'
+				/>
+				<p className='w-11/12 mb-6 text-2xl text-center mt-7 md:text-2xl'>
+					How much does it cost? Just about a small coffee per month!
+				</p>
 
-			<div className='flex flex-col w-2/3 lg:flex-row'>
-				<Button
-					className='m-2'
-					onClick={() => {
-						handleClick('price_1KxCYVGL9hdiIkISDFBzzU6Z');
-					}}
-				>
-					☕️ 3€
-				</Button>
-				<Button
-					className='m-2'
-					onClick={() => {
-						handleClick('price_1KxCa8GL9hdiIkISXvkAuA4F');
-					}}
-				>
-					☕️☕️ 5€
-				</Button>
-				<Button
-					className='m-2'
-					onClick={() => {
-						handleClick('price_1KxCafGL9hdiIkISewaLCtNO');
-					}}
-				>
-					☕️☕️☕️ 15€
-				</Button>
+				<div className='flex flex-col w-2/3 lg:flex-row'>
+					<Button
+						className='m-2'
+						onClick={() => {
+							handleClick('price_1KxCYVGL9hdiIkISDFBzzU6Z');
+						}}
+					>
+						☕️ 3€
+					</Button>
+					<Button
+						className='m-2'
+						onClick={() => {
+							handleClick('price_1KxCa8GL9hdiIkISXvkAuA4F');
+						}}
+					>
+						☕️☕️ 5€
+					</Button>
+					<Button
+						className='m-2'
+						onClick={() => {
+							handleClick('price_1KxCafGL9hdiIkISewaLCtNO');
+						}}
+					>
+						☕️☕️☕️ 15€
+					</Button>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
@@ -116,8 +122,8 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 	return (
 		<>
 			<NextSeo
-				title='ChessPecker | Sponsor'
-				description='Become a sponsor to help us make chessPecker grow !'
+				title='Chesspecker | Sponsor'
+				description="Start improving your chess skills today with chesspecker's training."
 			/>
 			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>

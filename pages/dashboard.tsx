@@ -44,8 +44,8 @@ const DashbaordPage = () => {
 	return (
 		<>
 			<NextSeo
-				title='ChessPecker | Dashboard'
-				description='Here are your sets'
+				title='Chesspecker | Dashboard'
+				description="Start improving your chess skills today with chesspecker's training."
 			/>
 			<Modal
 				showModal={showModal}

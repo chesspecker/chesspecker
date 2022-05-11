@@ -28,8 +28,8 @@ const CreatePage = () => {
 	return (
 		<>
 			<NextSeo
-				title='ChessPecker | Create a set'
-				description='Page to create a set on chessPecker website'
+				title='Chesspecker | Create a set'
+				description="Start improving your chess skills today with chesspecker's training."
 			/>
 			<div className='flex flex-col items-center justify-center pt-32 pb-24'>
 				<h2 className='text-xl font-bold sm:text-3xl'>

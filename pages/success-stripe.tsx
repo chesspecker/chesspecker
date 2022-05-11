@@ -35,7 +35,6 @@ const SuccessPage = () => {
 			completionMistakes: 0,
 			totalPuzzleSolved: 0,
 			themes: [],
-			totalSetSolved: 0,
 			streak: {
 				currentCount: 0,
 				startDate: currentDate,
@@ -69,22 +68,22 @@ const SuccessPage = () => {
 	return (
 		<>
 			<NextSeo
-				title='ChessPecker | Success-sponsor'
-				description='Join us on Discord to share your ideas and desires for Chesspecker'
+				title='Chesspecker | Success-sponsor'
+				description="Start improving your chess skills today with chesspecker's training."
 			/>
-			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20  '>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20'>
 				{useConffeti()}
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
 					Thanks for helping chesspecker grow!
 				</h1>
 				<p className='mx-2 text-center'>
 					Join us on Discord to share your ideas and desires for Chesspecker 🎉
 				</p>
-				<div className='w-full mx-0 my-3 flex flex-col text-center items-center justify-center '>
+				<div className='flex flex-col items-center justify-center w-full mx-0 my-3 text-center'>
 					<ButtonLink href='https://discord.gg/qDftJZBBHa'>
-						JOIN DISCORD ! 🔥{' '}
+						JOIN DISCORD! 🔥
 					</ButtonLink>
-					<Button href='/dashboard'>BACK TO DASHBOAD 🏠 </Button>
+					<Button href='/dashboard'>BACK TO DASHBOAD 🏠</Button>
 				</div>
 			</div>
 		</>

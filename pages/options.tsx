@@ -61,8 +61,8 @@ const OptionsPage = () => {
 	return (
 		<>
 			<NextSeo
-				title='ChessPecker | Option'
-				description='Page to create set in order to practice woodPecker chess methode on ChessPecker website'
+				title='Chesspecker | Option'
+				description="Start improving your chess skills today with chesspecker's training."
 			/>
 			<div className='flex flex-col items-center justify-center w-11/12 min-h-screen pt-32 pb-24 text-center'>
 				<div>
