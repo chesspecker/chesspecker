@@ -20,7 +20,7 @@ import Layout from '@/layouts/main';
 import {formattedDate, sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
 import audio from '@/lib/sound';
-import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
+import {configµ, orientationµ, animationµ, playµ, revertedµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
@@ -67,6 +67,7 @@ const PlayingPage = ({set}: Props) => {
 	const [completedPuzzles, setCompletedPuzzles] = useAtom(playµ.completed);
 
 	const [orientation, setOrientation] = useAtom(orientationµ);
+	const [isReverted] = useAtom(revertedµ);
 	const [, setAnimation] = useAtom(animationµ);
 
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
@@ -192,7 +193,10 @@ const PlayingPage = ({set}: Props) => {
 		setLastMove(() => []);
 		setIsComplete(() => false);
 		setPendingMove(() => undefined);
-		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
+		setOrientation(() => {
+			if (isReverted) return chess.turn() === 'b' ? 'black' : 'white';
+			return chess.turn() === 'b' ? 'white' : 'black';
+		});
 		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
 

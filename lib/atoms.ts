@@ -41,6 +41,7 @@ export const playµ = {
 };
 
 export const orientationµ = atom<'white' | 'black'>('white');
+export const revertedµ = atom<boolean>(false);
 
 export type Animation =
 	| ''
