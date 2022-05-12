@@ -4,6 +4,7 @@ import Solution from './solution';
 
 type Props = {
 	answer: string;
+	fen: string;
 	hasSpacedRepetition: boolean;
 	changePuzzle: () => void;
 	launchTimer: () => void;
@@ -11,6 +12,7 @@ type Props = {
 
 const RightBar = ({
 	answer,
+	fen,
 	changePuzzle,
 	launchTimer,
 	hasSpacedRepetition,
@@ -20,8 +22,8 @@ const RightBar = ({
 			<div className='mt-2'>
 				<Progress hasSpacedRepetition={hasSpacedRepetition} />
 			</div>
-			<div className='mt-2 h-48'>
-				<Solution answer={answer} />
+			<div className='h-48 mt-2'>
+				<Solution answer={answer} fen={fen} />
 				<MoveToNext changePuzzle={changePuzzle} launchTimer={launchTimer} />
 			</div>
 		</div>

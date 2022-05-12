@@ -695,6 +695,7 @@ const PlayingPage = ({set}: Props) => {
 						<BottomBar puzzles={previousPuzzle} />
 					</div>
 					<RightBar
+						fen={chess.fen()}
 						hasSpacedRepetition={set.spacedRepetition}
 						answer={moveHistory[moveNumber]}
 						changePuzzle={changePuzzle}

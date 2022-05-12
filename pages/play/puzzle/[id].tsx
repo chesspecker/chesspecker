@@ -396,7 +396,7 @@ const PlayingPage = ({puzzle}: Props) => {
 
 					<div className='flex flex-row justify-center w-5/6 md:w-fit md:flex-col'>
 						<div className='mt-2'>
-							<Solution answer={moveHistory[moveNumber]} />
+							<Solution answer={moveHistory[moveNumber]} fen={chess.fen()} />
 							<MoveToNext changePuzzle={fn} launchTimer={launchTimer} />
 							<ButtonLink
 								className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'
