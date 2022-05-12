@@ -14,7 +14,7 @@ import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
-import {Button} from '@/components/button';
+import {Button, ButtonLink} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
 import {get as get_} from '@/lib/play';
 import Board from '@/components/play/board';
@@ -398,6 +398,11 @@ const PlayingPage = ({puzzle}: Props) => {
 						<div className='mt-2'>
 							<Solution answer={moveHistory[moveNumber]} />
 							<MoveToNext changePuzzle={fn} launchTimer={launchTimer} />
+							<ButtonLink
+								href={`https://lichess.org/training/${puzzle.PuzzleId}`}
+							>
+								SEE IN LICHESS
+							</ButtonLink>
 						</div>
 					</div>
 				</div>
