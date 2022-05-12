@@ -399,6 +399,7 @@ const PlayingPage = ({puzzle}: Props) => {
 							<Solution answer={moveHistory[moveNumber]} />
 							<MoveToNext changePuzzle={fn} launchTimer={launchTimer} />
 							<ButtonLink
+								className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'
 								href={`https://lichess.org/training/${puzzle.PuzzleId}`}
 							>
 								SEE IN LICHESS
