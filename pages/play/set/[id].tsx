@@ -239,9 +239,34 @@ const PlayingPage = ({set}: Props) => {
 		[],
 	);
 
-	useEffect(() => {
-		if (!user) return;
-		updateFinishedPuzzle();
+	useEffectAsync(async () => {
+		if (!shouldCheck) return;
+		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
+		const body: AchivementsArgs = {
+			streakMistakes,
+			streakTime,
+			completionTime: timeWithoutMistakes,
+			completionMistakes: mistakes,
+			totalPuzzleSolved: user.totalPuzzleSolved,
+			themes: puzzle.Themes.map(t => {
+				const a = user.puzzleSolvedByCategories.find(c => t === c.title);
+				const count = a ? a.count + 1 : 1;
+				return {title: t, count};
+			}),
+			streak,
+			isSponsor: user.isSponsor,
+		};
+
+		const unlockedAchievements = await checkForAchievement(body);
+
+		if (unlockedAchievements.length > 0) {
+			setShowNotification(() => true);
+			setNotificationMessage(() => 'Achievement unlocked!');
+			setNotificationUrl(() => '/dashboard');
+		}
+
+		setShouldCheck(() => false);
 	}, [shouldCheck]);
 
 	/**
@@ -295,30 +320,7 @@ const PlayingPage = ({set}: Props) => {
 		promises.push(update_.user(user._id.toString(), incrementUser));
 		await Promise.all(promises).catch(console.error);
 
-		const body: AchivementsArgs = {
-			streakMistakes,
-			streakTime,
-			completionTime: timeWithoutMistakes,
-			completionMistakes: mistakes,
-			totalPuzzleSolved: user.totalPuzzleSolved,
-			themes: puzzle.Themes.map(t => {
-				const a = userThemes.find(c => t === c.title);
-				const count = a ? a.count + 1 : 1;
-				return {title: t, count};
-			}),
-			streak,
-			isSponsor: user.isSponsor,
-		};
-
-		const unlockedAchievements = await checkForAchievement(body);
 		const puzzleItem = puzzleList[puzzleIndex];
-
-		if (unlockedAchievements.length > 0) {
-			setShowNotification(() => true);
-			setNotificationMessage(() => 'Achievement unlocked!');
-			setNotificationUrl(() => '/dashboard');
-		}
-
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
@@ -343,6 +345,8 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		update.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
+
+		setShouldCheck(() => true);
 
 		try {
 			const result = await update_.puzzle(
@@ -373,9 +377,6 @@ const PlayingPage = ({set}: Props) => {
 		isSolutionClicked,
 		getGrade,
 		mutate,
-		streak,
-		streakMistakes,
-		streakTime,
 		user,
 	]);
 
@@ -383,7 +384,7 @@ const PlayingPage = ({set}: Props) => {
 	 * Called when puzzle is completed, switch to the next one.
 	 */
 	const changePuzzle = useCallback(async () => {
-		setShouldCheck(value => !value);
+		await updateFinishedPuzzle();
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
 		setInitialPuzzleTimer(() => Date.now());
