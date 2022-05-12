@@ -32,10 +32,6 @@ const Solution = ({answer, fen}: Props) => {
 		});
 	}, [answer, fen]);
 
-	useEffect(() => {
-		console.log('solution', solution);
-	}, [solution]);
-
 	if (timer.value < 6)
 		return <div className={disabledClasses}>SOLUTION IN {6 - timer.value}</div>;
 

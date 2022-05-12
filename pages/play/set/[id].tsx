@@ -46,6 +46,7 @@ import {
 	shouldInrementOrResetStreakCount,
 	updateStreak,
 } from '@/lib/streak';
+import {UpdateData} from '@/pages/api/puzzle/[id]';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -317,16 +318,17 @@ const PlayingPage = ({set}: Props) => {
 		// Is there some themes not in common?
 		const themesNotInCommon = newThemes.filter(id => !oldThemes.has(id));
 
-		let updateUserData: UpdateUser = {
+		const updateUserData: UpdateUser = {
 			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeWithoutMistakes},
 		};
 
 		// If there are, we add them to the user's themes
 		if (themesNotInCommon.length > 0) {
+			/* eslint-disable-next-line @typescript-eslint/dot-notation */
 			updateUserData['$push'] = {puzzleSolvedByCategories: {$each: []}};
 
 			for (const theme of themesNotInCommon) {
-				updateUserData['$push'].puzzleSolvedByCategories.$each.push({
+				updateUserData.$push.puzzleSolvedByCategories.$each.push({
 					title: theme,
 					count: 1,
 				});
@@ -344,13 +346,15 @@ const PlayingPage = ({set}: Props) => {
 				] = 1;
 
 		promises.push(update_.user(user._id.toString(), updateUserData));
-		const result = await Promise.all(promises).catch(console.error);
-		const grades = result[0].puzzle.grades;
+		const resultList = await Promise.all(promises).catch(console.error);
+		const result = resultList[0] as UpdateData;
+		if (!result.success) return;
+		const grades = result.puzzle.grades;
 		setPreviousPuzzle(previous => [
 			...previous,
 			{
 				grade: grades[grades.length - 1],
-				PuzzleId: result[0].puzzle.PuzzleId,
+				PuzzleId: result.puzzle.PuzzleId,
 			},
 		]);
 
