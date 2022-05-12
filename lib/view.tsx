@@ -8,6 +8,7 @@ import {
 	FireIcon,
 	LightningBoltIcon,
 	AcademicCapIcon,
+	ChartBarIcon,
 } from '@heroicons/react/solid';
 import useClock from '@/hooks/use-clock';
 import {PuzzleSetInterface} from '@/types/models';
@@ -88,6 +89,14 @@ const totalTimeSpent = (set: PuzzleSetInterface): ViewData => {
 		Icon: ClockIcon,
 	};
 };
+
+const setRating = (set: PuzzleSetInterface): ViewData => ({
+	title: 'Elo rating',
+	stat: <span>{set.rating}</span>,
+	hasChange: false,
+	Icon: ChartBarIcon,
+	tooltip: 'Lichess rating of the puzzles in this set.',
+});
 
 const time = {
 	lastOverFirst: (set: PuzzleSetInterface): ViewData => {
@@ -256,6 +265,7 @@ export const getOverviewStats = (set: PuzzleSetInterface): ViewData[] => {
 	data.push(totalCycles(set));
 	data.push(totalAverageGrade(set));
 	data.push(totalTimeSpent(set));
+	data.push(setRating(set));
 	return data;
 };
 
