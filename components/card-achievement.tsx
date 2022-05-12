@@ -18,11 +18,7 @@ const Card = ({
 				<div className='absolute top-0 left-0 z-20 w-full h-full bg-black opacity-50' />
 			)}
 			<div className='relative flex items-center justify-center w-full bg-white rounded-lg h-1/2 dark:bg-sky-700'>
-				<Image
-					src={achievement.image}
-					layout='fill'
-					objectFit='contain'
-				/>
+				<Image src={achievement.image} layout='fill' objectFit='contain' />
 			</div>
 			<div className='flex flex-col w-full h-1/2'>
 				<h4 className='mt-2 text-xl font-bold text-white dark:text-sky-800'>
