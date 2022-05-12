@@ -2,9 +2,10 @@ import type {ReactElement} from 'react';
 import Image from 'next/image.js';
 import {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
+import Link from 'next/link';
 import Layout from '@/layouts/login';
-import {ButtonLink as Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
+import {Button} from '@/components/button';
 
 const IndexPage = () => (
 	<>
@@ -22,9 +23,11 @@ const IndexPage = () => (
 				newcomer 👋
 			</h1>
 			<div className='w-full mx-0 my-3 text-center '>
-				<Button className='py-4' href='/api/auth/lichess/login'>
-					SIGN IN WITH LICHESS
-				</Button>
+				<Link href='/api/auth/lichess/login'>
+					<a>
+						<Button className='py-4'>SIGN IN WITH LICHESS</Button>
+					</a>
+				</Link>
 			</div>
 		</div>
 	</>

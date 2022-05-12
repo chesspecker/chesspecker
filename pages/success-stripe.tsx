@@ -2,8 +2,10 @@ import {ReactElement, useState, useEffect} from 'react';
 import Stripe from 'stripe';
 import {useRouter} from 'next/router';
 import {NextSeo} from 'next-seo';
+import Link from 'next/link';
 import Layout from '@/layouts/login';
-import {ButtonLink as Button, ButtonLink} from '@/components/button';
+import {Button, ButtonLink} from '@/components/button';
+
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
 import useUser from '@/hooks/use-user';
@@ -80,7 +82,11 @@ const SuccessPage = () => {
 					<ButtonLink href='https://discord.gg/qDftJZBBHa'>
 						JOIN DISCORD! 🔥
 					</ButtonLink>
-					<Button href='/dashboard'>BACK TO DASHBOAD 🏠</Button>
+					<Link href='/dashboard'>
+						<a>
+							<Button>BACK TO DASHBOAD 🏠</Button>
+						</a>
+					</Link>
 				</div>
 			</div>
 		</>

@@ -6,6 +6,7 @@ import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
+import Link from 'next/link';
 import {PuzzleInterface} from '@/types/models';
 import Layout from '@/layouts/main';
 import audio from '@/lib/sound';
@@ -13,7 +14,7 @@ import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
-import {ButtonLink as Button} from '@/components/button';
+import {Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
 import {get as get_} from '@/lib/play';
 import Board from '@/components/play/board';
@@ -371,12 +372,13 @@ const PlayingPage = ({puzzle}: Props) => {
 			<div className='flex flex-col justify-center w-screen min-h-screen pt-32 pb-24 m-0 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
 					<Timer value={0} mistakes={mistakes} isRunning={isRunning} />
-					<Button
-						className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'
-						href='/dashboard'
-					>
-						LEAVE 🧨
-					</Button>
+					<Link href='/dashboard'>
+						<a>
+							<Button className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'>
+								LEAVE 🧨
+							</Button>
+						</a>
+					</Link>
 				</div>
 				<div className='flex flex-col items-center justify-center w-full md:flex-row'>
 					<div className='hidden w-36 md:invisible md:block' />

@@ -1,8 +1,9 @@
 import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
 import {NextSeo} from 'next-seo';
+import Link from 'next/link';
 import Layout from '@/layouts/main';
-import {ButtonLink} from '@/components/button';
+import {Button} from '@/components/button';
 import Card from '@/components/card-achievement';
 import {achievements} from '@/data/achievements';
 import type {AchievementInterface, UserInterface} from '@/types/models';
@@ -42,15 +43,27 @@ const User = () => {
 						<>
 							<p className='mr-2'>Official Sponsor</p>
 							<div>
-								<ButtonLink href='/sponsor'>Manage subscription</ButtonLink>
+								<Link href='/sponsor'>
+									<a>
+										<Button>Manage subscription</Button>
+									</a>
+								</Link>
 							</div>
 						</>
 					) : (
-						<ButtonLink href='/sponsor'>Become sponsor </ButtonLink>
+						<Link href='/sponsor'>
+							<a>
+								<Button>Become sponsor</Button>
+							</a>
+						</Link>
 					)}
 
 					<div className='md:ml-2'>
-						<ButtonLink href='/achievements'>See all achievements</ButtonLink>
+						<Link href='/achievements'>
+							<a>
+								<Button>See all achievements</Button>
+							</a>
+						</Link>
 					</div>
 				</div>
 

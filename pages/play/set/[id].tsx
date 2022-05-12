@@ -7,6 +7,7 @@ import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import useSWR from 'swr';
 import {NextSeo} from 'next-seo';
+import Link from 'next/link';
 import {
 	PuzzleInterface,
 	PuzzleItemInterface,
@@ -23,7 +24,7 @@ import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
-import {ButtonLink as Button} from '@/components/button';
+import {Button} from '@/components/button';
 import {checkForAchievement} from '@/lib/achievements';
 import Notification from '@/components/notification';
 import {withSessionSsr} from '@/lib/session';
@@ -668,12 +669,13 @@ const PlayingPage = ({set}: Props) => {
 						mistakes={totalMistakes}
 						isRunning={isRunning}
 					/>
-					<Button
-						className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'
-						href='/dashboard'
-					>
-						LEAVE 🧨
-					</Button>
+					<Link href='/dashboard'>
+						<a>
+							<Button className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'>
+								LEAVE 🧨
+							</Button>
+						</a>
+					</Link>
 				</div>
 				<div className='flex flex-col items-center justify-center w-full md:flex-row'>
 					<div className='hidden w-36 md:invisible md:block' />
