@@ -105,6 +105,8 @@ const PlayingPage = ({set}: Props) => {
 	const [streak, setStreak] = useState<Streak>();
 	const [previousStreak, setPreviousStreak] = useState<Streak>();
 
+	const [shouldCheck, setShouldCheck] = useState<boolean>(false);
+
 	useEffectAsync(async () => {
 		if (!previousStreak || !id) return;
 
@@ -237,9 +239,15 @@ const PlayingPage = ({set}: Props) => {
 		[],
 	);
 
+	useEffect(() => {
+		if (!user) return;
+		updateFinishedPuzzle();
+	}, [shouldCheck]);
+
 	/**
 	 * Push the data of the current puzzle when complete.
 	 */
+
 	const updateFinishedPuzzle = useCallback(async () => {
 		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
@@ -375,7 +383,7 @@ const PlayingPage = ({set}: Props) => {
 	 * Called when puzzle is completed, switch to the next one.
 	 */
 	const changePuzzle = useCallback(async () => {
-		await updateFinishedPuzzle();
+		setShouldCheck(value => !value);
 		setCompletedPuzzles(previous => previous + 1);
 		setMistakes(() => 0);
 		setInitialPuzzleTimer(() => Date.now());
