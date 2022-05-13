@@ -47,7 +47,7 @@ const CustomApp = ({
 					images: [
 						{
 							url: 'https://www.chesspecker.com/images/banner.jpg',
-							secureUrl:'https://www.chesspecker.com/images/banner.jpg',
+							secureUrl: 'https://www.chesspecker.com/images/banner.jpg',
 							width: 1200,
 							height: 627,
 							alt: 'chesspecker',

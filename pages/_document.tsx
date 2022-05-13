@@ -11,18 +11,9 @@ const Document = () => {
 					content='black-translucent'
 				/>
 				<meta name='apple-mobile-web-app-title' content='Chesspecker' />
-				<meta property='og:title' content='Chesspecker' />
-				<meta
-					property='og:description'
-					content='Start improving your chess skills today with chesspecker’s training.'
-				/>
 				<link rel='manifest' href='/manifest.json' />
 				<link rel='apple-touch-icon' href='/icon.png' />
 				<meta name='theme-color' content='#fff' />
-				<meta
-					name='description'
-					content='Start improving your chess skills today with chesspecker’s training.'
-				/>
 				<link rel='canonical' href='https://www.chesspecker.com/' />
 				{/* Favicon */}
 				<link
