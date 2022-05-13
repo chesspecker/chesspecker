@@ -109,6 +109,15 @@ const PlayingPage = ({set}: Props) => {
 
 	const [shouldCheck, setShouldCheck] = useState<boolean>(false);
 
+	useEffect(() => {
+		if (!userData) return;
+		if (!userData.success) return;
+
+		setUser(() => userData.user);
+		setId(() => userData.user._id.toString());
+		setPreviousStreak(() => userData.user.streak);
+	}, [userData]);
+
 	useEffectAsync(async () => {
 		if (!previousStreak || !id) return;
 
@@ -134,15 +143,6 @@ const PlayingPage = ({set}: Props) => {
 
 		setStreak(() => updatedStreak);
 	}, [previousStreak, id]);
-
-	useEffect(() => {
-		if (!userData) return;
-		if (!userData.success) return;
-
-		setUser(() => userData.user);
-		setId(() => userData.user._id.toString());
-		setPreviousStreak(() => userData.user.streak);
-	}, [userData]);
 
 	// For achievement
 	const [streakMistakes, setStreakMistakes] = useState(0);
@@ -197,12 +197,12 @@ const PlayingPage = ({set}: Props) => {
 		setLastMove(() => []);
 		setIsComplete(() => false);
 		setPendingMove(() => undefined);
+		setInitialPuzzleTimer(() => Date.now());
+		setIsSolutionClicked(() => false);
 		setOrientation(() => {
 			if (isReverted) return chess.turn() === 'b' ? 'black' : 'white';
 			return chess.turn() === 'b' ? 'white' : 'black';
 		});
-		setInitialPuzzleTimer(() => Date.now());
-		setIsSolutionClicked(() => false);
 
 		const config: Partial<Config> = {
 			fen: chess.fen(),
@@ -260,13 +260,15 @@ const PlayingPage = ({set}: Props) => {
 			isSponsor: user.isSponsor,
 		};
 
-		const unlockedAchievements = await checkForAchievement(body);
-
-		if (unlockedAchievements.length > 0) {
-			setShowNotification(() => true);
-			setNotificationMessage(() => 'Achievement unlocked!');
-			setNotificationUrl(() => '/dashboard');
-		}
+		checkForAchievement(body)
+			.then(unlockedAchievements => {
+				if (unlockedAchievements.length > 0) {
+					setShowNotification(() => true);
+					setNotificationMessage(() => 'Achievement unlocked!');
+					setNotificationUrl(() => '/dashboard');
+				}
+			})
+			.catch(console.error);
 
 		setShouldCheck(() => false);
 	}, [shouldCheck]);
