@@ -496,13 +496,11 @@ const PlayingPage = ({set}: Props) => {
 	const checkPuzzleComplete = useCallback(
 		async moveNumber => {
 			const isComplete = moveNumber === moveHistory.length;
-
 			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
 			setAnimation(() => animation);
-			await cleanAnimation();
+			cleanAnimation().catch(console.error);
 
 			if (!isComplete) return playFromComputer(moveNumber);
-
 			if (set.spacedRepetition) await checkChunkComplete();
 			if (!set.spacedRepetition) await checkSetComplete();
 
@@ -560,7 +558,7 @@ const PlayingPage = ({set}: Props) => {
 		setMistakes(previous => previous + 1);
 		setTotalMistakes(previous => previous + 1);
 		setAnimation(() => 'animate-wrongMove');
-		await cleanAnimation();
+		cleanAnimation().catch(console.error);
 		await audio('ERROR', hasSound);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound, cleanAnimation]);
