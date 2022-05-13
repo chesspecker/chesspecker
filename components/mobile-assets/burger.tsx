@@ -111,7 +111,7 @@ const Burger = () => {
 										}}
 									/>
 								)}
-								{isDarkMode ? 'Dark mode' : 'Light Mode'}
+								{isDarkMode ? 'Light Mode' : 'Dark Mode'}
 							</button>
 						</Menu.Item>
 					</Menu.Items>
