@@ -43,6 +43,17 @@ const CustomApp = ({
 					locale: 'en_IE',
 					url: 'https://www.chesspecker.com/',
 					site_name: 'Chesspecker',
+					images: [
+						{
+							url: 'https://www.chesspecker.com/images/banner.jpg',
+							width: 1200,
+							height: 627,
+							alt: 'ChessPecker',
+							type: 'image/jpg',
+						},
+					],
+					description:
+						'Start improving your chess skills today with chesspecker’s training. ',
 				}}
 				titleTemplate='%s | Chesspecker'
 				description='Start improving your chess skills today with chesspecker’s training. Climb the elo rating using the woodpecker method.'
