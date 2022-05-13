@@ -182,7 +182,6 @@ const PlayingPage = ({set}: Props) => {
 		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
 
 		if (nextPuzzle) {
-			console.log('using next:', nextPuzzle);
 			setPuzzle(() => nextPuzzle);
 		} else {
 			const puzzleItem = puzzleList[puzzleIndex];
