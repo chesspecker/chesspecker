@@ -334,22 +334,18 @@ const PlayingPage = ({set}: Props) => {
 		// Is there some themes not in common?
 		const themesNotInCommon = newThemes.filter(id => !oldThemes.has(id));
 
-		const updateUserData: UpdateUser = {
+		const incUser: UpdateUser = {
 			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeWithoutMistakes},
 		};
+		const pushUser = {$push: {}};
 
 		// If there are, we add them to the user's themes
-		if (themesNotInCommon.length > 0) {
-			/* eslint-disable-next-line @typescript-eslint/dot-notation */
-			updateUserData['$push'] = {puzzleSolvedByCategories: {$each: []}};
-
-			for (const theme of themesNotInCommon) {
-				updateUserData.$push.puzzleSolvedByCategories.$each.push({
-					title: theme,
-					count: 1,
-				});
-			}
-		}
+		if (themesNotInCommon.length > 0)
+			pushUser.$push = {
+				puzzleSolvedByCategories: {
+					$each: themesNotInCommon.map(title => ({title, count: 1})),
+				},
+			};
 
 		// Is there some puzzles in common in the old and new themes?
 		const themesInCommon = userThemes.filter(t => newThemes.includes(t.title));
@@ -357,14 +353,15 @@ const PlayingPage = ({set}: Props) => {
 		// If there are, we update the user's themes
 		if (themesInCommon.length > 0)
 			for (const theme of themesInCommon)
-				updateUserData.$inc[
+				incUser.$inc[
 					`puzzleSolvedByCategories.${userThemes.indexOf(theme)}.count`
 				] = 1;
 
 		setShouldCheck(() => true);
 		Promise.all([
 			update_.puzzle(set._id.toString(), puzzleItem._id.toString(), update),
-			update_.user(user._id.toString(), updateUserData),
+			update_.user(user._id.toString(), pushUser),
+			update_.user(user._id.toString(), incUser),
 		])
 			.then(async () => mutate())
 			.catch(console.error);

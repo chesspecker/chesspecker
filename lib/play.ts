@@ -35,18 +35,21 @@ const updateSet = async (
 		body: JSON.stringify(data),
 	}).then(async response => response.json());
 
-export type UpdateUser = {
-	$inc: {
-		totalPuzzleSolved: number;
-		totalTimePlayed: number;
-		puzzleSolvedByCategories?: Record<number, ThemeItem>;
-	};
-	$push?: {
-		puzzleSolvedByCategories: {
-			$each: ThemeItem[];
-		};
-	};
-};
+export type UpdateUser =
+	| {
+			$inc: {
+				totalPuzzleSolved: number;
+				totalTimePlayed: number;
+				puzzleSolvedByCategories?: Record<number, ThemeItem>;
+			};
+	  }
+	| {
+			$push: {
+				puzzleSolvedByCategories: {
+					$each: ThemeItem[];
+				};
+			};
+	  };
 
 const updateUser = async (
 	id: string,
