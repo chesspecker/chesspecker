@@ -60,6 +60,7 @@ type Props = {set: PuzzleSetInterface};
 const PlayingPage = ({set}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
+	const [hasClock] = useAtom(configµ.hasClock);
 
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
@@ -670,11 +671,13 @@ const PlayingPage = ({set}: Props) => {
 			/>
 			<div className='flex flex-col justify-start w-screen min-h-screen pt-32 pb-24 m-0 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
-					<Timer
-						value={initialSetTimer}
-						mistakes={totalMistakes}
-						isRunning={isRunning}
-					/>
+					{hasClock && (
+						<Timer
+							value={initialSetTimer}
+							mistakes={totalMistakes}
+							isRunning={isRunning}
+						/>
+					)}
 					<Link href='/dashboard'>
 						<a>
 							<Button className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'>
