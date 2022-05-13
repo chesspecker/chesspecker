@@ -46,7 +46,6 @@ import {
 	shouldInrementOrResetStreakCount,
 	updateStreak,
 } from '@/lib/streak';
-import {UpdateData} from '@/pages/api/puzzle/[id]';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -287,8 +286,6 @@ const PlayingPage = ({set}: Props) => {
 		const oldThemes = new Set(userThemes.map(t => t.title));
 		const newThemes = puzzle.Themes;
 
-		const promises: Array<Promise<any>> = [];
-
 		const puzzleItem = puzzleList[puzzleIndex];
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
@@ -296,6 +293,14 @@ const PlayingPage = ({set}: Props) => {
 			timeTaken: timeWithoutMistakes,
 			streak: puzzleItem.streak,
 		});
+
+		setPreviousPuzzle(previous => [
+			...previous,
+			{
+				grade: newGrade,
+				PuzzleId: puzzle.PuzzleId,
+			},
+		]);
 
 		const update = {
 			$inc: {
@@ -314,9 +319,6 @@ const PlayingPage = ({set}: Props) => {
 		};
 
 		update.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
-		promises.push(
-			update_.puzzle(set._id.toString(), puzzleItem._id.toString(), update),
-		);
 
 		// Is there some themes not in common?
 		const themesNotInCommon = newThemes.filter(id => !oldThemes.has(id));
@@ -348,21 +350,13 @@ const PlayingPage = ({set}: Props) => {
 					`puzzleSolvedByCategories.${userThemes.indexOf(theme)}.count`
 				] = 1;
 
-		promises.push(update_.user(user._id.toString(), updateUserData));
-		const resultList = await Promise.all(promises).catch(console.error);
-		const result = resultList[0] as UpdateData;
-		if (!result.success) return;
-		const grades = result.puzzle.grades;
-		setPreviousPuzzle(previous => [
-			...previous,
-			{
-				grade: grades[grades.length - 1],
-				PuzzleId: result.puzzle.PuzzleId,
-			},
-		]);
-
-		await mutate();
 		setShouldCheck(() => true);
+		Promise.all([
+			update_.puzzle(set._id.toString(), puzzleItem._id.toString(), update),
+			update_.user(user._id.toString(), updateUserData),
+		])
+			.then(async () => mutate())
+			.catch(console.error);
 	}, [
 		puzzleIndex,
 		puzzle,
