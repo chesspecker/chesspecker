@@ -45,7 +45,7 @@ const CustomApp = ({
 					site_name: 'Chesspecker',
 				}}
 				titleTemplate='%s | Chesspecker'
-				description='Start improving your chess skills today with chesspecker’s training.'
+				description='Start improving your chess skills today with chesspecker’s training. Climb the elo rating using the woodpecker method.'
 				additionalMetaTags={[
 					{name: 'robots', content: 'index, follow'},
 					{name: 'viewport', content: 'initial-scale=1.0, width=device-width'},

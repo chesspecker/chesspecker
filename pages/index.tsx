@@ -9,7 +9,7 @@ import {Button} from '@/components/button';
 
 const IndexPage = () => (
 	<>
-		<NextSeo title='⚔️ Login' />
+		<NextSeo title='⚔️ Welcome' />
 		<div className='flex flex-col items-center justify-center h-screen m-0 '>
 			<Image
 				className='block w-40 h-40 mx-auto mt-8'
