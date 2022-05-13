@@ -198,7 +198,7 @@ const PlayingPage = ({puzzle}: Props) => {
 
 			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
 			setAnimation(() => animation);
-			await cleanAnimation();
+			cleanAnimation().catch(console.error);
 
 			if (!isComplete) return playFromComputer(moveNumber);
 			setIsRunning(() => false);
@@ -270,7 +270,7 @@ const PlayingPage = ({puzzle}: Props) => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
 		setAnimation(() => 'animate-wrongMove');
-		await cleanAnimation();
+		cleanAnimation().catch(console.error);
 		await audio('ERROR', hasSound);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound, cleanAnimation]);

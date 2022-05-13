@@ -76,6 +76,7 @@ const PlayingPage = ({set}: Props) => {
 	const [puzzleList, setPuzzleList] = useState<PuzzleItemInterface[]>([]);
 	const [puzzleIndex, setPuzzleIndex] = useState<number>(0);
 	const [puzzle, setPuzzle] = useState<PuzzleInterface>();
+	const [nextPuzzle, setNextPuzzle] = useState<PuzzleInterface>();
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
@@ -179,9 +180,20 @@ const PlayingPage = ({set}: Props) => {
 	 */
 	useEffectAsync(async () => {
 		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
-		const nextPuzzle = puzzleList[puzzleIndex];
-		const data = await get_.puzzle(nextPuzzle.PuzzleId.toString());
-		if (data.success) setPuzzle(() => data.puzzle);
+
+		if (nextPuzzle) {
+			console.log('using next:', nextPuzzle);
+			setPuzzle(() => nextPuzzle);
+		} else {
+			const puzzleItem = puzzleList[puzzleIndex];
+			const data = await get_.puzzle(puzzleItem.PuzzleId.toString());
+			if (data.success) setPuzzle(() => data.puzzle);
+		}
+
+		if (!puzzleList[puzzleIndex + 1] || puzzleList.length === 0) return;
+		const nextPuzzleItem = puzzleList[puzzleIndex + 1];
+		const dataNext = await get_.puzzle(nextPuzzleItem.PuzzleId.toString());
+		if (dataNext.success) setNextPuzzle(() => dataNext.puzzle);
 	}, [puzzleList, puzzleIndex]);
 
 	/**
