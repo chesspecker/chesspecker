@@ -9,11 +9,10 @@
 > chesspecker, open-source app to practice chess!
 
 [![LINTER](https://github.com/chesspecker/chesspecker/actions/workflows/lint.yml/badge.svg)](https://github.com/chesspecker/chesspecker/actions/workflows/lint.yml)
-[![TESTS](https://github.com/chesspecker/chesspecker/actions/workflows/test.yml/badge.svg)](https://github.com/chesspecker/chesspecker/actions/workflows/test.yml)
 
-#### Beta
+#### Discord
 
-The website is currently in beta.
+Join us to discuss issues and ideas: on [discord.](https://discord.com/invite/qDftJZBBHa) 
 
 
 ### Run in local
@@ -35,7 +34,7 @@ Finally, connect to the docker container and populate the database:
 
 ```
 docker exec -it mongo /bin/sh
-mongorestore dump
+mongorestore dump --gzip
 ```
 
 Navigate to http://localhost:3000
