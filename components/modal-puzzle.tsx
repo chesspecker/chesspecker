@@ -1,16 +1,23 @@
 import {Dispatch, Fragment, SetStateAction} from 'react';
 import {Transition} from '@headlessui/react';
 import {useRouter} from 'next/router';
-import {Button} from '@/components/button';
+import {Button, ButtonLink} from '@/components/button';
+import {PuzzleInterface} from '@/types/models';
 
 export type Stat = {time: number; mistakes: number; grade: string};
 type Props = {
 	stat: Stat;
+	puzzle: PuzzleInterface;
 	/* eslint-disable-next-line react/boolean-prop-naming */
 	showModal: boolean;
 	setShowModal: Dispatch<SetStateAction<boolean>>;
 };
-const ModalPuzzle = ({showModal, stat, setShowModal}: Props): JSX.Element => {
+const ModalPuzzle = ({
+	showModal,
+	stat,
+	setShowModal,
+	puzzle,
+}: Props): JSX.Element => {
 	const router = useRouter();
 	return (
 		<Transition
@@ -60,6 +67,9 @@ const ModalPuzzle = ({showModal, stat, setShowModal}: Props): JSX.Element => {
 					>
 						PLAY AGAIN ⚔️
 					</Button>
+					<ButtonLink href={`https://lichess.org/training/${puzzle.PuzzleId}`}>
+						VIEW ON LICHESS
+					</ButtonLink>
 					<Button
 						onClick={async () => {
 							setShowModal(() => false);

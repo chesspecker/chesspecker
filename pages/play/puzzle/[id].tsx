@@ -14,7 +14,7 @@ import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
-import {Button, ButtonLink} from '@/components/button';
+import {Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
 import {get as get_} from '@/lib/play';
 import Board from '@/components/play/board';
@@ -46,6 +46,7 @@ type Props = {puzzle: PuzzleInterface};
 const PlayingPage = ({puzzle}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
+	const [hasAnimation] = useAtom(configµ.animation);
 
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
@@ -195,10 +196,13 @@ const PlayingPage = ({puzzle}: Props) => {
 	const checkPuzzleComplete = useCallback(
 		async moveNumber => {
 			const isComplete = moveNumber === moveHistory.length;
-
-			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
-			setAnimation(() => animation);
-			cleanAnimation().catch(console.error);
+			if (hasAnimation) {
+				const animation = isComplete
+					? 'animate-finishMove'
+					: 'animate-rightMove';
+				setAnimation(() => animation);
+				cleanAnimation().catch(console.error);
+			}
 
 			if (!isComplete) return playFromComputer(moveNumber);
 			setIsRunning(() => false);
@@ -269,8 +273,11 @@ const PlayingPage = ({puzzle}: Props) => {
 	const onWrongMove = useCallback(async () => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
-		setAnimation(() => 'animate-wrongMove');
-		cleanAnimation().catch(console.error);
+		if (hasAnimation) {
+			setAnimation(() => 'animate-wrongMove');
+			cleanAnimation().catch(console.error);
+		}
+
 		await audio('ERROR', hasSound);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound, cleanAnimation]);
@@ -366,6 +373,7 @@ const PlayingPage = ({puzzle}: Props) => {
 			<NextSeo title='⚔️ Play' />
 			<ModalPuzzle
 				stat={stat}
+				puzzle={puzzle}
 				showModal={showModal}
 				setShowModal={setShowModal}
 			/>
@@ -390,20 +398,17 @@ const PlayingPage = ({puzzle}: Props) => {
 							color={getColor(chess.turn())}
 							onPromote={promotion}
 						/>
-
 						<BottomBar puzzles={[]} />
 					</div>
 
 					<div className='flex flex-row justify-center w-5/6 md:w-fit md:flex-col'>
 						<div className='mt-2'>
-							<Solution answer={moveHistory[moveNumber]} fen={chess.fen()} />
+							<Solution
+								answer={moveHistory[moveNumber]}
+								fen={chess.fen()}
+								puzzle={puzzle}
+							/>
 							<MoveToNext changePuzzle={fn} launchTimer={launchTimer} />
-							<ButtonLink
-								className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'
-								href={`https://lichess.org/training/${puzzle.PuzzleId}`}
-							>
-								SEE IN LICHESS
-							</ButtonLink>
 						</div>
 					</div>
 				</div>

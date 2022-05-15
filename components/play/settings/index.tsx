@@ -5,6 +5,7 @@ import BoardSettings from './board';
 import PiecesSettings from './pieces';
 import SoundSettings from './sound';
 import ClockSettings from './clock';
+import AnimationsSettings from './animations';
 import useModal from '@/hooks/use-modal';
 import GenericModal from '@/components/modal';
 
@@ -21,11 +22,12 @@ const Settings = () => {
 			</button>
 			<GenericModal title='Settings' hide={hide} isOpen={isOpen}>
 				<div className='grid items-center grid-cols-2 gap-3 mt-5 text-sm'>
-					<SoundSettings />
-					<ClockSettings />
 					<BoardSettings />
 					<PiecesSettings />
 					<AutoMoveSettings />
+					<SoundSettings />
+					<ClockSettings />
+					<AnimationsSettings />
 				</div>
 			</GenericModal>
 		</>

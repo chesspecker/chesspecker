@@ -1,27 +1,22 @@
 import {memo, useEffect, useState} from 'react';
 import {useAtom} from 'jotai';
 import * as ChessJS from 'chess.js';
-import {Button} from '../../button';
-import useTimer from '@/hooks/use-timer';
-import {playµ} from '@/lib/atoms';
+import {Button, ButtonLink} from '../../button';
+import {configµ, playµ} from '@/lib/atoms';
+import {PuzzleInterface} from '@/types/models';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
-type Props = {answer: string; fen: string};
+type Props = {answer: string; fen: string; puzzle: PuzzleInterface};
 
 const defaultClasses =
 	'mx-auto md:mx-2 w-36 rounded-md bg-slate-800 dark:bg-white leading-8 mt-0 ml-2 font-bold font-sans text-sm md:text-lg px-2.5 py-2';
 const disabledClasses = `block cursor-default text-white dark:text-sky-800 self-center border border-none border-transparent text-center shadow-sm ${defaultClasses}`;
 
-const Solution = ({answer, fen}: Props) => {
+const Solution = ({answer, fen, puzzle}: Props) => {
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
-	const [time] = useAtom(playµ.timer);
+	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [isComplete] = useAtom(playµ.isComplete);
-	const {timer, updateTimer} = useTimer(time - time);
 	const [solution, setSolution] = useState('');
-
-	useEffect(() => {
-		updateTimer(time - time);
-	}, [time, updateTimer]);
 
 	useEffect(() => {
 		if (!fen) return;
@@ -32,19 +27,14 @@ const Solution = ({answer, fen}: Props) => {
 		});
 	}, [answer, fen]);
 
-	if (timer.value < 6)
-		return <div className={disabledClasses}>SOLUTION IN {6 - timer.value}</div>;
-
-	if (isComplete)
+	if (isComplete && !hasAutoMove)
 		return (
-			<Button
+			<ButtonLink
 				className={disabledClasses}
-				onClick={() => {
-					('');
-				}}
+				href={`https://lichess.org/training/${puzzle.PuzzleId}`}
 			>
-				VIEW SOLUTION
-			</Button>
+				SEE IN LICHESS
+			</ButtonLink>
 		);
 
 	if (isSolutionClicked)

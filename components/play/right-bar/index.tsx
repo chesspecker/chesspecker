@@ -1,10 +1,12 @@
 import MoveToNext from './move-to-next';
 import Progress from './progress';
 import Solution from './solution';
+import {PuzzleInterface} from '@/types/models';
 
 type Props = {
 	answer: string;
 	fen: string;
+	puzzle: PuzzleInterface;
 	hasSpacedRepetition: boolean;
 	changePuzzle: () => void;
 	launchTimer: () => void;
@@ -13,6 +15,7 @@ type Props = {
 const RightBar = ({
 	answer,
 	fen,
+	puzzle,
 	changePuzzle,
 	launchTimer,
 	hasSpacedRepetition,
@@ -23,7 +26,7 @@ const RightBar = ({
 				<Progress hasSpacedRepetition={hasSpacedRepetition} />
 			</div>
 			<div className='h-48 mt-2'>
-				<Solution answer={answer} fen={fen} />
+				<Solution answer={answer} fen={fen} puzzle={puzzle} />
 				<MoveToNext changePuzzle={changePuzzle} launchTimer={launchTimer} />
 			</div>
 		</div>

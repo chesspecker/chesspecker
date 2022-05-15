@@ -24,9 +24,10 @@ export type Pieces = 'cburnett' | 'classic' | 'neo' | 'alpha' | 'bases';
 const board = atomWithStorage<Board>('cp-board', 'green');
 const pieces = atomWithStorage<Pieces>('cp-pieces', 'neo');
 const sound = atomWithStorage<boolean>('cp-sound', true);
+const animation = atomWithStorage<boolean>('cp-animation', true);
 const autoMove = atomWithStorage<boolean>('cp-automove', true);
 export const hasClock = atomWithStorage<boolean>('cp-clock', true);
-export const configµ = {autoMove, board, pieces, sound, hasClock};
+export const configµ = {autoMove, board, pieces, sound, hasClock, animation};
 
 const totalPuzzles = atom<number>(0);
 const completedPuzzles = atom<number>(0);

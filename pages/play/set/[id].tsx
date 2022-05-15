@@ -60,6 +60,7 @@ const PlayingPage = ({set}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
 	const [hasClock] = useAtom(configµ.hasClock);
+	const [hasAnimation] = useAtom(configµ.animation);
 
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
@@ -504,9 +505,13 @@ const PlayingPage = ({set}: Props) => {
 	const checkPuzzleComplete = useCallback(
 		async moveNumber => {
 			const isComplete = moveNumber === moveHistory.length;
-			const animation = isComplete ? 'animate-finishMove' : 'animate-rightMove';
-			setAnimation(() => animation);
-			cleanAnimation().catch(console.error);
+			if (hasAnimation) {
+				const animation = isComplete
+					? 'animate-finishMove'
+					: 'animate-rightMove';
+				setAnimation(() => animation);
+				cleanAnimation().catch(console.error);
+			}
 
 			if (!isComplete) return playFromComputer(moveNumber);
 			if (set.spacedRepetition) await checkChunkComplete();
@@ -565,8 +570,11 @@ const PlayingPage = ({set}: Props) => {
 		chess.undo();
 		setMistakes(previous => previous + 1);
 		setTotalMistakes(previous => previous + 1);
-		setAnimation(() => 'animate-wrongMove');
-		cleanAnimation().catch(console.error);
+		if (hasAnimation) {
+			setAnimation(() => 'animate-wrongMove');
+			cleanAnimation().catch(console.error);
+		}
+
 		await audio('ERROR', hasSound);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound, cleanAnimation]);
@@ -703,6 +711,7 @@ const PlayingPage = ({set}: Props) => {
 					</div>
 					<RightBar
 						fen={chess.fen()}
+						puzzle={puzzle}
 						hasSpacedRepetition={set.spacedRepetition}
 						answer={moveHistory[moveNumber]}
 						changePuzzle={changePuzzle}
