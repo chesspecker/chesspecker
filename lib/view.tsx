@@ -39,13 +39,13 @@ const parseGrade: Record<number, string> = {
 Object.freeze(parseGrade);
 
 const ParseTime = ({time}: {time: number}): JSX.Element => {
-	const [days, hours, minutes, secondes] = useClock(time);
+	const [days, hours, minutes, seconds] = useClock(time);
 	return (
 		<span className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}
-			{secondes !== 0 && `${secondes} secondes `}
+			{seconds !== 0 && `${seconds} seconds `}
 		</span>
 	);
 };
