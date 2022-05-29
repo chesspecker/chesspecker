@@ -42,13 +42,33 @@ const post_ = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {userID} = request.session;
-	const set = await create(userID, JSON.parse(request.body));
-	if (set === null) {
-		response.status(404).json({success: false, error: 'Set not found'});
-		throw new Error('Set not found');
-	}
 
-	response.json({success: true, set});
+	const timeout = new Promise((resolve: (response: string) => void) =>
+		// eslint-disable-next-line no-promise-executor-return
+		setTimeout(resolve, 8000, 'timeout'),
+	);
+
+	const creation = create(userID, JSON.parse(request.body));
+
+	try {
+		const value = await Promise.race([creation, timeout]);
+		if (value === null) {
+			const error = 'Unable to create set';
+			response.status(500).json({success: false, error});
+			throw new Error(error);
+		}
+
+		if (value === 'timeout') {
+			const error = 'timeout';
+			response.status(504).json({success: false, error});
+			throw new Error(error);
+		}
+
+		response.json({success: true, set: value as PuzzleSetInterface});
+	} catch (error: unknown) {
+		const error_ = error as Error;
+		console.error(error_);
+	}
 };
 
 const handler = async (
