@@ -237,15 +237,24 @@ const PlayingPage = ({set}: Props) => {
 		didCheat: boolean;
 		mistakes: number;
 		timeTaken: number;
+		maxTime: number;
+		minTime: number;
 		streak: number;
 	};
 
 	const getGrade = useCallback(
-		({didCheat, mistakes, timeTaken, streak = 0}: BodyData) => {
+		({
+			didCheat,
+			mistakes,
+			timeTaken,
+			maxTime,
+			minTime,
+			streak = 0,
+		}: BodyData) => {
 			if (didCheat || mistakes >= 3) return 1;
-			if (mistakes === 2 || (mistakes === 1 && timeTaken >= 20)) return 2;
-			if (mistakes === 1 || timeTaken >= 20) return 3;
-			if (timeTaken >= 6) return 4;
+			if (mistakes === 2 || (mistakes === 1 && timeTaken >= maxTime)) return 2;
+			if (mistakes === 1 || timeTaken >= maxTime) return 3;
+			if (timeTaken >= minTime) return 4;
 			if (streak < 2) return 5;
 			return 6;
 		},
@@ -298,11 +307,17 @@ const PlayingPage = ({set}: Props) => {
 		const oldThemes = new Set(userThemes.map(t => t.title));
 		const newThemes = puzzle.Themes;
 
+		const moveNumber_ = moveHistory.length / 2;
+		const maxTime = moveNumber_ * 8;
+		const minTime = moveNumber_ * 4;
+
 		const puzzleItem = puzzleList[puzzleIndex];
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
 			timeTaken: timeWithoutMistakes,
+			maxTime,
+			minTime,
 			streak: puzzleItem.streak,
 		});
 
@@ -377,6 +392,7 @@ const PlayingPage = ({set}: Props) => {
 		getGrade,
 		mutate,
 		user,
+		moveHistory.length,
 	]);
 
 	/**
