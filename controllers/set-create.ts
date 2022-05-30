@@ -12,6 +12,14 @@ import type {
 	PuzzleSetInterface,
 } from '@/types/models';
 
+export type Options = {
+	title: PuzzleSetInterface['title'];
+	themeArray: Array<Theme['id']>;
+	size: PuzzleSetInterface['length'];
+	level: PuzzleSetInterface['level'];
+	averageRating: PuzzleSetInterface['rating'];
+};
+
 const rating = (
 	level: PuzzleSetInterface['level'],
 	averageRating = 1500,
@@ -50,78 +58,76 @@ const getFilter = (
 				],
 		  };
 
-export type Options = {
-	title: PuzzleSetInterface['title'];
-	themeArray: Array<Theme['id']>;
-	size: PuzzleSetInterface['length'];
-	level: PuzzleSetInterface['level'];
-	averageRating: PuzzleSetInterface['rating'];
-};
-
 export const create = async (
 	userID: UserInterface['id'],
 	options: Options,
 ): Promise<PuzzleSetInterface> => {
-	const user: UserInterface = (await User.findById(
-		userID,
-	).exec()) as UserInterface;
-	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
 	const setLevel = options.level || 'normal';
 	const [minRating, maxRating] = rating(setLevel, options.averageRating);
-	puzzleSet.user = user._id;
-	puzzleSet.puzzles = [];
-	let puzzlesCount = 0;
 
-	let futurePuzzleSetRating = 0;
-	const iterateCursor = async (filter: FilterQuery<any>) => {
-		const cursor = (await Puzzle.find(filter, {
-			_id: 1,
-			PuzzleId: 1,
-			Rating: 1,
-		}).exec()) as PuzzleInterface[];
-		if (cursor.length === 0) throw new Error('No puzzles found');
-		const docArray = shuffle(cursor);
-		for (const doc of docArray) {
-			if (puzzlesCount >= options.size) break;
-			if (puzzleSet.puzzles.some(pzl => pzl._id === doc._id)) continue;
-			const puzzleToInsert: PuzzleItemInterface = {
-				_id: doc._id,
-				PuzzleId: doc.PuzzleId,
-				played: false,
-				count: 0,
-				streak: 0,
-				order: puzzlesCount,
-				mistakes: [],
-				timeTaken: [],
-				grades: [],
-			};
-			puzzleSet.puzzles.push(puzzleToInsert);
-			futurePuzzleSetRating += doc.Rating;
-			puzzlesCount++;
-		}
+	let filter: FilterQuery<any> = {};
+	const projection = {_id: 1, PuzzleId: 1, Rating: 1};
+
+	const loop = async (spread: number) => {
+		if (spread > 1500) return;
+
+		filter = getFilter(options.themeArray, minRating, maxRating, spread);
+		const possibleDocs = await Puzzle.countDocuments(filter)
+			.limit(options.size)
+			.exec();
+		if (possibleDocs >= options.size) return;
+
+		spread += 10;
+		await loop(spread);
 	};
 
-	let spread = 0;
-	do {
-		const filter = getFilter(options.themeArray, minRating, maxRating, spread);
-		try {
-			// eslint-disable-next-line no-await-in-loop
-			await iterateCursor(filter);
-		} catch (error: unknown) {
-			const error_ = error as Error;
-			throw error_;
-		}
+	await loop(0);
 
-		spread += 25;
-	} while (puzzlesCount < options.size);
+	const puzzles = (await Puzzle.find(filter, projection)
+		.limit(options.size)
+		.lean()
+		.exec()) as PuzzleInterface[];
 
-	puzzleSet.length = puzzlesCount;
+	const shuffledPuzzles = shuffle(puzzles);
+	const handlePuzzle = (puzzle: PuzzleInterface, index: number) => {
+		const puzzleToInsert: PuzzleItemInterface = {
+			_id: puzzle._id,
+			PuzzleId: puzzle.PuzzleId,
+			played: false,
+			count: 0,
+			streak: 0,
+			order: index,
+			mistakes: [],
+			timeTaken: [],
+			grades: [],
+		};
+		return {puzzle: puzzleToInsert, rating: puzzle.Rating};
+	};
+
+	const results = shuffledPuzzles.map((puzzle, index) =>
+		handlePuzzle(puzzle, index),
+	);
+
+	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
+	puzzleSet.puzzles = [];
+	let futurePuzzleSetRating = 0;
+
+	for (const {puzzle, rating} of results) {
+		puzzleSet.puzzles.push(puzzle);
+		futurePuzzleSetRating += rating;
+	}
+
+	const userQuery = User.findById(userID);
+	const user: UserInterface = (await userQuery.exec()) as UserInterface;
+
+	puzzleSet.user = user._id;
+	puzzleSet.length = shuffledPuzzles.length;
 	puzzleSet.title = options.title;
 	puzzleSet.spacedRepetition = false;
 	puzzleSet.cycles = 0;
 	puzzleSet.currentTime = 0;
 	puzzleSet.times = [];
-	puzzleSet.rating = Math.round(futurePuzzleSetRating / puzzlesCount);
+	puzzleSet.rating = Math.round(futurePuzzleSetRating / shuffledPuzzles.length);
 	puzzleSet.progress = 0;
 	puzzleSet.level = setLevel;
 	return puzzleSet.save();
