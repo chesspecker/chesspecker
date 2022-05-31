@@ -82,10 +82,18 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 					<Button
 						className='m-2'
 						onClick={() => {
+							handleClick('price_1L5Q2vGL9hdiIkISCVM9RbKS');
+						}}
+					>
+						☕️ 1€
+					</Button>
+					<Button
+						className='m-2'
+						onClick={() => {
 							handleClick('price_1KxCYVGL9hdiIkISDFBzzU6Z');
 						}}
 					>
-						☕️ 3€
+						☕️☕️ 3€
 					</Button>
 					<Button
 						className='m-2'
@@ -93,7 +101,7 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 							handleClick('price_1KxCa8GL9hdiIkISXvkAuA4F');
 						}}
 					>
-						☕️☕️ 5€
+						☕️☕️☕️ 5€
 					</Button>
 					<Button
 						className='m-2'
@@ -101,7 +109,7 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 							handleClick('price_1KxCafGL9hdiIkISewaLCtNO');
 						}}
 					>
-						☕️☕️☕️ 15€
+						🛢 15€
 					</Button>
 				</div>
 			</div>

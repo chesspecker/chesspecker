@@ -2,18 +2,22 @@ import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
 import {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
+import {useAtom} from 'jotai';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
 import {AchievementItem, UserInterface} from '@/types/models';
 import Modal from '@/components/modal-achievement';
 import {withSessionSsr} from '@/lib/session';
+import {Banner} from '@/components/dashboard/banner';
+import {supportBannerµ} from '@/lib/atoms';
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
 	const data = useUser();
 	const [user, setUser] = useState<UserInterface>();
 	const [achievementsList, setList] = useState<AchievementItem[]>([]);
+	const [isVisible, setIsVisible] = useAtom(supportBannerµ);
 
 	useEffect(() => {
 		if (!data) return;
@@ -49,7 +53,14 @@ const DashbaordPage = () => {
 				currentAchievementItem={achievementsList[0]}
 				handleClick={updateValidatedAchievement}
 			/>
-			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 relative  '>
+				{!user?.isSponsor && isVisible && (
+					<div className='w-full absolute top-24 left-0'>
+						<Banner setIsVisible={setIsVisible}>
+							Participate in the project!
+						</Banner>
+					</div>
+				)}
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>
