@@ -1,4 +1,6 @@
-/* eslint-disable unicorn/no-array-callback-reference, unicorn/no-array-method-this-argument */
+/* eslint-disable unicorn/no-array-callback-reference,
+unicorn/no-array-method-this-argument,
+@typescript-eslint/consistent-type-assertions */
 import {FilterQuery} from 'mongoose';
 import {safeZero, shuffle} from '@/lib/utils';
 import Puzzle from '@/models/puzzle-model';
@@ -43,20 +45,17 @@ const rating = (
 	}
 };
 
-const getFilter = (
-	themeArray: string[],
-	minRating: number,
-	maxRating: number,
-	spread: number,
-): FilterQuery<any> =>
-	themeArray.includes('healthyMix')
-		? {Rating: {$gt: minRating - spread, $lt: maxRating + spread}}
-		: {
-				$and: [
-					{Rating: {$gt: minRating - spread, $lt: maxRating + spread}},
-					{Themes: {$in: [...themeArray]}},
-				],
-		  };
+const createFilter =
+	(themeArray: string[], minRating: number, maxRating: number) =>
+	(spread: number): FilterQuery<any> =>
+		themeArray.includes('healthyMix')
+			? {Rating: {$gt: minRating - spread, $lt: maxRating + spread}}
+			: {
+					$and: [
+						{Rating: {$gt: minRating - spread, $lt: maxRating + spread}},
+						{Themes: {$in: [...themeArray]}},
+					],
+			  };
 
 export const create = async (
 	userID: UserInterface['id'],
@@ -65,69 +64,60 @@ export const create = async (
 	const setLevel = options.level || 'normal';
 	const [minRating, maxRating] = rating(setLevel, options.averageRating);
 
-	let filter: FilterQuery<any> = {};
 	const projection = {_id: 1, PuzzleId: 1, Rating: 1};
+	const getFilter = createFilter(options.themeArray, minRating, maxRating);
 
-	const loop = async (spread: number) => {
-		if (spread > 1500) return;
-
-		filter = getFilter(options.themeArray, minRating, maxRating, spread);
-		const possibleDocs = await Puzzle.countDocuments(filter)
+	const searchDb = async (spread: number): Promise<FilterQuery<any>> => {
+		const filter_: FilterQuery<any> = getFilter(spread);
+		if (spread > 250) return filter_;
+		const possibleDocs = await Puzzle.countDocuments(filter_)
 			.limit(options.size)
 			.exec();
-		if (possibleDocs >= options.size) return;
 
-		spread += 10;
-		await loop(spread);
+		if (possibleDocs < options.size) return searchDb(spread + 5);
+		return filter_;
 	};
 
-	await loop(0);
+	const filter = await searchDb(0);
 
-	const puzzles = (await Puzzle.find(filter, projection)
+	const format = (list: PuzzleInterface[]) =>
+		list.map((doc: PuzzleInterface, index: number) => ({
+			puzzle: {
+				_id: doc._id,
+				PuzzleId: doc.PuzzleId,
+				played: false,
+				count: 0,
+				streak: 0,
+				order: index,
+				mistakes: [],
+				timeTaken: [],
+				grades: [],
+			} as PuzzleItemInterface,
+			rating: doc.Rating,
+		}));
+
+	const unshuffledPuzzles = (await Puzzle.find(filter, projection)
 		.limit(options.size)
 		.lean()
 		.exec()) as PuzzleInterface[];
 
-	const shuffledPuzzles = shuffle(puzzles);
-	const handlePuzzle = (puzzle: PuzzleInterface, index: number) => {
-		const puzzleToInsert: PuzzleItemInterface = {
-			_id: puzzle._id,
-			PuzzleId: puzzle.PuzzleId,
-			played: false,
-			count: 0,
-			streak: 0,
-			order: index,
-			mistakes: [],
-			timeTaken: [],
-			grades: [],
-		};
-		return {puzzle: puzzleToInsert, rating: puzzle.Rating};
-	};
-
-	const results = shuffledPuzzles.map((puzzle, index) =>
-		handlePuzzle(puzzle, index),
-	);
-
-	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
-	puzzleSet.puzzles = [];
-	let futurePuzzleSetRating = 0;
-
-	for (const {puzzle, rating} of results) {
-		puzzleSet.puzzles.push(puzzle);
-		futurePuzzleSetRating += rating;
-	}
+	const unformattedPuzzles = shuffle(unshuffledPuzzles);
+	const puzzles = format(unformattedPuzzles);
 
 	const userQuery = User.findById(userID);
 	const user: UserInterface = (await userQuery.exec()) as UserInterface;
+	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
+	const avgRating = puzzles.reduce((acc, curr) => acc + curr.rating, 0);
 
+	puzzleSet.puzzles = puzzles.map(({puzzle}) => puzzle);
+	puzzleSet.rating = Math.round(avgRating / puzzles.length);
 	puzzleSet.user = user._id;
-	puzzleSet.length = shuffledPuzzles.length;
+	puzzleSet.length = puzzles.length;
 	puzzleSet.title = options.title;
 	puzzleSet.spacedRepetition = false;
 	puzzleSet.cycles = 0;
 	puzzleSet.currentTime = 0;
 	puzzleSet.times = [];
-	puzzleSet.rating = Math.round(futurePuzzleSetRating / shuffledPuzzles.length);
 	puzzleSet.progress = 0;
 	puzzleSet.level = setLevel;
 	return puzzleSet.save();
