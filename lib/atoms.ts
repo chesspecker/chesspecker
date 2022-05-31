@@ -8,6 +8,10 @@ export const darkModeµ = atomWithStorage<boolean>('cp-dark-mode', true);
 
 export const selectedAtom = atom<Array<Category['id']>>([]);
 export const ratingAtom = atom<number>(1500);
+export const supportBannerµ = atomWithStorage<boolean>(
+	'cp-banner-visible',
+	true,
+);
 
 const optionsTitleAtom = atom<string>('');
 const optionsLevelAtom = atom<Difficulty>('normal');
