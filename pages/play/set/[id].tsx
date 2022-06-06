@@ -28,7 +28,6 @@ import {Button} from '@/components/button';
 import {checkForAchievement} from '@/lib/achievements';
 import Notification from '@/components/notification';
 import {withSessionSsr} from '@/lib/session';
-import {get as get_, update as update_, UpdateUser} from '@/lib/play';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
 import BottomBar from '@/components/play/bottom-bar';
@@ -46,6 +45,17 @@ import {
 	shouldInrementOrResetStreakCount,
 	updateStreak,
 } from '@/lib/streak';
+import {
+	get as get_,
+	update as update_,
+	UpdateUser,
+	getGrade,
+	getMovable,
+	getThemes,
+	getTimeInterval,
+	getTimeTaken,
+	getUpdateBody,
+} from '@/lib/play';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -225,41 +235,13 @@ const PlayingPage = ({set}: Props) => {
 				check: true,
 			},
 			premovable: {enabled: false},
-			movable: calcMovable(),
+			movable: getMovable(chess),
 			coordinates: true,
 		};
 
 		setConfig(previousConfig => ({...previousConfig, ...config}));
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [puzzle]);
-
-	type BodyData = {
-		didCheat: boolean;
-		mistakes: number;
-		timeTaken: number;
-		maxTime: number;
-		minTime: number;
-		streak: number;
-	};
-
-	const getGrade = useCallback(
-		({
-			didCheat,
-			mistakes,
-			timeTaken,
-			maxTime,
-			minTime,
-			streak = 0,
-		}: BodyData) => {
-			if (didCheat || mistakes >= 3) return 1;
-			if (mistakes === 2 || (mistakes === 1 && timeTaken >= maxTime)) return 2;
-			if (mistakes === 1 || timeTaken >= maxTime) return 3;
-			if (timeTaken >= minTime) return 4;
-			if (streak < 2) return 5;
-			return 6;
-		},
-		[],
-	);
 
 	useEffectAsync(async () => {
 		if (!shouldCheck) return;
@@ -296,26 +278,17 @@ const PlayingPage = ({set}: Props) => {
 	/**
 	 * Push the data of the current puzzle when complete.
 	 */
-
 	const updateFinishedPuzzle = useCallback(async () => {
-		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+		const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
+		const {maxTime, minTime} = getTimeInterval(moveHistory.length);
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
 		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
-		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
-		const timeWithMistakes = timeTaken + 3 * mistakes;
-		const userThemes = user.puzzleSolvedByCategories;
-		const oldThemes = new Set(userThemes.map(t => t.title));
-		const newThemes = puzzle.Themes;
-
-		const moveNumber_ = moveHistory.length / 2;
-		const maxTime = moveNumber_ * 8;
-		const minTime = moveNumber_ * 4;
 
 		const puzzleItem = puzzleList[puzzleIndex];
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
-			timeTaken: timeWithoutMistakes,
+			timeTaken,
 			maxTime,
 			minTime,
 			streak: puzzleItem.streak,
@@ -337,7 +310,7 @@ const PlayingPage = ({set}: Props) => {
 			},
 			$push: {
 				'puzzles.$.mistakes': mistakes,
-				'puzzles.$.timeTaken': timeWithoutMistakes,
+				'puzzles.$.timeTaken': timeTaken,
 				'puzzles.$.grades': newGrade,
 			},
 			$set: {
@@ -347,15 +320,18 @@ const PlayingPage = ({set}: Props) => {
 
 		update.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
 
-		// Is there some themes not in common?
-		const themesNotInCommon = newThemes.filter(id => !oldThemes.has(id));
+		const userThemes = user.puzzleSolvedByCategories;
+		const newThemes = puzzle.Themes;
+		const {themesInCommon, themesNotInCommon} = getThemes({
+			userThemes,
+			newThemes,
+		});
 
 		const incUser: UpdateUser = {
-			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeWithoutMistakes},
+			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeTaken},
 		};
 		const pushUser = {$push: {}};
 
-		// If there are, we add them to the user's themes
 		if (themesNotInCommon.length > 0)
 			pushUser.$push = {
 				puzzleSolvedByCategories: {
@@ -363,10 +339,6 @@ const PlayingPage = ({set}: Props) => {
 				},
 			};
 
-		// Is there some puzzles in common in the old and new themes?
-		const themesInCommon = userThemes.filter(t => newThemes.includes(t.title));
-
-		// If there are, we update the user's themes
 		if (themesInCommon.length > 0)
 			for (const theme of themesInCommon)
 				incUser.$inc[
@@ -389,7 +361,6 @@ const PlayingPage = ({set}: Props) => {
 		initialPuzzleTimer,
 		set._id,
 		isSolutionClicked,
-		getGrade,
 		mutate,
 		user,
 		moveHistory.length,
@@ -412,25 +383,9 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
-		const timeTaken = (Date.now() - initialSetDate) / 1000;
-		const totalTime = timeTaken + set.currentTime;
-		const formattedTime = Number.parseInt(totalTime.toFixed(2), 10);
-
-		const update = {
-			$inc: {
-				cycles: 1,
-				totalSetCompleted: 1,
-			},
-			$push: {
-				times: formattedTime,
-			},
-			$set: {
-				'puzzles.$[].played': false,
-				currentTime: 0,
-				progress: 0,
-			},
-		};
-
+		const {timeTaken} = getTimeTaken(initialSetDate);
+		const totalTimeTaken = timeTaken + set.currentTime;
+		const update = getUpdateBody.finishedSet(totalTimeTaken);
 		await update_.set(set._id.toString(), update).catch(console.error);
 	}, [initialSetDate, set]);
 
@@ -453,28 +408,6 @@ const PlayingPage = ({set}: Props) => {
 	]);
 
 	/**
-	 * Allow only legal moves.
-	 */
-	const calcMovable = useCallback((): Partial<Config['movable']> => {
-		const dests = new Map();
-		for (const s of chess.SQUARES) {
-			const ms = chess.moves({square: s, verbose: true});
-			if (ms.length > 0)
-				dests.set(
-					s,
-					ms.map(m => m.to),
-				);
-		}
-
-		return {
-			free: false,
-			dests,
-			showDests: true,
-			color: 'both',
-		};
-	}, [chess]);
-
-	/**
 	 * Function making the computer play the next move.
 	 */
 	const computerMove = useCallback(
@@ -486,7 +419,7 @@ const PlayingPage = ({set}: Props) => {
 				...config,
 				fen: chess.fen(),
 				check: chess.in_check(),
-				movable: calcMovable(),
+				movable: getMovable(chess),
 				turnColor: getColor(chess.turn()),
 				lastMove: [move.from, move.to],
 			}));
@@ -495,7 +428,7 @@ const PlayingPage = ({set}: Props) => {
 				? audio('CAPTURE', hasSound)
 				: audio('MOVE', hasSound));
 		},
-		[chess, moveHistory, calcMovable, hasSound],
+		[chess, moveHistory, hasSound],
 	);
 
 	const playFromComputer = useCallback(
@@ -559,7 +492,7 @@ const PlayingPage = ({set}: Props) => {
 		if (!moveHistory) return;
 		if (moveNumber !== 0) return;
 		playFromComputer(0).catch(console.error);
-	}, [moveHistory, computerMove, moveNumber, playFromComputer]);
+	}, [moveHistory, moveNumber, playFromComputer]);
 
 	useEffect(() => {
 		setConfig(config => ({...config, lastMove}));
@@ -572,14 +505,14 @@ const PlayingPage = ({set}: Props) => {
 				fen: chess.fen(),
 				check: chess.in_check(),
 				turnColor: getColor(chess.turn()),
-				movable: calcMovable(),
+				movable: getMovable(chess),
 				lastMove: [from, to],
 			}));
 			const currentMoveNumber = moveNumber + 1;
 			setMoveNumber(previousMove => previousMove + 1);
 			await checkPuzzleComplete(currentMoveNumber);
 		},
-		[chess, moveNumber, checkPuzzleComplete, calcMovable],
+		[chess, moveNumber, checkPuzzleComplete],
 	);
 
 	const onWrongMove = useCallback(async () => {

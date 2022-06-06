@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import {UpdateQuery} from 'mongoose';
-import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
-import type {Data as SetData} from '@/api/set/[id]';
-import type {Data as UserData} from '@/api/user/[id]';
+import type {ChessInstance} from 'chess.js';
+import type {Config} from 'chessground/config';
 import {
 	PuzzleItemInterface,
 	PuzzleSetInterface,
 	ThemeItem,
 	UserInterface,
 } from '@/types/models';
+import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
+import type {Data as SetData} from '@/api/set/[id]';
+import type {Data as UserData} from '@/api/user/[id]';
 
 const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 	fetch(`${baseUrl}/api/puzzle/${id}`).then(async response => response.json());
@@ -69,4 +71,95 @@ export const update = {
 	puzzle: updatePuzzle,
 	set: updateSet,
 	user: updateUser,
+};
+
+type BodyData = {
+	didCheat: boolean;
+	mistakes: number;
+	timeTaken: number;
+	maxTime: number;
+	minTime: number;
+	streak: number;
+};
+
+export const getGrade = ({
+	didCheat,
+	mistakes,
+	timeTaken,
+	maxTime,
+	minTime,
+	streak = 0,
+}: BodyData) => {
+	if (didCheat || mistakes >= 3) return 1;
+	if (mistakes === 2 || (mistakes === 1 && timeTaken >= maxTime)) return 2;
+	if (mistakes === 1 || timeTaken >= maxTime) return 3;
+	if (timeTaken >= minTime) return 4;
+	if (streak < 2) return 5;
+	return 6;
+};
+
+export const getTimeTaken = (initialTime: number, mistakes = 0) => {
+	const timeTaken_ = (Date.now() - initialTime) / 1000;
+	const timeTaken = Number.parseInt(timeTaken_.toFixed(2), 10);
+	const timeWithMistakes = timeTaken + 3 * mistakes;
+	return {timeTaken, timeWithMistakes};
+};
+
+export const getTimeInterval = (historyLength: number) => {
+	const moveNumber_ = historyLength / 2;
+	const maxTime = moveNumber_ * 8;
+	const minTime = moveNumber_ * 4;
+	return {maxTime, minTime};
+};
+
+type ThemesArgs = {
+	userThemes: ThemeItem[];
+	newThemes: string[];
+};
+
+export const getThemes = ({userThemes, newThemes}: ThemesArgs) => {
+	const oldThemes = new Set(userThemes.map(t => t.title));
+	const themesInCommon = userThemes.filter(t => newThemes.includes(t.title));
+	const themesNotInCommon = newThemes.filter(id => !oldThemes.has(id));
+	return {themesInCommon, themesNotInCommon};
+};
+
+export const getMovable = (
+	chess: ChessInstance,
+): Partial<Config['movable']> => {
+	const dests = new Map();
+	for (const s of chess.SQUARES) {
+		const ms = chess.moves({square: s, verbose: true});
+		if (ms.length > 0)
+			dests.set(
+				s,
+				ms.map(m => m.to),
+			);
+	}
+
+	return {
+		free: false,
+		dests,
+		showDests: true,
+		color: 'both',
+	};
+};
+
+const bodyUpdateFinishedSet = (timeTaken: number) => ({
+	$inc: {
+		cycles: 1,
+		totalSetCompleted: 1,
+	},
+	$push: {
+		times: timeTaken,
+	},
+	$set: {
+		'puzzles.$[].played': false,
+		currentTime: 0,
+		progress: 0,
+	},
+});
+
+export const getUpdateBody = {
+	finishedSet: bodyUpdateFinishedSet,
 };

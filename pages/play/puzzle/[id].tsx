@@ -16,7 +16,7 @@ import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
-import {get as get_} from '@/lib/play';
+import {get as get_, getGrade, getTimeInterval, getTimeTaken} from '@/lib/play';
 import Board from '@/components/play/board';
 import BottomBar from '@/components/play/bottom-bar';
 import Solution from '@/components/play/right-bar/solution';
@@ -171,25 +171,6 @@ const PlayingPage = ({puzzle}: Props) => {
 		[computerMove],
 	);
 
-	type BodyData = {
-		didCheat: boolean;
-		mistakes: number;
-		timeTaken: number;
-		streak: number;
-	};
-
-	const getGrade = useCallback(
-		({didCheat, mistakes, timeTaken, streak = 0}: BodyData) => {
-			if (didCheat || mistakes >= 3) return 1;
-			if (mistakes === 2 || (mistakes === 1 && timeTaken >= 20)) return 2;
-			if (mistakes === 1 || timeTaken >= 20) return 3;
-			if (timeTaken >= 6) return 4;
-			if (streak < 2) return 5;
-			return 6;
-		},
-		[],
-	);
-
 	/**
 	 * Called after each correct move.
 	 */
@@ -209,14 +190,15 @@ const PlayingPage = ({puzzle}: Props) => {
 
 			await audio('GENERIC', hasSound, 0.3);
 
-			const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
-			const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
-			const timeWithMistakes = timeTaken + 3 * mistakes;
+			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
+			const {maxTime, minTime} = getTimeInterval(moveHistory.length);
 
 			const newGrade = getGrade({
 				didCheat: isSolutionClicked,
 				mistakes,
-				timeTaken: timeWithoutMistakes,
+				timeTaken,
+				maxTime,
+				minTime,
 				streak: 0,
 			});
 
@@ -247,7 +229,7 @@ const PlayingPage = ({puzzle}: Props) => {
 		if (!moveHistory) return;
 		if (moveNumber !== 0) return;
 		playFromComputer(0).catch(console.error);
-	}, [moveHistory, computerMove, moveNumber, playFromComputer]);
+	}, [moveHistory, moveNumber, playFromComputer]);
 
 	useEffect(() => {
 		setConfig(config => ({...config, lastMove}));

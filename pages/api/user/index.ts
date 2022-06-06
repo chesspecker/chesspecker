@@ -26,7 +26,7 @@ const get_ = async (
 	const user = await retrieve(userID);
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
-		throw new Error('User not found');
+		return;
 	}
 
 	response.json({success: true, user});
@@ -44,7 +44,7 @@ const post_ = async (
 
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
-		throw new Error('User not found');
+		return;
 	}
 
 	response.json({success: true, user});

@@ -1,3 +1,5 @@
+const process = require('process');
+
 /**
  * @type {import('next').NextConfig}
  **/
