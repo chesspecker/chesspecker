@@ -307,25 +307,72 @@ const currentProgress = (set: PuzzleSetInterface): ViewData => {
 	};
 };
 
-const currentTime = (set: PuzzleSetInterface): ViewData => ({
-	title: 'Current time',
-	stat: <ParseTime time={set.currentTime} />,
-	hasChange: false,
-	tooltip: 'Current time spent in seconds',
-});
+const currentTime = (set: PuzzleSetInterface): ViewData => {
+	const current = set.currentTime;
+	const result: ViewData = {
+		title: 'Current time',
+		stat: <ParseTime time={current} />,
+		hasChange: false,
+		tooltip: 'Current time spent in seconds',
+	};
 
-const currentGrade = (set: PuzzleSetInterface): ViewData => {
+	if (!set.cycles || set.cycles < 1) return result;
+
 	const last = set.puzzles
 		.filter(puzzle => puzzle.played)
+		.map(puzzle => puzzle.timeTaken[set.cycles - 1])
+		.reduce(reducer, 0);
+
+	result.stat = `${current.toFixed(1)}s / ${last}s`;
+	result.title = 'Current time / last time';
+	if (last !== current) {
+		result.hasChange = true;
+		result.change =
+			current < last
+				? `${(last - current).toFixed(1)}s`
+				: `${(last - current).toFixed(1)}s`;
+		result.type = current < last ? 'up' : 'down';
+	}
+
+	return result;
+};
+
+const currentGrade = (set: PuzzleSetInterface): ViewData => {
+	const current = set.puzzles
+		.filter(puzzle => puzzle.played)
 		.map(puzzle => puzzle.grades[puzzle.grades.length - 1]);
-	const sumLast = last.reduce(reducer, 0);
-	const averageLast = Math.round(sumLast / last.length);
-	return {
+	const sumCurrent = current.reduce(reducer, 0);
+	const averageCurrent = Math.round(sumCurrent / current.length);
+	const parsedCurrent = parseGrade[averageCurrent];
+
+	const result: ViewData = {
 		title: 'Current grade',
-		stat: parseGrade[averageLast],
+		stat: parsedCurrent,
 		hasChange: false,
 		tooltip: 'Current average grade this run',
 	};
+
+	if (!set.cycles || set.cycles < 1) return result;
+
+	const last = set.puzzles
+		.filter(puzzle => puzzle.played)
+		.map(puzzle => puzzle.grades[set.cycles - 1]);
+	const sumLast = last.reduce(reducer, 0);
+	const averageLast = Math.round(sumLast / last.length);
+	const parsedLast = parseGrade[averageLast];
+
+	result.stat = `${parsedCurrent} / ${parsedLast}`;
+	result.title = 'Current grade / last grade';
+	if (averageLast !== averageCurrent) {
+		result.hasChange = true;
+		result.change =
+			averageCurrent < averageLast
+				? `${averageLast - averageCurrent}`
+				: `${averageLast - averageCurrent}`;
+		result.type = averageLast < averageCurrent ? 'up' : 'down';
+	}
+
+	return result;
 };
 
 export const getOverviewStats = (set: PuzzleSetInterface): ViewData[] => {
