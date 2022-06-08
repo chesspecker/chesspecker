@@ -8,6 +8,7 @@ import {
 	FireIcon,
 	LightningBoltIcon,
 	AcademicCapIcon,
+	SparklesIcon,
 	ChartBarIcon,
 } from '@heroicons/react/solid';
 import useClock from '@/hooks/use-clock';
@@ -25,6 +26,12 @@ export type ViewData = {
 
 const INFINITY = Number.POSITIVE_INFINITY;
 const reducer = (accumulator: number, current: number) => accumulator + current;
+const summer = (arrays: number[][]): number[] =>
+	arrays.reduce<number[]>(
+		(acc: number[], array) => acc.map((sum, i) => sum + array[i]),
+		/* eslint-disable-next-line unicorn/no-new-array */
+		new Array(arrays[0].length).fill(0),
+	);
 
 const parseGrade: Record<number, string> = {
 	0: 'F',
@@ -156,6 +163,33 @@ const time = {
 
 		return result;
 	},
+	lastOverBest: (set: PuzzleSetInterface): ViewData => {
+		const result: ViewData = {
+			title: 'Last time / best time',
+			stat: '/',
+			hasChange: false,
+			Icon: SparklesIcon,
+			tooltip: 'Compare your last completion time with your best time',
+		};
+		if (!set.cycles || set.cycles < 2) return result;
+
+		const last = set.puzzles
+			.map(puzzle => puzzle.timeTaken[set.cycles - 1])
+			.reduce(reducer, 0);
+
+		const allTimeTaken = set.puzzles.map(puzzle => puzzle.timeTaken);
+		const sumOfRuns = summer(allTimeTaken).filter(Boolean);
+		const best = Math.min(...sumOfRuns);
+
+		result.stat = `${last}s / ${best}s`;
+		if (last !== best) {
+			result.hasChange = true;
+			result.change = last < best ? `${last - best}s` : `${last - best}s`;
+			result.type = last < best ? 'up' : 'down';
+		}
+
+		return result;
+	},
 };
 
 const grade = {
@@ -222,6 +256,40 @@ const grade = {
 
 		return result;
 	},
+	lastOverBest: (set: PuzzleSetInterface): ViewData => {
+		const result: ViewData = {
+			title: 'Last grade / best grade',
+			stat: '/',
+			hasChange: false,
+			Icon: SparklesIcon,
+			tooltip: 'Compare your last average grade with your best average grade',
+		};
+		if (!set.cycles || set.cycles < 2) return result;
+
+		const last = set.puzzles.map(puzzle => puzzle.grades[set.cycles - 1]);
+		const sumLast = last.reduce(reducer, 0);
+		const averageLast = Math.round(sumLast / last.length);
+		const parsedLast = parseGrade[averageLast];
+
+		const average = getAverageGrade(set);
+
+		const allGrades = set.puzzles.map(puzzle => puzzle.grades);
+		const sumOfRuns = summer(allGrades).filter(Boolean);
+		const best = Math.max(...sumOfRuns) / set.length;
+		const parsedAverage = parseGrade[Math.round(best)];
+
+		result.stat = `${parsedLast} / ${parsedAverage}`;
+		if (averageLast !== average) {
+			result.hasChange = true;
+			result.change =
+				averageLast < average
+					? `${averageLast - average}`
+					: `${averageLast - average}`;
+			result.type = averageLast < average ? 'up' : 'down';
+		}
+
+		return result;
+	},
 };
 
 const currentProgress = (set: PuzzleSetInterface): ViewData => {
@@ -273,8 +341,10 @@ export const getProgressStats = (set: PuzzleSetInterface): ViewData[] => {
 	const data: ViewData[] = [];
 	data.push(time.lastOverFirst(set));
 	data.push(time.lastOverAverage(set));
+	data.push(time.lastOverBest(set));
 	data.push(grade.lastOverFirst(set));
 	data.push(grade.lastOverAverage(set));
+	data.push(grade.lastOverBest(set));
 	return data;
 };
 
