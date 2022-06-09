@@ -57,6 +57,8 @@ const ParseTime = ({time}: {time: number}): JSX.Element => {
 	);
 };
 
+export {parseGrade, ParseTime};
+
 const getAverageGrade = (set: PuzzleSetInterface): number => {
 	const grades = set.puzzles
 		.map(puzzle => puzzle.grades)

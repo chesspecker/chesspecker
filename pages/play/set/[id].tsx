@@ -56,6 +56,7 @@ import {
 	getTimeTaken,
 	getUpdateBody,
 } from '@/lib/play';
+import LeftBar, {Stat} from '@/components/play/left-bar';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -117,8 +118,10 @@ const PlayingPage = ({set}: Props) => {
 	const [id, setId] = useState<string>();
 	const [streak, setStreak] = useState<Streak>();
 	const [previousStreak, setPreviousStreak] = useState<Streak>();
-
 	const [shouldCheck, setShouldCheck] = useState<boolean>(false);
+	const [leftBarStat, setLeftBarStat] = useState<Stat>();
+	const [gradeLast, setGradeLast] = useState<number>();
+	const [timeLast, setTimeLast] = useState<number>();
 
 	useEffect(() => {
 		if (!userData) return;
@@ -275,6 +278,13 @@ const PlayingPage = ({set}: Props) => {
 		setShouldCheck(() => false);
 	}, [shouldCheck]);
 
+	useEffect(() => {
+		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
+		const puzzleItem = puzzleList[puzzleIndex];
+		setGradeLast(() => puzzleItem.grades[puzzleItem.grades.length - 1]);
+		setTimeLast(() => puzzleItem.timeTaken[puzzleItem.timeTaken.length - 1]);
+	}, [puzzleList, puzzleIndex]);
+
 	/**
 	 * Push the data of the current puzzle when complete.
 	 */
@@ -293,6 +303,13 @@ const PlayingPage = ({set}: Props) => {
 			minTime,
 			streak: puzzleItem.streak,
 		});
+
+		setLeftBarStat(() => ({
+			gradeCurrent: newGrade,
+			timeCurrent: timeWithMistakes,
+			gradeLast,
+			timeLast,
+		}));
 
 		setPreviousPuzzle(previous => [
 			...previous,
@@ -364,6 +381,8 @@ const PlayingPage = ({set}: Props) => {
 		mutate,
 		user,
 		moveHistory.length,
+		gradeLast,
+		timeLast,
 	]);
 
 	/**
@@ -646,7 +665,7 @@ const PlayingPage = ({set}: Props) => {
 					</Link>
 				</div>
 				<div className='flex flex-col items-center justify-center w-full md:flex-row'>
-					<div className='hidden w-36 md:invisible md:block' />
+					<LeftBar stat={leftBarStat} />
 					<div className='max-w-[33rem] w-11/12 md:w-full flex-auto'>
 						<Board
 							config={{...config, orientation, events: {move: onMove}}}
