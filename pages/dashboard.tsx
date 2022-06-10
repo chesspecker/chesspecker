@@ -54,18 +54,14 @@ const DashbaordPage = () => {
 				handleClick={updateValidatedAchievement}
 			/>
 			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 relative  '>
-				{!user?.isSponsor && isVisible && (
-					<div className='w-full absolute top-24 left-0'>
-						<Banner setIsVisible={setIsVisible}>
-							Participate in the project!
-						</Banner>
-					</div>
-				)}
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>
 
 				<PuzzleSetMap />
+				{!user?.isSponsor && isVisible && (
+					<Banner setIsVisible={setIsVisible}>We need your help !</Banner>
+				)}
 			</div>
 		</>
 	);
