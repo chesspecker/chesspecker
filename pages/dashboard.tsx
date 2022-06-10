@@ -60,7 +60,7 @@ const DashbaordPage = () => {
 
 				<PuzzleSetMap />
 				{!user?.isSponsor && isVisible && (
-					<Banner setIsVisible={setIsVisible}>We need your help !</Banner>
+					<Banner setIsVisible={setIsVisible}>We need your help!</Banner>
 				)}
 			</div>
 		</>
