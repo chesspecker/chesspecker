@@ -4,18 +4,9 @@ import {withSessionRoute} from '@/lib/session';
 import getLichess from '@/lib/get-lichess';
 import {Perfs} from '@/types/lichess';
 import getChesscom from '@/lib/get-chesscom';
+import {SuccessData, ErrorData} from '@/types/data';
 
-type SuccessData = {
-	success: true;
-	rating: number;
-};
-
-type ErrorData = {
-	success: false;
-	error: string;
-};
-
-export type Data = SuccessData | ErrorData;
+export type Data = SuccessData<number> | ErrorData;
 
 const getLichessRating = async (
 	request: NextApiRequest,
@@ -34,7 +25,7 @@ const getLichessRating = async (
 	}
 
 	const average = Math.round(perfs / gamesPlayed);
-	response.json({success: true, rating: average});
+	response.json({success: true, data: average});
 };
 
 const getChesscomRating = async (
@@ -55,7 +46,7 @@ const getChesscomRating = async (
 	}
 
 	const average = Math.round(perfs / gamesPlayed);
-	response.json({success: true, rating: average});
+	response.json({success: true, data: average});
 };
 
 const handler = async (

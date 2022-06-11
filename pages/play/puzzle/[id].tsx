@@ -7,7 +7,7 @@ import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
-import {PuzzleInterface} from '@/types/models';
+import {Puzzle} from '@/models/puzzle';
 import Layout from '@/layouts/main';
 import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
@@ -42,7 +42,7 @@ Object.freeze(parseGrade);
 /* eslint-disable-next-line no-promise-executor-return */
 const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
 
-type Props = {puzzle: PuzzleInterface};
+type Props = {puzzle: Puzzle};
 const PlayingPage = ({puzzle}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
@@ -416,9 +416,9 @@ export const getServerSideProps = withSessionSsr(
 		const id: string = params.id;
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-		const data = await get_.puzzle(id, baseUrl);
+		const result = await get_.puzzle(id, baseUrl);
 
-		if (!data.success) return {notFound: true};
-		return {props: {puzzle: data.puzzle}};
+		if (!result.success) return {notFound: true};
+		return {props: {puzzle: result.data}};
 	},
 );

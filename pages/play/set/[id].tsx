@@ -8,14 +8,7 @@ import type {GetServerSidePropsContext, Redirect} from 'next';
 import useSWR from 'swr';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
-import {
-	PuzzleInterface,
-	PuzzleItemInterface,
-	PuzzleSetInterface,
-	AchivementsArgs,
-	UserInterface,
-	Streak,
-} from '@/types/models';
+import {AchivementsArgs, Streak} from '@/types/models';
 import Layout from '@/layouts/main';
 import {formattedDate, sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
@@ -38,11 +31,15 @@ import {
 	activateSpacedRepetion,
 	updateSpacedRepetition,
 } from '@/lib/spaced-repetition';
-import type {Data as UserData} from '@/pages/api/user';
+import {User} from '@/models/user';
+import {Puzzle} from '@/models/puzzle';
+import {PuzzleSet} from '@/models/puzzle-set';
+import {PuzzleItem} from '@/models/puzzle-item';
+import type {UserData} from '@/pages/api/user';
 import {
 	incrementStreakCount,
 	resetStreakCount,
-	shouldInrementOrResetStreakCount,
+	shouldIncrementOrResetStreakCount,
 	updateStreak,
 } from '@/lib/streak';
 import {
@@ -66,29 +63,26 @@ const fetcher = async (endpoint: string): Promise<UserData> =>
 /* eslint-disable-next-line no-promise-executor-return */
 const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
 
-type Props = {set: PuzzleSetInterface};
+type Props = {set: PuzzleSet};
 const PlayingPage = ({set}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
 	const [hasClock] = useAtom(configµ.hasClock);
 	const [hasAnimation] = useAtom(configµ.animation);
-
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
 	const [, setTotalPuzzles] = useAtom(playµ.totalPuzzles);
 	const [isComplete, setIsComplete] = useAtom(playµ.isComplete);
 	const [completedPuzzles, setCompletedPuzzles] = useAtom(playµ.completed);
-
 	const [orientation, setOrientation] = useAtom(orientationµ);
 	const [isReverted] = useAtom(revertedµ);
 	const [, setAnimation] = useAtom(animationµ);
-
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
-	const [puzzleList, setPuzzleList] = useState<PuzzleItemInterface[]>([]);
+	const [puzzleList, setPuzzleList] = useState<PuzzleItem[]>([]);
 	const [puzzleIndex, setPuzzleIndex] = useState<number>(0);
-	const [puzzle, setPuzzle] = useState<PuzzleInterface>();
-	const [nextPuzzle, setNextPuzzle] = useState<PuzzleInterface>();
+	const [puzzle, setPuzzle] = useState<Puzzle>();
+	const [nextPuzzle, setNextPuzzle] = useState<Puzzle>();
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
@@ -111,10 +105,8 @@ const PlayingPage = ({set}: Props) => {
 		hide: hideSpacedOff,
 	} = useModal();
 	const router = useRouter();
-
 	const {data: userData, mutate} = useSWR('/api/user', fetcher);
-	const [user, setUser] = useState<UserInterface>();
-
+	const [user, setUser] = useState<User>();
 	const [id, setId] = useState<string>();
 	const [streak, setStreak] = useState<Streak>();
 	const [previousStreak, setPreviousStreak] = useState<Streak>();
@@ -127,27 +119,27 @@ const PlayingPage = ({set}: Props) => {
 		if (!userData) return;
 		if (!userData.success) return;
 
-		setUser(() => userData.user);
-		setId(() => userData.user._id.toString());
-		setPreviousStreak(() => userData.user.streak);
+		setUser(() => userData.data);
+		setId(() => userData.data._id.toString());
+		setPreviousStreak(() => userData.data.streak);
 	}, [userData]);
 
 	useEffectAsync(async () => {
 		if (!previousStreak || !id) return;
 
-		const today = new Date();
-		const currentDate = formattedDate(today);
+		const date = new Date();
+		const today = formattedDate(date);
 
 		// Check if we should increment or reset
-		const {shouldIncrement, shouldReset} = shouldInrementOrResetStreakCount(
-			currentDate,
+		const {shouldIncrement, shouldReset} = shouldIncrementOrResetStreakCount(
+			today,
 			previousStreak.lastLoginDate,
 		);
 
 		let updatedStreak: Streak = previousStreak;
-		if (shouldReset) updatedStreak = resetStreakCount(currentDate);
+		if (shouldReset) updatedStreak = resetStreakCount(today);
 		if (shouldIncrement)
-			updatedStreak = incrementStreakCount(previousStreak, currentDate);
+			updatedStreak = incrementStreakCount(previousStreak, today);
 		if (shouldReset || shouldIncrement)
 			await updateStreak(id, {
 				$set: {
@@ -200,13 +192,13 @@ const PlayingPage = ({set}: Props) => {
 		} else {
 			const puzzleItem = puzzleList[puzzleIndex];
 			const data = await get_.puzzle(puzzleItem.PuzzleId.toString());
-			if (data.success) setPuzzle(() => data.puzzle);
+			if (data.success) setPuzzle(() => data.data);
 		}
 
 		if (!puzzleList[puzzleIndex + 1] || puzzleList.length === 0) return;
 		const nextPuzzleItem = puzzleList[puzzleIndex + 1];
 		const dataNext = await get_.puzzle(nextPuzzleItem.PuzzleId.toString());
-		if (dataNext.success) setNextPuzzle(() => dataNext.puzzle);
+		if (dataNext.success) setNextPuzzle(() => dataNext.data);
 	}, [puzzleList, puzzleIndex]);
 
 	/**
@@ -714,13 +706,14 @@ export const getServerSideProps = withSessionSsr(
 		const id: string = params.id;
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-		const data = await get_.set(id, baseUrl);
-		if (!data.success) return {notFound: true};
-		if (data.set.user.toString() !== req.session.userID) {
+		const result = await get_.set(id, baseUrl);
+		if (!result.success) return {notFound: true};
+		/* eslint-disable-next-line @typescript-eslint/no-base-to-string */
+		if (result.data.user.toString() !== req.session.userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
 			return {redirect};
 		}
 
-		return {props: {set: data.set}};
+		return {props: {set: result.data}};
 	},
 );

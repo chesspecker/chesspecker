@@ -1,34 +1,41 @@
 import {withSessionRoute} from 'lib/session';
 import withMongoRoute from 'providers/mongoose';
 import type {NextApiRequest, NextApiResponse} from 'next';
+import UserModel from '@/models/user';
 import {origin} from '@/config';
 import getLichess from '@/lib/get-lichess';
-import User from '@/models/user-model';
-import {createLichessUser} from '@/controllers/user';
-import type {UserInterface} from '@/types/models';
-
-type ErrorData = {
-	success: false;
-	error: string;
-};
+import {createLichessUser} from '@/controllers/create-user';
+import {failWrapper} from '@/lib/utils';
+import type {ErrorData} from '@/types/data';
 
 const callback = async (
 	request: NextApiRequest,
 	response: NextApiResponse<ErrorData>,
 ) => {
+	const fail = failWrapper(response);
 	if (request.method !== 'GET') {
-		response.status(405).json({success: false, error: 'Method not allowed.'});
+		fail('Method not allowed.', 405);
+		return;
+	}
+
+	const {verifier} = request.session;
+	if (!verifier) {
+		fail('No verifier found.', 400);
+		return;
+	}
+
+	const {code} = request.query as Record<string, string>;
+	if (!code) {
+		fail('No code found.', 404);
 		return;
 	}
 
 	try {
-		const {verifier} = request.session;
-		const lichessToken = await getLichess.token(request.query.code, verifier);
-		const oauthToken = lichessToken.access_token;
+		const {access_token: oauthToken} = await getLichess.token(code, verifier);
 		const lichessUser = await getLichess.account(oauthToken);
 		if (!lichessUser) throw new Error('user login failed');
 
-		let user: UserInterface = await User.findOne({id: lichessUser.id});
+		let user = await UserModel.findOne({id: lichessUser.id}).lean().exec();
 		if (!user) user = await createLichessUser(lichessUser);
 		request.session.type = 'lichess';
 		request.session.lichessToken = oauthToken;
@@ -39,7 +46,7 @@ const callback = async (
 		return;
 	} catch (error_: unknown) {
 		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+		fail(error.message);
 	}
 };
 

@@ -4,12 +4,13 @@ import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/main';
 import Card from '@/components/card-achievement';
 import {achievements, achievementsCategorys} from '@/data/achievements';
-import type {AchievementInterface, UserInterface} from '@/types/models';
+import type {AchievementInterface} from '@/types/models';
+import {User} from '@/models/user';
 import useUser from '@/hooks/use-user';
 
 const Achievements = () => {
 	const data = useUser();
-	const [user, setUser] = useState<UserInterface>();
+	const [user, setUser] = useState<User>();
 	const [achievementsList, setList] = useState<AchievementInterface[]>();
 	const [isLoading, setIsLoading] = useState(true);
 

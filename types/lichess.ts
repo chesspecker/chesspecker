@@ -4,7 +4,7 @@ export interface LichessToken {
 	expires_in: number;
 }
 
-type Perfs = {
+export type Perfs = {
 	games: number;
 	rating: number;
 	rd: number;

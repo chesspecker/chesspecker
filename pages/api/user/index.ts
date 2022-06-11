@@ -1,58 +1,59 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import type {UserInterface} from '@/types/models';
 import {withSessionRoute} from '@/lib/session';
-import {
-	createChesscomUser,
-	createLichessUser,
-	retrieve,
-} from '@/controllers/user';
+import {createChesscomUser, createLichessUser} from '@/controllers/create-user';
+import {SuccessData, ErrorData} from '@/types/data';
+import {failWrapper} from '@/lib/utils';
+import UserModel, {User} from '@/models/user';
 
-export type Data =
-	| {
-			success: true;
-			user: UserInterface;
-	  }
-	| {
-			success: false;
-			error: string;
-	  };
+export type UserData = SuccessData<User> | ErrorData;
 
 const get_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<UserData>,
 ) => {
+	const fail = failWrapper(response);
 	const {userID} = request.session;
-	const user = await retrieve(userID);
-	if (user === null) {
-		response.status(404).json({success: false, error: 'User not found'});
+	if (!userID) {
+		fail('Missing user id');
 		return;
 	}
 
-	response.json({success: true, user});
+	try {
+		const data = await UserModel.findById(userID).lean().exec();
+		if (data === null) {
+			fail('User not found');
+			return;
+		}
+
+		response.json({success: true, data});
+	} catch (error_: unknown) {
+		const error = error_ as Error;
+		response.status(500).json({success: false, error: error.message});
+	}
 };
 
 const post_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<UserData>,
 ) => {
-	let user: UserInterface;
+	let user: User;
 	if (request.session.type === 'chesscom')
 		user = await createChesscomUser(request.body);
 	if (request.session.type === 'lichess')
 		user = await createLichessUser(request.body);
 
 	if (user === null) {
-		response.status(404).json({success: false, error: 'User not found'});
+		failWrapper(response)('User not found');
 		return;
 	}
 
-	response.json({success: true, user});
+	response.json({success: true, data: user});
 };
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<UserData>,
 ) => {
 	switch (request.method) {
 		case 'GET':

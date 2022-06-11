@@ -6,7 +6,7 @@ import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
 import {NextSeo} from 'next-seo';
-import type {Data as SetData} from '@/api/set/[id]';
+import type {SetData} from '@/api/set/[id]';
 import Layout from '@/layouts/main';
 import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
 import {
@@ -278,9 +278,9 @@ export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
 	const id: string = params.id as string;
 	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-	const data = await fetch(`${baseUrl}/api/set/${id}`).then(
+	const result = await fetch(`${baseUrl}/api/set/${id}`).then(
 		async response => response.json() as Promise<SetData>,
 	);
-	if (!data?.success) return {notFound: true};
-	return {props: {currentSetProps: data.set}};
+	if (!result?.success) return {notFound: true};
+	return {props: {currentSetProps: result.data}};
 };

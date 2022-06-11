@@ -2,12 +2,12 @@ import {Dispatch, Fragment, SetStateAction} from 'react';
 import {Transition} from '@headlessui/react';
 import {useRouter} from 'next/router';
 import {Button, ButtonLink} from '@/components/button';
-import {PuzzleInterface} from '@/types/models';
+import {Puzzle} from '@/models/puzzle';
 
 export type Stat = {time: number; mistakes: number; grade: string};
 type Props = {
 	stat: Stat;
-	puzzle: PuzzleInterface;
+	puzzle: Puzzle;
 	/* eslint-disable-next-line react/boolean-prop-naming */
 	showModal: boolean;
 	setShowModal: Dispatch<SetStateAction<boolean>>;

@@ -1,5 +1,5 @@
 import {achievements} from '@/data/achievements';
-import {Data} from '@/pages/api/user';
+import {UserData} from '@/pages/api/user';
 import type {
 	AchievementItem,
 	AchievementInterface,
@@ -9,11 +9,11 @@ import type {
 export const checkForAchievement = async (
 	args: AchivementsArgs,
 ): Promise<AchievementInterface[]> => {
-	const data = await fetch('/api/user').then(
-		async reponse => reponse.json() as Promise<Data>,
+	const response = await fetch('/api/user').then(
+		async reponse => reponse.json() as Promise<UserData>,
 	);
-	if (!data.success) return;
-	const list: AchievementItem[] = data.user.validatedAchievements;
+	if (!response.success) return;
+	const list: AchievementItem[] = response.data.validatedAchievements;
 	const promises: Array<Promise<any>> = [];
 	const result: AchievementInterface[] = [];
 

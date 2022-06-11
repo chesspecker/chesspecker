@@ -3,9 +3,8 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {origin} from '@/config';
 import getChesscom from '@/lib/get-chesscom';
-import User from '@/models/user-model';
-import type {UserInterface} from '@/types/models';
-import {createChesscomUser} from '@/controllers/user';
+import User from '@/models/user';
+import {createChesscomUser} from '@/controllers/create-user';
 
 type ErrorData = {
 	success: false;
@@ -34,7 +33,7 @@ const callback = async (
 		const chesscomUser = await getChesscom.account(oauthToken, '');
 		if (!chesscomUser) throw new Error('user login failed');
 
-		let user: UserInterface = await User.findOne({id: chesscomUser.username});
+		let user = await User.findOne({id: chesscomUser.username}).lean().exec();
 		if (!user) user = await createChesscomUser(chesscomUser);
 		request.session.type = 'chesscom';
 		request.session.chesscomToken = oauthToken;

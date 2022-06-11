@@ -14,6 +14,8 @@ const IndexPage = () => {
 		await router.push('/dashboard');
 	};
 
+	console.log('user', useUser()?.user);
+
 	return (
 		<>
 			<NextSeo title='🎉 Success' />

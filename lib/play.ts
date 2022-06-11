@@ -2,15 +2,13 @@
 import {UpdateQuery} from 'mongoose';
 import type {ChessInstance} from 'chess.js';
 import type {Config} from 'chessground/config';
-import {
-	PuzzleItemInterface,
-	PuzzleSetInterface,
-	ThemeItem,
-	UserInterface,
-} from '@/types/models';
-import type {Data as PuzzleData, UpdateData} from '@/api/puzzle/[id]';
-import type {Data as SetData} from '@/api/set/[id]';
-import type {Data as UserData} from '@/api/user/[id]';
+import {PuzzleItem} from '@/models/puzzle-item';
+import {PuzzleSet} from '@/models/puzzle-set';
+import {User} from '@/models/user';
+import {ThemeItem} from '@/types/models';
+import type {PuzzleData, PuzzleSetData} from '@/api/puzzle/[id]';
+import type {SetData} from '@/api/set/[id]';
+import type {UserData} from '@/api/user/[id]';
 
 const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 	fetch(`${baseUrl}/api/puzzle/${id}`).then(async response => response.json());
@@ -18,8 +16,8 @@ const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 const updatePuzzle = async (
 	setId: string,
 	puzzleId: string,
-	data: UpdateQuery<Partial<PuzzleItemInterface>>,
-): Promise<UpdateData> =>
+	data: UpdateQuery<Partial<PuzzleItem>>,
+): Promise<PuzzleSetData> =>
 	fetch(`/api/puzzle/${puzzleId}`, {
 		method: 'PUT',
 		body: JSON.stringify({_id: setId, update: data}),
@@ -30,7 +28,7 @@ const getSetById = async (id: string, baseUrl = ''): Promise<SetData> =>
 
 const updateSet = async (
 	id: string,
-	data: UpdateQuery<Partial<PuzzleSetInterface>>,
+	data: UpdateQuery<Partial<PuzzleSet>>,
 ): Promise<SetData> =>
 	fetch(`/api/set/${id}`, {
 		method: 'PUT',
@@ -55,7 +53,7 @@ export type UpdateUser =
 
 const updateUser = async (
 	id: string,
-	data: UpdateQuery<Partial<UserInterface>>,
+	data: UpdateQuery<Partial<User>>,
 ): Promise<UserData> =>
 	fetch(`/api/user/${id}`, {
 		method: 'PUT',

@@ -1,5 +1,5 @@
 import {update as update_} from './play';
-import {PuzzleSetInterface} from '@/types/models';
+import {PuzzleSet} from '@/models/puzzle-set';
 
 const getTerminatedUpdate = () => ({
 	$set: {
@@ -10,7 +10,7 @@ const getTerminatedUpdate = () => ({
 	},
 });
 
-const getActivatedUpdate = (puzzleSet: PuzzleSetInterface) => {
+const getActivatedUpdate = (puzzleSet: PuzzleSet) => {
 	const puzzleOrder = [];
 	const chunks = {};
 
@@ -60,7 +60,7 @@ const getActivatedUpdate = (puzzleSet: PuzzleSetInterface) => {
  * Handle spaced-repetition.
  */
 export const updateSpacedRepetition = async (
-	set: PuzzleSetInterface,
+	set: PuzzleSet,
 	showSpacedOff = () => null,
 ) => {
 	const areAllPerfect = set.puzzles
@@ -81,12 +81,12 @@ export const updateSpacedRepetition = async (
 	await update_.set(set._id.toString(), update).catch(console.error);
 };
 
-export const activateSpacedRepetion = async (set: PuzzleSetInterface) => {
+export const activateSpacedRepetion = async (set: PuzzleSet) => {
 	const update = getActivatedUpdate(set);
 	await update_.set(set._id.toString(), update).catch(console.error);
 };
 
-export const turnOffSpacedRepetition = async (set: PuzzleSetInterface) => {
+export const turnOffSpacedRepetition = async (set: PuzzleSet) => {
 	const update = getTerminatedUpdate();
 	await update_.set(set._id.toString(), update).catch(console.error);
 };

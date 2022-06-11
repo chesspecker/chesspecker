@@ -35,6 +35,7 @@
 		"@heroicons/react": "^1.0.5",
 		"@stripe/stripe-js": "^1.23.0",
 		"@tailwindcss/forms": "^0.4.0",
+		"@typegoose/typegoose": "^9.9.0",
 		"chart.js": "^3.7.1",
 		"chess.js": "^0.12.1",
 		"chessground": "^8.2.1",

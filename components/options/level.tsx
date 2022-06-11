@@ -10,10 +10,10 @@ const OptionLevel = () => {
 	const [, setLevel] = useAtom(optionsµ.level);
 	const [rating, setRating] = useAtom(ratingAtom);
 	useEffectAsync(async () => {
-		const data = await fetch('/api/rating').then(
+		const result = await fetch('/api/rating').then(
 			async response => response.json() as Promise<Data>,
 		);
-		if (data.success) setRating(data.rating);
+		if (result.success) setRating(() => result.data);
 	}, []);
 
 	const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {

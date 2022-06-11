@@ -12,7 +12,7 @@ import OptionSize from '@/components/options/size';
 import OptionDifficulty from '@/components/options/level';
 import useModal from '@/hooks/use-modal';
 import Alert from '@/components/alert';
-import {Options} from '@/controllers/set-create';
+import {Options} from '@/controllers/create-set';
 import type {Difficulty} from '@/types/models';
 import loading from '@/public/images/spinner.svg';
 

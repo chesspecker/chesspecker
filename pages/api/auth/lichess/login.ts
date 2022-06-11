@@ -3,6 +3,7 @@ import withMongoRoute from 'providers/mongoose';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {lichess, origin} from '@/config';
 import {withSessionRoute} from '@/lib/session';
+import type {ErrorData} from '@/types/data';
 
 // eslint-disable-next-line node/prefer-global/buffer
 const base64URLEncode = (buffer_: Buffer): string =>
@@ -20,10 +21,10 @@ const createChallenge = (verifier: string) => base64URLEncode(sha256(verifier));
 
 const loginRoute = async (
 	request: NextApiRequest,
-	response: NextApiResponse,
+	response: NextApiResponse<ErrorData>,
 ) => {
 	if (request.method !== 'GET') {
-		response.status(405).json({success: false, message: 'Method not allowed.'});
+		response.status(405).json({success: false, error: 'Method not allowed.'});
 		return;
 	}
 
@@ -44,11 +45,9 @@ const loginRoute = async (
 		scope: 'preference:read',
 		code_challenge_method: 'S256',
 		code_challenge: challenge,
-	});
-	response.redirect(
-		302,
-		`https://lichess.org/oauth?${linkParameters.toString()}`,
-	);
+	}).toString();
+
+	response.redirect(302, `https://lichess.org/oauth?${linkParameters}`);
 };
 
 export default withMongoRoute(withSessionRoute(loginRoute));

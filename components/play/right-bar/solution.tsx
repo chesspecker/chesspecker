@@ -3,10 +3,10 @@ import {useAtom} from 'jotai';
 import * as ChessJS from 'chess.js';
 import {Button, ButtonLink} from '../../button';
 import {configµ, playµ} from '@/lib/atoms';
-import {PuzzleInterface} from '@/types/models';
+import {Puzzle} from '@/models/puzzle';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
-type Props = {answer: string; fen: string; puzzle: PuzzleInterface};
+type Props = {answer: string; fen: string; puzzle: Puzzle};
 
 const defaultClasses =
 	'mx-auto md:mx-2 w-36 rounded-md bg-slate-800 dark:bg-white leading-8 mt-0 ml-2 font-bold font-sans text-sm md:text-lg px-2.5 py-2';

@@ -6,7 +6,8 @@ import {useAtom} from 'jotai';
 import Layout from '@/layouts/main';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
-import {AchievementItem, UserInterface} from '@/types/models';
+import {AchievementItem} from '@/types/models';
+import {User} from '@/models/user';
 import Modal from '@/components/modal-achievement';
 import {withSessionSsr} from '@/lib/session';
 import {Banner} from '@/components/dashboard/banner';
@@ -15,7 +16,7 @@ import {supportBannerµ} from '@/lib/atoms';
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);
 	const data = useUser();
-	const [user, setUser] = useState<UserInterface>();
+	const [user, setUser] = useState<User>();
 	const [achievementsList, setList] = useState<AchievementItem[]>([]);
 	const [isVisible, setIsVisible] = useAtom(supportBannerµ);
 

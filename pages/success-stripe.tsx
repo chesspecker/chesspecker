@@ -9,14 +9,15 @@ import {Button, ButtonLink} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
 import useUser from '@/hooks/use-user';
-import {AchivementsArgs, UserInterface} from '@/types/models';
+import {AchivementsArgs} from '@/types/models';
+import {User} from '@/models/user';
 import {checkForAchievement} from '@/lib/achievements';
 import {formattedDate} from '@/lib/utils';
 
 const SuccessPage = () => {
 	const router = useRouter();
 	const data = useUser();
-	const [user, setUser] = useState<UserInterface>();
+	const [user, setUser] = useState<User>();
 	const {session_id: sessionId} = router.query;
 	const [session, setSession] = useState<Stripe.Checkout.Session>();
 

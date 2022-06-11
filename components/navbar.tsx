@@ -6,7 +6,7 @@ import {useAtom} from 'jotai';
 import Burger from './mobile-assets/burger';
 import logo from '@/public/images/logo.svg';
 import useUser from '@/hooks/use-user';
-import {UserInterface} from '@/types/models';
+import {User} from '@/models/user';
 import {darkModeµ} from '@/lib/atoms';
 
 export const BtnToggle = () => {
@@ -38,7 +38,7 @@ export const BtnToggle = () => {
 };
 
 const Navbar = () => {
-	const [user, setUser] = useState<UserInterface>();
+	const [user, setUser] = useState<User>();
 	const data = useUser();
 
 	useEffect(() => {

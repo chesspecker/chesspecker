@@ -12,7 +12,7 @@ import {
 	ChartBarIcon,
 } from '@heroicons/react/solid';
 import useClock from '@/hooks/use-clock';
-import {PuzzleSetInterface} from '@/types/models';
+import {PuzzleSet} from '@/models/puzzle-set';
 
 export type ViewData = {
 	title: string;
@@ -59,7 +59,7 @@ const ParseTime = ({time}: {time: number}): JSX.Element => {
 
 export {parseGrade, ParseTime};
 
-const getAverageGrade = (set: PuzzleSetInterface): number => {
+const getAverageGrade = (set: PuzzleSet): number => {
 	const grades = set.puzzles
 		.map(puzzle => puzzle.grades)
 		.flat(INFINITY) as number[];
@@ -67,14 +67,14 @@ const getAverageGrade = (set: PuzzleSetInterface): number => {
 	return Math.round(sum / grades.length);
 };
 
-const totalCycles = (set: PuzzleSetInterface): ViewData => ({
+const totalCycles = (set: PuzzleSet): ViewData => ({
 	title: 'How many times you completed this set',
 	stat: <span>{set?.cycles}</span>,
 	hasChange: false,
 	Icon: FireIcon,
 });
 
-const totalAverageGrade = (set: PuzzleSetInterface): ViewData => {
+const totalAverageGrade = (set: PuzzleSet): ViewData => {
 	const average = getAverageGrade(set);
 	const stat = parseGrade[average];
 	return {
@@ -87,7 +87,7 @@ const totalAverageGrade = (set: PuzzleSetInterface): ViewData => {
 	};
 };
 
-const totalTimeSpent = (set: PuzzleSetInterface): ViewData => {
+const totalTimeSpent = (set: PuzzleSet): ViewData => {
 	const sum = set.times.reduce(reducer, 0);
 	const total = sum === 0 ? set.currentTime : sum + set.currentTime;
 	const stat = <ParseTime time={total} />;
@@ -99,7 +99,7 @@ const totalTimeSpent = (set: PuzzleSetInterface): ViewData => {
 	};
 };
 
-const setRating = (set: PuzzleSetInterface): ViewData => ({
+const setRating = (set: PuzzleSet): ViewData => ({
 	title: 'Elo rating',
 	stat: <span>{set.rating}</span>,
 	hasChange: false,
@@ -108,7 +108,7 @@ const setRating = (set: PuzzleSetInterface): ViewData => ({
 });
 
 const time = {
-	lastOverFirst: (set: PuzzleSetInterface): ViewData => {
+	lastOverFirst: (set: PuzzleSet): ViewData => {
 		const result: ViewData = {
 			title: 'Last time / first time',
 			stat: '/',
@@ -135,7 +135,7 @@ const time = {
 
 		return result;
 	},
-	lastOverAverage: (set: PuzzleSetInterface): ViewData => {
+	lastOverAverage: (set: PuzzleSet): ViewData => {
 		const result: ViewData = {
 			title: 'Last time / average time',
 			stat: '/',
@@ -165,7 +165,7 @@ const time = {
 
 		return result;
 	},
-	lastOverBest: (set: PuzzleSetInterface): ViewData => {
+	lastOverBest: (set: PuzzleSet): ViewData => {
 		const result: ViewData = {
 			title: 'Last time / best time',
 			stat: '/',
@@ -195,7 +195,7 @@ const time = {
 };
 
 const grade = {
-	lastOverFirst: (set: PuzzleSetInterface): ViewData => {
+	lastOverFirst: (set: PuzzleSet): ViewData => {
 		const result: ViewData = {
 			title: 'Last grade / first grade',
 			stat: '/',
@@ -227,7 +227,7 @@ const grade = {
 
 		return result;
 	},
-	lastOverAverage: (set: PuzzleSetInterface): ViewData => {
+	lastOverAverage: (set: PuzzleSet): ViewData => {
 		const result: ViewData = {
 			title: 'Last grade / average grade',
 			stat: '/',
@@ -258,7 +258,7 @@ const grade = {
 
 		return result;
 	},
-	lastOverBest: (set: PuzzleSetInterface): ViewData => {
+	lastOverBest: (set: PuzzleSet): ViewData => {
 		const result: ViewData = {
 			title: 'Last grade / best grade',
 			stat: '/',
@@ -294,7 +294,7 @@ const grade = {
 	},
 };
 
-const currentProgress = (set: PuzzleSetInterface): ViewData => {
+const currentProgress = (set: PuzzleSet): ViewData => {
 	const completedPuzzlesArray = set.spacedRepetition
 		? set.puzzles.filter(puzzle => puzzle.grades[puzzle.grades.length - 1] >= 5)
 		: set.puzzles.filter(puzzle => puzzle.played);
@@ -309,7 +309,7 @@ const currentProgress = (set: PuzzleSetInterface): ViewData => {
 	};
 };
 
-const currentTime = (set: PuzzleSetInterface): ViewData => {
+const currentTime = (set: PuzzleSet): ViewData => {
 	const current = set.currentTime;
 	const result: ViewData = {
 		title: 'Current time',
@@ -339,7 +339,7 @@ const currentTime = (set: PuzzleSetInterface): ViewData => {
 	return result;
 };
 
-const currentGrade = (set: PuzzleSetInterface): ViewData => {
+const currentGrade = (set: PuzzleSet): ViewData => {
 	const current = set.puzzles
 		.filter(puzzle => puzzle.played)
 		.map(puzzle => puzzle.grades[puzzle.grades.length - 1]);
@@ -377,7 +377,7 @@ const currentGrade = (set: PuzzleSetInterface): ViewData => {
 	return result;
 };
 
-export const getOverviewStats = (set: PuzzleSetInterface): ViewData[] => {
+export const getOverviewStats = (set: PuzzleSet): ViewData[] => {
 	const data: ViewData[] = [];
 	data.push(totalCycles(set));
 	data.push(totalAverageGrade(set));
@@ -386,7 +386,7 @@ export const getOverviewStats = (set: PuzzleSetInterface): ViewData[] => {
 	return data;
 };
 
-export const getProgressStats = (set: PuzzleSetInterface): ViewData[] => {
+export const getProgressStats = (set: PuzzleSet): ViewData[] => {
 	const data: ViewData[] = [];
 	data.push(time.lastOverFirst(set));
 	data.push(time.lastOverAverage(set));
@@ -397,7 +397,7 @@ export const getProgressStats = (set: PuzzleSetInterface): ViewData[] => {
 	return data;
 };
 
-export const getCurrentRunStats = (set: PuzzleSetInterface): ViewData[] => {
+export const getCurrentRunStats = (set: PuzzleSet): ViewData[] => {
 	const data: ViewData[] = [];
 	data.push(currentProgress(set));
 	data.push(currentTime(set));

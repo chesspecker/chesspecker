@@ -10,7 +10,8 @@
  */
 
 import type {UpdateQuery} from 'mongoose';
-import type {Streak, UserInterface} from '@/types/models';
+import type {Streak} from '@/types/models';
+import {User} from '@/models/user';
 
 export const resetStreakCount = (date: string) => ({
 	startDate: date,
@@ -30,7 +31,7 @@ export const incrementStreakCount = (
 
 export const updateStreak = async (
 	id: string,
-	data: UpdateQuery<Partial<UserInterface>>,
+	data: UpdateQuery<Partial<User>>,
 ) =>
 	fetch(`/api/user/${id}`, {method: 'PUT', body: JSON.stringify(data)}).then(
 		async response => response.json(),
@@ -43,7 +44,7 @@ export const updateStreak = async (
  * returns a boolean value indicating whether or not you should increment or
  * reset streak count
  */
-export const shouldInrementOrResetStreakCount = (
+export const shouldIncrementOrResetStreakCount = (
 	currentDate: string,
 	lastLoginDate: string,
 ) => {

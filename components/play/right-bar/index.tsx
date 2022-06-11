@@ -1,12 +1,12 @@
 import MoveToNext from './move-to-next';
 import Progress from './progress';
 import Solution from './solution';
-import {PuzzleInterface} from '@/types/models';
+import {Puzzle} from '@/models/puzzle';
 
 type Props = {
 	answer: string;
 	fen: string;
-	puzzle: PuzzleInterface;
+	puzzle: Puzzle;
 	hasSpacedRepetition: boolean;
 	changePuzzle: () => void;
 	launchTimer: () => void;
