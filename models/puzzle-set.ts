@@ -2,7 +2,7 @@ import {getModelForClass, prop, mongoose} from '@typegoose/typegoose';
 import {User} from './user';
 import {PuzzleItem} from './puzzle-item';
 import type {Ref} from '@/types/ref';
-import type {Difficulty} from '@/types/models';
+import {Difficulty} from '@/types/models';
 
 export class PuzzleSet {
 	@prop()
@@ -38,7 +38,7 @@ export class PuzzleSet {
 	@prop()
 	public progress: number;
 
-	@prop()
+	@prop({enum: Difficulty, type: String})
 	public level: Difficulty;
 }
 

@@ -1,5 +1,7 @@
 import {getModelForClass, prop, mongoose} from '@typegoose/typegoose';
-import type {AchievementItem, Streak, ThemeItem} from '@/types/models';
+import {ThemeItem} from './theme';
+import {AchievementItem} from './achievement';
+import {Streak} from './streak';
 
 export class User {
 	@prop()
@@ -17,8 +19,7 @@ export class User {
 	@prop()
 	public isSponsor: boolean;
 
-	// FIXME: This is a hack to get the type to work.
-	@prop()
+	@prop({type: () => [AchievementItem]})
 	public validatedAchievements: AchievementItem[];
 
 	@prop()
@@ -30,11 +31,10 @@ export class User {
 	@prop()
 	public totalTimePlayed: number;
 
-	@prop()
+	@prop({type: () => Streak})
 	public streak: Streak;
 
-	// FIXME: This is a hack to get the type to work.
-	@prop()
+	@prop({type: () => [ThemeItem]})
 	public puzzleSolvedByCategories: ThemeItem[];
 }
 

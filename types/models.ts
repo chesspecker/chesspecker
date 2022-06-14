@@ -1,13 +1,5 @@
-export type ThemeItem = {
-	title: string;
-	count: number;
-};
-
-export type Streak = {
-	currentCount: number;
-	startDate: string; // 11/11/2019
-	lastLoginDate: string; // 14/11/2019
-};
+import {Streak} from '@/models/streak';
+import {ThemeItem} from '@/models/theme';
 
 export type AchivementsArgs = {
 	streakMistakes: number;
@@ -29,18 +21,13 @@ export type AchievementInterface = {
 	category: string;
 };
 
-export interface AchievementItem {
-	id: AchievementInterface['id'];
-	claimed: boolean;
-	date: Date;
+export enum Difficulty {
+	easiest = 'easiest',
+	easier = 'easier',
+	easy = 'easy',
+	normal = 'normal',
+	intermediate = 'intermediate',
+	hard = 'hard',
+	harder = 'harder',
+	hardest = 'hardest',
 }
-
-export type Difficulty =
-	| 'easiest'
-	| 'easier'
-	| 'easy'
-	| 'normal'
-	| 'intermediate'
-	| 'hard'
-	| 'harder'
-	| 'hardest';
