@@ -94,7 +94,7 @@ const PuzzleSetMap = () => {
 			{sets.map(set => (
 				<PuzzleSetComponent key={set._id.toString()} set={set} />
 			))}
-			<Link href='/create' prefetch>
+			<Link prefetch href='/create'>
 				<a>
 					<EmptyPuzzleSetComponent
 						/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
