@@ -1,21 +1,10 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import {retrieve} from '@/controllers/user';
 import {withSessionRoute} from '@/lib/session';
-import User from '@/models/user-model';
-import type {UserInterface} from '@/types/models';
+import UserModel, {User} from '@/models/user';
+import {SuccessData, ErrorData} from '@/types/data';
 
-type SuccessData = {
-	success: true;
-	user: UserInterface;
-};
-
-type ErrorData = {
-	success: false;
-	error: string;
-};
-
-export type Data = SuccessData | ErrorData;
+export type AchievementData = SuccessData<User> | ErrorData;
 
 type PutRequestBody = {
 	achievementId: string;
@@ -26,36 +15,38 @@ type PostRequestBody = {achievementId: string};
 
 const put_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<AchievementData>,
 ) => {
 	const {userID} = request.session;
-	const user: UserInterface = await retrieve(userID);
+	const user = await UserModel.findById(userID).lean().exec();
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
 		return;
 	}
 
 	const body = (await JSON.parse(request.body)) as PutRequestBody;
-	const newUser = (await User.findOneAndUpdate(
+	const newUser = await UserModel.findOneAndUpdate(
 		{_id: userID, 'validatedAchievements.id': body.achievementId},
 		{$set: {'validatedAchievements.$.claimed': body.claimed}},
-	).exec()) as UserInterface;
-	response.json({success: true, user: newUser});
+	)
+		.lean()
+		.exec();
+	response.json({success: true, data: newUser});
 };
 
 const post_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<AchievementData>,
 ) => {
 	const {userID} = request.session;
-	const user: UserInterface = await retrieve(userID);
+	const user = await UserModel.findById(userID).lean().exec();
 	if (user === null) {
 		response.status(404).json({success: false, error: 'User not found'});
 		return;
 	}
 
 	const body = (await JSON.parse(request.body)) as PostRequestBody;
-	const newUser = (await User.findByIdAndUpdate(userID, {
+	const newUser = await UserModel.findByIdAndUpdate(userID, {
 		$push: {
 			validatedAchievements: {
 				id: body.achievementId,
@@ -63,18 +54,21 @@ const post_ = async (
 				date: new Date(),
 			},
 		},
-	}).exec()) as UserInterface;
-	response.json({success: true, user: newUser});
+	})
+		.lean()
+		.exec();
+	response.json({success: true, data: newUser});
 };
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<AchievementData>,
 ) => {
 	switch (request.method) {
 		case 'POST':
 			await post_(request, response);
 			return;
+
 		case 'PUT':
 			await put_(request, response);
 			return;

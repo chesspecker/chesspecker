@@ -1,29 +1,23 @@
 /* eslint-disable unicorn/no-array-callback-reference,
-unicorn/no-array-method-this-argument,
-@typescript-eslint/consistent-type-assertions */
-import {FilterQuery} from 'mongoose';
+unicorn/no-array-method-this-argument */
+import {mongoose} from '@typegoose/typegoose';
 import {safeZero, shuffle} from '@/lib/utils';
-import Puzzle from '@/models/puzzle-model';
-import PuzzleSet from '@/models/puzzle-set-model';
-import User from '@/models/user-model';
+import PuzzleModel, {Puzzle} from '@/models/puzzle';
+import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
+import UserModel, {User} from '@/models/user';
 import {Theme} from '@/data/themes';
-import type {
-	UserInterface,
-	PuzzleInterface,
-	PuzzleItemInterface,
-	PuzzleSetInterface,
-} from '@/types/models';
+import {Difficulty} from '@/types/models';
 
 export type Options = {
-	title: PuzzleSetInterface['title'];
+	title: PuzzleSet['title'];
 	themeArray: Array<Theme['id']>;
-	size: PuzzleSetInterface['length'];
-	level: PuzzleSetInterface['level'];
-	averageRating: PuzzleSetInterface['rating'];
+	size: PuzzleSet['length'];
+	level: PuzzleSet['level'];
+	averageRating: PuzzleSet['rating'];
 };
 
 const rating = (
-	level: PuzzleSetInterface['level'],
+	level: PuzzleSet['level'],
 	averageRating = 1500,
 ): [number, number] => {
 	switch (level) {
@@ -47,7 +41,7 @@ const rating = (
 
 const createFilter =
 	(themeArray: string[], minRating: number, maxRating: number) =>
-	(spread: number): FilterQuery<any> =>
+	(spread: number): mongoose.FilterQuery<any> =>
 		themeArray.includes('healthyMix')
 			? {Rating: {$gt: minRating - spread, $lt: maxRating + spread}}
 			: {
@@ -58,19 +52,21 @@ const createFilter =
 			  };
 
 export const create = async (
-	userID: UserInterface['id'],
+	userID: User['id'],
 	options: Options,
-): Promise<PuzzleSetInterface> => {
-	const setLevel = options.level || 'normal';
+): Promise<PuzzleSet> => {
+	const setLevel = options.level || Difficulty.normal;
 	const [minRating, maxRating] = rating(setLevel, options.averageRating);
 
 	const projection = {_id: 1, PuzzleId: 1, Rating: 1};
 	const getFilter = createFilter(options.themeArray, minRating, maxRating);
 
-	const searchDb = async (spread: number): Promise<FilterQuery<any>> => {
-		const filter_: FilterQuery<any> = getFilter(spread);
+	const searchDb = async (
+		spread: number,
+	): Promise<mongoose.FilterQuery<any>> => {
+		const filter_: mongoose.FilterQuery<any> = getFilter(spread);
 		if (spread > 250) return filter_;
-		const possibleDocs = await Puzzle.countDocuments(filter_)
+		const possibleDocs = await PuzzleModel.countDocuments(filter_)
 			.limit(options.size)
 			.exec();
 
@@ -80,8 +76,8 @@ export const create = async (
 
 	const filter = await searchDb(0);
 
-	const format = (list: PuzzleInterface[]) =>
-		list.map((doc: PuzzleInterface, index: number) => ({
+	const format = (list: Puzzle[]) =>
+		list.map((doc: Puzzle, index: number) => ({
 			puzzle: {
 				_id: doc._id,
 				PuzzleId: doc.PuzzleId,
@@ -92,22 +88,24 @@ export const create = async (
 				mistakes: [],
 				timeTaken: [],
 				grades: [],
-			} as PuzzleItemInterface,
+			},
 			rating: doc.Rating,
 		}));
 
-	const unshuffledPuzzles = (await Puzzle.find(filter, projection)
+	const unshuffledPuzzles = await PuzzleModel.find(filter, projection)
 		.limit(options.size)
 		.lean()
-		.exec()) as PuzzleInterface[];
+		.exec();
 
 	const unformattedPuzzles = shuffle(unshuffledPuzzles);
 	const puzzles = format(unformattedPuzzles);
 
-	const userQuery = User.findById(userID);
-	const user: UserInterface = (await userQuery.exec()) as UserInterface;
-	const puzzleSet: PuzzleSetInterface = new PuzzleSet() as PuzzleSetInterface;
-	const avgRating = puzzles.reduce((acc, curr) => acc + curr.rating, 0);
+	const user = await UserModel.findById(userID).lean().exec();
+	const puzzleSet = new PuzzleSetModel();
+	const avgRating = puzzles.reduce(
+		(acc, curr) => acc + Number.parseInt(curr.rating, 10),
+		0,
+	);
 
 	puzzleSet.puzzles = puzzles.map(({puzzle}) => puzzle);
 	puzzleSet.rating = Math.round(avgRating / puzzles.length);

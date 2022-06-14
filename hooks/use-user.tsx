@@ -1,13 +1,13 @@
 import useSWR from 'swr';
-import type {Data} from '@/pages/api/user';
+import type {UserData} from '@/pages/api/user';
 
-const fetcher = async (endpoint: string): Promise<Data> =>
-	fetch(endpoint).then(async response => response.json() as Promise<Data>);
+const fetcher = async (endpoint: string): Promise<UserData> =>
+	fetch(endpoint).then(async response => response.json() as Promise<UserData>);
 const useUser = () => {
 	const {data, mutate} = useSWR('/api/user', fetcher);
 	if (data?.success) {
 		return {
-			user: data.user,
+			user: data.data,
 			mutate,
 		};
 	}

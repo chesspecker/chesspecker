@@ -6,24 +6,31 @@ import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
 import {NextSeo} from 'next-seo';
-import type {Data as SetData} from '@/api/set/[id]';
+import dynamic from 'next/dynamic';
+import type {SetData} from '@/api/set/[id]';
 import Layout from '@/layouts/main';
-import {PuzzleItemInterface, PuzzleSetInterface} from '@/types/models';
 import {
 	getCurrentRunStats,
 	getOverviewStats,
 	getProgressStats,
 	ViewData,
 } from '@/lib/view';
-import EditModal from '@/components/view/edit-modal';
-import ModalSpacedOn from '@/components/play/modal-spaced-on';
 import useModal from '@/hooks/use-modal';
 import {
 	activateSpacedRepetion,
 	turnOffSpacedRepetition,
 } from '@/lib/spaced-repetition';
-import ModalSpacedOff from '@/components/play/modal-spaced-off';
 import {Tooltip} from '@/components/tooltip';
+import {PuzzleItem} from '@/models/puzzle-item';
+import {PuzzleSet} from '@/models/puzzle-set';
+
+const ModalSpacedOn = dynamic(
+	async () => import('@/components/play/modal-spaced-on'),
+);
+const ModalSpacedOff = dynamic(
+	async () => import('@/components/play/modal-spaced-off'),
+);
+const EditModal = dynamic(async () => import('@/components/view/edit-modal'));
 
 const reducer = (accumulator: number, current: number) => accumulator + current;
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
@@ -120,13 +127,13 @@ const getClasses = (grade: number) => {
 const getAverage = (array: number[]): number =>
 	array.reduce(reducer, 0) / array.length;
 
-const PuzzleComponent = (puzzle: PuzzleItemInterface): JSX.Element => (
+const PuzzleComponent = (puzzle: PuzzleItem): JSX.Element => (
 	<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
 		<a className={getClasses(getAverage(puzzle.grades))} />
 	</Link>
 );
 
-type Props = {currentSetProps: PuzzleSetInterface};
+type Props = {currentSetProps: PuzzleSet};
 const ViewingPage = ({currentSetProps: set}: Props) => {
 	const [overviewStats, setOverviewStats] = useState<ViewData[]>([]);
 	const [progressStats, setProgressStats] = useState<ViewData[]>([]);
@@ -278,9 +285,9 @@ export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
 	const id: string = params.id as string;
 	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-	const data = await fetch(`${baseUrl}/api/set/${id}`).then(
+	const result = await fetch(`${baseUrl}/api/set/${id}`).then(
 		async response => response.json() as Promise<SetData>,
 	);
-	if (!data?.success) return {notFound: true};
-	return {props: {currentSetProps: data.set}};
+	if (!result?.success) return {notFound: true};
+	return {props: {currentSetProps: result.data}};
 };

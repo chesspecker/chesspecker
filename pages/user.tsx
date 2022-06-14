@@ -6,12 +6,13 @@ import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import Card from '@/components/card-achievement';
 import {achievements} from '@/data/achievements';
-import type {AchievementInterface, UserInterface} from '@/types/models';
+import type {AchievementInterface} from '@/types/models';
 import useUser from '@/hooks/use-user';
+import {User} from '@/models/user';
 
-const User = () => {
+const UserPage = () => {
 	const data = useUser();
-	const [user, setUser] = useState<UserInterface>();
+	const [user, setUser] = useState<User>();
 	const [achievementsList, setList] = useState<AchievementInterface[]>();
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -91,5 +92,5 @@ const User = () => {
 	);
 };
 
-User.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
-export default User;
+UserPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
+export default UserPage;

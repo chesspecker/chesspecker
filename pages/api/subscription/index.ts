@@ -4,36 +4,25 @@ import withMongoRoute from 'providers/mongoose';
 import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
 import {origin} from '@/config';
+import {ErrorData, SuccessData} from '@/types/data';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-	apiVersion: '2020-08-27',
-});
+const key = process.env.STRIPE_SECRET_KEY;
+const stripe = new Stripe(key, {apiVersion: '2020-08-27'});
 
-type DataSession = {
-	success: boolean;
-	session: Stripe.Checkout.Session;
-};
+export type CheckoutData = SuccessData<Stripe.Checkout.Session> | ErrorData;
 
-type DataError = {
-	success: false;
-	error: string;
-};
-
-export type Data = DataSession | DataError;
-
-export type SubBody = {
+export type CheckoutRequestBody = {
 	stripePriceId: Stripe.Checkout.SessionCreateParams.LineItem['price'];
 	customer?: Stripe.Checkout.SessionCreateParams['customer'];
 };
 
-// Create
 const post_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<CheckoutData>,
 ) => {
-	const {stripePriceId, customer}: SubBody = JSON.parse(
+	const {stripePriceId, customer} = JSON.parse(
 		request.body,
-	) as SubBody;
+	) as CheckoutRequestBody;
 	const parameters: Stripe.Checkout.SessionCreateParams = {
 		line_items: [{price: stripePriceId, quantity: 1}],
 		payment_method_types: ['card'],
@@ -47,7 +36,7 @@ const post_ = async (
 	try {
 		const session: Stripe.Checkout.Session =
 			await stripe.checkout.sessions.create(parameters);
-		response.status(200).json({success: true, session});
+		response.status(200).json({success: true, data: session});
 		return;
 	} catch (error: unknown) {
 		const error_ = error as Error;
@@ -57,7 +46,7 @@ const post_ = async (
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<CheckoutData>,
 ) => {
 	switch (request.method) {
 		case 'POST':

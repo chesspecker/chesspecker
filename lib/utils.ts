@@ -1,3 +1,6 @@
+import type {NextApiResponse} from 'next';
+import type {ErrorData} from '@/types/data';
+
 export const shuffle = <T>(array: T[]): T[] => {
 	let currentIndex = array.length;
 	let temporary: T;
@@ -24,3 +27,10 @@ export const formattedDate = (date: Date): string =>
 
 export const getRandomInt = (max: number): number =>
 	Math.floor(Math.random() * max);
+
+export const failWrapper =
+	(response: NextApiResponse<ErrorData>) =>
+	(error: string, status = 500): void => {
+		console.error('Error:', error);
+		response.status(status).json({success: false, error});
+	};

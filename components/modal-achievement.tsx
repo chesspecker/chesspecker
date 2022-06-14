@@ -3,8 +3,9 @@ import {Transition} from '@headlessui/react';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {Button} from '@/components/button';
 import {achievements as achievementsList} from '@/data/achievements';
-import type {AchievementItem, AchievementInterface} from '@/types/models';
+import type {AchievementInterface} from '@/types/models';
 import Card from '@/components/card-achievement';
+import {AchievementItem} from '@/models/achievement';
 
 type Props = {
 	/* eslint-disable-next-line react/boolean-prop-naming */

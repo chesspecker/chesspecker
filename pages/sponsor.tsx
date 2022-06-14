@@ -5,14 +5,14 @@ import {useEffect, useState} from 'react';
 import Modal from 'react-pure-modal';
 import {useRouter} from 'next/router';
 import {NextSeo} from 'next-seo';
-import type {Data as SubscriptionData} from '@/api/subscription/[id]';
-import type {SubBody, Data as SessionData} from '@/api/subscription/index';
+import type {SubscriptionData} from '@/api/subscription/[id]';
+import type {CheckoutRequestBody, CheckoutData} from '@/api/subscription/index';
 import useModal from '@/hooks/use-modal';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
-import type {UserInterface} from '@/types/models';
+import {User} from '@/models/user';
 import useEffectAsync from '@/hooks/use-effect-async';
 
 type Props = {onClick: () => Promise<void>};
@@ -146,7 +146,7 @@ const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
 
 const SponsorPage = () => {
 	const data = useUser();
-	const [user, setUser] = useState<UserInterface>();
+	const [user, setUser] = useState<User>();
 	const [subscription, setSubscription] = useState<Stripe.Subscription>();
 
 	useEffect(() => {
@@ -156,24 +156,24 @@ const SponsorPage = () => {
 
 	useEffectAsync(async () => {
 		if (!user?.isSponsor) return;
-		const data = await fetch(`/api/subscription/${user.stripeId}`).then(
+		const result = await fetch(`/api/subscription/${user.stripeId}`).then(
 			async response => response.json() as Promise<SubscriptionData>,
 		);
-		if (!data.success) return;
-		setSubscription(data.subscription);
+		if (!result.success) return;
+		setSubscription(result.data);
 	}, [user]);
 
 	const handleClick = async (priceId: string) => {
-		const body: SubBody = {stripePriceId: priceId};
+		const body: CheckoutRequestBody = {stripePriceId: priceId};
 		if (user.stripeId) body.customer = user.stripeId;
 
-		const data = await fetch('/api/subscription', {
+		const result = await fetch('/api/subscription', {
 			method: 'POST',
 			body: JSON.stringify(body),
-		}).then(async response => response.json() as Promise<SessionData>);
+		}).then(async response => response.json() as Promise<CheckoutData>);
 
-		if (data.success) {
-			const {id: sessionId} = data.session;
+		if (result.success) {
+			const {id: sessionId} = result.data;
 			const stripe = await getStripe(
 				process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 			);

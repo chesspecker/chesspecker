@@ -13,7 +13,7 @@ const getAccount = async (
 		});
 
 const getToken = async (
-	authCode: string | string[],
+	authCode: string,
 	verifier: string,
 ): Promise<LichessToken> =>
 	fetch('https://lichess.org/api/token', {
@@ -34,10 +34,7 @@ const getToken = async (
 
 const getLichess: {
 	account: (accessToken: LichessToken['access_token']) => Promise<LichessUser>;
-	token: (
-		authCode: string | string[],
-		verifier: string,
-	) => Promise<LichessToken>;
+	token: (authCode: string, verifier: string) => Promise<LichessToken>;
 } = {
 	account: getAccount,
 	token: getToken,

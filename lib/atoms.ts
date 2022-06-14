@@ -1,8 +1,7 @@
 import {atom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
-
 import type {Category} from 'data/categories';
-import type {Difficulty} from '@/types/models';
+import {Difficulty} from '@/types/models';
 
 export const darkModeµ = atomWithStorage<boolean>('cp-dark-mode', true);
 
@@ -14,7 +13,7 @@ export const supportBannerµ = atomWithStorage<boolean>(
 );
 
 const optionsTitleAtom = atom<string>('');
-const optionsLevelAtom = atom<Difficulty>('normal');
+const optionsLevelAtom = atom<Difficulty>(Difficulty.normal);
 const optionsSizeAtom = atom<number>(500);
 export const optionsµ = {
 	title: optionsTitleAtom,

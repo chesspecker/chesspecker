@@ -1,15 +1,14 @@
 import {withSessionRoute} from 'lib/session';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {origin} from '@/config';
-
-export type ResponseData = {success: boolean; message?: string};
+import type {ErrorData} from '@/types/data';
 
 const logoutRoute = (
 	request: NextApiRequest,
-	response: NextApiResponse<ResponseData>,
+	response: NextApiResponse<ErrorData>,
 ) => {
 	if (request.method !== 'GET') {
-		response.status(405).json({success: false, message: 'Method not allowed.'});
+		response.status(405).json({success: false, error: 'Method not allowed.'});
 		return;
 	}
 
@@ -17,7 +16,7 @@ const logoutRoute = (
 		request.session.destroy();
 	} catch (error_: unknown) {
 		const error = error_ as Error;
-		response.status(500).json({success: false, message: error.message});
+		response.status(500).json({success: false, error: error.message});
 		return;
 	}
 

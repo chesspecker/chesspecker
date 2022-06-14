@@ -6,14 +6,14 @@ import {useRouter} from 'next/router';
 import {Button} from '@/components/button';
 import plus from '@/public/images/plus.svg';
 import spinner from '@/public/images/spinner.svg';
-import type {PuzzleSetInterface} from '@/types/models';
+import {PuzzleSet} from '@/models/puzzle-set';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {DataMany} from '@/pages/api/set';
+import {PuzzleSetArrayData} from '@/pages/api/set';
 import RemoveModal from '@/components/dashboard/remove-modal';
 import audio from '@/lib/sound';
 
 type PropsComponent = {
-	set: PuzzleSetInterface;
+	set: PuzzleSet;
 };
 
 const PuzzleSetComponent = ({set}: PropsComponent) => {
@@ -70,16 +70,16 @@ const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
 );
 
 const PuzzleSetMap = () => {
-	const [sets, setSets] = useState<PuzzleSetInterface[]>([]);
+	const [sets, setSets] = useState<PuzzleSet[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffectAsync(async () => {
-		const data = await fetch('/api/set').then(
-			async response => response.json() as Promise<DataMany>,
+		const result = await fetch('/api/set').then(
+			async response => response.json() as Promise<PuzzleSetArrayData>,
 		);
-		if (!data?.success) return;
-		setSets(data.sets);
-		setIsLoading(false);
+		if (!result?.success) return;
+		setSets(() => result.data);
+		setIsLoading(() => false);
 	}, []);
 
 	return (
@@ -94,7 +94,7 @@ const PuzzleSetMap = () => {
 			{sets.map(set => (
 				<PuzzleSetComponent key={set._id.toString()} set={set} />
 			))}
-			<Link href='/create'>
+			<Link prefetch href='/create'>
 				<a>
 					<EmptyPuzzleSetComponent
 						/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */

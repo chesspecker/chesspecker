@@ -1,47 +1,44 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
-import {create, retrieveByUser} from '@/controllers/set';
+import {create} from '@/controllers/create-set';
+import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
+import {failWrapper} from '@/lib/utils';
+import type {SuccessData, ErrorData} from '@/types/data';
 
-import type {PuzzleSetInterface} from '@/types/models';
-
-type SuccessDataMany = {
-	success: true;
-	sets: PuzzleSetInterface[];
-};
-
-type SuccessData = {
-	success: true;
-	set: PuzzleSetInterface;
-};
-
-type ErrorData = {
-	success: false;
-	error: string;
-};
-
-export type Data = SuccessData | ErrorData;
-export type DataMany = SuccessDataMany | ErrorData;
+export type PuzzleSetData = SuccessData<PuzzleSet> | ErrorData;
+export type PuzzleSetArrayData = SuccessData<PuzzleSet[]> | ErrorData;
 
 const get_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<DataMany>,
+	response: NextApiResponse<PuzzleSetArrayData>,
 ) => {
+	const fail = failWrapper(response);
 	const {userID} = request.session;
-	const sets = await retrieveByUser(userID);
-	if (sets === null) {
-		response.status(404).json({success: false, error: 'Set not found'});
-		throw new Error('Set not found');
+	if (!userID) {
+		fail('Missing user id');
+		return;
 	}
 
-	response.json({success: true, sets});
+	const data = await PuzzleSetModel.find({
+		user: userID,
+	})
+		.lean()
+		.exec();
+	if (data === null) {
+		fail('Unable to retrieve set');
+		return;
+	}
+
+	response.json({success: true, data});
 };
 
 const post_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<PuzzleSetData>,
 ) => {
 	const {userID} = request.session;
+	const fail = failWrapper(response);
 
 	const timeout = new Promise((resolve: (response: string) => void) =>
 		// eslint-disable-next-line no-promise-executor-return
@@ -50,30 +47,27 @@ const post_ = async (
 
 	const creation = create(userID, JSON.parse(request.body));
 
+	const guard: (
+		data: PuzzleSet | string | null,
+	) => asserts data is PuzzleSet = data => {
+		if (data === null) throw new Error('Unable to create set');
+		if (data === 'timeout') throw new Error('Timed out');
+	};
+
 	try {
-		const value = await Promise.race([creation, timeout]);
-		if (value === null) {
-			const error = 'Unable to create set';
-			response.status(500).json({success: false, error});
-			throw new Error(error);
-		}
-
-		if (value === 'timeout') {
-			const error = 'timeout';
-			response.status(504).json({success: false, error});
-			throw new Error(error);
-		}
-
-		response.json({success: true, set: value as PuzzleSetInterface});
+		const data = await Promise.race([creation, timeout]);
+		guard(data);
+		response.json({success: true, data});
 	} catch (error: unknown) {
 		const error_ = error as Error;
 		console.error(error_);
+		fail(error_.message);
 	}
 };
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data | DataMany>,
+	response: NextApiResponse<PuzzleSetData | PuzzleSetArrayData>,
 ) => {
 	switch (request.method) {
 		case 'GET':

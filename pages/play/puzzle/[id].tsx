@@ -7,22 +7,28 @@ import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
-import {PuzzleInterface} from '@/types/models';
+import dynamic from 'next/dynamic';
+import {Puzzle} from '@/models/puzzle';
 import Layout from '@/layouts/main';
 import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
-import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
 import {get as get_, getGrade, getTimeInterval, getTimeTaken} from '@/lib/play';
-import Board from '@/components/play/board';
-import BottomBar from '@/components/play/bottom-bar';
-import Solution from '@/components/play/right-bar/solution';
-import MoveToNext from '@/components/play/right-bar/move-to-next';
-import ModalPuzzle from '@/components/modal-puzzle';
 import type {Stat} from '@/components/modal-puzzle';
+
+const MoveToNext = dynamic(
+	async () => import('@/components/play/right-bar/move-to-next'),
+);
+const Timer = dynamic(async () => import('@/components/play/timer'));
+const Board = dynamic(async () => import('@/components/play/board'));
+const ModalPuzzle = dynamic(async () => import('@/components/modal-puzzle'));
+const Solution = dynamic(
+	async () => import('@/components/play/right-bar/solution'),
+);
+const BottomBar = dynamic(async () => import('@/components/play/bottom-bar'));
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
@@ -42,7 +48,7 @@ Object.freeze(parseGrade);
 /* eslint-disable-next-line no-promise-executor-return */
 const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
 
-type Props = {puzzle: PuzzleInterface};
+type Props = {puzzle: Puzzle};
 const PlayingPage = ({puzzle}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
@@ -416,9 +422,9 @@ export const getServerSideProps = withSessionSsr(
 		const id: string = params.id;
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
-		const data = await get_.puzzle(id, baseUrl);
+		const result = await get_.puzzle(id, baseUrl);
 
-		if (!data.success) return {notFound: true};
-		return {props: {puzzle: data.puzzle}};
+		if (!result.success) return {notFound: true};
+		return {props: {puzzle: result.data}};
 	},
 );

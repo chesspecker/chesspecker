@@ -1,67 +1,77 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
+import type {UpdateQuery} from 'mongoose';
 import {withSessionRoute} from '@/lib/session';
-import {retrieve, remove, update} from '@/controllers/set';
+import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
+import {failWrapper} from '@/lib/utils';
+import type {SuccessData, ErrorData} from '@/types/data';
 
-import type {PuzzleSetInterface} from '@/types/models';
-
-type SuccessData = {
-	success: true;
-	set: PuzzleSetInterface;
-};
-
-type ErrorData = {
-	success: false;
-	error: string;
-};
-
-export type Data = SuccessData | ErrorData;
+export type SetData = SuccessData<PuzzleSet> | ErrorData;
 
 const get_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<SetData>,
 ) => {
-	const {id} = request.query;
-	const set = await retrieve(id as string);
-	if (set === null) {
-		response.status(404).json({success: false, error: 'Set not found'});
-		return;
-	}
+	const {id} = request.query as Record<string, string>;
 
-	response.json({success: true, set});
+	try {
+		const data = await PuzzleSetModel.findById(id).lean().exec();
+		if (data === null) {
+			failWrapper(response)('Set not found');
+			return;
+		}
+
+		response.json({success: true, data});
+	} catch (error_: unknown) {
+		const error = error_ as Error;
+		response.status(500).json({success: false, error: error.message});
+	}
 };
 
 const delete_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<SetData>,
 ) => {
-	const {id} = request.query;
-	const set = await remove(id as string);
-	if (set === null) {
-		response.status(404).json({success: false, error: 'Set not found'});
-		return;
-	}
+	const {id} = request.query as Record<string, string>;
 
-	response.json({success: true, set});
+	try {
+		const data = await PuzzleSetModel.findByIdAndDelete(id).lean().exec();
+		if (data === null) {
+			failWrapper(response)('Set not found');
+			return;
+		}
+
+		response.json({success: true, data});
+	} catch (error_: unknown) {
+		const error = error_ as Error;
+		response.status(500).json({success: false, error: error.message});
+	}
 };
+
+type PutRequestBody = UpdateQuery<Partial<PuzzleSet>>;
 
 const put_ = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<SetData>,
 ) => {
 	const {id} = request.query;
-	const set = await update(id as string, JSON.parse(request.body));
-	if (set === null) {
-		response.status(404).json({success: false, error: 'Set not found'});
-		return;
+	const body = JSON.parse(request.body) as PutRequestBody;
+	try {
+		const data = await PuzzleSetModel.findByIdAndUpdate(id, body, {
+			new: true,
+		})
+			.lean()
+			.exec();
+		response.json({success: true, data});
+	} catch (error_: unknown) {
+		const error = error_ as Error;
+		response.status(500).json({success: false, error: error.message});
 	}
-
-	response.json({success: true, set});
 };
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<SetData>,
 ) => {
 	switch (request.method.toUpperCase()) {
 		case 'GET':
