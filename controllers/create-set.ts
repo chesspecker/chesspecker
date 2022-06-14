@@ -6,6 +6,7 @@ import PuzzleModel, {Puzzle} from '@/models/puzzle';
 import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
 import UserModel, {User} from '@/models/user';
 import {Theme} from '@/data/themes';
+import {Difficulty} from '@/types/models';
 
 export type Options = {
 	title: PuzzleSet['title'];
@@ -54,7 +55,7 @@ export const create = async (
 	userID: User['id'],
 	options: Options,
 ): Promise<PuzzleSet> => {
-	const setLevel = options.level || 'normal';
+	const setLevel = options.level || Difficulty.normal;
 	const [minRating, maxRating] = rating(setLevel, options.averageRating);
 
 	const projection = {_id: 1, PuzzleId: 1, Rating: 1};

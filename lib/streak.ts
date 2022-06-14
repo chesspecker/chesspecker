@@ -10,8 +10,8 @@
  */
 
 import type {UpdateQuery} from 'mongoose';
-import type {Streak} from '@/types/models';
 import {User} from '@/models/user';
+import {Streak} from '@/models/streak';
 
 export const resetStreakCount = (date: string) => ({
 	startDate: date,

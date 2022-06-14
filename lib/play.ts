@@ -5,10 +5,10 @@ import type {Config} from 'chessground/config';
 import {PuzzleItem} from '@/models/puzzle-item';
 import {PuzzleSet} from '@/models/puzzle-set';
 import {User} from '@/models/user';
-import {ThemeItem} from '@/types/models';
 import type {PuzzleData, PuzzleSetData} from '@/api/puzzle/[id]';
 import type {SetData} from '@/api/set/[id]';
 import type {UserData} from '@/api/user/[id]';
+import {ThemeItem} from '@/models/theme';
 
 const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 	fetch(`${baseUrl}/api/puzzle/${id}`).then(async response => response.json());

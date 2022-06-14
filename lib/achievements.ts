@@ -1,10 +1,7 @@
 import {achievements} from '@/data/achievements';
+import {AchievementItem} from '@/models/achievement';
 import {UserData} from '@/pages/api/user';
-import type {
-	AchievementItem,
-	AchievementInterface,
-	AchivementsArgs,
-} from '@/types/models';
+import type {AchievementInterface, AchivementsArgs} from '@/types/models';
 
 export const checkForAchievement = async (
 	args: AchivementsArgs,
