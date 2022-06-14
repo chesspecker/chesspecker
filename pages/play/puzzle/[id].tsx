@@ -7,22 +7,28 @@ import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {Puzzle} from '@/models/puzzle';
 import Layout from '@/layouts/main';
 import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
-import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
 import {get as get_, getGrade, getTimeInterval, getTimeTaken} from '@/lib/play';
-import Board from '@/components/play/board';
-import BottomBar from '@/components/play/bottom-bar';
-import Solution from '@/components/play/right-bar/solution';
-import MoveToNext from '@/components/play/right-bar/move-to-next';
-import ModalPuzzle from '@/components/modal-puzzle';
 import type {Stat} from '@/components/modal-puzzle';
+
+const MoveToNext = dynamic(
+	async () => import('@/components/play/right-bar/move-to-next'),
+);
+const Timer = dynamic(async () => import('@/components/play/timer'));
+const Board = dynamic(async () => import('@/components/play/board'));
+const ModalPuzzle = dynamic(async () => import('@/components/modal-puzzle'));
+const Solution = dynamic(
+	async () => import('@/components/play/right-bar/solution'),
+);
+const BottomBar = dynamic(async () => import('@/components/play/bottom-bar'));
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');

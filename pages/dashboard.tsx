@@ -3,15 +3,19 @@ import {useState, useEffect} from 'react';
 import {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import {useAtom} from 'jotai';
+import dynamic from 'next/dynamic';
 import Layout from '@/layouts/main';
-import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import useUser from '@/hooks/use-user';
-import {AchievementItem} from '@/types/models';
 import {User} from '@/models/user';
-import Modal from '@/components/modal-achievement';
 import {withSessionSsr} from '@/lib/session';
 import {Banner} from '@/components/dashboard/banner';
 import {supportBannerµ} from '@/lib/atoms';
+import {AchievementItem} from '@/models/achievement';
+
+const Modal = dynamic(async () => import('@/components/modal-achievement'));
+const PuzzleSetMap = dynamic(
+	async () => import('@/components/dashboard/puzzle-set-map'),
+);
 
 const DashbaordPage = () => {
 	const [showModal, setShowModal] = useState(false);

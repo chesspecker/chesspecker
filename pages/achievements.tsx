@@ -2,12 +2,13 @@ import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
 import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/main';
-import Card from '@/components/card-achievement';
 import {achievements, achievementsCategorys} from '@/data/achievements';
 import type {AchievementInterface} from '@/types/models';
 import {User} from '@/models/user';
 import useUser from '@/hooks/use-user';
+import dynamic from 'next/dynamic';
 
+const Card = dynamic(async () => import('@/components/card-achievement'));
 const Achievements = () => {
 	const data = useUser();
 	const [user, setUser] = useState<User>();

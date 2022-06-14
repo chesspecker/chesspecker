@@ -8,25 +8,19 @@ import type {GetServerSidePropsContext, Redirect} from 'next';
 import useSWR from 'swr';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
-import {AchivementsArgs, Streak} from '@/types/models';
+import dynamic from 'next/dynamic';
+import {AchivementsArgs} from '@/types/models';
 import Layout from '@/layouts/main';
 import {formattedDate, sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
 import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ, revertedµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
-import Timer from '@/components/play/timer';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
 import {checkForAchievement} from '@/lib/achievements';
-import Notification from '@/components/notification';
 import {withSessionSsr} from '@/lib/session';
-import Board from '@/components/play/board';
-import RightBar from '@/components/play/right-bar';
-import BottomBar from '@/components/play/bottom-bar';
 import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
-import ModalSpacedOn from '@/components/play/modal-spaced-on';
-import ModalSpacedEnd from '@/components/play/modal-spaced-end';
 import {
 	activateSpacedRepetion,
 	updateSpacedRepetition,
@@ -53,7 +47,21 @@ import {
 	getTimeTaken,
 	getUpdateBody,
 } from '@/lib/play';
-import LeftBar, {Stat} from '@/components/play/left-bar';
+import {Stat} from '@/components/play/left-bar';
+import {Streak} from '@/models/streak';
+
+const Notification = dynamic(async () => import('@/components/notification'));
+const Timer = dynamic(async () => import('@/components/play/timer'));
+const Board = dynamic(async () => import('@/components/play/board'));
+const LeftBar = dynamic(async () => import('@/components/play/left-bar'));
+const RightBar = dynamic(async () => import('@/components/play/right-bar'));
+const BottomBar = dynamic(async () => import('@/components/play/bottom-bar'));
+const ModalSpacedOn = dynamic(
+	async () => import('@/components/play/modal-spaced-on'),
+);
+const ModalSpacedEnd = dynamic(
+	async () => import('@/components/play/modal-spaced-end'),
+);
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
