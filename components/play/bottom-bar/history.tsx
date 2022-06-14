@@ -20,7 +20,7 @@ const History = ({puzzles}: HistoryProps) => {
 	return (
 		<div className='flex flex-row flex-wrap w-full gap-1'>
 			{puzzles.map(puzzle => (
-				<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
+				<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`} prefetch>
 					<a className={getClasses(puzzle.grade)} />
 				</Link>
 			))}
