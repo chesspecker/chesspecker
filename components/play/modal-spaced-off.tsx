@@ -39,7 +39,7 @@ const ModalSpacedOff = ({onClick, isOpen = false, hide}: Props) => {
 		>
 			<div className='w-full mt-2'>
 				<p className='text-sm leading-5 text-gray-500'>
-					Are you sure you want to turn off spaced repetition? YOU WILL LOOSE
+					Are you sure you want to turn off spaced repetition? YOU WILL LOSE
 					YOUR CURRENT PROGRESS.
 				</p>
 			</div>
@@ -61,7 +61,7 @@ const ModalSpacedOff = ({onClick, isOpen = false, hide}: Props) => {
 								className='inline-flex justify-center px-4 py-2 ml-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
 								onClick={wrapOnClick}
 							>
-								Desactivate
+								Deactivate
 							</Button>
 						</>
 					)}
