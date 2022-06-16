@@ -5,9 +5,6 @@ import {Streak} from './streak';
 
 export class User {
 	@prop()
-	public _id: mongoose.Types.ObjectId;
-
-	@prop()
 	public id: string;
 
 	@prop()
@@ -36,6 +33,8 @@ export class User {
 
 	@prop({type: () => [ThemeItem]})
 	public puzzleSolvedByCategories: ThemeItem[];
+
+	_id: mongoose.Types.ObjectId;
 }
 
 const UserModel = getModelForClass(User);

@@ -2,9 +2,6 @@ import {mongoose, prop} from '@typegoose/typegoose';
 
 export class PuzzleItem {
 	@prop()
-	public _id: mongoose.Types.ObjectId;
-
-	@prop()
 	public PuzzleId: string;
 
 	@prop()
@@ -27,4 +24,6 @@ export class PuzzleItem {
 
 	@prop({type: () => [Number]})
 	public grades: number[];
+
+	_id: mongoose.Types.ObjectId;
 }

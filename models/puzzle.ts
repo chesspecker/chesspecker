@@ -2,9 +2,6 @@ import {getModelForClass, prop, mongoose} from '@typegoose/typegoose';
 
 export class Puzzle {
 	@prop()
-	public _id: mongoose.Types.ObjectId;
-
-	@prop()
 	public PuzzleId: string;
 
 	@prop()
@@ -14,7 +11,7 @@ export class Puzzle {
 	public Moves: string;
 
 	@prop()
-	public Rating: string;
+	public Rating: number;
 
 	@prop()
 	public RatingDeviation: number;
@@ -30,6 +27,8 @@ export class Puzzle {
 
 	@prop()
 	public GameUrl: string;
+
+	_id: mongoose.Types.ObjectId;
 }
 
 const PuzzleModel = getModelForClass(Puzzle);

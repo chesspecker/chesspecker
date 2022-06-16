@@ -97,15 +97,13 @@ export const create = async (
 		.lean()
 		.exec();
 
+	if (unshuffledPuzzles.length === 0) throw new Error('No puzzles found');
 	const unformattedPuzzles = shuffle(unshuffledPuzzles);
 	const puzzles = format(unformattedPuzzles);
 
 	const user = await UserModel.findById(userID).lean().exec();
 	const puzzleSet = new PuzzleSetModel();
-	const avgRating = puzzles.reduce(
-		(acc, curr) => acc + Number.parseInt(curr.rating, 10),
-		0,
-	);
+	const avgRating = puzzles.reduce((acc, curr) => acc + curr.rating, 0);
 
 	puzzleSet.puzzles = puzzles.map(({puzzle}) => puzzle);
 	puzzleSet.rating = Math.round(avgRating / puzzles.length);

@@ -5,9 +5,6 @@ import type {Ref} from '@/types/ref';
 import {Difficulty} from '@/types/models';
 
 export class PuzzleSet {
-	@prop()
-	public _id: mongoose.Types.ObjectId;
-
 	@prop({ref: () => User})
 	public user?: Ref<User>;
 
@@ -40,6 +37,8 @@ export class PuzzleSet {
 
 	@prop({enum: Difficulty, type: String})
 	public level: Difficulty;
+
+	_id: mongoose.Types.ObjectId;
 }
 
 const PuzzleSetModel = getModelForClass(PuzzleSet);
