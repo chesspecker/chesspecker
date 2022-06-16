@@ -51,7 +51,7 @@ const Navbar = () => {
 			<Burger />
 			<div className='fixed top-0 z-10 items-center justify-between hidden w-full font-sans bg-white shadow sm:flex dark:bg-sky-700 sm:visible'>
 				<div className='flex cursor-pointer'>
-					<Link prefetch href='/dashboard'>
+					<Link href='/dashboard'>
 						<a>
 							<div className='flex'>
 								<div className='m-2 max-w-[3.5rem]'>
@@ -66,14 +66,14 @@ const Navbar = () => {
 				</div>
 				<div className='self-center mr-8 text-lg '>
 					<div className='flex'>
-						<Link prefetch href='/user'>
+						<Link href='/user'>
 							<a className='flex items-center justify-center mr-5'>
 								{user?.isSponsor && <span>👑&nbsp;</span>}
 								{user?.username}
 							</a>
 						</Link>
 
-						<Link prefetch href='/api/auth/logout'>
+						<Link href='/api/auth/logout'>
 							<a className='flex'>
 								<LogoutIcon className='w-3 h-3 mt-1 mr-2 md:h-5 md:w-5' />
 								Logout

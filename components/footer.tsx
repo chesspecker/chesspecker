@@ -8,7 +8,7 @@ const Footer = () => (
 	<footer className='flex-row items-center justify-center hidden w-full h-24 shadow sm:flex dark:bg-slate-900 sm:visible '>
 		<div className='flex content-center justify-between w-full'>
 			<div className='flex flex-col items-center justify-center mx-1 sm:mx-5'>
-				<Link prefetch href='/sponsor'>
+				<Link href='/sponsor'>
 					<a>
 						<div className='flex items-center content-center justify-between w-full px-3 cursor-pointer group'>
 							<HeartIcon className='w-6 h-6 group-hover:text-pink-600' />
