@@ -6,7 +6,7 @@ import {withSessionRoute} from '@/lib/session';
 import {origin} from '@/config';
 import {ErrorData, SuccessData} from '@/types/data';
 
-const key = process.env.STRIPE_SECRET_KEY;
+const key = process.env.STRIPE_SECRET_KEY!;
 const stripe = new Stripe(key, {apiVersion: '2020-08-27'});
 
 export type CheckoutData = SuccessData<Stripe.Checkout.Session> | ErrorData;
@@ -48,7 +48,7 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<CheckoutData>,
 ) => {
-	switch (request.method) {
+	switch (request.method?.toUpperCase()) {
 		case 'POST':
 			await post_(request, response);
 			return;

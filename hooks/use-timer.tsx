@@ -6,7 +6,7 @@ const useTimer = (initialTime = 0) => {
 	 * Setup timer.
 	 */
 	useEffect(() => {
-		let interval = null;
+		let interval: NodeJS.Timeout | null = null;
 		if (timer.isRunning) {
 			interval = setInterval(() => {
 				setTimer(timer => ({...timer, value: timer.value + 1}));
@@ -14,7 +14,7 @@ const useTimer = (initialTime = 0) => {
 		}
 
 		return () => {
-			clearInterval(interval);
+			if (interval) clearInterval(interval);
 		};
 	}, [timer]);
 

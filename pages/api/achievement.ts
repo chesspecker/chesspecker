@@ -31,6 +31,7 @@ const put_ = async (
 	)
 		.lean()
 		.exec();
+	if (!newUser) throw new Error('User not found');
 	response.json({success: true, data: newUser});
 };
 
@@ -57,6 +58,7 @@ const post_ = async (
 	})
 		.lean()
 		.exec();
+	if (!newUser) throw new Error('User not found');
 	response.json({success: true, data: newUser});
 };
 

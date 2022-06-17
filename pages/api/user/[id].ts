@@ -103,7 +103,7 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<UserData>,
 ) => {
-	switch (request.method) {
+	switch (request.method?.toUpperCase()) {
 		case 'GET':
 			await get_(request, response);
 			break;

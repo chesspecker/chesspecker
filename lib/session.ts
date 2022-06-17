@@ -21,7 +21,7 @@ declare module 'iron-session' {
 }
 
 export const sessionOptions: IronSessionOptions = {
-	password: cookiePassword,
+	password: cookiePassword!,
 	cookieName: 'chesspecker',
 	cookieOptions: {
 		secure: process.env.NODE_ENV === 'production',

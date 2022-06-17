@@ -82,8 +82,7 @@ const totalAverageGrade = (set: PuzzleSet): ViewData => {
 		stat,
 		hasChange: false,
 		Icon: LibraryIcon,
-		tooltip:
-			'Grades are calculated based on the number of mistakes and time taken to solve the puzzle.',
+		// Not working properly: tooltip:			'Grades are calculated based on the number of mistakes and time taken to solve the puzzle.',
 	};
 };
 
@@ -104,7 +103,7 @@ const setRating = (set: PuzzleSet): ViewData => ({
 	stat: <span>{set.rating}</span>,
 	hasChange: false,
 	Icon: ChartBarIcon,
-	tooltip: 'Lichess rating of the puzzles in this set.',
+	// Not working properly: tooltip: 'Lichess rating of the puzzles in this set.',
 });
 
 const time = {
@@ -114,7 +113,7 @@ const time = {
 			stat: '/',
 			hasChange: false,
 			Icon: LightningBoltIcon,
-			tooltip: 'Compare your last completion time with your first run',
+			// Not working properly: tooltip: 'Compare your last completion time with your first run',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -141,7 +140,7 @@ const time = {
 			stat: '/',
 			hasChange: false,
 			Icon: LightningBoltIcon,
-			tooltip: 'Compare your last completion time with your average time',
+			// Not working properly: tooltip: 'Compare your last completion time with your average time',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -149,11 +148,12 @@ const time = {
 			.map(puzzle => puzzle.timeTaken[set.cycles - 1])
 			.reduce(reducer, 0);
 
-		const previousTimes = set.puzzles
+		const flatPuzzleList = set.puzzles
 			.map(puzzle => puzzle.timeTaken)
-			.flat(INFINITY)
-			.reduce(reducer, 0);
-		const average = Math.round((previousTimes as number) / set.cycles);
+			.flat(INFINITY) as number[];
+
+		const previousTimes = flatPuzzleList.reduce(reducer, 0);
+		const average = Math.round(previousTimes / set.cycles);
 
 		result.stat = `${last}s / ${average}s`;
 		if (last !== average) {
@@ -171,7 +171,7 @@ const time = {
 			stat: '/',
 			hasChange: false,
 			Icon: SparklesIcon,
-			tooltip: 'Compare your last completion time with your best time',
+			// Not working properly: tooltip: 'Compare your last completion time with your best time',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -201,7 +201,7 @@ const grade = {
 			stat: '/',
 			hasChange: false,
 			Icon: AcademicCapIcon,
-			tooltip: 'Compare your last average grade with your first run',
+			// Not working properly: tooltip: 'Compare your last average grade with your first run',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -233,8 +233,7 @@ const grade = {
 			stat: '/',
 			hasChange: false,
 			Icon: AcademicCapIcon,
-			tooltip:
-				'Compare your last average grade with your all over average grade',
+			// Not working properly: tooltip:				'Compare your last average grade with your all over average grade',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -264,7 +263,7 @@ const grade = {
 			stat: '/',
 			hasChange: false,
 			Icon: SparklesIcon,
-			tooltip: 'Compare your last average grade with your best average grade',
+			// Not working properly: tooltip: 'Compare your last average grade with your best average grade',
 		};
 		if (!set.cycles || set.cycles < 2) return result;
 
@@ -305,7 +304,7 @@ const currentProgress = (set: PuzzleSet): ViewData => {
 		title: 'Current progress',
 		stat: `${completedPuzzles}/${totalPuzzles} • ${percentage}%`,
 		hasChange: false,
-		tooltip: 'How far are you from completing the set?',
+		// Not working properly: tooltip: 'How far are you from completing the set?',
 	};
 };
 
@@ -315,7 +314,7 @@ const currentTime = (set: PuzzleSet): ViewData => {
 		title: 'Current time',
 		stat: <ParseTime time={current} />,
 		hasChange: false,
-		tooltip: 'Current time spent in seconds',
+		// Not working properly: tooltip: 'Current time spent in seconds',
 	};
 
 	if (!set.cycles || set.cycles < 1) return result;
@@ -351,7 +350,7 @@ const currentGrade = (set: PuzzleSet): ViewData => {
 		title: 'Current grade',
 		stat: parsedCurrent,
 		hasChange: false,
-		tooltip: 'Current average grade this run',
+		// Not working properly: tooltip: 'Current average grade this run',
 	};
 
 	if (!set.cycles || set.cycles < 1) return result;

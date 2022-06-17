@@ -11,7 +11,7 @@ const withMongoRoute =
 			return;
 		}
 
-		await mongoose.connect(db.url);
+		await mongoose.connect(db.url!);
 		await handler(request, response);
 	};
 

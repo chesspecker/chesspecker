@@ -45,8 +45,6 @@ const post_ = async (
 		setTimeout(resolve, 8000, 'timeout'),
 	);
 
-	const creation = create(userID, JSON.parse(request.body));
-
 	const guard: (
 		data: PuzzleSet | string | null,
 	) => asserts data is PuzzleSet = data => {
@@ -55,6 +53,8 @@ const post_ = async (
 	};
 
 	try {
+		if (!userID) throw new Error('Missing user id');
+		const creation = create(userID, JSON.parse(request.body));
 		const data = await Promise.race([creation, timeout]);
 		guard(data);
 		response.json({success: true, data});
@@ -69,7 +69,7 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<PuzzleSetData | PuzzleSetArrayData>,
 ) => {
-	switch (request.method) {
+	switch (request.method?.toUpperCase()) {
 		case 'GET':
 			await get_(request, response);
 			return;

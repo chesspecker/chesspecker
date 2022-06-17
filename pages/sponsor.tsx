@@ -117,9 +117,14 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 	);
 };
 
-const ManageSponsor = ({subscription}: {subscription: Stripe.Subscription}) => {
+const ManageSponsor = ({
+	subscription,
+}: {
+	subscription: Stripe.Subscription | undefined;
+}) => {
 	const router = useRouter();
 	const cancelSubscription = async () => {
+		if (!subscription?.id) return;
 		await fetch(`/api/subscription/${subscription.id}`, {method: 'DELETE'});
 		router.reload();
 	};
@@ -155,7 +160,7 @@ const SponsorPage = () => {
 	}, [data]);
 
 	useEffectAsync(async () => {
-		if (!user?.isSponsor) return;
+		if (!user?.isSponsor || !user?.stripeId) return;
 		const result = await fetch(`/api/subscription/${user.stripeId}`).then(
 			async response => response.json() as Promise<SubscriptionData>,
 		);
@@ -165,7 +170,7 @@ const SponsorPage = () => {
 
 	const handleClick = async (priceId: string) => {
 		const body: CheckoutRequestBody = {stripePriceId: priceId};
-		if (user.stripeId) body.customer = user.stripeId;
+		if (user?.stripeId) body.customer = user.stripeId;
 
 		const result = await fetch('/api/subscription', {
 			method: 'POST',
@@ -174,9 +179,9 @@ const SponsorPage = () => {
 
 		if (result.success) {
 			const {id: sessionId} = result.data;
-			const stripe = await getStripe(
-				process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-			);
+			const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
+			const stripe = await getStripe(key);
+			if (!stripe) return;
 			const {error} = await stripe.redirectToCheckout({sessionId});
 			if (error) console.error(error);
 		}

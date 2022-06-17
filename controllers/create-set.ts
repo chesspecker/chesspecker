@@ -102,6 +102,7 @@ export const create = async (
 	const puzzles = format(unformattedPuzzles);
 
 	const user = await UserModel.findById(userID).lean().exec();
+	if (!user) throw new Error('No user found');
 	const puzzleSet = new PuzzleSetModel();
 	const avgRating = puzzles.reduce((acc, curr) => acc + curr.rating, 0);
 

@@ -100,7 +100,7 @@ const PlayingPage = ({puzzle}: Props) => {
 		setMoveHistory(() => puzzle.Moves.split(' '));
 		setMoveNumber(() => 0);
 		setLastMove(() => []);
-		setPendingMove(() => undefined);
+		setPendingMove(() => []);
 		setOrientation(() => (chess.turn() === 'b' ? 'white' : 'black'));
 		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
@@ -380,7 +380,8 @@ const PlayingPage = ({puzzle}: Props) => {
 					<div className='hidden w-36 md:invisible md:block' />
 					<div className='max-w-[33rem] w-11/12 md:w-full flex-auto'>
 						<Board
-							config={{...config, orientation, events: {move: onMove}}}
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							config={{...config, orientation, events: {move: onMove as any}}}
 							isOpen={isOpen}
 							hide={hide}
 							color={getColor(chess.turn())}
@@ -408,20 +409,14 @@ const PlayingPage = ({puzzle}: Props) => {
 PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
-interface SSRProps extends GetServerSidePropsContext {
-	params: {id: string | undefined};
-}
-
 export const getServerSideProps = withSessionSsr(
-	async ({params, req}: SSRProps) => {
-		if (!req?.session?.userID) {
-			const redirect: Redirect = {statusCode: 303, destination: '/'};
-			return {redirect};
-		}
-
-		const id: string = params.id;
+	async ({params, req}: GetServerSidePropsContext) => {
+		const redirect: Redirect = {statusCode: 303, destination: '/'};
+		if (!req?.session?.userID) return {redirect};
+		const id = params?.id as string | undefined;
+		if (!id) return {redirect};
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
+		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
 		const result = await get_.puzzle(id, baseUrl);
 
 		if (!result.success) return {notFound: true};

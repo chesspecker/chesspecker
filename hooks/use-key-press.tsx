@@ -7,10 +7,8 @@ type Props = {
 
 const useKeyPress = ({targetKey, fn}: Props) => {
 	useEffect(() => {
-		const handleKeyPress = async ({key}) => {
-			if (key === targetKey) {
-				await fn();
-			}
+		const handleKeyPress = async ({key}: {key: string}) => {
+			if (key === targetKey) await fn();
 		};
 
 		document.addEventListener('keydown', handleKeyPress);

@@ -37,11 +37,10 @@ const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<UserData>,
 ) => {
-	let user: User;
-	if (request.session.type === 'chesscom')
-		user = await createChesscomUser(request.body);
-	if (request.session.type === 'lichess')
-		user = await createLichessUser(request.body);
+	const user: User =
+		request.session.type === 'chesscom'
+			? await createChesscomUser(request.body)
+			: await createLichessUser(request.body);
 
 	if (user === null) {
 		failWrapper(response)('User not found');

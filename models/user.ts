@@ -5,36 +5,36 @@ import {Streak} from './streak';
 
 export class User {
 	@prop()
-	public id: string;
+	public id!: string;
 
 	@prop()
-	public stripeId: string;
+	public stripeId?: string;
 
 	@prop()
-	public username: string;
+	public username!: string;
 
 	@prop()
-	public isSponsor: boolean;
+	public isSponsor!: boolean;
 
 	@prop({type: () => [AchievementItem]})
-	public validatedAchievements: AchievementItem[];
+	public validatedAchievements!: AchievementItem[];
 
 	@prop()
-	public totalPuzzleSolved: number;
+	public totalPuzzleSolved!: number;
 
 	@prop()
-	public totalSetCompleted: number;
+	public totalSetCompleted!: number;
 
 	@prop()
-	public totalTimePlayed: number;
+	public totalTimePlayed!: number;
 
 	@prop({type: () => Streak})
-	public streak: Streak;
+	public streak!: Streak;
 
 	@prop({type: () => [ThemeItem]})
-	public puzzleSolvedByCategories: ThemeItem[];
+	public puzzleSolvedByCategories!: ThemeItem[];
 
-	_id: mongoose.Types.ObjectId;
+	_id!: mongoose.Types.ObjectId;
 }
 
 const UserModel = getModelForClass(User);

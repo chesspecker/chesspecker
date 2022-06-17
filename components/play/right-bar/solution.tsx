@@ -23,7 +23,8 @@ const Solution = ({answer, fen, puzzle}: Props) => {
 		setSolution(() => {
 			const chess = new Chess(fen);
 			const move = chess.move(answer, {sloppy: true});
-			return move?.san;
+			if (move) return move.san;
+			return '';
 		});
 	}, [answer, fen]);
 

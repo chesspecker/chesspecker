@@ -42,7 +42,7 @@ const loginRoute = async (
 
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',
-		client_id: chesscom.clientId,
+		client_id: chesscom.clientId!,
 		redirect_uri: `${origin}/api/auth/chesscom/callback`,
 		scope: 'openid profile',
 		state,

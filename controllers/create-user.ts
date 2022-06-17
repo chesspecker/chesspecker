@@ -18,7 +18,7 @@ export const createLichessUser = async (liUser: LichessUser) => {
 	const parameters: Partial<User> = {
 		id: liUser.id,
 		username: liUser.username,
-		stripeId: null,
+		stripeId: undefined,
 		isSponsor: false,
 		validatedAchievements: [],
 		totalPuzzleSolved: 0,

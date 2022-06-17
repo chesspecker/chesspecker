@@ -44,38 +44,12 @@ const Block = ({
 	hasChange,
 	tooltip,
 }: ViewData): JSX.Element => {
-	if (!hasChange)
-		return (
-			<Tooltip label={tooltip}>
-				<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
-					<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
-						{title}
-					</h3>
+	const Element = ({changeElement}: {changeElement?: any}) => (
+		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
+			<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
+				{title}
+			</h3>
 
-					<div className='flex items-center justify-center w-full h-full'>
-						{Icon && (
-							<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
-								<Icon
-									className='w-6 h-6 text-sky-700 dark:text-white'
-									aria-hidden='true'
-								/>
-							</div>
-						)}
-						<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
-							{stat}
-						</p>
-					</div>
-				</div>
-			</Tooltip>
-		);
-
-	return (
-		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white  rounded-lg shadow sm:pt-6 sm:px-6'>
-			<div>
-				<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
-					{title}
-				</h3>
-			</div>
 			<div className='flex items-center justify-center w-full h-full'>
 				{Icon && (
 					<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
@@ -88,33 +62,52 @@ const Block = ({
 				<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
 					{stat}
 				</p>
-				<p
-					className={classNames(
-						type === 'up'
-							? 'text-green-400 dark:text-green-600'
-							: 'text-red-400 dark:text-red-500',
-						'ml-2 flex items-baseline text-sm font-semibold',
-					)}
-				>
-					{type === 'up' ? (
-						<ArrowSmUpIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
-							aria-hidden='true'
-						/>
-					) : (
-						<ArrowSmDownIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
-							aria-hidden='true'
-						/>
-					)}
-					<span className='sr-only'>
-						{type === 'up' ? 'Increased' : 'Decreased'} by
-					</span>
-					{change}
-				</p>
+				{changeElement}
 			</div>
 		</div>
 	);
+
+	if (hasChange) {
+		const changeElement = (
+			<p
+				className={classNames(
+					type === 'up'
+						? 'text-green-400 dark:text-green-600'
+						: 'text-red-400 dark:text-red-500',
+					'ml-2 flex items-baseline text-sm font-semibold',
+				)}
+			>
+				{type === 'up' ? (
+					<ArrowSmUpIcon
+						className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
+						aria-hidden='true'
+					/>
+				) : (
+					<ArrowSmDownIcon
+						className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
+						aria-hidden='true'
+					/>
+				)}
+				<span className='sr-only'>
+					{type === 'up' ? 'Increased' : 'Decreased'} by
+				</span>
+				{change}
+			</p>
+		);
+		if (tooltip) {
+			console.log('tooltip', tooltip);
+			return (
+				<Tooltip label={tooltip}>
+					<Element changeElement={changeElement} />
+				</Tooltip>
+			);
+		}
+
+		return <Element changeElement={changeElement} />;
+	}
+
+	if (tooltip) return <Tooltip label={tooltip}>{<Element />}</Tooltip>;
+	return <Element />;
 };
 
 const getClasses = (grade: number) => {
@@ -138,7 +131,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 	const [overviewStats, setOverviewStats] = useState<ViewData[]>([]);
 	const [progressStats, setProgressStats] = useState<ViewData[]>([]);
 	const [currentRunStats, setCurrentRunStats] = useState<ViewData[]>([]);
-	const [setTitle, setSetTitle] = useState<string>();
+	const [setTitle, setSetTitle] = useState<string>('');
 	const router = useRouter();
 	const {isOpen, hide, toggle} = useModal(false);
 
@@ -282,9 +275,10 @@ ViewingPage.getLayout = (page: ReactElement): JSX.Element => (
 export default ViewingPage;
 
 export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
-	const id: string = params.id as string;
+	const id: string = params?.id as string;
+	if (!id) return {notFound: true};
 	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-	const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
+	const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
 	const result = await fetch(`${baseUrl}/api/set/${id}`).then(
 		async response => response.json() as Promise<SetData>,
 	);

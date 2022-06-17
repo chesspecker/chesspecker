@@ -14,6 +14,7 @@ const Choice = ({theme}: Props) => {
 		if (selectedState.includes('healthyMix')) return true;
 		if (theme.id === 'healthyMix' && selectedState.length > 0) return true;
 		if (selectedState.length >= 3) return true;
+		return false;
 	};
 
 	const getBorderColor = (): string => {

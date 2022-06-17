@@ -5,6 +5,7 @@ import getLichess from '@/lib/get-lichess';
 import {Perfs} from '@/types/lichess';
 import getChesscom from '@/lib/get-chesscom';
 import {SuccessData, ErrorData} from '@/types/data';
+import {failWrapper} from '@/lib/utils';
 
 export type Data = SuccessData<number> | ErrorData;
 
@@ -13,6 +14,11 @@ const getLichessRating = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {lichessToken} = request.session;
+	if (!lichessToken) {
+		failWrapper(response)('Not logged in');
+		return;
+	}
+
 	const user = await getLichess.account(lichessToken);
 
 	let perfs = 0;
@@ -33,16 +39,23 @@ const getChesscomRating = async (
 	response: NextApiResponse<Data>,
 ) => {
 	const {chesscomToken, username} = request.session;
+	if (!chesscomToken || !username) {
+		failWrapper(response)('Not logged in');
+		return;
+	}
+
 	const stats = await getChesscom.stats(chesscomToken, username);
 
 	let perfs = 0;
 	let gamesPlayed = 0;
 	for (const [, value] of Object.entries(stats)) {
-		if (value?.record?.win < 1) continue;
-		const games = value.record.win + value.record.loss;
-		const rating = value.last.rating;
+		const won = value.record?.win;
+		const lost = value.record?.loss;
+		if (!won || won < 1 || !lost || lost < 1) continue;
+		const games = won + lost;
+		const rating = value.last?.rating;
 		gamesPlayed += games;
-		perfs += games * rating;
+		if (rating) perfs += games * rating;
 	}
 
 	const average = Math.round(perfs / gamesPlayed);

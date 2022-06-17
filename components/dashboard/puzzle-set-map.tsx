@@ -86,8 +86,7 @@ const PuzzleSetMap = () => {
 		<div className='flex flex-wrap items-center justify-center'>
 			{isLoading && (
 				<EmptyPuzzleSetComponent
-					/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-					image={<Image src={spinner} className='animate-spin' />}
+					image={<Image src={spinner as string} className='animate-spin' />}
 					text={<p className='mt-4 animate-pulse'>Loading...</p>}
 				/>
 			)}
@@ -97,8 +96,7 @@ const PuzzleSetMap = () => {
 			<Link href='/create'>
 				<a>
 					<EmptyPuzzleSetComponent
-						/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */
-						image={<Image src={plus} />}
+						image={<Image src={plus as string} />}
 						text={<p className='mt-4'>Create a set</p>}
 					/>
 				</a>

@@ -220,7 +220,7 @@ const PlayingPage = ({set}: Props) => {
 		setMoveNumber(() => 0);
 		setLastMove(() => []);
 		setIsComplete(() => false);
-		setPendingMove(() => undefined);
+		setPendingMove(() => []);
 		setInitialPuzzleTimer(() => Date.now());
 		setIsSolutionClicked(() => false);
 		setOrientation(() => {
@@ -247,7 +247,7 @@ const PlayingPage = ({set}: Props) => {
 	}, [puzzle]);
 
 	useEffectAsync(async () => {
-		if (!shouldCheck) return;
+		if (!shouldCheck || !user || !puzzle || !streak) return;
 		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
 		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
 		const body: AchivementsArgs = {
@@ -267,6 +267,7 @@ const PlayingPage = ({set}: Props) => {
 
 		checkForAchievement(body)
 			.then(unlockedAchievements => {
+				if (!unlockedAchievements) return;
 				if (unlockedAchievements.length > 0) {
 					setShowNotification(() => true);
 					setNotificationMessage(() => 'Achievement unlocked!');
@@ -289,6 +290,7 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
+		if (!puzzle || !user) return;
 		const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
 		const {maxTime, minTime} = getTimeInterval(moveHistory.length);
 		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
@@ -322,6 +324,7 @@ const PlayingPage = ({set}: Props) => {
 		const update = {
 			$inc: {
 				'puzzles.$.count': 1,
+				'puzzles.$.streak': 0,
 				currentTime: timeWithMistakes,
 				progress: 1,
 			},
@@ -357,10 +360,12 @@ const PlayingPage = ({set}: Props) => {
 			};
 
 		if (themesInCommon.length > 0)
-			for (const theme of themesInCommon)
+			for (const theme of themesInCommon) {
+				// @ts-expect-error Can't index type any
 				incUser.$inc[
 					`puzzleSolvedByCategories.${userThemes.indexOf(theme)}.count`
 				] = 1;
+			}
 
 		setShouldCheck(() => true);
 		Promise.all([
@@ -402,6 +407,7 @@ const PlayingPage = ({set}: Props) => {
 	 * Push the data of the current set when complete.
 	 */
 	const updateFinishedSet = useCallback(async () => {
+		if (!initialSetDate) return;
 		const {timeTaken} = getTimeTaken(initialSetDate);
 		const totalTimeTaken = timeTaken + set.currentTime;
 		const update = getUpdateBody.finishedSet(totalTimeTaken);
@@ -668,7 +674,8 @@ const PlayingPage = ({set}: Props) => {
 					<LeftBar stat={leftBarStat} />
 					<div className='max-w-[33rem] w-11/12 md:w-full flex-auto'>
 						<Board
-							config={{...config, orientation, events: {move: onMove}}}
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							config={{...config, orientation, events: {move: onMove as any}}}
 							isOpen={isOpen}
 							hide={hide}
 							color={getColor(chess.turn())}
@@ -700,24 +707,24 @@ const PlayingPage = ({set}: Props) => {
 PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
-interface SSRProps extends GetServerSidePropsContext {
-	params: {id: string | undefined};
-}
-
 export const getServerSideProps = withSessionSsr(
-	async ({params, req}: SSRProps) => {
+	async ({params, req}: GetServerSidePropsContext) => {
 		if (!req?.session?.userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/'};
 			return {redirect};
 		}
 
-		const id: string = params.id;
+		const id = params?.id as string | undefined;
+		if (!id) {
+			const redirect: Redirect = {statusCode: 303, destination: '/'};
+			return {redirect};
+		}
+
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-		const baseUrl = req ? `${protocol}://${req.headers.host}` : '';
+		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
 		const result = await get_.set(id, baseUrl);
 		if (!result.success) return {notFound: true};
-		/* eslint-disable-next-line @typescript-eslint/no-base-to-string */
-		if (result.data.user.toString() !== req.session.userID) {
+		if (result.data.user?.toString() !== req.session.userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
 			return {redirect};
 		}

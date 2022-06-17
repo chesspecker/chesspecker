@@ -11,7 +11,7 @@ export type Stat = {
 };
 
 type Props = {
-	stat: Stat;
+	stat?: Stat;
 };
 
 const getGradeColor = (grade: number) => {

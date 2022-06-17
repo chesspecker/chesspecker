@@ -62,6 +62,7 @@ const put_ = async (
 		})
 			.lean()
 			.exec();
+		if (data === null) throw new Error('Set not found');
 		response.json({success: true, data});
 	} catch (error_: unknown) {
 		const error = error_ as Error;
@@ -73,7 +74,7 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SetData>,
 ) => {
-	switch (request.method.toUpperCase()) {
+	switch (request.method?.toUpperCase()) {
 		case 'GET':
 			await get_(request, response);
 			break;

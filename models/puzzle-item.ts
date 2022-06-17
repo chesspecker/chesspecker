@@ -2,28 +2,28 @@ import {mongoose, prop} from '@typegoose/typegoose';
 
 export class PuzzleItem {
 	@prop()
-	public PuzzleId: string;
+	public PuzzleId!: string;
 
 	@prop()
-	public played: boolean;
+	public played!: boolean;
 
 	@prop()
-	public count: number;
+	public count!: number;
 
 	@prop()
-	public streak: number;
+	public streak!: number;
 
 	@prop()
-	public order: number;
+	public order!: number;
 
 	@prop({type: () => [Number]})
-	public mistakes: number[];
+	public mistakes!: number[];
 
 	@prop({type: () => [Number]})
-	public timeTaken: number[];
+	public timeTaken!: number[];
 
 	@prop({type: () => [Number]})
-	public grades: number[];
+	public grades!: number[];
 
-	_id: mongoose.Types.ObjectId;
+	_id!: mongoose.Types.ObjectId;
 }

@@ -18,6 +18,7 @@ export const shuffle = <T>(array: T[]): T[] => {
 };
 
 export const sortBy = <T>(array: T[], p: string): T[] =>
+	// @ts-expect-error @typescript-eslint/restrict-template-expressions
 	[...array].sort((a, b) => (a[p] > b[p] ? 1 : a[p] < b[p] ? -1 : 0));
 
 export const safeZero = (value: number) => Math.max(value, 0);

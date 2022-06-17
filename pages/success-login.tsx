@@ -1,19 +1,13 @@
 import type {ReactElement} from 'react';
-import {useRouter} from 'next/router';
 import {NextSeo} from 'next-seo';
 import Layout from '@/layouts/login';
 import {Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useUser from '@/hooks/use-user';
 import audio from '@/lib/sound';
+import Link from 'next/link';
 
 const IndexPage = () => {
-	const router = useRouter();
-	const handleClick = async () => {
-		await audio('VICTORY', true, 0);
-		await router.push('/dashboard');
-	};
-
 	return (
 		<>
 			<NextSeo title='🎉 Success' />
@@ -23,9 +17,16 @@ const IndexPage = () => {
 					Hello {useUser()?.user?.username} 👋 <br /> Welcome to chesspecker
 				</h1>
 				<div className='w-full mx-0 my-3 text-center '>
-					<Button className='py-4' onClick={handleClick}>
-						LET&apos;S GO! 🔥
-					</Button>
+					<Link href='/dashboard'>
+						<a>
+							<Button
+								className='py-4'
+								onClick={async () => audio('VICTORY', true, 0)}
+							>
+								LET&apos;S GO! 🔥
+							</Button>
+						</a>
+					</Link>
 				</div>
 			</div>
 		</>

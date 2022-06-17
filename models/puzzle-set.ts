@@ -9,36 +9,36 @@ export class PuzzleSet {
 	public user?: Ref<User>;
 
 	@prop({type: () => PuzzleItem})
-	public puzzles: PuzzleItem[];
+	public puzzles!: PuzzleItem[];
 
 	@prop()
-	public title: string;
+	public title!: string;
 
 	@prop()
-	public length: number;
+	public length!: number;
 
 	@prop()
-	public cycles: number;
+	public cycles!: number;
 
 	@prop()
-	public spacedRepetition: boolean;
+	public spacedRepetition!: boolean;
 
 	@prop()
-	public currentTime: number;
+	public currentTime!: number;
 
 	@prop({type: () => [Number]})
-	public times: number[];
+	public times!: number[];
 
 	@prop()
-	public rating: number;
+	public rating!: number;
 
 	@prop()
-	public progress: number;
+	public progress!: number;
 
 	@prop({enum: Difficulty, type: String})
-	public level: Difficulty;
+	public level!: Difficulty;
 
-	_id: mongoose.Types.ObjectId;
+	_id!: mongoose.Types.ObjectId;
 }
 
 const PuzzleSetModel = getModelForClass(PuzzleSet);

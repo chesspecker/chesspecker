@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
 import {SuccessData, ErrorData} from '@/types/data';
 
-const key = process.env.STRIPE_SECRET_KEY;
+const key = process.env.STRIPE_SECRET_KEY!;
 const stripe = new Stripe(key, {apiVersion: '2020-08-27'});
 
 export type SubscriptionData = SuccessData<Stripe.Subscription> | ErrorData;
@@ -50,7 +50,7 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SubscriptionData>,
 ) => {
-	switch (request.method) {
+	switch (request.method?.toUpperCase()) {
 		case 'GET':
 			await get_(request, response);
 			return;

@@ -13,7 +13,7 @@ import {User} from '@/models/user';
 const UserPage = () => {
 	const data = useUser();
 	const [user, setUser] = useState<User>();
-	const [achievementsList, setList] = useState<AchievementInterface[]>();
+	const [achievementsList, setList] = useState<AchievementInterface[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
@@ -24,10 +24,11 @@ const UserPage = () => {
 	useEffect(() => {
 		if (!user) return;
 		const itemAchievements = user.validatedAchievements;
-		setList(() =>
-			itemAchievements.map(item =>
-				achievements.find(achievement => item.id === achievement.id),
-			),
+		setList(
+			() =>
+				itemAchievements.map(item =>
+					achievements.find(achievement => item.id === achievement.id),
+				) as AchievementInterface[],
 		);
 
 		setIsLoading(() => false);
@@ -39,7 +40,7 @@ const UserPage = () => {
 			<NextSeo title='♟ Profile' />
 			<div className='flex flex-col w-screen min-h-screen px-10 pt-32 pb-24'>
 				<div className='flex flex-wrap items-center'>
-					<p className='mr-5 text-6xl'>{user.username}</p>
+					<p className='mr-5 text-6xl'>{user?.username}</p>
 					{user?.isSponsor ? (
 						<>
 							<p className='mr-2'>Official Sponsor</p>

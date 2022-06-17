@@ -2,8 +2,8 @@ import {prop} from '@typegoose/typegoose';
 
 export class ThemeItem {
 	@prop()
-	public title: string;
+	public title!: string;
 
 	@prop()
-	public count: number;
+	public count!: number;
 }

@@ -8,14 +8,15 @@ const getTerminatedUpdate = () => ({
 		progress: 0,
 		spacedRepetition: false,
 	},
+	$inc: {
+		cycles: 0,
+	},
 });
 
 const getActivatedUpdate = (puzzleSet: PuzzleSet) => {
 	const puzzleOrder = [];
-	const chunks = {};
-
+	const chunks: Record<number, number> = {};
 	for (let i = 0; i <= 6; i++) chunks[i] = puzzleSet.length * i + 1;
-
 	for (let index = 0; index < puzzleSet.length; index++) {
 		const grades = puzzleSet.puzzles[index].grades;
 		const lastGrade = grades.length > 0 ? grades[grades.length - 1] : 3;
@@ -61,7 +62,7 @@ const getActivatedUpdate = (puzzleSet: PuzzleSet) => {
  */
 export const updateSpacedRepetition = async (
 	set: PuzzleSet,
-	showSpacedOff = () => null,
+	showSpacedOff: () => void,
 ) => {
 	const areAllPerfect = set.puzzles
 		.map(puzzle => puzzle.grades[puzzle.grades.length - 1])
@@ -70,8 +71,7 @@ export const updateSpacedRepetition = async (
 
 	if (areAllPerfect) {
 		const update = getTerminatedUpdate();
-		// eslint-disable-next-line @typescript-eslint/dot-notation
-		update['$inc'].cycles = 1;
+		update.$inc.cycles = 1;
 		await update_.set(set._id.toString(), update).catch(console.error);
 		showSpacedOff();
 		return;

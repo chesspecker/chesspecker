@@ -4,7 +4,8 @@ import withMongoRoute from 'providers/mongoose';
 import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const key = process.env.STRIPE_SECRET_KEY!;
+const stripe = new Stripe(key, {
 	apiVersion: '2020-08-27',
 });
 
@@ -27,7 +28,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
 		case 'GET':
 			return getStripeSession(request, response);
 		default:
-			response.status(405).end(`Method ${request.method} Not Allowed`);
+			response.status(405).end(`Method Not Allowed`);
 	}
 };
 

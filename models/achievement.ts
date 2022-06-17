@@ -2,11 +2,11 @@ import {prop} from '@typegoose/typegoose';
 
 export class AchievementItem {
 	@prop()
-	public id: string;
+	public id!: string;
 
 	@prop()
-	public claimed: boolean;
+	public claimed!: boolean;
 
 	@prop()
-	public date: Date;
+	public date!: Date;
 }

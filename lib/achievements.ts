@@ -5,7 +5,7 @@ import type {AchievementInterface, AchivementsArgs} from '@/types/models';
 
 export const checkForAchievement = async (
 	args: AchivementsArgs,
-): Promise<AchievementInterface[]> => {
+): Promise<AchievementInterface[] | void> => {
 	const response = await fetch('/api/user').then(
 		async reponse => reponse.json() as Promise<UserData>,
 	);

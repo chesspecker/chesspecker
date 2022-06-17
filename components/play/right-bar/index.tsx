@@ -6,7 +6,7 @@ import {Puzzle} from '@/models/puzzle';
 type Props = {
 	answer: string;
 	fen: string;
-	puzzle: Puzzle;
+	puzzle?: Puzzle;
 	hasSpacedRepetition: boolean;
 	changePuzzle: () => void;
 	launchTimer: () => void;
@@ -20,6 +20,7 @@ const RightBar = ({
 	launchTimer,
 	hasSpacedRepetition,
 }: Props) => {
+	if (!puzzle) return null;
 	return (
 		<div className='flex flex-row justify-center w-5/6 md:w-fit md:flex-col'>
 			<div className='mt-2'>

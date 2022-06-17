@@ -25,7 +25,7 @@ const CustomApp = ({
 	Component,
 	pageProps: {session, ...pageProps},
 }: AppPropsWithLayout) => {
-	const [loading, setLoading] = useState<boolean>();
+	const [loading, setLoading] = useState<boolean>(false);
 	Router.events.on('routeChangeStart', () => {
 		setLoading(() => true);
 	});

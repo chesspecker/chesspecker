@@ -12,7 +12,7 @@ const Card = dynamic(async () => import('@/components/card-achievement'));
 const Achievements = () => {
 	const data = useUser();
 	const [user, setUser] = useState<User>();
-	const [achievementsList, setList] = useState<AchievementInterface[]>();
+	const [achievementsList, setList] = useState<AchievementInterface[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
@@ -22,11 +22,14 @@ const Achievements = () => {
 
 	useEffect(() => {
 		if (!user) return;
-		const itemAchievements = user.validatedAchievements;
+		const validated = user.validatedAchievements;
 		setList(() => {
 			const array: AchievementInterface[] = [];
-			for (const item of itemAchievements) {
-				array.push(achievements.find(achivement => achivement.id === item.id));
+			for (const item of validated) {
+				const result = achievements.find(
+					achivement => achivement.id === item.id,
+				);
+				if (result) array.push();
 			}
 
 			return array;

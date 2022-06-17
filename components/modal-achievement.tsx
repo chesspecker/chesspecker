@@ -18,7 +18,7 @@ const Modal = ({
 	showModal,
 	currentAchievementItem,
 	handleClick,
-}: Props): JSX.Element => {
+}: Props): JSX.Element | null => {
 	const [achievement, setAchievement] = useState<AchievementInterface>();
 	useEffectAsync(async () => {
 		if (!currentAchievementItem) return;

@@ -2,11 +2,11 @@ import {prop} from '@typegoose/typegoose';
 
 export class Streak {
 	@prop()
-	public currentCount: number;
+	public currentCount!: number;
 
 	@prop()
-	public startDate: string;
+	public startDate!: string;
 
 	@prop()
-	public lastLoginDate: string;
+	public lastLoginDate!: string;
 }
