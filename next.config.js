@@ -1,17 +1,7 @@
-const process = require('process');
-const runtimeCaching = require('next-pwa/cache');
-
 /**
  * @type {import('next').NextConfig}
  **/
 const nextConfig = {
-	pwa: {
-		dest: 'public',
-		register: true,
-		skipWaiting: true,
-		disable: process.env.NODE_ENV === 'development',
-		runtimeCaching,
-	},
 	reactStrictMode: true,
 	swcMinify: true,
 	images: {
@@ -54,7 +44,4 @@ const nextConfig = {
 	},
 };
 
-const withPWA = require('next-pwa');
-const withTM = require('next-transpile-modules')([]);
-
-module.exports = withPWA(withTM(nextConfig));
+module.exports = nextConfig;

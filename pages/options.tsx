@@ -1,9 +1,10 @@
 import {useAtom} from 'jotai';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
 import Image from 'next/image';
 import {NextSeo} from 'next-seo';
+import dynamic from 'next/dynamic';
 import {optionsµ, ratingAtom} from '@/lib/atoms';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
@@ -11,10 +12,11 @@ import OptionTextInput from '@/components/options/text-input';
 import OptionSize from '@/components/options/size';
 import OptionDifficulty from '@/components/options/level';
 import useModal from '@/hooks/use-modal';
-import Alert from '@/components/alert';
 import {Options} from '@/controllers/create-set';
 import type {Difficulty} from '@/types/models';
 import loading from '@/public/images/spinner.svg';
+
+const Alert = dynamic(async () => import('@/components/alert'));
 
 const OptionsPage = () => {
 	const router = useRouter();
@@ -23,17 +25,11 @@ const OptionsPage = () => {
 	const [size] = useAtom<number>(optionsµ.size);
 	const [level] = useAtom<Difficulty>(optionsµ.level);
 	const [rating] = useAtom(ratingAtom);
-	const [themeArray, setThemeArray] = useState<string[]>(['healthyMix']);
 	const {isOpen, show} = useModal(false);
 
-	useEffect(() => {
-		if (router.query.category) {
-			const categories: string[] = JSON.parse(
-				router.query.category as string,
-			) as string[];
-			setThemeArray(categories);
-		}
-	}, [router.query.category]);
+	const themeArray = router.query.category
+		? (JSON.parse(router.query.category as string) as string[])
+		: ['healthyMix'];
 
 	const validate = async () => {
 		if (isDisabled) return;
@@ -71,27 +67,23 @@ const OptionsPage = () => {
 						<OptionSize />
 						<div className='w-3/5 mt-20'>
 							<Button
-								className={`flex h-14 flex-row items-center justify-center ${
-									isDisabled
-										? 'font-sky-700 cursor-default hover:bg-white'
-										: 'cursor-pointer'
-								}`}
+								className='flex h-14 flex-row items-center justify-center font-sky-700 font-bold cursor-default hover:bg-white'
 								onClick={validate}
 							>
-								{isDisabled && (
-									<div
-										className={`relative mr-3 h-9 w-9 animate-spin ${
-											isDisabled ? 'visible' : 'invisible'
-										}`}
-									>
-										<Image
-											src={loading as string}
-											objectFit='contain'
-											layout='fill'
-										/>
-									</div>
+								{isDisabled ? (
+									<>
+										<div className='relative mr-3 h-9 w-9 animate-spin visible'>
+											<Image
+												src={loading as string}
+												objectFit='contain'
+												layout='fill'
+											/>
+										</div>
+										Loading...
+									</>
+								) : (
+									`LET'S GO! 🎉`
 								)}
-								{isDisabled ? 'Loading...' : `LET'S GO! 🎉`}
 							</Button>
 						</div>
 					</div>

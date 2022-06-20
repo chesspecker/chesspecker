@@ -11,7 +11,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {AchivementsArgs} from '@/types/models';
 import Layout from '@/layouts/main';
-import {formattedDate, sortBy} from '@/lib/utils';
+import {formattedDate, sleep, sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
 import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ, revertedµ} from '@/lib/atoms';
@@ -46,15 +46,15 @@ import {
 	getTimeInterval,
 	getTimeTaken,
 	getUpdateBody,
+	getColor,
 } from '@/lib/play';
-import {Stat} from '@/components/play/left-bar';
+import LeftBar, {Stat} from '@/components/play/left-bar';
 import {Streak} from '@/models/streak';
+import Board from '@/components/play/board';
+import RightBar from '@/components/play/right-bar';
 
 const Notification = dynamic(async () => import('@/components/notification'));
 const Timer = dynamic(async () => import('@/components/play/timer'));
-const Board = dynamic(async () => import('@/components/play/board'));
-const LeftBar = dynamic(async () => import('@/components/play/left-bar'));
-const RightBar = dynamic(async () => import('@/components/play/right-bar'));
 const BottomBar = dynamic(async () => import('@/components/play/bottom-bar'));
 const ModalSpacedOn = dynamic(
 	async () => import('@/components/play/modal-spaced-on'),
@@ -64,12 +64,8 @@ const ModalSpacedEnd = dynamic(
 );
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
-const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
 const fetcher = async (endpoint: string): Promise<UserData> =>
 	fetch(endpoint).then(async response => response.json() as Promise<UserData>);
-
-/* eslint-disable-next-line no-promise-executor-return */
-const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
 
 type Props = {set: PuzzleSet};
 const PlayingPage = ({set}: Props) => {
@@ -126,6 +122,7 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		if (!userData) return;
 		if (!userData.success) return;
+		console.log('userData', userData);
 
 		setUser(() => userData.data);
 		setId(() => userData.data._id.toString());

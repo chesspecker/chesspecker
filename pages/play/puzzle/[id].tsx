@@ -16,37 +16,25 @@ import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
-import {get as get_, getGrade, getTimeInterval, getTimeTaken} from '@/lib/play';
+import {
+	get as get_,
+	getColor,
+	getGrade,
+	getTimeInterval,
+	getTimeTaken,
+	parseGrade,
+} from '@/lib/play';
 import type {Stat} from '@/components/modal-puzzle';
+import MoveToNext from '@/components/play/right-bar/move-to-next';
+import {sleep} from '@/lib/utils';
+import Board from '@/components/play/board';
+import Solution from '@/components/play/right-bar/solution';
 
-const MoveToNext = dynamic(
-	async () => import('@/components/play/right-bar/move-to-next'),
-);
 const Timer = dynamic(async () => import('@/components/play/timer'));
-const Board = dynamic(async () => import('@/components/play/board'));
 const ModalPuzzle = dynamic(async () => import('@/components/modal-puzzle'));
-const Solution = dynamic(
-	async () => import('@/components/play/right-bar/solution'),
-);
 const BottomBar = dynamic(async () => import('@/components/play/bottom-bar'));
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
-const getColor = (string_: 'w' | 'b') => (string_ === 'w' ? 'white' : 'black');
-
-const parseGrade: Record<number, string> = {
-	0: 'F',
-	1: 'E',
-	2: 'D',
-	3: 'C',
-	4: 'B',
-	5: 'A',
-	6: 'A+',
-};
-
-Object.freeze(parseGrade);
-
-/* eslint-disable-next-line no-promise-executor-return */
-const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
 
 type Props = {puzzle: Puzzle};
 const PlayingPage = ({puzzle}: Props) => {

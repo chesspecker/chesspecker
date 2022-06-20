@@ -1,43 +1,33 @@
 import type {ReactElement} from 'react';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import {useAtom} from 'jotai';
 import dynamic from 'next/dynamic';
+import {UserData} from './api/user/[id]';
 import Layout from '@/layouts/main';
-import useUser from '@/hooks/use-user';
 import {User} from '@/models/user';
 import {withSessionSsr} from '@/lib/session';
 import {Banner} from '@/components/dashboard/banner';
 import {supportBannerµ} from '@/lib/atoms';
 import {AchievementItem} from '@/models/achievement';
+import {fetcher} from '@/lib/utils';
 
 const Modal = dynamic(async () => import('@/components/modal-achievement'));
 const PuzzleSetMap = dynamic(
 	async () => import('@/components/dashboard/puzzle-set-map'),
 );
 
-const DashbaordPage = () => {
-	const [showModal, setShowModal] = useState(false);
-	const data = useUser();
-	const [user, setUser] = useState<User>();
-	const [achievementsList, setList] = useState<AchievementItem[]>([]);
+type Props = {
+	user: User;
+};
+
+const DashbaordPage = ({user}: Props) => {
+	const [achievementsList, setList] = useState<AchievementItem[]>(
+		user.validatedAchievements.filter(achievement => !achievement.claimed),
+	);
+	const [showModal, setShowModal] = useState(achievementsList.length > 0);
 	const [isVisible, setIsVisible] = useAtom(supportBannerµ);
-
-	useEffect(() => {
-		if (!data) return;
-		setUser(() => data.user);
-	}, [data]);
-
-	useEffect(() => {
-		if (!user) return;
-		const list = user.validatedAchievements.filter(
-			achievement => !achievement.claimed,
-		);
-
-		setList(() => list);
-		if (list.length > 0) setShowModal(() => true);
-	}, [user]);
 
 	const updateValidatedAchievement = async (achievementId: string) => {
 		setShowModal(() => false);
@@ -64,7 +54,7 @@ const DashbaordPage = () => {
 				</h1>
 
 				<PuzzleSetMap />
-				{!user?.isSponsor && isVisible && (
+				{!user.isSponsor && isVisible && (
 					<Banner setIsVisible={setIsVisible}>We need your help!</Banner>
 				)}
 			</div>
@@ -77,11 +67,19 @@ export default DashbaordPage;
 
 export const getServerSideProps = withSessionSsr(
 	async ({req}: GetServerSidePropsContext) => {
-		if (!req?.session?.userID) {
-			const redirect: Redirect = {statusCode: 303, destination: '/'};
-			return {redirect};
-		}
+		const userID = req.session?.userID;
+		const redirect: Redirect = {statusCode: 303, destination: '/'};
+		if (!userID) return {redirect};
 
-		return {props: {}};
+		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
+		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
+		const response = await fetcher<UserData>(`${baseUrl}/api/user/${userID}`);
+		if (!response?.success) return {redirect};
+
+		return {
+			props: {
+				user: response.data,
+			},
+		};
 	},
 );

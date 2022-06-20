@@ -39,7 +39,7 @@ const RemoveModal = ({onClick}: Props) => {
 					/>
 
 					<div className='p-2 m-2'>
-						<Button className='px-8 my-2 ' onClick={onClick}>
+						<Button className='px-8 my-2' onClick={onClick}>
 							Yes
 						</Button>
 						<Button onClick={hide}>No</Button>

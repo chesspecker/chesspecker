@@ -26,8 +26,21 @@ export const safeZero = (value: number) => Math.max(value, 0);
 export const formattedDate = (date: Date): string =>
 	date.toLocaleString('en-US').split(',')[0];
 
+/* eslint-disable-next-line no-promise-executor-return */
+export const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
+
+export const reducer = (accumulator: number, current: number) =>
+	accumulator + current;
+
+export const classNames = (...classes: string[]) =>
+	classes.filter(Boolean).join(' ');
+
 export const getRandomInt = (max: number): number =>
 	Math.floor(Math.random() * max);
+
+export const fetcher = async <T>(url: string): Promise<T> =>
+	/* eslint-disable-next-line @typescript-eslint/no-unsafe-return */
+	fetch(url).then(async response => response.json());
 
 export const failWrapper =
 	(response: NextApiResponse<ErrorData>) =>

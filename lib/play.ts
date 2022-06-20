@@ -80,6 +80,19 @@ type BodyData = {
 	streak: number;
 };
 
+const parseGrade: Record<number, string> = {
+	0: 'F',
+	1: 'E',
+	2: 'D',
+	3: 'C',
+	4: 'B',
+	5: 'A',
+	6: 'A+',
+};
+
+Object.freeze(parseGrade);
+export {parseGrade};
+
 export const getGrade = ({
 	didCheat,
 	mistakes,
@@ -121,6 +134,9 @@ export const getThemes = ({userThemes, newThemes}: ThemesArgs) => {
 	const themesNotInCommon = newThemes.filter(id => !oldThemes.has(id));
 	return {themesInCommon, themesNotInCommon};
 };
+
+export const getColor = (string_: 'w' | 'b') =>
+	string_ === 'w' ? 'white' : 'black';
 
 export const getMovable = (
 	chess: ChessInstance,

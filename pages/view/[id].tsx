@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/no-array-reduce */
 /* eslint-disable unicorn/no-array-callback-reference */
 import {GetServerSideProps} from 'next';
-import {ReactElement, useCallback, useEffect, useState} from 'react';
+import {ReactElement, useCallback, useState} from 'react';
 import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
@@ -20,9 +20,9 @@ import {
 	activateSpacedRepetion,
 	turnOffSpacedRepetition,
 } from '@/lib/spaced-repetition';
-import {Tooltip} from '@/components/tooltip';
 import {PuzzleItem} from '@/models/puzzle-item';
 import {PuzzleSet} from '@/models/puzzle-set';
+import {classNames, fetcher, reducer} from '@/lib/utils';
 
 const ModalSpacedOn = dynamic(
 	async () => import('@/components/play/modal-spaced-on'),
@@ -32,9 +32,6 @@ const ModalSpacedOff = dynamic(
 );
 const EditModal = dynamic(async () => import('@/components/view/edit-modal'));
 
-const reducer = (accumulator: number, current: number) => accumulator + current;
-const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
-
 const Block = ({
 	title,
 	stat,
@@ -42,7 +39,6 @@ const Block = ({
 	change,
 	Icon,
 	hasChange,
-	tooltip,
 }: ViewData): JSX.Element => {
 	const Element = ({changeElement}: {changeElement?: any}) => (
 		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
@@ -67,47 +63,35 @@ const Block = ({
 		</div>
 	);
 
-	if (hasChange) {
-		const changeElement = (
-			<p
-				className={classNames(
-					type === 'up'
-						? 'text-green-400 dark:text-green-600'
-						: 'text-red-400 dark:text-red-500',
-					'ml-2 flex items-baseline text-sm font-semibold',
-				)}
-			>
-				{type === 'up' ? (
-					<ArrowSmUpIcon
-						className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
-						aria-hidden='true'
-					/>
-				) : (
-					<ArrowSmDownIcon
-						className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
-						aria-hidden='true'
-					/>
-				)}
-				<span className='sr-only'>
-					{type === 'up' ? 'Increased' : 'Decreased'} by
-				</span>
-				{change}
-			</p>
-		);
-		if (tooltip) {
-			console.log('tooltip', tooltip);
-			return (
-				<Tooltip label={tooltip}>
-					<Element changeElement={changeElement} />
-				</Tooltip>
-			);
-		}
+	if (!hasChange) return <Element />;
 
-		return <Element changeElement={changeElement} />;
-	}
-
-	if (tooltip) return <Tooltip label={tooltip}>{<Element />}</Tooltip>;
-	return <Element />;
+	const changeElement = (
+		<p
+			className={classNames(
+				type === 'up'
+					? 'text-green-400 dark:text-green-600'
+					: 'text-red-400 dark:text-red-500',
+				'ml-2 flex items-baseline text-sm font-semibold',
+			)}
+		>
+			{type === 'up' ? (
+				<ArrowSmUpIcon
+					className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
+					aria-hidden='true'
+				/>
+			) : (
+				<ArrowSmDownIcon
+					className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
+					aria-hidden='true'
+				/>
+			)}
+			<span className='sr-only'>
+				{type === 'up' ? 'Increased' : 'Decreased'} by
+			</span>
+			{change}
+		</p>
+	);
+	return <Element changeElement={changeElement} />;
 };
 
 const getClasses = (grade: number) => {
@@ -126,22 +110,11 @@ const PuzzleComponent = (puzzle: PuzzleItem): JSX.Element => (
 	</Link>
 );
 
-type Props = {currentSetProps: PuzzleSet};
-const ViewingPage = ({currentSetProps: set}: Props) => {
-	const [overviewStats, setOverviewStats] = useState<ViewData[]>([]);
-	const [progressStats, setProgressStats] = useState<ViewData[]>([]);
-	const [currentRunStats, setCurrentRunStats] = useState<ViewData[]>([]);
-	const [setTitle, setSetTitle] = useState<string>('');
+type Props = {set: PuzzleSet};
+const ViewingPage = ({set}: Props) => {
+	const [setTitle, setSetTitle] = useState<string>(set.title);
 	const router = useRouter();
 	const {isOpen, hide, toggle} = useModal(false);
-
-	useEffect(() => {
-		if (!set) return;
-		setSetTitle(set.title);
-		setOverviewStats(() => getOverviewStats(set));
-		setProgressStats(() => getProgressStats(set));
-		setCurrentRunStats(() => getCurrentRunStats(set));
-	}, [set]);
 
 	const onChangeName = useCallback(async () => {
 		const body = {$set: {title: setTitle}};
@@ -217,7 +190,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					<div className='w-full mt-4'>
 						<h2 className='h2'>Set overview</h2>
 						<div className='flex flex-wrap w-full mt-4'>
-							{overviewStats.map(stat => (
+							{getOverviewStats(set).map(stat => (
 								<Block key={stat.title} {...stat} />
 							))}
 						</div>
@@ -236,7 +209,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					<div className='w-full mt-4'>
 						<h2 className='h2'>Global progress</h2>
 						<div className='flex flex-wrap w-full mt-4'>
-							{progressStats.map(stat => (
+							{getProgressStats(set).map(stat => (
 								<Block key={stat.title} {...stat} />
 							))}
 						</div>
@@ -247,7 +220,7 @@ const ViewingPage = ({currentSetProps: set}: Props) => {
 					<div className='flex-wrap w-full mt-4'>
 						<h2 className='h2'>Current run</h2>
 						<div className='flex flex-wrap justify-around w-full mt-4'>
-							{currentRunStats.map(stat => (
+							{getCurrentRunStats(set).map(stat => (
 								<Block key={stat.title} {...stat} />
 							))}
 						</div>
@@ -279,9 +252,7 @@ export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
 	if (!id) return {notFound: true};
 	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 	const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
-	const result = await fetch(`${baseUrl}/api/set/${id}`).then(
-		async response => response.json() as Promise<SetData>,
-	);
-	if (!result?.success) return {notFound: true};
-	return {props: {currentSetProps: result.data}};
+	const response = await fetcher<SetData>(`${baseUrl}/api/set/${id}`);
+	if (!response?.success) return {notFound: true};
+	return {props: {set: response.data}};
 };

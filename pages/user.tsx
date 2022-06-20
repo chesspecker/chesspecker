@@ -2,39 +2,37 @@ import type {ReactElement} from 'react';
 import {useState, useEffect} from 'react';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
+import {UserData} from './api/user';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import Card from '@/components/card-achievement';
 import {achievements} from '@/data/achievements';
 import type {AchievementInterface} from '@/types/models';
-import useUser from '@/hooks/use-user';
 import {User} from '@/models/user';
+import useEffectAsync from '@/hooks/use-effect-async';
+import {fetcher} from '@/lib/utils';
 
 const UserPage = () => {
-	const data = useUser();
-	const [user, setUser] = useState<User>();
 	const [achievementsList, setList] = useState<AchievementInterface[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [user, setUser] = useState<User>();
 
-	useEffect(() => {
-		if (!data) return;
-		setUser(data.user);
-	}, [data]);
+	useEffectAsync(async () => {
+		const response = await fetcher<UserData>('/api/user');
+		if (response.success) setUser(() => response.data);
+	}, []);
 
 	useEffect(() => {
 		if (!user) return;
-		const itemAchievements = user.validatedAchievements;
-		setList(
-			() =>
-				itemAchievements.map(item =>
-					achievements.find(achievement => item.id === achievement.id),
-				) as AchievementInterface[],
-		);
 
+		const badges = user.validatedAchievements.map(item =>
+			achievements.find(achievement => item.id === achievement.id),
+		) as AchievementInterface[];
+
+		setList(() => badges);
 		setIsLoading(() => false);
 	}, [user]);
 
-	if (isLoading) return null;
 	return (
 		<>
 			<NextSeo title='♟ Profile' />
@@ -73,17 +71,19 @@ const UserPage = () => {
 					<p className='text-xl'>My badges</p>
 					<div className='flex items-center justify-center w-full'>
 						<div className='flex items-center justify-center w-full max-w-screen-xl'>
-							<div className='flex flex-wrap items-center justify-center w-full'>
-								{achievementsList.length === 0 && (
-									<p className='text-center'>
-										You don&apos;t have any achievement yet
-									</p>
-								)}
-								{achievementsList.length > 0 &&
-									achievementsList.map(achievement => (
-										<Card key={achievement.id} achievement={achievement} />
-									))}
-							</div>
+							{!isLoading && (
+								<div className='flex flex-wrap items-center justify-center w-full'>
+									{achievementsList.length === 0 && (
+										<p className='text-center'>
+											You don&apos;t have any achievement yet
+										</p>
+									)}
+									{achievementsList.length > 0 &&
+										achievementsList.map(achievement => (
+											<Card key={achievement.id} achievement={achievement} />
+										))}
+								</div>
+							)}
 						</div>
 					</div>
 				</div>

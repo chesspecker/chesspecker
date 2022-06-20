@@ -14,16 +14,13 @@ import type {Theme} from '@/data/themes';
 
 const CreatePage = () => {
 	const router = useRouter();
-	const [choicesSelected] = useAtom(selectedAtom);
+	const [choices] = useAtom(selectedAtom);
 
-	const handleClick = async () =>
-		router.push(
-			`/options?category=${encodeURIComponent(
-				JSON.stringify(
-					choicesSelected.length === 0 ? ['healthyMix'] : choicesSelected,
-				),
-			)}`,
-		);
+	const handleClick = async () => {
+		const list = choices.length === 0 ? ['healthyMix'] : choices;
+		const categories = JSON.stringify(list);
+		await router.push(`/options?category=${encodeURIComponent(categories)}`);
+	};
 
 	return (
 		<>
@@ -41,7 +38,7 @@ const CreatePage = () => {
 				<div className='flex flex-col jus'>
 					{CATEGORIES.map((category: Category) => (
 						<div key={category.id}>
-							<h3 className='pb-8 mx-2 mt-4 mb-3 text-3xl '>{category.name}</h3>
+							<h3 className='pb-8 mx-2 mt-4 mb-3 text-3xl'>{category.name}</h3>
 							<div className='flex items-center justify-center w-full'>
 								<div className='flex items-center justify-center w-full max-w-screen-xl'>
 									<div className='flex flex-wrap justify-center w-full'>

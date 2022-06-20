@@ -1,34 +1,40 @@
-import {ReactElement, useState, useEffect} from 'react';
+import {ReactElement} from 'react';
 import Stripe from 'stripe';
-import {useRouter} from 'next/router';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
+import {GetServerSidePropsContext, Redirect} from 'next';
+import {UserData} from './api/user';
 import Layout from '@/layouts/login';
 import {Button, ButtonLink} from '@/components/button';
-
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
-import useUser from '@/hooks/use-user';
 import {AchivementsArgs} from '@/types/models';
 import {User} from '@/models/user';
 import {checkForAchievement} from '@/lib/achievements';
-import {formattedDate} from '@/lib/utils';
+import {fetcher, formattedDate} from '@/lib/utils';
+import {withSessionSsr} from '@/lib/session';
 
-const SuccessPage = () => {
-	const router = useRouter();
-	const data = useUser();
-	const [user, setUser] = useState<User>();
-	const {session_id: sessionId} = router.query;
-	const [session, setSession] = useState<Stripe.Checkout.Session>();
+type Session = Stripe.Checkout.Session;
+type Props = {
+	user: User;
+	sessionId: string;
+};
 
-	const updateUser = {
-		$set: {
-			isSponsor: true,
-			stripeId: session?.customer && session.customer,
-		},
-	};
-
+const SuccessPage = ({user, sessionId}: Props) => {
 	useEffectAsync(async () => {
+		const data = await fetcher<Session>(`/api/checkout-sessions/${sessionId}`);
+		await fetch(`/api/user/${user._id.toString()}`, {
+			method: 'PUT',
+			body: JSON.stringify({
+				$set: {
+					isSponsor: true,
+					stripeId: data?.customer,
+				},
+			}),
+		});
+	}, []);
+
+	const handleClick = async () => {
 		const today = new Date();
 		const currentDate = formattedDate(today);
 		const body: AchivementsArgs = {
@@ -46,27 +52,7 @@ const SuccessPage = () => {
 			isSponsor: true,
 		};
 		await checkForAchievement(body);
-	}, []);
-
-	useEffect(() => {
-		if (!data) return;
-		setUser(data.user);
-	}, [data]);
-
-	useEffectAsync(async () => {
-		if (!sessionId || !user) return;
-		const data = await fetch(
-			`/api/checkout-sessions/${sessionId as string}`,
-		).then(
-			async response => response.json() as Promise<Stripe.Checkout.Session>,
-		);
-		setSession(data);
-
-		await fetch(`/api/user/${user._id.toString()}`, {
-			method: 'PUT',
-			body: JSON.stringify(updateUser),
-		});
-	}, [sessionId, user]);
+	};
 
 	return (
 		<>
@@ -85,7 +71,7 @@ const SuccessPage = () => {
 					</ButtonLink>
 					<Link href='/dashboard'>
 						<a>
-							<Button>BACK TO DASHBOAD 🏠</Button>
+							<Button onClick={handleClick}>BACK TO DASHBOAD 🏠</Button>
 						</a>
 					</Link>
 				</div>
@@ -96,3 +82,26 @@ const SuccessPage = () => {
 
 SuccessPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default SuccessPage;
+
+export const getServerSideProps = withSessionSsr(
+	async ({req, query}: GetServerSidePropsContext) => {
+		const userID = req.session?.userID;
+		const redirect: Redirect = {statusCode: 303, destination: '/'};
+		if (!userID) return {redirect};
+
+		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
+		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
+		const response = await fetcher<UserData>(`${baseUrl}/api/user/${userID}`);
+		if (!response?.success) return {redirect};
+
+		const sessionId = query?.session_id as string;
+		if (!sessionId) return {redirect};
+
+		return {
+			props: {
+				user: response.data,
+				sessionId,
+			},
+		};
+	},
+);
