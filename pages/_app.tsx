@@ -4,7 +4,7 @@ import '@/styles/cg-base.css';
 import '@/styles/cg-chess.css';
 import '@/styles/cg-board.css';
 import '@/styles/cg-pieces.css';
-import {ReactElement, ReactNode, useEffect, useState} from 'react';
+import {ReactElement, ReactNode, useState} from 'react';
 import type {NextPage} from 'next';
 import type {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
@@ -12,6 +12,7 @@ import Router from 'next/router';
 import {DefaultSeo} from 'next-seo';
 import PlausibleProvider from 'next-plausible';
 import Loader from '@/components/loader';
+import useEffectAsync from '@/hooks/use-effect-async';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -33,13 +34,17 @@ const CustomApp = ({
 		setLoading(() => false);
 	});
 
-	useEffect(() => {
+	useEffectAsync(async () => {
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.getRegistrations().then(function (registrations) {
-				for (const registration of registrations) {
-					registration.unregister();
-				}
-			});
+			navigator.serviceWorker
+				.getRegistrations()
+				.then(async registrations => {
+					for (const registration of registrations) {
+						/* eslint-disable-next-line no-await-in-loop */
+						await registration.unregister();
+					}
+				})
+				.catch(console.error);
 		}
 	}, []);
 

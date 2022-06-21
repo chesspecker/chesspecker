@@ -21,9 +21,7 @@ const RightBar = ({
 	hasSpacedRepetition,
 }: Props) => {
 	if (!puzzle)
-		return (
-			<div className='flex invisible md:w-36 md:mx-2 md:flex-col h-48'></div>
-		);
+		return <div className='flex invisible md:w-36 md:mx-2 md:flex-col h-48' />;
 	return (
 		<div className='flex flex-row justify-center w-5/6 md:w-fit md:flex-col'>
 			<div className='mt-2'>

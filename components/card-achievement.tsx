@@ -11,10 +11,12 @@ const Card = ({
 	return (
 		<div
 			className={`m-2 flex h-96 w-64 flex-col rounded-lg bg-sky-700 dark:bg-white p-2 ${
-				!isClaimed && 'grayscale'
+				isClaimed ? '' : 'grayscale'
 			} relative overflow-hidden`}
 		>
-			{!isClaimed && (
+			{isClaimed ? (
+				''
+			) : (
 				<div className='absolute top-0 left-0 z-20 w-full h-full bg-black opacity-50' />
 			)}
 			<div className='relative flex items-center justify-center w-full bg-white rounded-lg h-1/2 dark:bg-sky-700'>

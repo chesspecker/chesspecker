@@ -24,8 +24,8 @@ export const chesscom = {
 };
 
 export const config = {
-	port: env.APP_PORT || 8000,
-	frontPort: env.FRONT_PORT || 3000,
+	port: env.APP_PORT ?? 8000,
+	frontPort: env.FRONT_PORT ?? 3000,
 	status: env.NODE_ENV,
 };
 
