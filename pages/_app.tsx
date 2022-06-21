@@ -4,7 +4,7 @@ import '@/styles/cg-base.css';
 import '@/styles/cg-chess.css';
 import '@/styles/cg-board.css';
 import '@/styles/cg-pieces.css';
-import {ReactElement, ReactNode, useState} from 'react';
+import {ReactElement, ReactNode, useEffect, useState} from 'react';
 import type {NextPage} from 'next';
 import type {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
@@ -32,6 +32,16 @@ const CustomApp = ({
 	Router.events.on('routeChangeComplete', () => {
 		setLoading(() => false);
 	});
+
+	useEffect(() => {
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.getRegistrations().then(function (registrations) {
+				for (const registration of registrations) {
+					registration.unregister();
+				}
+			});
+		}
+	}, []);
 
 	const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
 

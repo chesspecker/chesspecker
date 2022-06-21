@@ -122,7 +122,6 @@ const PlayingPage = ({set}: Props) => {
 	useEffect(() => {
 		if (!userData) return;
 		if (!userData.success) return;
-		console.log('userData', userData);
 
 		setUser(() => userData.data);
 		setId(() => userData.data._id.toString());

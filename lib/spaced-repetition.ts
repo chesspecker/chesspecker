@@ -67,7 +67,7 @@ export const updateSpacedRepetition = async (
 	const areAllPerfect = set.puzzles
 		.map(puzzle => puzzle.grades[puzzle.grades.length - 1])
 		.flat(Number.POSITIVE_INFINITY)
-		.every(grade => grade >= 5);
+		.every(grade => grade >= 4);
 
 	if (areAllPerfect) {
 		const update = getTerminatedUpdate();
