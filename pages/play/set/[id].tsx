@@ -95,14 +95,16 @@ const PlayingPage = ({set, user}: Props) => {
 	const [puzzleItemList, setPuzzleItemList] = useState<PuzzleItem[]>([]);
 	const [puzzleList, setPuzzleList] = useState<Record<string, Puzzle>>({});
 	const [currentPuzzle, setCurrentPuzzle] = useState<string>();
-	const [puzzleIndex, setPuzzleIndex] = useState<number>(0);
+	const [puzzleIndex, setPuzzleIndex] = useState(0);
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
 	const [previousPuzzle, setPreviousPuzzle] = useState<PreviousPuzzle[]>([]);
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
-	const [initialSetTimer, setInitialSetTimer] = useState<number>(0);
+	const [timeTaken, setTimeTaken] = useState(0);
+	const [timeWithMistakes, setTimeWithMistakes] = useState(0);
+	const [initialSetTimer, setInitialSetTimer] = useState(0);
 	const [initialSetDate, setInitialSetDate] = useState<number>();
 	const [isRunning, setIsRunning] = useState(true);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
@@ -307,10 +309,8 @@ const PlayingPage = ({set, user}: Props) => {
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
-		if (!currentPuzzle) return;
-		const puzzle = puzzleList[currentPuzzle];
+		const puzzle = puzzleList[currentPuzzle!];
 		if (!puzzle || !user) return;
-		const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
 		const {maxTime, minTime} = getTimeInterval(moveHistory.length);
 		const streakMistakes_ = mistakes === 0 ? streakMistakes + 1 : 0;
 		const streakTime_ = timeTaken < 5 ? streakTime + 1 : 0;
@@ -413,10 +413,11 @@ const PlayingPage = ({set, user}: Props) => {
 		handleCheckAchievements,
 		streakMistakes,
 		streakTime,
+		timeTaken,
+		timeWithMistakes,
 		puzzleIndex,
 		mistakes,
 		puzzleItemList,
-		initialPuzzleTimer,
 		set._id,
 		isSolutionClicked,
 		user,
@@ -527,6 +528,9 @@ const PlayingPage = ({set, user}: Props) => {
 			setIsComplete(() => true);
 
 			if (hasSound) playGeneric();
+			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
+			setTimeTaken(() => timeTaken);
+			setTimeWithMistakes(() => timeWithMistakes);
 			if (hasAutoMove) return changePuzzle();
 			setIsRunning(() => false);
 		},
