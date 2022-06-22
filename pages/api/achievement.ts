@@ -3,6 +3,7 @@ import withMongoRoute from 'providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import UserModel, {User} from '@/models/user';
 import {SuccessData, ErrorData} from '@/types/data';
+import {failWrapper} from '@/lib/utils';
 
 export type AchievementData = SuccessData<User> | ErrorData;
 
@@ -18,21 +19,41 @@ const put_ = async (
 	response: NextApiResponse<AchievementData>,
 ) => {
 	const {userID} = request.session;
-	const user = await UserModel.findById(userID).lean().exec();
-	if (user === null) {
-		response.status(404).json({success: false, error: 'User not found'});
+	if (!userID) {
+		response.redirect(302, `${origin}/logout`);
 		return;
 	}
 
+	const fail = failWrapper(response);
 	const body = (await JSON.parse(request.body)) as PutRequestBody;
-	const newUser = await UserModel.findOneAndUpdate(
-		{_id: userID, 'validatedAchievements.id': body.achievementId},
-		{$set: {'validatedAchievements.$.claimed': body.claimed}},
-	)
-		.lean()
-		.exec();
-	if (!newUser) throw new Error('User not found');
-	response.json({success: true, data: newUser});
+	if (!body) {
+		fail('Missing body', 400);
+		return;
+	}
+
+	try {
+		const user = await UserModel.findById(userID).lean().exec();
+		if (!user) {
+			fail('User not found', 404);
+			return;
+		}
+
+		const newUser = await UserModel.findOneAndUpdate(
+			{_id: userID, 'validatedAchievements.id': body.achievementId},
+			{$set: {'validatedAchievements.$.claimed': body.claimed}},
+		)
+			.lean()
+			.exec();
+
+		if (!newUser) {
+			fail('User not found', 404);
+			return;
+		}
+
+		response.json({success: true, data: newUser});
+	} catch (error: unknown) {
+		fail((error as Error).message);
+	}
 };
 
 const post_ = async (
@@ -40,26 +61,46 @@ const post_ = async (
 	response: NextApiResponse<AchievementData>,
 ) => {
 	const {userID} = request.session;
-	const user = await UserModel.findById(userID).lean().exec();
-	if (user === null) {
-		response.status(404).json({success: false, error: 'User not found'});
+	if (!userID) {
+		response.redirect(302, `${origin}/logout`);
 		return;
 	}
 
+	const fail = failWrapper(response);
 	const body = (await JSON.parse(request.body)) as PostRequestBody;
-	const newUser = await UserModel.findByIdAndUpdate(userID, {
-		$push: {
-			validatedAchievements: {
-				id: body.achievementId,
-				claimed: false,
-				date: new Date(),
+	if (!body) {
+		fail('Missing body', 400);
+		return;
+	}
+
+	try {
+		const user = await UserModel.findById(userID).lean().exec();
+		if (!user) {
+			fail('User not found', 404);
+			return;
+		}
+
+		const newUser = await UserModel.findByIdAndUpdate(userID, {
+			$push: {
+				validatedAchievements: {
+					id: body.achievementId,
+					claimed: false,
+					date: new Date(),
+				},
 			},
-		},
-	})
-		.lean()
-		.exec();
-	if (!newUser) throw new Error('User not found');
-	response.json({success: true, data: newUser});
+		})
+			.lean()
+			.exec();
+
+		if (!newUser) {
+			fail('User not found', 404);
+			return;
+		}
+
+		response.json({success: true, data: newUser});
+	} catch (error: unknown) {
+		fail((error as Error).message);
+	}
 };
 
 const handler = async (
@@ -76,7 +117,7 @@ const handler = async (
 			return;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
+			failWrapper(response)('Method not allowed', 405);
 	}
 };
 

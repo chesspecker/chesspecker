@@ -4,6 +4,7 @@ import withMongoRoute from 'providers/mongoose';
 import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
 import {SuccessData, ErrorData} from '@/types/data';
+import {failWrapper} from '@/lib/utils';
 
 const key = process.env.STRIPE_SECRET_KEY!;
 const stripe = new Stripe(key, {apiVersion: '2020-08-27'});
@@ -14,8 +15,19 @@ const get_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SubscriptionData>,
 ) => {
+	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
+	if (!id) {
+		fail('Missing id', 400);
+		return;
+	}
+
 	const {data} = await stripe.subscriptions.list({customer: id});
+	if (!data) {
+		fail('Subscription not found', 404);
+		return;
+	}
+
 	response.status(200).json({success: true, data: data[0]});
 };
 
@@ -28,10 +40,19 @@ const put_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SubscriptionData>,
 ) => {
-	const {id, priceId} = request.body as PutRequestBody;
-	const data = await stripe.subscriptions.update(id, {
-		items: priceId,
-	});
+	const fail = failWrapper(response);
+	const {id, priceId: items} = request.body as PutRequestBody;
+	if (!id || items) {
+		fail('Body missing params', 400);
+		return;
+	}
+
+	const data = await stripe.subscriptions.update(id, {items});
+	if (!data) {
+		fail('Subscription not found', 404);
+		return;
+	}
+
 	response.status(200).json({success: true, data});
 };
 
@@ -39,10 +60,21 @@ const delete_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SubscriptionData>,
 ) => {
+	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
+	if (!id) {
+		fail('Missing id', 400);
+		return;
+	}
+
 	const data = await stripe.subscriptions.update(id, {
 		cancel_at_period_end: true,
 	});
+	if (!data) {
+		fail('Subscription not found', 404);
+		return;
+	}
+
 	response.status(200).json({success: true, data});
 };
 

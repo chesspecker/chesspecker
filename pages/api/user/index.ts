@@ -5,6 +5,7 @@ import {createChesscomUser, createLichessUser} from '@/controllers/create-user';
 import {SuccessData, ErrorData} from '@/types/data';
 import {failWrapper} from '@/lib/utils';
 import UserModel, {User} from '@/models/user';
+import {origin} from '@/config';
 
 export type UserData = SuccessData<User> | ErrorData;
 
@@ -15,21 +16,20 @@ const get_ = async (
 	const fail = failWrapper(response);
 	const {userID} = request.session;
 	if (!userID) {
-		fail('Missing user id');
+		response.redirect(302, `${origin}/logout`);
 		return;
 	}
 
 	try {
 		const data = await UserModel.findById(userID).lean().exec();
-		if (data === null) {
-			fail('User not found');
+		if (!data) {
+			fail('User not found', 404);
 			return;
 		}
 
 		response.json({success: true, data});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -37,24 +37,30 @@ const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<UserData>,
 ) => {
-	const user: User =
-		request.session.type === 'chesscom'
-			? await createChesscomUser(request.body)
-			: await createLichessUser(request.body);
+	const fail = failWrapper(response);
 
-	if (user === null) {
-		failWrapper(response)('User not found');
-		return;
+	try {
+		const user: User =
+			request.session.type === 'chesscom'
+				? await createChesscomUser(request.body)
+				: await createLichessUser(request.body);
+
+		if (!user) {
+			fail('User not found', 404);
+			return;
+		}
+
+		response.json({success: true, data: user});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
-
-	response.json({success: true, data: user});
 };
 
 const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<UserData>,
 ) => {
-	switch (request.method) {
+	switch (request.method?.toUpperCase()) {
 		case 'GET':
 			await get_(request, response);
 			break;
@@ -64,8 +70,7 @@ const handler = async (
 			break;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
-			break;
+			failWrapper(response)('Method not allowed', 405);
 	}
 };
 

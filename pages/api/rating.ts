@@ -15,7 +15,7 @@ const getLichessRating = async (
 ) => {
 	const {lichessToken} = request.session;
 	if (!lichessToken) {
-		failWrapper(response)('Not logged in');
+		response.redirect(302, `${origin}/logout`);
 		return;
 	}
 
@@ -40,7 +40,7 @@ const getChesscomRating = async (
 ) => {
 	const {chesscomToken, username} = request.session;
 	if (!chesscomToken || !username) {
-		failWrapper(response)('Not logged in');
+		response.redirect(302, `${origin}/logout`);
 		return;
 	}
 
@@ -66,10 +66,11 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<Data>,
 ) => {
+	const fail = failWrapper(response);
 	switch (request.method) {
 		case 'GET':
 			if (!request?.session?.userID) {
-				response.status(401).json({success: false, error: 'Not logged in'});
+				response.redirect(302, `${origin}/logout`);
 				return;
 			}
 
@@ -83,12 +84,11 @@ const handler = async (
 				return;
 			}
 
-			response.status(500).json({success: false, error: 'Session error.'});
+			fail('Session error', 500);
 			break;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
-			break;
+			failWrapper(response)('Method not allowed', 405);
 	}
 };
 

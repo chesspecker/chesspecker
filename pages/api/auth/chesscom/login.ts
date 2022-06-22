@@ -4,6 +4,7 @@ import withMongoRoute from 'providers/mongoose';
 import {nanoid} from 'nanoid';
 import {chesscom, origin} from '@/config';
 import {withSessionRoute} from '@/lib/session';
+import {failWrapper} from '@/lib/utils';
 
 // eslint-disable-next-line node/prefer-global/buffer
 const base64URLEncode = (buffer_: Buffer): string =>
@@ -24,8 +25,9 @@ const loginRoute = async (
 	request: NextApiRequest,
 	response: NextApiResponse,
 ) => {
+	const fail = failWrapper(response);
 	if (request.method !== 'GET') {
-		response.status(405).json({success: false, message: 'Method not allowed.'});
+		fail('Method not allowed', 405);
 		return;
 	}
 
@@ -38,7 +40,13 @@ const loginRoute = async (
 	const challenge = createChallenge(verifier);
 	request.session.verifier = verifier;
 	request.session.state = state;
-	await request.session.save();
+
+	try {
+		await request.session.save();
+	} catch (error: unknown) {
+		fail((error as Error).message);
+		return;
+	}
 
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',
@@ -48,11 +56,9 @@ const loginRoute = async (
 		state,
 		code_challenge_method: 'S256',
 		code_challenge: challenge,
-	});
-	response.redirect(
-		302,
-		`https://oauth.chess.com/authorize?${linkParameters.toString()}`,
-	);
+	}).toString();
+
+	response.redirect(302, `https://oauth.chess.com/authorize?${linkParameters}`);
 };
 
 export default withMongoRoute(withSessionRoute(loginRoute));

@@ -16,7 +16,7 @@ const get_ = async (
 	const fail = failWrapper(response);
 	const {userID} = request.session;
 	if (!userID) {
-		fail('Missing user id');
+		response.redirect(302, `${origin}/logout`);
 		return;
 	}
 
@@ -25,8 +25,8 @@ const get_ = async (
 	})
 		.lean()
 		.exec();
-	if (data === null) {
-		fail('Unable to retrieve set');
+	if (!data) {
+		fail('Set not found', 404);
 		return;
 	}
 
@@ -37,8 +37,12 @@ const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<PuzzleSetData>,
 ) => {
-	const {userID} = request.session;
 	const fail = failWrapper(response);
+	const {userID} = request.session;
+	if (!userID) {
+		response.redirect(302, `${origin}/logout`);
+		return;
+	}
 
 	const timeout = new Promise((resolve: (response: string) => void) =>
 		// eslint-disable-next-line no-promise-executor-return
@@ -79,7 +83,7 @@ const handler = async (
 			return;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
+			failWrapper(response)('Method not allowed');
 	}
 };
 

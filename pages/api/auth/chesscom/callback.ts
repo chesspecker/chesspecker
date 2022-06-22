@@ -5,6 +5,7 @@ import {origin} from '@/config';
 import getChesscom from '@/lib/get-chesscom';
 import User from '@/models/user';
 import {createChesscomUser} from '@/controllers/create-user';
+import {failWrapper} from '@/lib/utils';
 
 type ErrorData = {
 	success: false;
@@ -15,13 +16,14 @@ const callback = async (
 	request: NextApiRequest,
 	response: NextApiResponse<ErrorData>,
 ) => {
+	const fail = failWrapper(response);
 	if (request.method !== 'GET') {
-		response.status(405).json({success: false, error: 'Method not allowed.'});
+		fail('Method not allowed', 405);
 		return;
 	}
 
 	if (request.query.state !== request.session.state) {
-		response.status(500).json({success: false, error: 'Invalid state.'});
+		fail('Invalid state');
 		return;
 	}
 
@@ -43,9 +45,8 @@ const callback = async (
 		await request.session.save();
 		response.redirect(302, `${origin}/success-login`);
 		return;
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 

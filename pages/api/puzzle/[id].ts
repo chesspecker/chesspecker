@@ -6,6 +6,7 @@ import PuzzleModel, {Puzzle} from '@/models/puzzle';
 import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
 import type {SuccessData, ErrorData} from '@/types/data';
 import {PuzzleItem} from '@/models/puzzle-item';
+import {failWrapper} from '@/lib/utils';
 
 export type PuzzleData = SuccessData<Puzzle> | ErrorData;
 
@@ -13,14 +14,23 @@ const get_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<PuzzleData>,
 ) => {
+	const fail = failWrapper(response);
 	const {id: PuzzleId} = request.query;
+	if (!PuzzleId) {
+		fail('Missing puzzle id', 400);
+		return;
+	}
+
 	try {
 		const puzzle = await PuzzleModel.findOne({PuzzleId}).lean().exec();
-		if (puzzle === null) throw new Error('Puzzle not found');
+		if (!puzzle) {
+			fail('Puzzle not found', 404);
+			return;
+		}
+
 		response.json({success: true, data: puzzle});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -35,8 +45,18 @@ const put_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<PuzzleSetData>,
 ) => {
+	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
+	if (!id) {
+		fail('Missing puzzle id', 400);
+		return;
+	}
+
 	const {_id, update} = JSON.parse(request.body) as BodyPutRequest;
+	if (!_id || !update) {
+		fail('Missing params in body', 400);
+		return;
+	}
 
 	try {
 		const puzzle = await PuzzleSetModel.findOneAndUpdate(
@@ -46,11 +66,15 @@ const put_ = async (
 		)
 			.lean()
 			.exec();
-		if (puzzle === null) throw new Error('Puzzle not found');
+
+		if (!puzzle) {
+			fail('Puzzle not found', 404);
+			return;
+		}
+
 		response.json({success: true, data: puzzle});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -58,7 +82,7 @@ const handler = async (
 	request: NextApiRequest,
 	response: NextApiResponse<PuzzleData | PuzzleSetData>,
 ) => {
-	switch (request.method) {
+	switch (request.method?.toUpperCase()) {
 		case 'GET':
 			await get_(request, response);
 			break;
@@ -68,8 +92,7 @@ const handler = async (
 			break;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
-			break;
+			failWrapper(response)('Method not allowed', 405);
 	}
 };
 

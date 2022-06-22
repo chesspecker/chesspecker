@@ -5,6 +5,7 @@ import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
 import {origin} from '@/config';
 import {ErrorData, SuccessData} from '@/types/data';
+import {failWrapper} from '@/lib/utils';
 
 const key = process.env.STRIPE_SECRET_KEY!;
 const stripe = new Stripe(key, {apiVersion: '2020-08-27'});
@@ -20,9 +21,16 @@ const post_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<CheckoutData>,
 ) => {
+	const fail = failWrapper(response);
 	const {stripePriceId, customer} = JSON.parse(
 		request.body,
 	) as CheckoutRequestBody;
+
+	if (!stripePriceId) {
+		fail('Missing price id', 400);
+		return;
+	}
+
 	const parameters: Stripe.Checkout.SessionCreateParams = {
 		line_items: [{price: stripePriceId, quantity: 1}],
 		payment_method_types: ['card'],
@@ -39,8 +47,7 @@ const post_ = async (
 		response.status(200).json({success: true, data: session});
 		return;
 	} catch (error: unknown) {
-		const error_ = error as Error;
-		response.status(500).json({success: false, error: error_.message});
+		fail((error as Error).message);
 	}
 };
 
@@ -54,7 +61,7 @@ const handler = async (
 			return;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
+			failWrapper(response)('Method not allowed', 405);
 	}
 };
 

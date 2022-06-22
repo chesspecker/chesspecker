@@ -12,19 +12,23 @@ const get_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SetData>,
 ) => {
+	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
+	if (!id) {
+		fail('Missing id', 400);
+		return;
+	}
 
 	try {
 		const data = await PuzzleSetModel.findById(id).lean().exec();
-		if (data === null) {
-			failWrapper(response)('Set not found');
+		if (!data) {
+			fail('Set not found', 404);
 			return;
 		}
 
 		response.json({success: true, data});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -32,19 +36,23 @@ const delete_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SetData>,
 ) => {
+	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
+	if (!id) {
+		fail('Missing id', 400);
+		return;
+	}
 
 	try {
 		const data = await PuzzleSetModel.findByIdAndDelete(id).lean().exec();
-		if (data === null) {
-			failWrapper(response)('Set not found');
+		if (!data) {
+			fail('Set not found', 404);
 			return;
 		}
 
 		response.json({success: true, data});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -54,19 +62,33 @@ const put_ = async (
 	request: NextApiRequest,
 	response: NextApiResponse<SetData>,
 ) => {
-	const {id} = request.query;
+	const fail = failWrapper(response);
+	const {id} = request.query as Record<string, string>;
+	if (!id) {
+		fail('Missing id', 400);
+		return;
+	}
+
 	const body = JSON.parse(request.body) as PutRequestBody;
+	if (!body) {
+		fail('Missing body', 400);
+		return;
+	}
+
 	try {
 		const data = await PuzzleSetModel.findByIdAndUpdate(id, body, {
 			new: true,
 		})
 			.lean()
 			.exec();
-		if (data === null) throw new Error('Set not found');
+		if (data === null) {
+			fail('Set not found', 404);
+			return;
+		}
+
 		response.json({success: true, data});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		response.status(500).json({success: false, error: error.message});
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -88,7 +110,7 @@ const handler = async (
 			break;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
+			failWrapper(response)('Method not allowed', 405);
 			break;
 	}
 };

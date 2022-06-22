@@ -13,24 +13,22 @@ const get_ = async (
 	response: NextApiResponse<UserData>,
 ) => {
 	const fail = failWrapper(response);
-
 	const {id} = request.query as Record<string, string>;
 	if (!id) {
-		fail('Missing user id');
+		fail('Missing user id', 400);
 		return;
 	}
 
 	try {
 		const data = await UserModel.findById(id).lean().exec();
 		if (!data) {
-			fail('User not found');
+			fail('User not found', 404);
 			return;
 		}
 
 		response.json({success: true, data});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		fail(error.message);
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -40,24 +38,21 @@ const delete_ = async (
 ) => {
 	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
-
 	if (!id) {
-		fail('Missing user id');
+		fail('Missing user id', 400);
 		return;
 	}
 
 	try {
 		const data = await UserModel.findByIdAndDelete(id).lean().exec();
-
 		if (!data) {
-			fail('User not found');
+			fail('User not found', 404);
 			return;
 		}
 
 		response.json({success: true, data});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		fail(error.message);
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -67,16 +62,14 @@ const put_ = async (
 ) => {
 	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
-
 	if (!id) {
-		fail('Missing user id');
+		fail('Missing user id', 400);
 		return;
 	}
 
 	const body = JSON.parse(request.body) as UpdateQuery<Partial<User>>;
-
 	if (!body) {
-		fail('Missing request body');
+		fail('Missing request body', 400);
 		return;
 	}
 
@@ -93,9 +86,8 @@ const put_ = async (
 		}
 
 		response.json({success: true, data});
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		fail(error.message);
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
@@ -117,8 +109,7 @@ const handler = async (
 			break;
 
 		default:
-			response.status(405).json({success: false, error: 'Method not allowed'});
-			break;
+			failWrapper(response)('Method not allowed', 405);
 	}
 };
 

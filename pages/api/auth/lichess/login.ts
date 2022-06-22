@@ -4,6 +4,7 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import {lichess, origin} from '@/config';
 import {withSessionRoute} from '@/lib/session';
 import type {ErrorData} from '@/types/data';
+import {failWrapper} from '@/lib/utils';
 
 // eslint-disable-next-line node/prefer-global/buffer
 const base64URLEncode = (buffer_: Buffer): string =>
@@ -23,8 +24,9 @@ const loginRoute = async (
 	request: NextApiRequest,
 	response: NextApiResponse<ErrorData>,
 ) => {
+	const fail = failWrapper(response);
 	if (request.method !== 'GET') {
-		response.status(405).json({success: false, error: 'Method not allowed.'});
+		fail('Method not allowed', 405);
 		return;
 	}
 
@@ -36,7 +38,12 @@ const loginRoute = async (
 	const verifier = createVerifier();
 	const challenge = createChallenge(verifier);
 	request.session.verifier = verifier;
-	await request.session.save();
+
+	try {
+		await request.session.save();
+	} catch (error: unknown) {
+		fail((error as Error).message);
+	}
 
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',

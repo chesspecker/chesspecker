@@ -3,32 +3,45 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
+import {failWrapper} from '@/lib/utils';
+import {ErrorData, SuccessData} from '@/types/data';
 
 const key = process.env.STRIPE_SECRET_KEY!;
 const stripe = new Stripe(key, {
 	apiVersion: '2020-08-27',
 });
 
+export type SessionData = SuccessData<Stripe.Checkout.Session> | ErrorData;
+
 const getStripeSession = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Stripe.Checkout.Session>,
+	response: NextApiResponse<SessionData>,
 ) => {
+	const fail = failWrapper(response);
 	const {id} = request.query as Record<string, string>;
-	const session = await stripe.checkout.sessions.retrieve(id);
-	if (!session) {
-		response.status(404).end('Session Not Found');
+	if (!id) {
+		fail('Missing id', 400);
 		return;
 	}
 
-	response.status(200).json(session);
+	const session = await stripe.checkout.sessions.retrieve(id);
+	if (!session) {
+		fail('Session Not Found', 404);
+		return;
+	}
+
+	response.status(200).json({success: true, data: session});
 };
 
-const handler = async (request: NextApiRequest, response: NextApiResponse) => {
+const handler = async (
+	request: NextApiRequest,
+	response: NextApiResponse<SessionData>,
+) => {
 	switch (request.method) {
 		case 'GET':
 			return getStripeSession(request, response);
 		default:
-			response.status(405).end(`Method Not Allowed`);
+			failWrapper(response)('Method not allowed', 405);
 	}
 };
 

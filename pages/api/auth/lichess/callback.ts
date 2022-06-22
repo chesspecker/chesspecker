@@ -14,26 +14,26 @@ const callback = async (
 ) => {
 	const fail = failWrapper(response);
 	if (request.method !== 'GET') {
-		fail('Method not allowed.', 405);
+		fail('Method not allowed', 405);
 		return;
 	}
 
 	const {verifier} = request.session;
 	if (!verifier) {
-		fail('No verifier found.', 400);
+		fail('No verifier found');
 		return;
 	}
 
 	const {code} = request.query as Record<string, string>;
 	if (!code) {
-		fail('No code found.', 404);
+		fail('No code found');
 		return;
 	}
 
 	try {
 		const {access_token: oauthToken} = await getLichess.token(code, verifier);
 		const lichessUser = await getLichess.account(oauthToken);
-		if (!lichessUser) throw new Error('user login failed');
+		if (!lichessUser) throw new Error('User login failed');
 
 		let user = await UserModel.findOne({id: lichessUser.id}).lean().exec();
 		if (!user) user = await createLichessUser(lichessUser);
@@ -44,9 +44,8 @@ const callback = async (
 		await request.session.save();
 		response.redirect(302, `${origin}/success-login`);
 		return;
-	} catch (error_: unknown) {
-		const error = error_ as Error;
-		fail(error.message);
+	} catch (error: unknown) {
+		fail((error as Error).message);
 	}
 };
 
