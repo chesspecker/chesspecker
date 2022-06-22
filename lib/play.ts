@@ -13,6 +13,9 @@ import {ThemeItem} from '@/models/theme';
 const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 	fetch(`${baseUrl}/api/puzzle/${id}`).then(async response => response.json());
 
+const getUser = async (id: string, baseUrl = ''): Promise<UserData> =>
+	fetch(`${baseUrl}/api/user/${id}`).then(async response => response.json());
+
 const updatePuzzle = async (
 	setId: string,
 	puzzleId: string,
@@ -63,6 +66,7 @@ const updateUser = async (
 export const get = {
 	puzzle: getPuzzleById,
 	set: getSetById,
+	user: getUser,
 };
 
 export const update = {

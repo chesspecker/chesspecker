@@ -4,11 +4,11 @@ import '@/styles/cg-base.css';
 import '@/styles/cg-chess.css';
 import '@/styles/cg-board.css';
 import '@/styles/cg-pieces.css';
-import {ReactElement, ReactNode, useState} from 'react';
+import {ReactElement, ReactNode, useEffect, useState} from 'react';
 import type {NextPage} from 'next';
 import type {AppProps} from 'next/app';
 import {SWRConfig} from 'swr';
-import Router from 'next/router';
+import {useRouter} from 'next/router';
 import {DefaultSeo} from 'next-seo';
 import PlausibleProvider from 'next-plausible';
 import Loader from '@/components/loader';
@@ -26,13 +26,26 @@ const CustomApp = ({
 	Component,
 	pageProps: {session, ...pageProps},
 }: AppPropsWithLayout) => {
+	const router = useRouter();
 	const [loading, setLoading] = useState<boolean>(false);
-	Router.events.on('routeChangeStart', () => {
-		setLoading(() => true);
-	});
-	Router.events.on('routeChangeComplete', () => {
-		setLoading(() => false);
-	});
+
+	useEffect(() => {
+		const setTrue = () => {
+			setLoading(() => true);
+		};
+
+		const setFalse = () => {
+			setLoading(() => false);
+		};
+
+		router.events.on('routeChangeStart', setTrue);
+		router.events.on('routeChangeComplete', setFalse);
+
+		return () => {
+			router.events.off('routeChangeStart', setTrue);
+			router.events.off('routeChangeComplete', setFalse);
+		};
+	}, [router.events]);
 
 	useEffectAsync(async () => {
 		if ('serviceWorker' in navigator) {

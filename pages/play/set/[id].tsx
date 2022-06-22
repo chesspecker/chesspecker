@@ -5,15 +5,19 @@ import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
-import useSWR from 'swr';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import {useSound} from 'use-sound';
+import MOVE from '@/sounds/Move.mp3';
+import CAPTURE from '@/sounds/Capture.mp3';
+import ERROR from '@/sounds/Error.mp3';
+import GENERIC from '@/sounds/GenericNotify.mp3';
+import VICTORY from '@/sounds/Victory.mp3';
 import {AchivementsArgs} from '@/types/models';
 import Layout from '@/layouts/main';
 import {formattedDate, sleep, sortBy} from '@/lib/utils';
 import useEffectAsync from '@/hooks/use-effect-async';
-import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ, revertedµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
@@ -29,7 +33,6 @@ import {User} from '@/models/user';
 import {Puzzle} from '@/models/puzzle';
 import {PuzzleSet} from '@/models/puzzle-set';
 import {PuzzleItem} from '@/models/puzzle-item';
-import type {UserData} from '@/pages/api/user';
 import {
 	incrementStreakCount,
 	resetStreakCount,
@@ -52,6 +55,8 @@ import LeftBar, {Stat} from '@/components/play/left-bar';
 import {Streak} from '@/models/streak';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
+import {PuzzleData} from '@/pages/api/puzzle/[id]';
+import {ThemeItem} from '@/models/theme';
 
 const Notification = dynamic(async () => import('@/components/notification'));
 const Timer = dynamic(async () => import('@/components/play/timer'));
@@ -64,11 +69,15 @@ const ModalSpacedEnd = dynamic(
 );
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
-const fetcher = async (endpoint: string): Promise<UserData> =>
-	fetch(endpoint).then(async response => response.json() as Promise<UserData>);
 
-type Props = {set: PuzzleSet};
-const PlayingPage = ({set}: Props) => {
+type Props = {set: PuzzleSet; user: User};
+const PlayingPage = ({set, user}: Props) => {
+	const [playMove] = useSound(MOVE);
+	const [playCapture] = useSound(CAPTURE);
+	const [playError] = useSound(ERROR);
+	const [playGeneric] = useSound(GENERIC, {volume: 0.3});
+	const [playVictory] = useSound(VICTORY);
+	const router = useRouter();
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
 	const [hasClock] = useAtom(configµ.hasClock);
@@ -83,10 +92,10 @@ const PlayingPage = ({set}: Props) => {
 	const [, setAnimation] = useAtom(animationµ);
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
-	const [puzzleList, setPuzzleList] = useState<PuzzleItem[]>([]);
+	const [puzzleItemList, setPuzzleItemList] = useState<PuzzleItem[]>([]);
+	const [puzzleList, setPuzzleList] = useState<Record<string, Puzzle>>({});
+	const [currentPuzzle, setCurrentPuzzle] = useState<string>();
 	const [puzzleIndex, setPuzzleIndex] = useState<number>(0);
-	const [puzzle, setPuzzle] = useState<Puzzle>();
-	const [nextPuzzle, setNextPuzzle] = useState<Puzzle>();
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
@@ -97,6 +106,19 @@ const PlayingPage = ({set}: Props) => {
 	const [initialSetDate, setInitialSetDate] = useState<number>();
 	const [isRunning, setIsRunning] = useState(true);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
+	const [leftBarStat, setLeftBarStat] = useState<Stat>();
+	const [streakMistakes, setStreakMistakes] = useState(0);
+	const [streakTime, setStreakTime] = useState(0);
+	const [showNotification, setShowNotification] = useState(false);
+	const [notificationMessage, setNotificationMessage] = useState('');
+	const [notificationUrl, setNotificationUrl] = useState('');
+	const [shouldReturn, setShouldReturn] = useState(false);
+	const [totalPuzzleSolved, setTotalPuzzleSolved] = useState(
+		user.totalPuzzleSolved,
+	);
+	const [puzzleSolvedByCategories, setPuzzleSolvedByCategories] = useState(
+		user.puzzleSolvedByCategories,
+	);
 	const {isOpen, show, hide} = useModal();
 	const {
 		isOpen: isOpenSpacedOn,
@@ -108,58 +130,6 @@ const PlayingPage = ({set}: Props) => {
 		show: showSpacedOff,
 		hide: hideSpacedOff,
 	} = useModal();
-	const router = useRouter();
-	const {data: userData, mutate} = useSWR('/api/user', fetcher);
-	const [user, setUser] = useState<User>();
-	const [id, setId] = useState<string>();
-	const [streak, setStreak] = useState<Streak>();
-	const [previousStreak, setPreviousStreak] = useState<Streak>();
-	const [shouldCheck, setShouldCheck] = useState<boolean>(false);
-	const [leftBarStat, setLeftBarStat] = useState<Stat>();
-	const [gradeLast, setGradeLast] = useState<number>();
-	const [timeLast, setTimeLast] = useState<number>();
-
-	useEffect(() => {
-		if (!userData) return;
-		if (!userData.success) return;
-
-		setUser(() => userData.data);
-		setId(() => userData.data._id.toString());
-		setPreviousStreak(() => userData.data.streak);
-	}, [userData]);
-
-	useEffectAsync(async () => {
-		if (!previousStreak || !id) return;
-
-		const date = new Date();
-		const today = formattedDate(date);
-
-		// Check if we should increment or reset
-		const {shouldIncrement, shouldReset} = shouldIncrementOrResetStreakCount(
-			today,
-			previousStreak.lastLoginDate,
-		);
-
-		let updatedStreak: Streak = previousStreak;
-		if (shouldReset) updatedStreak = resetStreakCount(today);
-		if (shouldIncrement)
-			updatedStreak = incrementStreakCount(previousStreak, today);
-		if (shouldReset || shouldIncrement)
-			await updateStreak(id, {
-				$set: {
-					streak: updatedStreak,
-				},
-			});
-
-		setStreak(() => updatedStreak);
-	}, [previousStreak, id]);
-
-	// For achievement
-	const [streakMistakes, setStreakMistakes] = useState(0);
-	const [streakTime, setStreakTime] = useState(0);
-	const [showNotification, setShowNotification] = useState(false);
-	const [notificationMessage, setNotificationMessage] = useState('');
-	const [notificationUrl, setNotificationUrl] = useState('');
 
 	const cleanAnimation = useCallback(
 		async () =>
@@ -181,35 +151,54 @@ const PlayingPage = ({set}: Props) => {
 		setCompletedPuzzles(() => set.progress);
 		setTotalPuzzles(() => set.length);
 		const puzzleList = set.puzzles.filter(p => !p.played);
-		setPuzzleList(() => sortBy(puzzleList, 'order'));
+		const sortedList = sortBy(puzzleList, 'order');
+		setPuzzleItemList(() => sortedList);
+		setCurrentPuzzle(() => sortedList[0].PuzzleId);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [set]);
 
-	/**
-	 * Retrieve current puzzle.
-	 */
 	useEffectAsync(async () => {
-		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
+		const abortController = new AbortController();
+		const {signal} = abortController;
 
-		if (nextPuzzle) {
-			setPuzzle(() => nextPuzzle);
-		} else {
-			const puzzleItem = puzzleList[puzzleIndex];
-			const data = await get_.puzzle(puzzleItem.PuzzleId.toString());
-			if (data.success) setPuzzle(() => data.data);
+		const aborting = () => {
+			abortController.abort();
+		};
+
+		router.events.on('routeChangeStart', aborting);
+
+		const requests: Array<Promise<PuzzleData>> = [];
+		for (const item of puzzleItemList) {
+			requests.push(
+				fetch(`/api/puzzle/${item.PuzzleId}`, {signal}).then(async response =>
+					response.json(),
+				),
+			);
 		}
 
-		if (!puzzleList[puzzleIndex + 1] || puzzleList.length === 0) return;
-		const nextPuzzleItem = puzzleList[puzzleIndex + 1];
-		const dataNext = await get_.puzzle(nextPuzzleItem.PuzzleId.toString());
-		if (dataNext.success) setNextPuzzle(() => dataNext.data);
-	}, [puzzleList, puzzleIndex]);
+		requests.map(async promise => {
+			const puzzleData = await promise;
+			if (puzzleData.success) {
+				setPuzzleList(previous => ({
+					...previous,
+					[puzzleData.data.PuzzleId]: puzzleData.data,
+				}));
+			}
+		});
+
+		return () => {
+			router.events.off('routeChangeStart', aborting);
+		};
+	}, [puzzleItemList]);
 
 	/**
 	 * Setup the board.
 	 */
 	useEffect(() => {
-		if (!puzzle?.Moves) return;
+		if (!currentPuzzle || shouldReturn) return;
+		const puzzle = puzzleList[currentPuzzle];
+		if (!puzzle) return;
+		setShouldReturn(() => true);
 		const chess = new Chess(puzzle.FEN);
 		setChess(() => chess);
 		setMoveHistory(() => puzzle.Moves.split(' '));
@@ -240,59 +229,95 @@ const PlayingPage = ({set}: Props) => {
 
 		setConfig(previousConfig => ({...previousConfig, ...config}));
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [puzzle]);
+	}, [currentPuzzle, puzzleList]);
 
-	useEffectAsync(async () => {
-		if (!shouldCheck || !user || !puzzle || !streak) return;
-		const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
-		const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
-		const body: AchivementsArgs = {
-			streakMistakes,
-			streakTime,
-			completionTime: timeWithoutMistakes,
-			completionMistakes: mistakes,
-			totalPuzzleSolved: user.totalPuzzleSolved,
-			themes: puzzle.Themes.map(t => {
-				const a = user.puzzleSolvedByCategories.find(c => t === c.title);
-				const count = a ? a.count + 1 : 1;
-				return {title: t, count};
-			}),
-			streak,
-			isSponsor: user.isSponsor,
-		};
+	const handleCheckAchievements = useCallback(
+		async ({
+			streakMistakes_,
+			streakTime_,
+		}: {
+			streakMistakes_: number;
+			streakTime_: number;
+		}) => {
+			if (!currentPuzzle) return;
+			const puzzle = puzzleList[currentPuzzle];
+			if (!puzzle) return;
+			const date = formattedDate(new Date());
 
-		checkForAchievement(body)
-			.then(unlockedAchievements => {
-				if (!unlockedAchievements) return;
-				if (unlockedAchievements.length > 0) {
-					setShowNotification(() => true);
-					setNotificationMessage(() => 'Achievement unlocked!');
-					setNotificationUrl(() => '/dashboard');
-				}
-			})
-			.catch(console.error);
+			// Check if we should increment or reset
+			const {shouldIncrement, shouldReset} = shouldIncrementOrResetStreakCount(
+				date,
+				user.streak.lastLoginDate,
+			);
 
-		setShouldCheck(() => false);
-	}, [shouldCheck]);
+			let updatedStreak: Streak = user.streak;
+			if (shouldReset) updatedStreak = resetStreakCount(date);
 
-	useEffect(() => {
-		if (!puzzleList[puzzleIndex] || puzzleList.length === 0) return;
-		const puzzleItem = puzzleList[puzzleIndex];
-		setGradeLast(() => puzzleItem.grades[puzzleItem.grades.length - 1]);
-		setTimeLast(() => puzzleItem.timeTaken[puzzleItem.timeTaken.length - 1]);
-	}, [puzzleList, puzzleIndex]);
+			if (shouldIncrement)
+				updatedStreak = incrementStreakCount(user.streak, date);
+
+			if (shouldReset || shouldIncrement) {
+				await updateStreak(user._id.toString(), {
+					$set: {
+						streak: updatedStreak,
+					},
+				});
+			}
+
+			const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
+			const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
+			const body: AchivementsArgs = {
+				streakMistakes: streakMistakes_,
+				streakTime: streakTime_,
+				completionTime: timeWithoutMistakes,
+				completionMistakes: mistakes,
+				totalPuzzleSolved,
+				themes: puzzle.Themes.map(t => {
+					const a = puzzleSolvedByCategories.find(c => t === c.title);
+					const count = a ? a.count + 1 : 1;
+					return {title: t, count};
+				}),
+				streak: updatedStreak,
+				isSponsor: user.isSponsor,
+			};
+
+			checkForAchievement(body)
+				.then(unlockedAchievements => {
+					if (!unlockedAchievements) return;
+					if (unlockedAchievements.length > 0) {
+						setShowNotification(() => true);
+						setNotificationMessage(() => 'Achievement unlocked!');
+						setNotificationUrl(() => '/dashboard');
+					}
+				})
+				.catch(console.error);
+		},
+		[
+			puzzleSolvedByCategories,
+			initialPuzzleTimer,
+			mistakes,
+			user,
+			totalPuzzleSolved,
+			currentPuzzle,
+			puzzleList,
+		],
+	);
 
 	/**
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
+		if (!currentPuzzle) return;
+		const puzzle = puzzleList[currentPuzzle];
 		if (!puzzle || !user) return;
 		const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
 		const {maxTime, minTime} = getTimeInterval(moveHistory.length);
-		setStreakMistakes(previous => (mistakes === 0 ? previous + 1 : 0));
-		setStreakTime(previous => (timeTaken < 5 ? previous + 1 : 0));
+		const streakMistakes_ = mistakes === 0 ? streakMistakes + 1 : 0;
+		const streakTime_ = timeTaken < 5 ? streakTime + 1 : 0;
+		setStreakMistakes(() => streakMistakes_);
+		setStreakTime(() => streakTime_);
 
-		const puzzleItem = puzzleList[puzzleIndex];
+		const puzzleItem = puzzleItemList[puzzleIndex];
 		const newGrade = getGrade({
 			didCheat: isSolutionClicked,
 			mistakes,
@@ -305,8 +330,8 @@ const PlayingPage = ({set}: Props) => {
 		setLeftBarStat(() => ({
 			gradeCurrent: newGrade,
 			timeCurrent: timeWithMistakes,
-			gradeLast,
-			timeLast,
+			gradeLast: puzzleItem.grades[puzzleItem.grades.length - 1],
+			timeLast: puzzleItem.timeTaken[puzzleItem.timeTaken.length - 1],
 		}));
 
 		setPreviousPuzzle(previous => [
@@ -336,7 +361,8 @@ const PlayingPage = ({set}: Props) => {
 
 		update.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
 
-		const userThemes = user.puzzleSolvedByCategories;
+		const puzzleSolvedByCategories_: ThemeItem[] = [];
+		const userThemes = puzzleSolvedByCategories;
 		const newThemes = puzzle.Themes;
 		const {themesInCommon, themesNotInCommon} = getThemes({
 			userThemes,
@@ -348,12 +374,16 @@ const PlayingPage = ({set}: Props) => {
 		};
 		const pushUser = {$push: {}};
 
-		if (themesNotInCommon.length > 0)
+		if (themesNotInCommon.length > 0) {
 			pushUser.$push = {
 				puzzleSolvedByCategories: {
 					$each: themesNotInCommon.map(title => ({title, count: 1})),
 				},
 			};
+			puzzleSolvedByCategories_.push(
+				...themesNotInCommon.map(title => ({title, count: 1})),
+			);
+		}
 
 		if (themesInCommon.length > 0)
 			for (const theme of themesInCommon) {
@@ -361,29 +391,39 @@ const PlayingPage = ({set}: Props) => {
 				incUser.$inc[
 					`puzzleSolvedByCategories.${userThemes.indexOf(theme)}.count`
 				] = 1;
+				puzzleSolvedByCategories_.push({
+					title: theme.title,
+					count: theme.count + 1,
+				});
 			}
 
-		setShouldCheck(() => true);
+		setPuzzleSolvedByCategories(() => puzzleSolvedByCategories_);
+		setShouldReturn(() => false);
+		setCurrentPuzzle(() => puzzleItemList[puzzleIndex + 1].PuzzleId);
+		setTotalPuzzleSolved(previous => previous + 1);
+
 		Promise.all([
 			update_.puzzle(set._id.toString(), puzzleItem._id.toString(), update),
 			update_.user(user._id.toString(), pushUser),
 			update_.user(user._id.toString(), incUser),
 		])
-			.then(async () => mutate())
+			.then(async () => handleCheckAchievements({streakMistakes_, streakTime_}))
 			.catch(console.error);
 	}, [
+		handleCheckAchievements,
+		streakMistakes,
+		streakTime,
 		puzzleIndex,
-		puzzle,
 		mistakes,
-		puzzleList,
+		puzzleItemList,
 		initialPuzzleTimer,
 		set._id,
 		isSolutionClicked,
-		mutate,
 		user,
+		currentPuzzle,
+		puzzleSolvedByCategories,
+		puzzleList,
 		moveHistory.length,
-		gradeLast,
-		timeLast,
 	]);
 
 	/**
@@ -414,16 +454,14 @@ const PlayingPage = ({set}: Props) => {
 	 * Called after each correct move.
 	 */
 	const checkSetComplete = useCallback(async () => {
-		if (puzzleIndex + 1 !== puzzleList.length) return;
-		await audio('VICTORY', hasSound)
-			.then(updateFinishedPuzzle)
-			.then(updateFinishedSet)
-			.then(showSpacedOn);
+		if (puzzleIndex + 1 !== puzzleItemList.length) return;
+		if (hasSound) playVictory();
+		await updateFinishedPuzzle().then(updateFinishedSet).then(showSpacedOn);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [
 		puzzleIndex,
 		hasSound,
-		puzzleList.length,
+		puzzleItemList.length,
 		updateFinishedPuzzle,
 		updateFinishedSet,
 	]);
@@ -445,11 +483,10 @@ const PlayingPage = ({set}: Props) => {
 				lastMove: [move.from, move.to],
 			}));
 			setMoveNumber(previousMove => previousMove + 1);
-			await (move.captured
-				? audio('CAPTURE', hasSound)
-				: audio('MOVE', hasSound));
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 		},
-		[chess, moveHistory, hasSound],
+		[chess, moveHistory, hasSound, playCapture, playMove],
 	);
 
 	const playFromComputer = useCallback(
@@ -489,7 +526,7 @@ const PlayingPage = ({set}: Props) => {
 
 			setIsComplete(() => true);
 
-			await audio('GENERIC', hasSound, 0.3);
+			if (hasSound) playGeneric();
 			if (hasAutoMove) return changePuzzle();
 			setIsRunning(() => false);
 		},
@@ -545,7 +582,7 @@ const PlayingPage = ({set}: Props) => {
 			cleanAnimation().catch(console.error);
 		}
 
-		await audio('ERROR', hasSound);
+		if (hasSound) playError();
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound, cleanAnimation]);
 
@@ -570,9 +607,8 @@ const PlayingPage = ({set}: Props) => {
 			const move = chess.move({from, to});
 			if (move === null) return;
 
-			await (move.captured
-				? audio('CAPTURE', hasSound)
-				: audio('MOVE', hasSound));
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 
 			const isCorrectMove =
 				`${move.from}${move.to}` === moveHistory[moveNumber];
@@ -583,7 +619,17 @@ const PlayingPage = ({set}: Props) => {
 
 			await onWrongMove();
 		},
-		[chess, moveHistory, moveNumber, onRightMove, onWrongMove, hasSound, show],
+		[
+			chess,
+			moveHistory,
+			moveNumber,
+			onRightMove,
+			onWrongMove,
+			hasSound,
+			show,
+			playCapture,
+			playMove,
+		],
 	);
 
 	/**
@@ -597,9 +643,8 @@ const PlayingPage = ({set}: Props) => {
 			const move = chess.move({from, to, promotion: piece});
 			if (move === null) return;
 
-			await (move.captured
-				? audio('CAPTURE', hasSound)
-				: audio('MOVE', hasSound));
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 
 			if (isCorrectMove || chess.in_checkmate()) {
 				await onRightMove(from, to);
@@ -616,6 +661,8 @@ const PlayingPage = ({set}: Props) => {
 			hasSound,
 			onRightMove,
 			onWrongMove,
+			playCapture,
+			playMove,
 		],
 	);
 
@@ -682,7 +729,7 @@ const PlayingPage = ({set}: Props) => {
 					</div>
 					<RightBar
 						fen={chess.fen()}
-						puzzle={puzzle}
+						puzzle={puzzleList[currentPuzzle ?? '']}
 						hasSpacedRepetition={set.spacedRepetition}
 						answer={moveHistory[moveNumber]}
 						changePuzzle={changePuzzle}
@@ -705,7 +752,8 @@ export default PlayingPage;
 
 export const getServerSideProps = withSessionSsr(
 	async ({params, req}: GetServerSidePropsContext) => {
-		if (!req?.session?.userID) {
+		const {userID} = req.session;
+		if (!userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/'};
 			return {redirect};
 		}
@@ -718,13 +766,17 @@ export const getServerSideProps = withSessionSsr(
 
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
-		const result = await get_.set(id, baseUrl);
-		if (!result.success) return {notFound: true};
-		if (result.data.user?.toString() !== req.session.userID) {
+
+		const setResponse = await get_.set(id, baseUrl);
+		if (!setResponse.success) return {notFound: true};
+		if (setResponse.data.user?.toString() !== userID) {
 			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
 			return {redirect};
 		}
 
-		return {props: {set: result.data}};
+		const userResponse = await get_.user(userID, baseUrl);
+		if (!userResponse.success) return {notFound: true};
+
+		return {props: {set: setResponse.data, user: userResponse.data}};
 	},
 );
