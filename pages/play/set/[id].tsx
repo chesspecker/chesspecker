@@ -96,6 +96,7 @@ const PlayingPage = ({set, user}: Props) => {
 	const [puzzleList, setPuzzleList] = useState<Record<string, Puzzle>>({});
 	const [currentPuzzle, setCurrentPuzzle] = useState<string>();
 	const [puzzleIndex, setPuzzleIndex] = useState(0);
+	const [newGrade, setNewGrade] = useState(0);
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [lastMove, setLastMove] = useState<Square[]>([]);
@@ -311,28 +312,12 @@ const PlayingPage = ({set, user}: Props) => {
 	const updateFinishedPuzzle = useCallback(async () => {
 		const puzzle = puzzleList[currentPuzzle!];
 		if (!puzzle || !user) return;
-		const {maxTime, minTime} = getTimeInterval(moveHistory.length);
 		const streakMistakes_ = mistakes === 0 ? streakMistakes + 1 : 0;
 		const streakTime_ = timeTaken < 5 ? streakTime + 1 : 0;
 		setStreakMistakes(() => streakMistakes_);
 		setStreakTime(() => streakTime_);
 
 		const puzzleItem = puzzleItemList[puzzleIndex];
-		const newGrade = getGrade({
-			didCheat: isSolutionClicked,
-			mistakes,
-			timeTaken,
-			maxTime,
-			minTime,
-			streak: puzzleItem.streak,
-		});
-
-		setLeftBarStat(() => ({
-			gradeCurrent: newGrade,
-			timeCurrent: timeWithMistakes,
-			gradeLast: puzzleItem.grades[puzzleItem.grades.length - 1],
-			timeLast: puzzleItem.timeTaken[puzzleItem.timeTaken.length - 1],
-		}));
 
 		setPreviousPuzzle(previous => [
 			...previous,
@@ -411,6 +396,7 @@ const PlayingPage = ({set, user}: Props) => {
 			.catch(console.error);
 	}, [
 		handleCheckAchievements,
+		newGrade,
 		streakMistakes,
 		streakTime,
 		timeTaken,
@@ -419,12 +405,10 @@ const PlayingPage = ({set, user}: Props) => {
 		mistakes,
 		puzzleItemList,
 		set._id,
-		isSolutionClicked,
 		user,
 		currentPuzzle,
 		puzzleSolvedByCategories,
 		puzzleList,
-		moveHistory.length,
 	]);
 
 	/**
@@ -528,7 +512,28 @@ const PlayingPage = ({set, user}: Props) => {
 			setIsComplete(() => true);
 
 			if (hasSound) playGeneric();
+
+			const {maxTime, minTime} = getTimeInterval(moveHistory.length);
 			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
+			const puzzleItem = puzzleItemList[puzzleIndex];
+
+			const newGrade = getGrade({
+				didCheat: isSolutionClicked,
+				mistakes,
+				timeTaken,
+				maxTime,
+				minTime,
+				streak: puzzleItem.streak,
+			});
+
+			setNewGrade(() => newGrade);
+
+			setLeftBarStat(() => ({
+				gradeCurrent: newGrade,
+				timeCurrent: timeWithMistakes,
+				gradeLast: puzzleItem.grades[puzzleItem.grades.length - 1],
+				timeLast: puzzleItem.timeTaken[puzzleItem.timeTaken.length - 1],
+			}));
 			setTimeTaken(() => timeTaken);
 			setTimeWithMistakes(() => timeWithMistakes);
 			if (hasAutoMove) return changePuzzle();
@@ -537,6 +542,7 @@ const PlayingPage = ({set, user}: Props) => {
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[
 			hasAutoMove,
+			hasAnimation,
 			hasSound,
 			changePuzzle,
 			checkChunkComplete,
@@ -544,6 +550,13 @@ const PlayingPage = ({set, user}: Props) => {
 			cleanAnimation,
 			playFromComputer,
 			moveHistory.length,
+			initialPuzzleTimer,
+			isSolutionClicked,
+			mistakes,
+			playGeneric,
+			puzzleIndex,
+			puzzleItemList,
+			set.spacedRepetition,
 		],
 	);
 
