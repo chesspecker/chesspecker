@@ -171,7 +171,8 @@ const PlayingPage = ({set, user}: Props) => {
 		router.events.on('routeChangeStart', aborting);
 
 		const requests: Array<Promise<PuzzleData>> = [];
-		for (const item of puzzleItemList) {
+		for (let index = 0; index < 50; index++) {
+			const item = puzzleItemList[index];
 			requests.push(
 				fetch(`/api/puzzle/${item.PuzzleId}`, {signal}).then(async response =>
 					response.json(),
