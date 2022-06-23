@@ -56,10 +56,10 @@ import {Streak} from '@/models/streak';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
 import {PuzzleData} from '@/pages/api/puzzle/[id]';
+import Timer from '@/components/play/timer';
 import {ThemeItem} from '@/models/theme';
 
 const Notification = dynamic(async () => import('@/components/notification'));
-const Timer = dynamic(async () => import('@/components/play/timer'));
 const BottomBar = dynamic(async () => import('@/components/play/bottom-bar'));
 const ModalSpacedOn = dynamic(
 	async () => import('@/components/play/modal-spaced-on'),
@@ -93,8 +93,8 @@ const PlayingPage = ({set, user}: Props) => {
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
 	const [puzzleItemList, setPuzzleItemList] = useState<PuzzleItem[]>([]);
-	const [puzzleList, setPuzzleList] = useState<Record<string, Puzzle>>({});
-	const [currentPuzzle, setCurrentPuzzle] = useState<string>();
+	const [puzzle, setPuzzle] = useState<Puzzle>();
+	const [nextPuzzle, setNextPuzzle] = useState<Puzzle>();
 	const [puzzleIndex, setPuzzleIndex] = useState(0);
 	const [newGrade, setNewGrade] = useState(0);
 	const [moveNumber, setMoveNumber] = useState(0);
@@ -115,7 +115,6 @@ const PlayingPage = ({set, user}: Props) => {
 	const [showNotification, setShowNotification] = useState(false);
 	const [notificationMessage, setNotificationMessage] = useState('');
 	const [notificationUrl, setNotificationUrl] = useState('');
-	const [shouldReturn, setShouldReturn] = useState(false);
 	const [totalPuzzleSolved, setTotalPuzzleSolved] = useState(
 		user.totalPuzzleSolved,
 	);
@@ -156,53 +155,54 @@ const PlayingPage = ({set, user}: Props) => {
 		const puzzleList = set.puzzles.filter(p => !p.played);
 		const sortedList = sortBy(puzzleList, 'order');
 		setPuzzleItemList(() => sortedList);
-		setCurrentPuzzle(() => sortedList[0].PuzzleId);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [set]);
 
-	useEffectAsync(async () => {
+	/**
+	 * Retrieve current puzzle.
+	 */
+	useEffectAsync(() => {
+		if (!puzzleItemList[puzzleIndex] || puzzleItemList.length === 0) return;
+
 		const abortController = new AbortController();
-		const {signal} = abortController;
-
-		const aborting = () => {
-			abortController.abort();
-		};
-
-		router.events.on('routeChangeStart', aborting);
-
-		const requests: Array<Promise<PuzzleData>> = [];
-		for (let index = 0; index < 50; index++) {
-			const item = puzzleItemList[index];
-			requests.push(
-				fetch(`/api/puzzle/${item.PuzzleId}`, {signal}).then(async response =>
-					response.json(),
-				),
-			);
+		const item = puzzleItemList[puzzleIndex];
+		if (nextPuzzle?.PuzzleId === item.PuzzleId) {
+			console.log('🟣 using cached puzzle:', item.PuzzleId);
+			setPuzzle(() => nextPuzzle);
+		} else {
+			console.log('🔵 fetching puzzle:', item.PuzzleId);
+			fetch(`/api/puzzle/${item.PuzzleId}`, {signal: abortController.signal})
+				.then(async response => response.json() as Promise<PuzzleData>)
+				.then(request => {
+					console.log('🟢 fetched puzzle:', item.PuzzleId);
+					if (request.success) setPuzzle(() => request.data);
+				})
+				.catch(console.error);
 		}
 
-		requests.map(async promise => {
-			const puzzleData = await promise;
-			if (puzzleData.success) {
-				setPuzzleList(previous => ({
-					...previous,
-					[puzzleData.data.PuzzleId]: puzzleData.data,
-				}));
-			}
-		});
+		if (!puzzleItemList[puzzleIndex + 1]) return;
+		const abortController2 = new AbortController();
+		const item2 = puzzleItemList[puzzleIndex + 1];
+		console.log('🔵 fetching next puzzle:', item2.PuzzleId);
+		fetch(`/api/puzzle/${item2.PuzzleId}`, {signal: abortController2.signal})
+			.then(async response => response.json() as Promise<PuzzleData>)
+			.then(request => {
+				console.log('🟢 fetched next puzzle:', item2.PuzzleId);
+				if (request.success) setNextPuzzle(() => request.data);
+			})
+			.catch(console.error);
 
 		return () => {
-			router.events.off('routeChangeStart', aborting);
+			abortController.abort();
+			abortController2.abort();
 		};
-	}, [puzzleItemList]);
+	}, [puzzleItemList, puzzleIndex]);
 
 	/**
 	 * Setup the board.
 	 */
 	useEffect(() => {
-		if (!currentPuzzle || shouldReturn) return;
-		const puzzle = puzzleList[currentPuzzle];
 		if (!puzzle) return;
-		setShouldReturn(() => true);
 		const chess = new Chess(puzzle.FEN);
 		setChess(() => chess);
 		setMoveHistory(() => puzzle.Moves.split(' '));
@@ -233,7 +233,7 @@ const PlayingPage = ({set, user}: Props) => {
 
 		setConfig(previousConfig => ({...previousConfig, ...config}));
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [currentPuzzle, puzzleList]);
+	}, [puzzle]);
 
 	const handleCheckAchievements = useCallback(
 		async ({
@@ -243,8 +243,6 @@ const PlayingPage = ({set, user}: Props) => {
 			streakMistakes_: number;
 			streakTime_: number;
 		}) => {
-			if (!currentPuzzle) return;
-			const puzzle = puzzleList[currentPuzzle];
 			if (!puzzle) return;
 			const date = formattedDate(new Date());
 
@@ -302,8 +300,7 @@ const PlayingPage = ({set, user}: Props) => {
 			mistakes,
 			user,
 			totalPuzzleSolved,
-			currentPuzzle,
-			puzzleList,
+			puzzle,
 		],
 	);
 
@@ -311,7 +308,6 @@ const PlayingPage = ({set, user}: Props) => {
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updateFinishedPuzzle = useCallback(async () => {
-		const puzzle = puzzleList[currentPuzzle!];
 		if (!puzzle || !user) return;
 		const streakMistakes_ = mistakes === 0 ? streakMistakes + 1 : 0;
 		const streakTime_ = timeTaken < 5 ? streakTime + 1 : 0;
@@ -384,8 +380,6 @@ const PlayingPage = ({set, user}: Props) => {
 			}
 
 		setPuzzleSolvedByCategories(() => puzzleSolvedByCategories_);
-		setShouldReturn(() => false);
-		setCurrentPuzzle(() => puzzleItemList[puzzleIndex + 1].PuzzleId);
 		setTotalPuzzleSolved(previous => previous + 1);
 
 		Promise.all([
@@ -406,10 +400,9 @@ const PlayingPage = ({set, user}: Props) => {
 		mistakes,
 		puzzleItemList,
 		set._id,
+		puzzle,
 		user,
-		currentPuzzle,
 		puzzleSolvedByCategories,
-		puzzleList,
 	]);
 
 	/**
@@ -747,7 +740,7 @@ const PlayingPage = ({set, user}: Props) => {
 					</div>
 					<RightBar
 						fen={chess.fen()}
-						puzzle={puzzleList[currentPuzzle ?? '']}
+						puzzle={puzzle}
 						hasSpacedRepetition={set.spacedRepetition}
 						answer={moveHistory[moveNumber]}
 						changePuzzle={changePuzzle}
