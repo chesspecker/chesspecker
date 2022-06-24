@@ -38,6 +38,13 @@ export const classNames = (...classes: string[]) =>
 export const getRandomInt = (max: number): number =>
 	Math.floor(Math.random() * max);
 
+export const groupBy = <T>(array: T[], predicate: (v: T) => string) =>
+	/* eslint-disable-next-line unicorn/no-array-reduce, unicorn/prefer-object-from-entries */
+	array.reduce<Record<string, T[]>>((acc, value) => {
+		(acc[predicate(value)] ||= []).push(value);
+		return acc;
+	}, {});
+
 export const fetcher = async <T>(url: string): Promise<T> =>
 	/* eslint-disable-next-line @typescript-eslint/no-unsafe-return */
 	fetch(url).then(async response => response.json());

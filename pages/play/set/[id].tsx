@@ -16,8 +16,7 @@ import GENERIC from '@/sounds/GenericNotify.mp3';
 import VICTORY from '@/sounds/Victory.mp3';
 import {AchivementsArgs} from '@/types/models';
 import Layout from '@/layouts/main';
-import {formattedDate, sleep, sortBy} from '@/lib/utils';
-import useEffectAsync from '@/hooks/use-effect-async';
+import {formattedDate, groupBy, sleep, sortBy} from '@/lib/utils';
 import {configµ, orientationµ, animationµ, playµ, revertedµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
@@ -42,7 +41,6 @@ import {
 import {
 	get as get_,
 	update as update_,
-	UpdateUser,
 	getGrade,
 	getMovable,
 	getThemes,
@@ -99,13 +97,11 @@ const PlayingPage = ({set, user}: Props) => {
 	const [newGrade, setNewGrade] = useState(0);
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
-	const [lastMove, setLastMove] = useState<Square[]>([]);
 	const [previousPuzzle, setPreviousPuzzle] = useState<PreviousPuzzle[]>([]);
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [timeTaken, setTimeTaken] = useState(0);
 	const [timeWithMistakes, setTimeWithMistakes] = useState(0);
-	const [initialSetTimer, setInitialSetTimer] = useState(0);
 	const [initialSetDate, setInitialSetDate] = useState<number>();
 	const [isRunning, setIsRunning] = useState(true);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
@@ -144,34 +140,15 @@ const PlayingPage = ({set, user}: Props) => {
 		[],
 	);
 
-	/**
-	 * Extract the list of puzzles.
-	 */
-	useEffect(() => {
-		setInitialSetTimer(() => set.currentTime);
-		setInitialSetDate(() => Date.now());
-		setCompletedPuzzles(() => set.progress);
-		setTotalPuzzles(() => set.length);
-		const puzzleList = set.puzzles.filter(p => !p.played);
-		const sortedList = sortBy(puzzleList, 'order');
-		setPuzzleItemList(() => sortedList);
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [set]);
-
-	/**
-	 * Retrieve current puzzle.
-	 */
-	useEffectAsync(() => {
+	const retrieveCurrentPuzzle = useCallback(() => {
 		if (!puzzleItemList[puzzleIndex] || puzzleItemList.length === 0) return;
-
-		const abortController = new AbortController();
 		const item = puzzleItemList[puzzleIndex];
 		if (nextPuzzle?.PuzzleId === item.PuzzleId) {
 			console.log('🟣 using cached puzzle:', item.PuzzleId);
 			setPuzzle(() => nextPuzzle);
 		} else {
 			console.log('🔵 fetching puzzle:', item.PuzzleId);
-			fetch(`/api/puzzle/${item.PuzzleId}`, {signal: abortController.signal})
+			fetch(`/api/puzzle/${item.PuzzleId}`)
 				.then(async response => response.json() as Promise<PuzzleData>)
 				.then(request => {
 					console.log('🟢 fetched puzzle:', item.PuzzleId);
@@ -181,21 +158,38 @@ const PlayingPage = ({set, user}: Props) => {
 		}
 
 		if (!puzzleItemList[puzzleIndex + 1]) return;
-		const abortController2 = new AbortController();
 		const item2 = puzzleItemList[puzzleIndex + 1];
 		console.log('🔵 fetching next puzzle:', item2.PuzzleId);
-		fetch(`/api/puzzle/${item2.PuzzleId}`, {signal: abortController2.signal})
+		fetch(`/api/puzzle/${item2.PuzzleId}`)
 			.then(async response => response.json() as Promise<PuzzleData>)
 			.then(request => {
 				console.log('🟢 fetched next puzzle:', item2.PuzzleId);
 				if (request.success) setNextPuzzle(() => request.data);
 			})
 			.catch(console.error);
+	}, [puzzleItemList, puzzleIndex, nextPuzzle]);
 
-		return () => {
-			abortController.abort();
-			abortController2.abort();
-		};
+	/**
+	 * Extract the list of puzzles.
+	 */
+	const [previous, setPrevious] = useState<PuzzleSet>();
+	if (set !== previous) {
+		setPrevious(set);
+		setCompletedPuzzles(() => set.progress);
+		setTotalPuzzles(() => set.length);
+		setInitialSetDate(() => Date.now());
+		setPuzzleItemList(() =>
+			sortBy(
+				set.puzzles.filter(p => !p.played),
+				'order',
+			),
+		);
+	}
+
+	useEffect(() => {
+		if (!puzzleItemList) return;
+		retrieveCurrentPuzzle();
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [puzzleItemList, puzzleIndex]);
 
 	/**
@@ -207,7 +201,6 @@ const PlayingPage = ({set, user}: Props) => {
 		setChess(() => chess);
 		setMoveHistory(() => puzzle.Moves.split(' '));
 		setMoveNumber(() => 0);
-		setLastMove(() => []);
 		setIsComplete(() => false);
 		setPendingMove(() => []);
 		setInitialPuzzleTimer(() => Date.now());
@@ -222,6 +215,7 @@ const PlayingPage = ({set, user}: Props) => {
 			check: chess.in_check(),
 			animation: {enabled: true, duration: 50},
 			turnColor: getColor(chess.turn()),
+			lastMove: [],
 			highlight: {
 				lastMove: true,
 				check: true,
@@ -314,8 +308,6 @@ const PlayingPage = ({set, user}: Props) => {
 		setStreakMistakes(() => streakMistakes_);
 		setStreakTime(() => streakTime_);
 
-		const puzzleItem = puzzleItemList[puzzleIndex];
-
 		setPreviousPuzzle(previous => [
 			...previous,
 			{
@@ -324,7 +316,7 @@ const PlayingPage = ({set, user}: Props) => {
 			},
 		]);
 
-		const update = {
+		const updatePuzzleSet = {
 			$inc: {
 				'puzzles.$.count': 1,
 				'puzzles.$.streak': 0,
@@ -341,51 +333,66 @@ const PlayingPage = ({set, user}: Props) => {
 			},
 		};
 
-		update.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
+		updatePuzzleSet.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
 
-		const puzzleSolvedByCategories_: ThemeItem[] = [];
-		const userThemes = puzzleSolvedByCategories;
+		const groupedArray = groupBy<ThemeItem>(
+			puzzleSolvedByCategories,
+			v => v.title,
+		);
+
+		const puzzleSolvedByCategories_: ThemeItem[] = Object.keys(
+			groupedArray,
+		).map(key => ({
+			title: key,
+			count: groupedArray[key].reduce(
+				(previous_: number, {count}) => previous_ + count,
+				0,
+			),
+		}));
+
+		const userThemes = puzzleSolvedByCategories_;
 		const newThemes = puzzle.Themes;
 		const {themesInCommon, themesNotInCommon} = getThemes({
 			userThemes,
 			newThemes,
 		});
 
-		const incUser: UpdateUser = {
-			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeTaken},
-		};
-		const pushUser = {$push: {}};
-
-		if (themesNotInCommon.length > 0) {
-			pushUser.$push = {
-				puzzleSolvedByCategories: {
-					$each: themesNotInCommon.map(title => ({title, count: 1})),
-				},
-			};
+		if (themesNotInCommon.length > 0)
 			puzzleSolvedByCategories_.push(
 				...themesNotInCommon.map(title => ({title, count: 1})),
 			);
-		}
 
 		if (themesInCommon.length > 0)
 			for (const theme of themesInCommon) {
-				// @ts-expect-error Can't index type any
-				incUser.$inc[
-					`puzzleSolvedByCategories.${userThemes.indexOf(theme)}.count`
-				] = 1;
-				puzzleSolvedByCategories_.push({
-					title: theme.title,
-					count: theme.count + 1,
-				});
+				const currentTheme =
+					puzzleSolvedByCategories_[
+						puzzleSolvedByCategories_.indexOf(
+							puzzleSolvedByCategories_.find(
+								value => value.title === theme.title,
+							)!,
+						)
+					];
+
+				currentTheme.count += 1;
 			}
+
+		const updateUser = {
+			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeTaken},
+			$set: {
+				puzzleSolvedByCategories: puzzleSolvedByCategories_,
+			},
+		};
 
 		setPuzzleSolvedByCategories(() => puzzleSolvedByCategories_);
 		setTotalPuzzleSolved(previous => previous + 1);
 
 		Promise.all([
-			update_.puzzle(set._id.toString(), puzzleItem._id.toString(), update),
-			update_.user(user._id.toString(), pushUser),
-			update_.user(user._id.toString(), incUser),
+			update_.puzzle(
+				set._id.toString(),
+				puzzleItemList[puzzleIndex]._id.toString(),
+				updatePuzzleSet,
+			),
+			update_.user(user._id.toString(), updateUser),
 		])
 			.then(async () => handleCheckAchievements({streakMistakes_, streakTime_}))
 			.catch(console.error);
@@ -563,10 +570,6 @@ const PlayingPage = ({set, user}: Props) => {
 		playFromComputer(0).catch(console.error);
 	}, [moveHistory, moveNumber, playFromComputer]);
 
-	useEffect(() => {
-		setConfig(config => ({...config, lastMove}));
-	}, [lastMove]);
-
 	const onRightMove = useCallback(
 		async (from: Square, to: Square) => {
 			setConfig(config => ({
@@ -711,7 +714,7 @@ const PlayingPage = ({set, user}: Props) => {
 				<div className='flex flex-row justify-center gap-2'>
 					{hasClock && (
 						<Timer
-							value={initialSetTimer}
+							value={set.currentTime}
 							mistakes={totalMistakes}
 							isRunning={isRunning}
 						/>
