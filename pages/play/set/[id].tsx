@@ -16,7 +16,14 @@ import GENERIC from '@/sounds/GenericNotify.mp3';
 import VICTORY from '@/sounds/Victory.mp3';
 import Layout from '@/layouts/main';
 import {sleep, sortBy} from '@/lib/utils';
-import {configµ, orientationµ, animationµ, playµ, revertedµ} from '@/lib/atoms';
+import {
+	configµ,
+	orientationµ,
+	animationµ,
+	playµ,
+	revertedµ,
+	Animation,
+} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
@@ -42,12 +49,14 @@ import {
 	getColor,
 	retrieveCurrentPuzzle_,
 	updatePuzzleSolvedByCategories,
+	getPuzzleSetUpdate,
 } from '@/lib/play';
 import LeftBar, {Stat} from '@/components/play/left-bar';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
 import Timer from '@/components/play/timer';
 import BottomBar from '@/components/play/bottom-bar';
+import useEffectAsync from '@/hooks/use-effect-async';
 
 const Notification = dynamic(async () => import('@/components/notification'));
 const ModalSpacedOn = dynamic(
@@ -85,20 +94,16 @@ const PlayingPage = ({set, user}: Props) => {
 	const [puzzle, setPuzzle] = useState<Puzzle>();
 	const [nextPuzzle, setNextPuzzle] = useState<Puzzle>();
 	const [puzzleIndex, setPuzzleIndex] = useState(0);
-	const [newGrade, setNewGrade] = useState(0);
 	const [moveNumber, setMoveNumber] = useState(0);
 	const [moveHistory, setMoveHistory] = useState<string[]>([]);
 	const [previousPuzzle, setPreviousPuzzle] = useState<PreviousPuzzle[]>([]);
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
-	const [timeTaken, setTimeTaken] = useState(0);
-	const [timeWithMistakes, setTimeWithMistakes] = useState(0);
 	const [initialSetDate, setInitialSetDate] = useState<number>();
 	const [isRunning, setIsRunning] = useState(true);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const [leftBarStat, setLeftBarStat] = useState<Stat>();
-	const [streakMistakes, setStreakMistakes] = useState(0);
-	const [streakTime, setStreakTime] = useState(0);
+	const [streakData, setStreakData] = useState({mistakes: 0, time: 0});
 	const [showNotification, setShowNotification] = useState(false);
 	const [notificationMessage, setNotificationMessage] = useState('');
 	const [notificationUrl, setNotificationUrl] = useState('');
@@ -108,7 +113,7 @@ const PlayingPage = ({set, user}: Props) => {
 	const [puzzleSolvedByCategories, setPuzzleSolvedByCategories] = useState(
 		user.puzzleSolvedByCategories,
 	);
-	const {isOpen, show, hide} = useModal();
+	const {isOpen, show: showPromotionContainer, hide} = useModal();
 	const {
 		isOpen: isOpenSpacedOn,
 		show: showSpacedOn,
@@ -120,13 +125,12 @@ const PlayingPage = ({set, user}: Props) => {
 		hide: hideSpacedOff,
 	} = useModal();
 
-	const cleanAnimation = useCallback(
-		async () =>
-			sleep(600)
-				.then(() => {
-					setAnimation(() => '');
-				})
-				.catch(console.error),
+	const toggleAnimation = useCallback(
+		async (animationString: Animation) => {
+			setAnimation(() => animationString);
+			await sleep(600);
+			setAnimation(() => '');
+		},
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[],
 	);
@@ -224,6 +228,7 @@ const PlayingPage = ({set, user}: Props) => {
 			});
 
 			if (!body) return;
+
 			checkForAchievement(body)
 				.then(unlockedAchievements => {
 					if (!unlockedAchievements || unlockedAchievements.length <= 0) return;
@@ -243,380 +248,360 @@ const PlayingPage = ({set, user}: Props) => {
 		],
 	);
 
-	/**
-	 * Push the data of the current puzzle when complete.
-	 */
-	const updateFinishedPuzzle = useCallback(async () => {
-		if (!puzzle || !user) return;
-		const streakMistakes_ = mistakes === 0 ? streakMistakes + 1 : 0;
-		const streakTime_ = timeTaken < 5 ? streakTime + 1 : 0;
-		setStreakMistakes(() => streakMistakes_);
-		setStreakTime(() => streakTime_);
-
-		const {maxTime, minTime} = getTimeInterval(moveHistory.length);
-
-		const currentGrade = getGrade({
-			didCheat: isSolutionClicked,
-			mistakes,
-			timeTaken,
-			maxTime,
-			minTime,
-			streak: puzzleItemList[puzzleIndex].streak,
-		});
-
-		const updatePuzzleSet = {
-			$inc: {
-				'puzzles.$.count': 1,
-				'puzzles.$.streak': 0,
-				currentTime: timeWithMistakes,
-				progress: 1,
-			},
-			$push: {
-				'puzzles.$.mistakes': mistakes,
-				'puzzles.$.timeTaken': timeTaken,
-				'puzzles.$.grades': currentGrade,
-			},
-			$set: {
-				'puzzles.$.played': true,
-			},
-		};
-
-		updatePuzzleSet.$inc['puzzles.$.streak'] = currentGrade >= 5 ? 1 : 0;
-
-		const puzzleSolvedByCategories_ = updatePuzzleSolvedByCategories(
-			puzzleSolvedByCategories,
-			puzzle.Themes,
-		);
-
-		const updateUser = {
-			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeTaken},
-			$set: {
-				puzzleSolvedByCategories: puzzleSolvedByCategories_,
-			},
-		};
-
-		setPuzzleSolvedByCategories(() => puzzleSolvedByCategories_);
-		setTotalPuzzleSolved(previous => previous + 1);
-
-		Promise.all([
-			update_.puzzle(
-				set._id.toString(),
-				puzzleItemList[puzzleIndex]._id.toString(),
-				updatePuzzleSet,
-			),
-			update_.user(user._id.toString(), updateUser),
-		])
-			.then(async () => handleCheckAchievements({streakMistakes_, streakTime_}))
-			.catch(console.error);
-	}, [
-		handleCheckAchievements,
-		isSolutionClicked,
-		moveHistory.length,
-		streakMistakes,
-		streakTime,
-		timeTaken,
-		timeWithMistakes,
-		puzzleIndex,
-		mistakes,
-		puzzleItemList,
-		set._id,
-		puzzle,
-		user,
-		puzzleSolvedByCategories,
-	]);
-
-	/**
-	 * Called when puzzle is completed, switch to the next one.
-	 */
-	const changePuzzle = useCallback(async () => {
-		await updateFinishedPuzzle();
-		setCompletedPuzzles(previous => previous + 1);
-		setMistakes(() => 0);
-		setInitialPuzzleTimer(() => Date.now());
-		setIsSolutionClicked(() => false);
-		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [updateFinishedPuzzle]);
-
-	/**
-	 * Push the data of the current set when complete.
-	 */
-	const updateFinishedSet = useCallback(async () => {
-		if (!initialSetDate) return;
-		const {timeTaken} = getTimeTaken(initialSetDate);
-		const totalTimeTaken = timeTaken + set.currentTime;
-		const update = getUpdateBody.finishedSet(totalTimeTaken);
-		await update_.set(set._id.toString(), update).catch(console.error);
-	}, [initialSetDate, set]);
-
-	/**
-	 * Called after each correct move.
-	 */
-	const checkSetComplete = useCallback(async () => {
-		if (puzzleIndex + 1 !== puzzleItemList.length) return;
-		if (hasSound) playVictory();
-		await updateFinishedPuzzle().then(updateFinishedSet).then(showSpacedOn);
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [
-		puzzleIndex,
-		hasSound,
-		puzzleItemList.length,
-		updateFinishedPuzzle,
-		updateFinishedSet,
-	]);
-
-	/**
-	 * Function making the computer play the next move.
-	 */
-	const computerMove = useCallback(
-		async (index: number) => {
-			if (!chess) return;
-			const move = chess.move(moveHistory[index], {sloppy: true});
-			if (!move) return;
+	const updateBoard = useCallback(
+		(from: Square, to: Square, chess: ChessJS.ChessInstance) => {
 			setConfig(config => ({
 				...config,
 				fen: chess.fen(),
 				check: chess.in_check(),
 				movable: getMovable(chess),
 				turnColor: getColor(chess.turn()),
-				lastMove: [move.from, move.to],
+				lastMove: [from, to],
 			}));
-			setMoveNumber(previousMove => previousMove + 1);
-			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
-			if (hasSound) move.captured ? playCapture() : playMove();
 		},
-		[chess, moveHistory, hasSound, playCapture, playMove],
+		[],
 	);
-
-	const playFromComputer = useCallback(
-		async (move: number) =>
-			sleep(300)
-				.then(async () => computerMove(move))
-				.catch(console.error),
-		[computerMove],
-	);
-
-	const checkChunkComplete = useCallback(async (): Promise<boolean> => {
-		const isChunkComplete = completedPuzzles + 1 >= 20;
-		if (!set.spacedRepetition || !isChunkComplete) return false;
-		await updateSpacedRepetition(set, showSpacedOff);
-		router.reload();
-		return true;
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [completedPuzzles, set]);
 
 	/**
-	 * Called after each correct move.
+	 * Push the data of the current puzzle when complete.
 	 */
-	const checkPuzzleComplete = useCallback(
-		async moveNumber => {
-			const isComplete = moveNumber === moveHistory.length;
-			if (hasAnimation) {
-				const animation = isComplete
-					? 'animate-finishMove'
-					: 'animate-rightMove';
-				setAnimation(() => animation);
-				cleanAnimation().catch(console.error);
-			}
+	const updatePuzzleInDb = useCallback(
+		async (
+			currentGrade: number,
+			timeTaken: number,
+			timeWithMistakes: number,
+		) => {
+			if (!puzzle || !user) return;
+			const streakMistakes_ = mistakes === 0 ? streakData.mistakes + 1 : 0;
+			const streakTime_ = timeTaken < 5 ? streakData.time + 1 : 0;
+			setStreakData(() => ({mistakes: streakMistakes_, time: streakTime_}));
 
-			if (!isComplete) return playFromComputer(moveNumber);
-			if (set.spacedRepetition) await checkChunkComplete();
-			if (!set.spacedRepetition) await checkSetComplete();
-
-			setIsComplete(() => true);
-
-			if (hasSound) playGeneric();
-
-			const {maxTime, minTime} = getTimeInterval(moveHistory.length);
-			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
-			const puzzleItem = puzzleItemList[puzzleIndex];
-
-			const newGrade = getGrade({
-				didCheat: isSolutionClicked,
+			const updatePuzzleSet = getPuzzleSetUpdate({
+				currentTime: timeWithMistakes,
 				mistakes,
 				timeTaken,
-				maxTime,
-				minTime,
-				streak: puzzleItem.streak,
+				currentGrade,
 			});
 
-			setNewGrade(() => newGrade);
+			updatePuzzleSet.$inc['puzzles.$.streak'] = currentGrade >= 5 ? 1 : 0;
 
+			const puzzleSolvedByCategories_ = updatePuzzleSolvedByCategories(
+				puzzleSolvedByCategories,
+				puzzle.Themes,
+			);
+
+			const updateUser = {
+				$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeTaken},
+				$set: {puzzleSolvedByCategories: puzzleSolvedByCategories_},
+			};
+
+			setPuzzleSolvedByCategories(() => puzzleSolvedByCategories_);
+			setTotalPuzzleSolved(previous => previous + 1);
+
+			Promise.all([
+				update_.puzzle(
+					set._id.toString(),
+					puzzleItemList[puzzleIndex]._id.toString(),
+					updatePuzzleSet,
+				),
+				update_.user(user._id.toString(), updateUser),
+				handleCheckAchievements({streakMistakes_, streakTime_}),
+			]).catch(console.error);
+		},
+		[
+			handleCheckAchievements,
+			mistakes,
+			puzzle,
+			puzzleIndex,
+			puzzleItemList,
+			puzzleSolvedByCategories,
+			set._id,
+			streakData.mistakes,
+			streakData.time,
+			user,
+		],
+	);
+
+	/**
+	 * Push the data of the current set when complete.
+	 */
+	const updateSetInDb = useCallback(
+		async (initialSetDate: number) => {
+			const {timeTaken} = getTimeTaken(initialSetDate);
+			const totalTimeTaken = timeTaken + set.currentTime;
+			const update = getUpdateBody.finishedSet(totalTimeTaken);
+			await update_.set(set._id.toString(), update).catch(console.error);
+		},
+		[set._id, set.currentTime],
+	);
+
+	const handleSetComplete = useCallback(async () => {
+		if (hasSound) playVictory();
+		showSpacedOn();
+	}, [hasSound, playVictory, showSpacedOn]);
+
+	const handleChunkComplete = useCallback(async () => {
+		await updateSpacedRepetition(set, showSpacedOff);
+		router.reload();
+	}, [set, showSpacedOff]);
+
+	/**
+	 * Called when puzzle is completed, switch to the next one.
+	 */
+	const changePuzzle = useCallback(() => {
+		if (!isComplete) return;
+		setCompletedPuzzles(previous => previous + 1);
+		setMistakes(() => 0);
+		setIsSolutionClicked(() => false);
+		setInitialPuzzleTimer(() => Date.now());
+		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
+	}, [isComplete]);
+
+	useEffect(() => {
+		if (isComplete && hasAutoMove) changePuzzle();
+	}, [isComplete, hasAutoMove, changePuzzle]);
+
+	const handlePuzzleComplete = useCallback(
+		(currentGrade: number, timeWithMistakes: number) => {
+			const puzzleItem = puzzleItemList[puzzleIndex];
 			setPreviousPuzzle(previous => [
 				...previous,
 				{
-					grade: newGrade,
+					grade: currentGrade,
 					PuzzleId: puzzleItem.PuzzleId,
 				},
 			]);
 
 			setLeftBarStat(() => ({
-				gradeCurrent: newGrade,
+				currentGrade,
 				timeCurrent: timeWithMistakes,
 				gradeLast: puzzleItem.grades[puzzleItem.grades.length - 1],
 				timeLast: puzzleItem.timeTaken[puzzleItem.timeTaken.length - 1],
 			}));
-			setTimeTaken(() => timeTaken);
-			setTimeWithMistakes(() => timeWithMistakes);
-			if (hasAutoMove) return changePuzzle();
-			setIsRunning(() => false);
+
+			if (hasSound) playGeneric();
+			if (hasAutoMove) changePuzzle();
 		},
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 		[
-			hasAutoMove,
-			hasAnimation,
-			hasSound,
-			changePuzzle,
-			checkChunkComplete,
-			checkSetComplete,
-			cleanAnimation,
-			playFromComputer,
-			moveHistory.length,
-			initialPuzzleTimer,
-			isSolutionClicked,
-			mistakes,
-			playGeneric,
-			puzzleIndex,
 			puzzleItemList,
-			set.spacedRepetition,
+			puzzleIndex,
+			changePuzzle,
+			hasAutoMove,
+			hasSound,
+			playGeneric,
 		],
 	);
 
 	/**
-	 * When the board is setup, make the first move.
+	 * Play the next comptuer move.
 	 */
-	useEffect(() => {
-		if (!moveHistory) return;
-		if (moveNumber !== 0) return;
-		playFromComputer(0).catch(console.error);
-	}, [moveHistory, moveNumber, playFromComputer]);
-
-	const onRightMove = useCallback(
-		async (from: Square, to: Square) => {
-			setConfig(config => ({
-				...config,
-				fen: chess.fen(),
-				check: chess.in_check(),
-				turnColor: getColor(chess.turn()),
-				movable: getMovable(chess),
-				lastMove: [from, to],
-			}));
-			const currentMoveNumber = moveNumber + 1;
+	const computerMove = useCallback(
+		async (moveNumber: number) => {
+			if (!chess) return;
+			const move = chess.move(moveHistory[moveNumber], {sloppy: true});
+			if (!move) return;
+			await sleep(300);
+			updateBoard(move.from, move.to, chess);
 			setMoveNumber(previousMove => previousMove + 1);
-			await checkPuzzleComplete(currentMoveNumber);
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 		},
-		[chess, moveNumber, checkPuzzleComplete],
+		[chess, moveHistory, hasSound, playCapture, playMove, updateBoard],
 	);
 
-	const onWrongMove = useCallback(async () => {
-		chess.undo();
-		setMistakes(previous => previous + 1);
-		setTotalMistakes(previous => previous + 1);
-		if (hasAnimation) {
-			setAnimation(() => 'animate-wrongMove');
-			cleanAnimation().catch(console.error);
-		}
+	const checkIsMoveCorrect = useCallback(
+		(move: ChessJS.Move, chess: ChessJS.ChessInstance) =>
+			`${move.from}${move.to}` === moveHistory[moveNumber] ||
+			chess.in_checkmate(),
+		[moveHistory, moveNumber],
+	);
 
-		if (hasSound) playError();
-		/* eslint-disable-next-line react-hooks/exhaustive-deps */
-	}, [chess, hasSound, cleanAnimation]);
+	const handleRightMove = useCallback(
+		async (from: Square, to: Square, chess: ChessJS.ChessInstance) => {
+			updateBoard(from, to, chess);
+			const currentMoveNumber = moveNumber + 1;
+			setMoveNumber(previousMove => previousMove + 1);
+			const isPuzzleComplete = currentMoveNumber === moveHistory.length;
+			if (hasAnimation) {
+				const animation = isPuzzleComplete ? 'finishMove' : 'rightMove';
+				toggleAnimation(`animate-${animation}`).catch(console.error);
+			}
+
+			if (!isPuzzleComplete) {
+				await computerMove(currentMoveNumber);
+				return;
+			}
+
+			setIsComplete(() => true);
+
+			const {maxTime, minTime} = getTimeInterval(moveHistory.length);
+			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
+			const currentGrade = getGrade({
+				didCheat: isSolutionClicked,
+				mistakes,
+				timeTaken,
+				maxTime,
+				minTime,
+				streak: puzzleItemList[puzzleIndex].streak,
+			});
+
+			await updatePuzzleInDb(currentGrade, timeTaken, timeWithMistakes);
+
+			if (set.spacedRepetition) {
+				const isChunkComplete = completedPuzzles + 1 >= 20;
+				if (isChunkComplete) await handleChunkComplete();
+				return;
+			}
+
+			const isSetComplete = completedPuzzles + 1 === puzzleItemList.length;
+			if (isSetComplete) {
+				if (!initialSetDate) return;
+				await updateSetInDb(initialSetDate);
+				await handleSetComplete();
+				return;
+			}
+
+			handlePuzzleComplete(currentGrade, timeWithMistakes);
+		},
+		[
+			completedPuzzles,
+			computerMove,
+			handleChunkComplete,
+			handlePuzzleComplete,
+			handleSetComplete,
+			hasAnimation,
+			initialPuzzleTimer,
+			initialSetDate,
+			isSolutionClicked,
+			mistakes,
+			moveHistory.length,
+			moveNumber,
+			puzzleIndex,
+			puzzleItemList,
+			set.spacedRepetition,
+			setIsComplete,
+			toggleAnimation,
+			updateBoard,
+			updatePuzzleInDb,
+			updateSetInDb,
+		],
+	);
+
+	const handleWrongMove = useCallback(
+		(chess: ChessJS.ChessInstance) => {
+			chess.undo();
+			setMistakes(previous => previous + 1);
+			setTotalMistakes(previous => previous + 1);
+			if (hasAnimation)
+				toggleAnimation('animate-wrongMove').catch(console.error);
+			if (hasSound) playError();
+		},
+		[hasAnimation, hasSound, playError, toggleAnimation],
+	);
+
+	const checkIsPromotion = useCallback(
+		(from: Square, to: Square, moves: ChessJS.Move[]): boolean => {
+			for (const move of moves)
+				if (move.from === from && move.to === to && move.flags.includes('p'))
+					return true;
+
+			return false;
+		},
+		[],
+	);
 
 	/**
-	 * Function called when the user plays.
+	 * Function called on each move.
 	 */
-	const onMove = useCallback(
+	const handleUserMove = useCallback(
 		async (from: Square, to: Square) => {
 			const moves = chess.moves({verbose: true});
-			for (const move_ of moves) {
-				if (
-					move_.from === from &&
-					move_.to === to &&
-					move_.flags.includes('p')
-				) {
-					setPendingMove([from, to]);
-					show();
-					return;
-				}
+
+			const isPromotion = checkIsPromotion(from, to, moves);
+			if (isPromotion) {
+				setPendingMove([from, to]);
+				showPromotionContainer();
+				return;
 			}
 
 			const move = chess.move({from, to});
 			if (move === null) return;
 
-			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
-			if (hasSound) move.captured ? playCapture() : playMove();
-
-			const isCorrectMove =
-				`${move.from}${move.to}` === moveHistory[moveNumber];
-			if (isCorrectMove || chess.in_checkmate()) {
-				await onRightMove(from, to);
+			const isRightMove = checkIsMoveCorrect(move, chess);
+			if (isRightMove) {
+				await handleRightMove(from, to, chess);
 				return;
 			}
 
-			await onWrongMove();
+			handleWrongMove(chess);
 		},
 		[
+			checkIsPromotion,
+			handleRightMove,
+			handleWrongMove,
+			checkIsMoveCorrect,
 			chess,
-			moveHistory,
-			moveNumber,
-			onRightMove,
-			onWrongMove,
-			hasSound,
-			show,
-			playCapture,
-			playMove,
+			showPromotionContainer,
 		],
 	);
 
 	/**
 	 * Handle promotions via chessground.
 	 */
-	const promotion = useCallback(
+	const handlePromotion = useCallback(
 		async (piece: ShortMove['promotion']) => {
 			const from = pendingMove[0];
 			const to = pendingMove[1];
-			const isCorrectMove = piece === moveHistory[moveNumber].slice(-1);
+			const isRightMove =
+				piece === moveHistory[moveNumber].slice(-1) || chess.in_checkmate();
 			const move = chess.move({from, to, promotion: piece});
 			if (move === null) return;
 
 			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
 			if (hasSound) move.captured ? playCapture() : playMove();
 
-			if (isCorrectMove || chess.in_checkmate()) {
-				await onRightMove(from, to);
+			if (isRightMove) {
+				await handleRightMove(from, to, chess);
 				return;
 			}
 
-			await onWrongMove();
+			handleWrongMove(chess);
 		},
 		[
+			handleRightMove,
+			handleWrongMove,
 			pendingMove,
 			moveHistory,
 			moveNumber,
 			chess,
 			hasSound,
-			onRightMove,
-			onWrongMove,
 			playCapture,
 			playMove,
 		],
 	);
 
-	const fn = useCallback(async () => {
-		if (!isComplete) return;
-		await changePuzzle();
-	}, [isComplete, changePuzzle]);
+	/**
+	 * When the board is setup, make the first move.
+	 */
+	useEffectAsync(() => {
+		if (!moveHistory) return;
+		if (moveNumber !== 0) return;
+		computerMove(0).catch(console.error);
+	}, [moveHistory, moveNumber, computerMove]);
+
+	const returnDashboard = async () => router.push('/dashboard');
 
 	const launchTimer = useCallback(() => {
 		setIsRunning(() => true);
 	}, []);
 
-	useKeyPress({targetKey: 'Q', fn: async () => router.push('/dashboard')});
-	useKeyPress({targetKey: 'q', fn: async () => router.push('/dashboard')});
-	useKeyPress({targetKey: 'Escape', fn: async () => router.push('/dashboard')});
-	useKeyPress({targetKey: 's', fn});
-	useKeyPress({targetKey: 'S', fn});
-	useKeyPress({targetKey: 'n', fn});
-	useKeyPress({targetKey: 'N', fn});
+	useKeyPress({targetKey: 'Q', fn: returnDashboard});
+	useKeyPress({targetKey: 'q', fn: returnDashboard});
+	useKeyPress({targetKey: 'Escape', fn: returnDashboard});
+	useKeyPress({targetKey: 's', fn: changePuzzle});
+	useKeyPress({targetKey: 'S', fn: changePuzzle});
+	useKeyPress({targetKey: 'n', fn: changePuzzle});
+	useKeyPress({targetKey: 'N', fn: changePuzzle});
 
 	return (
 		<>
@@ -652,12 +637,16 @@ const PlayingPage = ({set, user}: Props) => {
 					<LeftBar stat={leftBarStat} />
 					<div className='max-w-[33rem] w-11/12 md:w-full flex-auto'>
 						<Board
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-							config={{...config, orientation, events: {move: onMove as any}}}
+							config={{
+								...config,
+								orientation,
+								// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+								events: {move: handleUserMove as any},
+							}}
 							isOpen={isOpen}
 							hide={hide}
 							color={getColor(chess.turn())}
-							onPromote={promotion}
+							onPromote={handlePromotion}
 						/>
 
 						<BottomBar puzzles={previousPuzzle} />

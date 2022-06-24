@@ -4,7 +4,7 @@ import {parseGrade} from '@/lib/view';
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 
 export type Stat = {
-	gradeCurrent: number;
+	currentGrade: number;
 	timeCurrent: number;
 	gradeLast?: number;
 	timeLast?: number;
@@ -23,8 +23,8 @@ const getGradeColor = (grade: number) => {
 const LeftBar = ({stat}: Props) => {
 	if (!stat)
 		return <div className='hidden w-36 px-2.5 md:mx-2 md:invisible md:block' />;
-	const {gradeCurrent, timeCurrent, gradeLast, timeLast} = stat;
-	const gradeDiff = gradeLast ? gradeCurrent - gradeLast : 0;
+	const {currentGrade, timeCurrent, gradeLast, timeLast} = stat;
+	const gradeDiff = gradeLast ? currentGrade - gradeLast : 0;
 	const timeDiff = timeLast ? timeCurrent - timeLast : 0;
 
 	return (
@@ -32,8 +32,8 @@ const LeftBar = ({stat}: Props) => {
 			<span>Last puzzle: </span>
 			<span>
 				grade:{' '}
-				<span className={getGradeColor(gradeCurrent)}>
-					{parseGrade[gradeCurrent]}
+				<span className={getGradeColor(currentGrade)}>
+					{parseGrade[currentGrade]}
 				</span>
 			</span>
 

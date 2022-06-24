@@ -273,3 +273,35 @@ export const updatePuzzleSolvedByCategories = (
 
 	return puzzleSolvedByCategories_;
 };
+
+type PropsPuzzleSetUpdate = {
+	currentGrade: number;
+	currentTime: number;
+	mistakes: number;
+	timeTaken: number;
+};
+
+export const getPuzzleSetUpdate = ({
+	currentGrade,
+	currentTime,
+	mistakes,
+	timeTaken,
+}: PropsPuzzleSetUpdate) => {
+	const updatePuzzleSet = {
+		$inc: {
+			'puzzles.$.count': 1,
+			'puzzles.$.streak': 0,
+			currentTime,
+			progress: 1,
+		},
+		$push: {
+			'puzzles.$.mistakes': mistakes,
+			'puzzles.$.timeTaken': timeTaken,
+			'puzzles.$.grades': currentGrade,
+		},
+		$set: {
+			'puzzles.$.played': true,
+		},
+	};
+	return updatePuzzleSet;
+};
