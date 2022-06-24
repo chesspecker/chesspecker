@@ -14,14 +14,13 @@ import CAPTURE from '@/sounds/Capture.mp3';
 import ERROR from '@/sounds/Error.mp3';
 import GENERIC from '@/sounds/GenericNotify.mp3';
 import VICTORY from '@/sounds/Victory.mp3';
-import {AchivementsArgs} from '@/types/models';
 import Layout from '@/layouts/main';
-import {formattedDate, groupBy, sleep, sortBy} from '@/lib/utils';
+import {sleep, sortBy} from '@/lib/utils';
 import {configµ, orientationµ, animationµ, playµ, revertedµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
-import {checkForAchievement} from '@/lib/achievements';
+import {checkForAchievement, getCheckAchivementBody} from '@/lib/achievements';
 import {withSessionSsr} from '@/lib/session';
 import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
 import {
@@ -33,32 +32,24 @@ import {Puzzle} from '@/models/puzzle';
 import {PuzzleSet} from '@/models/puzzle-set';
 import {PuzzleItem} from '@/models/puzzle-item';
 import {
-	incrementStreakCount,
-	resetStreakCount,
-	shouldIncrementOrResetStreakCount,
-	updateStreak,
-} from '@/lib/streak';
-import {
 	get as get_,
 	update as update_,
 	getGrade,
 	getMovable,
-	getThemes,
 	getTimeInterval,
 	getTimeTaken,
 	getUpdateBody,
 	getColor,
+	retrieveCurrentPuzzle_,
+	updatePuzzleSolvedByCategories,
 } from '@/lib/play';
 import LeftBar, {Stat} from '@/components/play/left-bar';
-import {Streak} from '@/models/streak';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
-import {PuzzleData} from '@/pages/api/puzzle/[id]';
 import Timer from '@/components/play/timer';
-import {ThemeItem} from '@/models/theme';
+import BottomBar from '@/components/play/bottom-bar';
 
 const Notification = dynamic(async () => import('@/components/notification'));
-const BottomBar = dynamic(async () => import('@/components/play/bottom-bar'));
 const ModalSpacedOn = dynamic(
 	async () => import('@/components/play/modal-spaced-on'),
 );
@@ -140,35 +131,6 @@ const PlayingPage = ({set, user}: Props) => {
 		[],
 	);
 
-	const retrieveCurrentPuzzle = useCallback(() => {
-		if (!puzzleItemList[puzzleIndex] || puzzleItemList.length === 0) return;
-		const item = puzzleItemList[puzzleIndex];
-		if (nextPuzzle?.PuzzleId === item.PuzzleId) {
-			console.log('🟣 using cached puzzle:', item.PuzzleId);
-			setPuzzle(() => nextPuzzle);
-		} else {
-			console.log('🔵 fetching puzzle:', item.PuzzleId);
-			fetch(`/api/puzzle/${item.PuzzleId}`)
-				.then(async response => response.json() as Promise<PuzzleData>)
-				.then(request => {
-					console.log('🟢 fetched puzzle:', item.PuzzleId);
-					if (request.success) setPuzzle(() => request.data);
-				})
-				.catch(console.error);
-		}
-
-		if (!puzzleItemList[puzzleIndex + 1]) return;
-		const item2 = puzzleItemList[puzzleIndex + 1];
-		console.log('🔵 fetching next puzzle:', item2.PuzzleId);
-		fetch(`/api/puzzle/${item2.PuzzleId}`)
-			.then(async response => response.json() as Promise<PuzzleData>)
-			.then(request => {
-				console.log('🟢 fetched next puzzle:', item2.PuzzleId);
-				if (request.success) setNextPuzzle(() => request.data);
-			})
-			.catch(console.error);
-	}, [puzzleItemList, puzzleIndex, nextPuzzle]);
-
 	/**
 	 * Extract the list of puzzles.
 	 */
@@ -186,9 +148,21 @@ const PlayingPage = ({set, user}: Props) => {
 		);
 	}
 
+	const retrieveCurrentPuzzle = useCallback(retrieveCurrentPuzzle_, [
+		puzzleItemList,
+		puzzleIndex,
+		nextPuzzle,
+	]);
+
 	useEffect(() => {
 		if (!puzzleItemList) return;
-		retrieveCurrentPuzzle();
+		retrieveCurrentPuzzle({
+			puzzleItemList,
+			puzzleIndex,
+			nextPuzzle,
+			setPuzzle,
+			setNextPuzzle,
+		});
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [puzzleItemList, puzzleIndex]);
 
@@ -238,53 +212,24 @@ const PlayingPage = ({set, user}: Props) => {
 			streakTime_: number;
 		}) => {
 			if (!puzzle) return;
-			const date = formattedDate(new Date());
-
-			// Check if we should increment or reset
-			const {shouldIncrement, shouldReset} = shouldIncrementOrResetStreakCount(
-				date,
-				user.streak.lastLoginDate,
-			);
-
-			let updatedStreak: Streak = user.streak;
-			if (shouldReset) updatedStreak = resetStreakCount(date);
-
-			if (shouldIncrement)
-				updatedStreak = incrementStreakCount(user.streak, date);
-
-			if (shouldReset || shouldIncrement) {
-				await updateStreak(user._id.toString(), {
-					$set: {
-						streak: updatedStreak,
-					},
-				});
-			}
-
-			const timeTaken = (Date.now() - initialPuzzleTimer) / 1000;
-			const timeWithoutMistakes = Number.parseInt(timeTaken.toFixed(2), 10);
-			const body: AchivementsArgs = {
+			const body = getCheckAchivementBody({
+				user,
+				puzzle,
+				puzzleSolvedByCategories,
+				initialPuzzleTimer,
+				totalPuzzleSolved,
 				streakMistakes: streakMistakes_,
 				streakTime: streakTime_,
-				completionTime: timeWithoutMistakes,
 				completionMistakes: mistakes,
-				totalPuzzleSolved,
-				themes: puzzle.Themes.map(t => {
-					const a = puzzleSolvedByCategories.find(c => t === c.title);
-					const count = a ? a.count + 1 : 1;
-					return {title: t, count};
-				}),
-				streak: updatedStreak,
-				isSponsor: user.isSponsor,
-			};
+			});
 
+			if (!body) return;
 			checkForAchievement(body)
 				.then(unlockedAchievements => {
-					if (!unlockedAchievements) return;
-					if (unlockedAchievements.length > 0) {
-						setShowNotification(() => true);
-						setNotificationMessage(() => 'Achievement unlocked!');
-						setNotificationUrl(() => '/dashboard');
-					}
+					if (!unlockedAchievements || unlockedAchievements.length <= 0) return;
+					setShowNotification(() => true);
+					setNotificationMessage(() => 'Achievement unlocked!');
+					setNotificationUrl(() => '/dashboard');
 				})
 				.catch(console.error);
 		},
@@ -308,13 +253,16 @@ const PlayingPage = ({set, user}: Props) => {
 		setStreakMistakes(() => streakMistakes_);
 		setStreakTime(() => streakTime_);
 
-		setPreviousPuzzle(previous => [
-			...previous,
-			{
-				grade: newGrade,
-				PuzzleId: puzzle.PuzzleId,
-			},
-		]);
+		const {maxTime, minTime} = getTimeInterval(moveHistory.length);
+
+		const currentGrade = getGrade({
+			didCheat: isSolutionClicked,
+			mistakes,
+			timeTaken,
+			maxTime,
+			minTime,
+			streak: puzzleItemList[puzzleIndex].streak,
+		});
 
 		const updatePuzzleSet = {
 			$inc: {
@@ -326,55 +274,19 @@ const PlayingPage = ({set, user}: Props) => {
 			$push: {
 				'puzzles.$.mistakes': mistakes,
 				'puzzles.$.timeTaken': timeTaken,
-				'puzzles.$.grades': newGrade,
+				'puzzles.$.grades': currentGrade,
 			},
 			$set: {
 				'puzzles.$.played': true,
 			},
 		};
 
-		updatePuzzleSet.$inc['puzzles.$.streak'] = newGrade >= 5 ? 1 : 0;
+		updatePuzzleSet.$inc['puzzles.$.streak'] = currentGrade >= 5 ? 1 : 0;
 
-		const groupedArray = groupBy<ThemeItem>(
+		const puzzleSolvedByCategories_ = updatePuzzleSolvedByCategories(
 			puzzleSolvedByCategories,
-			v => v.title,
+			puzzle.Themes,
 		);
-
-		const puzzleSolvedByCategories_: ThemeItem[] = Object.keys(
-			groupedArray,
-		).map(key => ({
-			title: key,
-			count: groupedArray[key].reduce(
-				(previous_: number, {count}) => previous_ + count,
-				0,
-			),
-		}));
-
-		const userThemes = puzzleSolvedByCategories_;
-		const newThemes = puzzle.Themes;
-		const {themesInCommon, themesNotInCommon} = getThemes({
-			userThemes,
-			newThemes,
-		});
-
-		if (themesNotInCommon.length > 0)
-			puzzleSolvedByCategories_.push(
-				...themesNotInCommon.map(title => ({title, count: 1})),
-			);
-
-		if (themesInCommon.length > 0)
-			for (const theme of themesInCommon) {
-				const currentTheme =
-					puzzleSolvedByCategories_[
-						puzzleSolvedByCategories_.indexOf(
-							puzzleSolvedByCategories_.find(
-								value => value.title === theme.title,
-							)!,
-						)
-					];
-
-				currentTheme.count += 1;
-			}
 
 		const updateUser = {
 			$inc: {totalPuzzleSolved: 1, totalTimePlayed: timeTaken},
@@ -398,7 +310,8 @@ const PlayingPage = ({set, user}: Props) => {
 			.catch(console.error);
 	}, [
 		handleCheckAchievements,
-		newGrade,
+		isSolutionClicked,
+		moveHistory.length,
 		streakMistakes,
 		streakTime,
 		timeTaken,
@@ -528,6 +441,14 @@ const PlayingPage = ({set, user}: Props) => {
 			});
 
 			setNewGrade(() => newGrade);
+
+			setPreviousPuzzle(previous => [
+				...previous,
+				{
+					grade: newGrade,
+					PuzzleId: puzzleItem.PuzzleId,
+				},
+			]);
 
 			setLeftBarStat(() => ({
 				gradeCurrent: newGrade,

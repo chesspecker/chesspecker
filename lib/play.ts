@@ -2,6 +2,7 @@
 import {UpdateQuery} from 'mongoose';
 import type {ChessInstance} from 'chess.js';
 import type {Config} from 'chessground/config';
+import {groupBy} from './utils';
 import {PuzzleItem} from '@/models/puzzle-item';
 import {PuzzleSet} from '@/models/puzzle-set';
 import {User} from '@/models/user';
@@ -9,6 +10,7 @@ import type {PuzzleData, PuzzleSetData} from '@/api/puzzle/[id]';
 import type {SetData} from '@/api/set/[id]';
 import type {UserData} from '@/api/user/[id]';
 import {ThemeItem} from '@/models/theme';
+import {Puzzle} from '@/models/puzzle';
 
 const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 	fetch(`${baseUrl}/api/puzzle/${id}`).then(async response => response.json());
@@ -180,4 +182,94 @@ const bodyUpdateFinishedSet = (timeTaken: number) => ({
 
 export const getUpdateBody = {
 	finishedSet: bodyUpdateFinishedSet,
+};
+
+type PropsRetrieveCurrentPuzzle = {
+	puzzleItemList: PuzzleItem[];
+	puzzleIndex: number;
+	nextPuzzle: Puzzle | undefined;
+	setPuzzle: React.Dispatch<React.SetStateAction<Puzzle | undefined>>;
+	setNextPuzzle: React.Dispatch<React.SetStateAction<Puzzle | undefined>>;
+};
+export const retrieveCurrentPuzzle_ = ({
+	puzzleItemList,
+	puzzleIndex,
+	nextPuzzle,
+	setPuzzle,
+	setNextPuzzle,
+}: PropsRetrieveCurrentPuzzle) => {
+	if (!puzzleItemList[puzzleIndex] || puzzleItemList.length === 0) return;
+	const item = puzzleItemList[puzzleIndex];
+	if (nextPuzzle?.PuzzleId === item.PuzzleId) {
+		console.log('🟣 using cached puzzle:', item.PuzzleId);
+		setPuzzle(() => nextPuzzle);
+	} else {
+		console.log('🔵 fetching puzzle:', item.PuzzleId);
+		fetch(`/api/puzzle/${item.PuzzleId}`)
+			.then(async response => response.json() as Promise<PuzzleData>)
+			.then(request => {
+				console.log('🟢 fetched puzzle:', item.PuzzleId);
+				if (request.success) setPuzzle(() => request.data);
+			})
+			.catch(console.error);
+	}
+
+	if (!puzzleItemList[puzzleIndex + 1]) return;
+	const item2 = puzzleItemList[puzzleIndex + 1];
+	console.log('🔵 fetching next puzzle:', item2.PuzzleId);
+	fetch(`/api/puzzle/${item2.PuzzleId}`)
+		.then(async response => response.json() as Promise<PuzzleData>)
+		.then(request => {
+			console.log('🟢 fetched next puzzle:', item2.PuzzleId);
+			if (request.success) setNextPuzzle(() => request.data);
+		})
+		.catch(console.error);
+};
+
+export const updatePuzzleSolvedByCategories = (
+	puzzleSolvedByCategories: ThemeItem[],
+	puzzleThemes: string[],
+): ThemeItem[] => {
+	const groupedArray = groupBy<ThemeItem>(
+		puzzleSolvedByCategories,
+		v => v.title,
+	);
+
+	const puzzleSolvedByCategories_: ThemeItem[] = Object.keys(groupedArray).map(
+		key => ({
+			title: key,
+			count: groupedArray[key].reduce(
+				(previous_: number, {count}) => previous_ + count,
+				0,
+			),
+		}),
+	);
+
+	const userThemes = puzzleSolvedByCategories_;
+	const newThemes = puzzleThemes;
+	const {themesInCommon, themesNotInCommon} = getThemes({
+		userThemes,
+		newThemes,
+	});
+
+	if (themesNotInCommon.length > 0)
+		puzzleSolvedByCategories_.push(
+			...themesNotInCommon.map(title => ({title, count: 1})),
+		);
+
+	if (themesInCommon.length > 0)
+		for (const theme of themesInCommon) {
+			const currentTheme =
+				puzzleSolvedByCategories_[
+					puzzleSolvedByCategories_.indexOf(
+						puzzleSolvedByCategories_.find(
+							value => value.title === theme.title,
+						)!,
+					)
+				];
+
+			currentTheme.count += 1;
+		}
+
+	return puzzleSolvedByCategories_;
 };
