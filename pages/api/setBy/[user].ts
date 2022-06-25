@@ -12,14 +12,14 @@ const get_ = async (
 	response: NextApiResponse<PuzzleSetArrayData>,
 ) => {
 	const fail = failWrapper(response);
-	const {userID} = request.query as Record<string, string>;
-	if (!userID) {
+	const {user} = request.query as Record<string, string>;
+	if (!user) {
 		fail('Missing id', 400);
 		return;
 	}
 
 	try {
-		const data = await PuzzleSetModel.find({user:userID}).lean().exec();
+		const data = await PuzzleSetModel.find({user}).lean().exec();
 		if (!data) {
 			fail('Sets not found', 404);
 			return;
@@ -30,7 +30,6 @@ const get_ = async (
 		fail((error as Error).message);
 	}
 };
-
 
 const handler = async (
 	request: NextApiRequest,

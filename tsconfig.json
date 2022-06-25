@@ -34,7 +34,7 @@
 			"@/controllers/*": ["controllers/*"],
 			"@/models/*": ["models/*"],
 			"@/sounds/*": ["public/sounds/*"],
-			"@/config": ["config"],
+			"@/config": ["config"]
 		},
 		"incremental": true
 	},

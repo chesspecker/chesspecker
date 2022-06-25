@@ -8,10 +8,14 @@ import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import {useSound} from 'use-sound';
 import {Puzzle} from '@/models/puzzle';
 import Layout from '@/layouts/main';
-import audio from '@/lib/sound';
 import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
+import MOVE from '@/sounds/Move.mp3';
+import CAPTURE from '@/sounds/Capture.mp3';
+import ERROR from '@/sounds/Error.mp3';
+import GENERIC from '@/sounds/GenericNotify.mp3';
 import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
@@ -41,6 +45,11 @@ const PlayingPage = ({puzzle}: Props) => {
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
 	const [hasAnimation] = useAtom(configµ.animation);
+
+	const [playMove] = useSound(MOVE);
+	const [playCapture] = useSound(CAPTURE);
+	const [playError] = useSound(ERROR);
+	const [playGeneric] = useSound(GENERIC, {volume: 0.3});
 
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
@@ -150,9 +159,8 @@ const PlayingPage = ({puzzle}: Props) => {
 				lastMove: [move.from, move.to],
 			}));
 			setMoveNumber(previousMove => previousMove + 1);
-			await (move.captured
-				? audio('CAPTURE', hasSound)
-				: audio('MOVE', hasSound));
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 		},
 		[chess, moveHistory, calcMovable, hasSound],
 	);
@@ -182,7 +190,7 @@ const PlayingPage = ({puzzle}: Props) => {
 			if (!isComplete) return playFromComputer(moveNumber);
 			setIsRunning(() => false);
 
-			await audio('GENERIC', hasSound, 0.3);
+			if (hasSound) playGeneric();
 
 			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
 			const {maxTime, minTime} = getTimeInterval(moveHistory.length);
@@ -254,7 +262,7 @@ const PlayingPage = ({puzzle}: Props) => {
 			cleanAnimation().catch(console.error);
 		}
 
-		await audio('ERROR', hasSound);
+		if (hasSound) playError();
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [chess, hasSound, cleanAnimation]);
 
@@ -279,9 +287,8 @@ const PlayingPage = ({puzzle}: Props) => {
 			const move = chess.move({from, to});
 			if (move === null) return;
 
-			await (move.captured
-				? audio('CAPTURE', hasSound)
-				: audio('MOVE', hasSound));
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 
 			const isCorrectMove =
 				`${move.from}${move.to}` === moveHistory[moveNumber];
@@ -306,9 +313,8 @@ const PlayingPage = ({puzzle}: Props) => {
 			const move = chess.move({from, to, promotion: piece});
 			if (move === null) return;
 
-			await (move.captured
-				? audio('CAPTURE', hasSound)
-				: audio('MOVE', hasSound));
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 
 			if (isCorrectMove || chess.in_checkmate()) {
 				await onRightMove(from, to);

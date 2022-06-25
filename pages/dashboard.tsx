@@ -4,13 +4,13 @@ import {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import dynamic from 'next/dynamic';
 import {UserData} from './api/user/[id]';
+import {PuzzleSetArrayData} from './api/setBy/[user]';
 import Layout from '@/layouts/main';
 import {User} from '@/models/user';
 import {withSessionSsr} from '@/lib/session';
 import {AchievementItem} from '@/models/achievement';
 import {fetcher} from '@/lib/utils';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
-import {PuzzleSetArrayData} from './api/setFromUser/[userID]';
 import {PuzzleSet} from '@/models/puzzle-set';
 
 const Modal = dynamic(async () => import('@/components/modal-achievement'));
@@ -73,7 +73,7 @@ export const getServerSideProps = withSessionSsr(
 		if (!responseUser?.success) return {redirect};
 
 		const responseSet = await fetcher<PuzzleSetArrayData>(
-			`${baseUrl}/api/setFromUser/${userID}`,
+			`${baseUrl}/api/setBy/${userID}`,
 		);
 
 		const puzzleSets = responseSet?.success ? responseSet.data : undefined;

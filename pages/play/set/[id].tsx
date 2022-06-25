@@ -467,9 +467,6 @@ const PlayingPage = ({set, user}: Props) => {
 			}
 
 			const isSetComplete = completedPuzzles + 1 === set.length;
-			console.log('set.progress', set.progress)
-			console.log('completedPuzzles', completedPuzzles + 1);
-			console.log('isSetComplete', isSetComplete);
 			if (isSetComplete) {
 				if (!initialSetDate) return;
 				setIsRunning(() => false);

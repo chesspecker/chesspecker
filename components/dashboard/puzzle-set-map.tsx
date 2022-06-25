@@ -2,11 +2,11 @@ import type {MouseEvent} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {useRouter} from 'next/router';
+import {useSound} from 'use-sound';
 import {Button} from '@/components/button';
 import plus from '@/public/images/plus.svg';
 import {PuzzleSet} from '@/models/puzzle-set';
 import RemoveModal from '@/components/dashboard/remove-modal';
-import {useSound} from 'use-sound';
 import GENERIC from '@/sounds/GenericNotify.mp3';
 
 type PropsComponent = {
@@ -74,10 +74,9 @@ type Props = {
 const PuzzleSetMap = ({puzzleSets}: Props) => {
 	return (
 		<div className='flex flex-wrap items-center justify-center'>
-			{puzzleSets &&
-				puzzleSets.map(set => (
-					<PuzzleSetComponent key={set._id.toString()} set={set} />
-				))}
+			{puzzleSets?.map(set => (
+				<PuzzleSetComponent key={set._id.toString()} set={set} />
+			))}
 			<Link href='/create'>
 				<a>
 					<EmptyPuzzleSetComponent
