@@ -75,19 +75,24 @@ const PlayingPage = ({set, user}: Props) => {
 	const [playError] = useSound(ERROR);
 	const [playGeneric] = useSound(GENERIC, {volume: 0.3});
 	const [playVictory] = useSound(VICTORY);
+
 	const router = useRouter();
+
 	const [hasAutoMove] = useAtom(configµ.autoMove);
 	const [hasSound] = useAtom(configµ.sound);
 	const [hasClock] = useAtom(configµ.hasClock);
 	const [hasAnimation] = useAtom(configµ.animation);
+
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
 	const [, setTotalPuzzles] = useAtom(playµ.totalPuzzles);
 	const [isComplete, setIsComplete] = useAtom(playµ.isComplete);
 	const [completedPuzzles, setCompletedPuzzles] = useAtom(playµ.completed);
+
 	const [orientation, setOrientation] = useAtom(orientationµ);
 	const [isReverted] = useAtom(revertedµ);
 	const [, setAnimation] = useAtom(animationµ);
+
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
 	const [puzzleItemList, setPuzzleItemList] = useState<PuzzleItem[]>([]);
@@ -100,20 +105,27 @@ const PlayingPage = ({set, user}: Props) => {
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
 	const [initialSetDate, setInitialSetDate] = useState<number>();
-	const [isRunning, setIsRunning] = useState(true);
+	const [isRunning, setIsRunning] = useState(false);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const [leftBarStat, setLeftBarStat] = useState<Stat>();
 	const [streakData, setStreakData] = useState({mistakes: 0, time: 0});
+
 	const [showNotification, setShowNotification] = useState(false);
-	const [notificationMessage, setNotificationMessage] = useState('');
-	const [notificationUrl, setNotificationUrl] = useState('');
+	const [notificationData, setNotificationData] = useState({
+		message: '',
+		url: '',
+	});
 	const [totalPuzzleSolved, setTotalPuzzleSolved] = useState(
 		user.totalPuzzleSolved,
 	);
 	const [puzzleSolvedByCategories, setPuzzleSolvedByCategories] = useState(
 		user.puzzleSolvedByCategories,
 	);
-	const {isOpen, show: showPromotionContainer, hide} = useModal();
+	const {
+		isOpen: isOpenPromotion,
+		show: showPromotion,
+		hide: hidePromotion,
+	} = useModal();
 	const {
 		isOpen: isOpenSpacedOn,
 		show: showSpacedOn,
@@ -138,9 +150,7 @@ const PlayingPage = ({set, user}: Props) => {
 	/**
 	 * Extract the list of puzzles.
 	 */
-	const [previous, setPrevious] = useState<PuzzleSet>();
-	if (set !== previous) {
-		setPrevious(set);
+	useEffect(() => {
 		setCompletedPuzzles(() => set.progress);
 		setTotalPuzzles(() => set.length);
 		setInitialSetDate(() => Date.now());
@@ -150,7 +160,7 @@ const PlayingPage = ({set, user}: Props) => {
 				'order',
 			),
 		);
-	}
+	}, []);
 
 	const retrieveCurrentPuzzle = useCallback(retrieveCurrentPuzzle_, [
 		puzzleItemList,
@@ -171,7 +181,7 @@ const PlayingPage = ({set, user}: Props) => {
 	}, [puzzleItemList, puzzleIndex]);
 
 	/**
-	 * Setup the board.
+	 * Setup the board when we move to a new puzzle
 	 */
 	useEffect(() => {
 		if (!puzzle) return;
@@ -182,6 +192,7 @@ const PlayingPage = ({set, user}: Props) => {
 		setIsComplete(() => false);
 		setPendingMove(() => []);
 		setInitialPuzzleTimer(() => Date.now());
+		setIsRunning(() => true);
 		setIsSolutionClicked(() => false);
 		setOrientation(() => {
 			if (isReverted) return chess.turn() === 'b' ? 'black' : 'white';
@@ -233,8 +244,10 @@ const PlayingPage = ({set, user}: Props) => {
 				.then(unlockedAchievements => {
 					if (!unlockedAchievements || unlockedAchievements.length <= 0) return;
 					setShowNotification(() => true);
-					setNotificationMessage(() => 'Achievement unlocked!');
-					setNotificationUrl(() => '/dashboard');
+					setNotificationData(() => ({
+						message: 'Achievement unlocked!',
+						url: '/dashboard',
+					}));
 				})
 				.catch(console.error);
 		},
@@ -453,9 +466,13 @@ const PlayingPage = ({set, user}: Props) => {
 				return;
 			}
 
-			const isSetComplete = completedPuzzles + 1 === puzzleItemList.length;
+			const isSetComplete = completedPuzzles + 1 === set.length;
+			console.log('set.progress', set.progress)
+			console.log('completedPuzzles', completedPuzzles + 1);
+			console.log('isSetComplete', isSetComplete);
 			if (isSetComplete) {
 				if (!initialSetDate) return;
+				setIsRunning(() => false);
 				await updateSetInDb(initialSetDate);
 				await handleSetComplete();
 				return;
@@ -477,6 +494,7 @@ const PlayingPage = ({set, user}: Props) => {
 			moveHistory.length,
 			moveNumber,
 			puzzleIndex,
+			set.length,
 			puzzleItemList,
 			set.spacedRepetition,
 			setIsComplete,
@@ -520,12 +538,15 @@ const PlayingPage = ({set, user}: Props) => {
 			const isPromotion = checkIsPromotion(from, to, moves);
 			if (isPromotion) {
 				setPendingMove([from, to]);
-				showPromotionContainer();
+				showPromotion();
 				return;
 			}
 
 			const move = chess.move({from, to});
 			if (move === null) return;
+
+			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+			if (hasSound) move.captured ? playCapture() : playMove();
 
 			const isRightMove = checkIsMoveCorrect(move, chess);
 			if (isRightMove) {
@@ -541,7 +562,7 @@ const PlayingPage = ({set, user}: Props) => {
 			handleWrongMove,
 			checkIsMoveCorrect,
 			chess,
-			showPromotionContainer,
+			showPromotion,
 		],
 	);
 
@@ -584,8 +605,7 @@ const PlayingPage = ({set, user}: Props) => {
 	 * When the board is setup, make the first move.
 	 */
 	useEffectAsync(() => {
-		if (!moveHistory) return;
-		if (moveNumber !== 0) return;
+		if (!moveHistory || moveNumber !== 0) return;
 		computerMove(0).catch(console.error);
 	}, [moveHistory, moveNumber, computerMove]);
 
@@ -643,8 +663,8 @@ const PlayingPage = ({set, user}: Props) => {
 								// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 								events: {move: handleUserMove as any},
 							}}
-							isOpen={isOpen}
-							hide={hide}
+							isOpen={isOpenPromotion}
+							hide={hidePromotion}
 							color={getColor(chess.turn())}
 							onPromote={handlePromotion}
 						/>
@@ -662,9 +682,9 @@ const PlayingPage = ({set, user}: Props) => {
 				</div>
 			</div>
 			<Notification
-				text={notificationMessage}
+				text={notificationData.message}
 				isVisible={showNotification}
-				url={notificationUrl}
+				url={notificationData.url}
 				setShow={setShowNotification}
 			/>
 		</>

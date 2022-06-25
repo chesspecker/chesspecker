@@ -2,32 +2,29 @@ import type {ReactElement} from 'react';
 import {useState} from 'react';
 import {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
-import {useAtom} from 'jotai';
 import dynamic from 'next/dynamic';
 import {UserData} from './api/user/[id]';
 import Layout from '@/layouts/main';
 import {User} from '@/models/user';
 import {withSessionSsr} from '@/lib/session';
-import {Banner} from '@/components/dashboard/banner';
-import {supportBannerµ} from '@/lib/atoms';
 import {AchievementItem} from '@/models/achievement';
 import {fetcher} from '@/lib/utils';
+import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
+import {PuzzleSetArrayData} from './api/setFromUser/[userID]';
+import {PuzzleSet} from '@/models/puzzle-set';
 
 const Modal = dynamic(async () => import('@/components/modal-achievement'));
-const PuzzleSetMap = dynamic(
-	async () => import('@/components/dashboard/puzzle-set-map'),
-);
 
 type Props = {
 	user: User;
+	puzzleSets?: PuzzleSet[];
 };
 
-const DashbaordPage = ({user}: Props) => {
+const DashbaordPage = ({user, puzzleSets}: Props) => {
 	const [achievementsList, setList] = useState<AchievementItem[]>(
 		user.validatedAchievements.filter(achievement => !achievement.claimed),
 	);
 	const [showModal, setShowModal] = useState(achievementsList.length > 0);
-	const [isVisible, setIsVisible] = useAtom(supportBannerµ);
 
 	const updateValidatedAchievement = async (achievementId: string) => {
 		setShowModal(() => false);
@@ -53,10 +50,7 @@ const DashbaordPage = ({user}: Props) => {
 					Here are your sets!
 				</h1>
 
-				<PuzzleSetMap />
-				{!user.isSponsor && isVisible && (
-					<Banner setIsVisible={setIsVisible}>We need your help!</Banner>
-				)}
+				<PuzzleSetMap puzzleSets={puzzleSets} />
 			</div>
 		</>
 	);
@@ -73,12 +67,21 @@ export const getServerSideProps = withSessionSsr(
 
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
-		const response = await fetcher<UserData>(`${baseUrl}/api/user/${userID}`);
-		if (!response?.success) return {redirect};
+		const responseUser = await fetcher<UserData>(
+			`${baseUrl}/api/user/${userID}`,
+		);
+		if (!responseUser?.success) return {redirect};
+
+		const responseSet = await fetcher<PuzzleSetArrayData>(
+			`${baseUrl}/api/setFromUser/${userID}`,
+		);
+
+		const puzzleSets = responseSet?.success ? responseSet.data : undefined;
 
 		return {
 			props: {
-				user: response.data,
+				user: responseUser.data,
+				puzzleSets,
 			},
 		};
 	},

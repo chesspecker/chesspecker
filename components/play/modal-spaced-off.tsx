@@ -2,34 +2,27 @@ import {memo, useState} from 'react';
 import ProgressBar from '../progress-bar';
 import {Button} from '@/components/button';
 import GenericModal from '@/components/modal';
-import useEffectAsync from '@/hooks/use-effect-async';
 
 type Props = {
-	onClick: () => Promise<void>;
+	onClick: (event?: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
 	isOpen: boolean;
 	hide: () => void;
 };
 const ModalSpacedOff = ({onClick, isOpen = false, hide}: Props) => {
 	const [progress, setProgress] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
-	const [timerId, setTimerId] = useState<NodeJS.Timeout>();
 
-	const wrapOnClick = async () => {
+	const wrapOnClick = async (event?: React.MouseEvent<HTMLButtonElement>) => {
 		setIsLoading(true);
-		setTimerId(() =>
-			setInterval(() => {
-				setProgress(previous => previous + 1);
-			}, 150),
-		);
-	};
+		const timerId = setInterval(() => {
+			setProgress(previous => previous + 1);
+		}, 100);
 
-	useEffectAsync(async () => {
-		if (!timerId) return;
-		if (progress >= 95) {
+		setTimeout(async () => {
 			clearInterval(timerId);
-			await onClick();
-		}
-	}, [progress, timerId]);
+			await onClick(event);
+		}, 9500);
+	};
 
 	return (
 		<GenericModal

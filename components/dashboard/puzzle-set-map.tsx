@@ -1,22 +1,20 @@
-import {useState} from 'react';
 import type {MouseEvent} from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {useRouter} from 'next/router';
 import {Button} from '@/components/button';
 import plus from '@/public/images/plus.svg';
-import spinner from '@/public/images/spinner.svg';
 import {PuzzleSet} from '@/models/puzzle-set';
-import useEffectAsync from '@/hooks/use-effect-async';
-import {PuzzleSetArrayData} from '@/pages/api/set';
 import RemoveModal from '@/components/dashboard/remove-modal';
-import audio from '@/lib/sound';
+import {useSound} from 'use-sound';
+import GENERIC from '@/sounds/GenericNotify.mp3';
 
 type PropsComponent = {
 	set: PuzzleSet;
 };
 
 const PuzzleSetComponent = ({set}: PropsComponent) => {
+	const [playGeneric] = useSound(GENERIC, {volume: 0.1});
 	const router = useRouter();
 	const removeSet = async () =>
 		fetch(`/api/set/${set._id.toString()}`, {method: 'DELETE'})
@@ -28,7 +26,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const onPlayClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
-		await audio('VICTORY', true, 0);
+		playGeneric();
 		await router.push(`/play/set/${set._id.toString()}`);
 	};
 
@@ -69,30 +67,17 @@ const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
 	</div>
 );
 
-const PuzzleSetMap = () => {
-	const [sets, setSets] = useState<PuzzleSet[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
+type Props = {
+	puzzleSets?: PuzzleSet[];
+};
 
-	useEffectAsync(async () => {
-		const result = await fetch('/api/set').then(
-			async response => response.json() as Promise<PuzzleSetArrayData>,
-		);
-		if (!result?.success) return;
-		setSets(() => result.data);
-		setIsLoading(() => false);
-	}, []);
-
+const PuzzleSetMap = ({puzzleSets}: Props) => {
 	return (
 		<div className='flex flex-wrap items-center justify-center'>
-			{isLoading && (
-				<EmptyPuzzleSetComponent
-					image={<Image src={spinner as string} className='animate-spin' />}
-					text={<p className='mt-4 animate-pulse'>Loading...</p>}
-				/>
-			)}
-			{sets.map(set => (
-				<PuzzleSetComponent key={set._id.toString()} set={set} />
-			))}
+			{puzzleSets &&
+				puzzleSets.map(set => (
+					<PuzzleSetComponent key={set._id.toString()} set={set} />
+				))}
 			<Link href='/create'>
 				<a>
 					<EmptyPuzzleSetComponent

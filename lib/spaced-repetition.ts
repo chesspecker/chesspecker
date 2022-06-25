@@ -83,6 +83,7 @@ export const updateSpacedRepetition = async (
 
 export const activateSpacedRepetion = async (set: PuzzleSet) => {
 	const update = getActivatedUpdate(set);
+	console.log('activateSpacedRepetion', update, set._id.toString());
 	await update_.set(set._id.toString(), update).catch(console.error);
 };
 

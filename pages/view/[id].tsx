@@ -145,7 +145,8 @@ const ViewingPage = ({set}: Props) => {
 						<ModalSpacedOff
 							isOpen={isOpen}
 							hide={hide}
-							onClick={async () => {
+							onClick={async event => {
+								if (event) event.stopPropagation();
 								await turnOffSpacedRepetition(set);
 								hide();
 								router.reload();
@@ -155,7 +156,8 @@ const ViewingPage = ({set}: Props) => {
 						<ModalSpacedOn
 							isOpen={isOpen}
 							hide={hide}
-							onClick={async () => {
+							onClick={async event => {
+								if (event) event.stopPropagation();
 								await activateSpacedRepetion(set);
 								hide();
 								router.reload();
