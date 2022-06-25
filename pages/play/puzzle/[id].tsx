@@ -162,7 +162,7 @@ const PlayingPage = ({puzzle}: Props) => {
 			/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
 			if (hasSound) move.captured ? playCapture() : playMove();
 		},
-		[chess, moveHistory, calcMovable, hasSound],
+		[chess, moveHistory, calcMovable, hasSound, playCapture, playMove],
 	);
 
 	const playFromComputer = useCallback(
@@ -299,7 +299,17 @@ const PlayingPage = ({puzzle}: Props) => {
 
 			await onWrongMove();
 		},
-		[chess, moveHistory, moveNumber, onRightMove, onWrongMove, hasSound, show],
+		[
+			chess,
+			moveHistory,
+			moveNumber,
+			onRightMove,
+			onWrongMove,
+			hasSound,
+			show,
+			playCapture,
+			playMove,
+		],
 	);
 
 	/**
@@ -331,6 +341,8 @@ const PlayingPage = ({puzzle}: Props) => {
 			hasSound,
 			onRightMove,
 			onWrongMove,
+			playCapture,
+			playMove,
 		],
 	);
 

@@ -160,6 +160,7 @@ const PlayingPage = ({set, user}: Props) => {
 				'order',
 			),
 		);
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, []);
 
 	const retrieveCurrentPuzzle = useCallback(retrieveCurrentPuzzle_, [
@@ -356,7 +357,7 @@ const PlayingPage = ({set, user}: Props) => {
 	const handleChunkComplete = useCallback(async () => {
 		await updateSpacedRepetition(set, showSpacedOff);
 		router.reload();
-	}, [set, showSpacedOff]);
+	}, [set, showSpacedOff, router]);
 
 	/**
 	 * Called when puzzle is completed, switch to the next one.
@@ -368,6 +369,7 @@ const PlayingPage = ({set, user}: Props) => {
 		setIsSolutionClicked(() => false);
 		setInitialPuzzleTimer(() => Date.now());
 		setPuzzleIndex(previousPuzzle => previousPuzzle + 1);
+		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, [isComplete]);
 
 	useEffect(() => {
@@ -560,6 +562,9 @@ const PlayingPage = ({set, user}: Props) => {
 			checkIsMoveCorrect,
 			chess,
 			showPromotion,
+			hasSound,
+			playCapture,
+			playMove,
 		],
 	);
 
