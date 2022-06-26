@@ -20,14 +20,9 @@ import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
 import {withSessionSsr} from '@/lib/session';
-import {
-	get as get_,
-	getColor,
-	getGrade,
-	getTimeInterval,
-	getTimeTaken,
-	parseGrade,
-} from '@/lib/play';
+import {get_} from '@/lib/api-helpers';
+import {getGrade, parseGrade} from '@/lib/grades';
+import {getColor, getTime} from '@/lib/play';
 import type {Stat} from '@/components/modal-puzzle';
 import MoveToNext from '@/components/play/right-bar/move-to-next';
 import {sleep} from '@/lib/utils';
@@ -192,8 +187,8 @@ const PlayingPage = ({puzzle}: Props) => {
 
 			if (hasSound) playGeneric();
 
-			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
-			const {maxTime, minTime} = getTimeInterval(moveHistory.length);
+			const {timeTaken, timeWithMistakes} = getTime.taken(initialPuzzleTimer);
+			const {maxTime, minTime} = getTime.interval(moveHistory.length);
 
 			const newGrade = getGrade({
 				didCheat: isSolutionClicked,
@@ -416,7 +411,7 @@ PlayingPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default PlayingPage;
 
 export const getServerSideProps = withSessionSsr(
-	async ({params, req}: GetServerSidePropsContext) => {
+	async ({params, req, res}: GetServerSidePropsContext) => {
 		const redirect: Redirect = {statusCode: 303, destination: '/'};
 		if (!req?.session?.userID) return {redirect};
 		const id = params?.id as string | undefined;
@@ -426,6 +421,7 @@ export const getServerSideProps = withSessionSsr(
 		const result = await get_.puzzle(id, baseUrl);
 
 		if (!result.success) return {notFound: true};
+		res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
 		return {props: {puzzle: result.data}};
 	},
 );

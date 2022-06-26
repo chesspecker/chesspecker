@@ -30,26 +30,20 @@ import {Button} from '@/components/button';
 import {checkForAchievement, getCheckAchivementBody} from '@/lib/achievements';
 import {withSessionSsr} from '@/lib/session';
 import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
-import {
-	activateSpacedRepetion,
-	updateSpacedRepetition,
-} from '@/lib/spaced-repetition';
+import {activateSpacedRep, updateSpacedRep} from '@/lib/spaced-repetition';
 import {User} from '@/models/user';
 import {Puzzle} from '@/models/puzzle';
 import {PuzzleSet} from '@/models/puzzle-set';
 import {PuzzleItem} from '@/models/puzzle-item';
+import {get_, update_} from '@/lib/api-helpers';
+import {getGrade} from '@/lib/grades';
 import {
-	get as get_,
-	update as update_,
-	getGrade,
 	getMovable,
-	getTimeInterval,
-	getTimeTaken,
+	getTime,
 	getUpdateBody,
 	getColor,
-	retrieveCurrentPuzzle_,
+	getCurrentPuzzle,
 	updatePuzzleSolvedByCategories,
-	getPuzzleSetUpdate,
 } from '@/lib/play';
 import LeftBar, {Stat} from '@/components/play/left-bar';
 import Board from '@/components/play/board';
@@ -163,7 +157,7 @@ const PlayingPage = ({set, user}: Props) => {
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, []);
 
-	const retrieveCurrentPuzzle = useCallback(retrieveCurrentPuzzle_, [
+	const retrieveCurrentPuzzle = useCallback(getCurrentPuzzle, [
 		puzzleItemList,
 		puzzleIndex,
 		nextPuzzle,
@@ -290,7 +284,7 @@ const PlayingPage = ({set, user}: Props) => {
 			const streakTime_ = timeTaken < 5 ? streakData.time + 1 : 0;
 			setStreakData(() => ({mistakes: streakMistakes_, time: streakTime_}));
 
-			const updatePuzzleSet = getPuzzleSetUpdate({
+			const updatePuzzleSet = getUpdateBody.puzzle({
 				currentTime: timeWithMistakes,
 				mistakes,
 				timeTaken,
@@ -341,9 +335,9 @@ const PlayingPage = ({set, user}: Props) => {
 	 */
 	const updateSetInDb = useCallback(
 		async (initialSetDate: number) => {
-			const {timeTaken} = getTimeTaken(initialSetDate);
+			const {timeTaken} = getTime.taken(initialSetDate);
 			const totalTimeTaken = timeTaken + set.currentTime;
-			const update = getUpdateBody.finishedSet(totalTimeTaken);
+			const update = getUpdateBody.set({timeTaken: totalTimeTaken});
 			await update_.set(set._id.toString(), update).catch(console.error);
 		},
 		[set._id, set.currentTime],
@@ -355,7 +349,7 @@ const PlayingPage = ({set, user}: Props) => {
 	}, [hasSound, playVictory, showSpacedOn]);
 
 	const handleChunkComplete = useCallback(async () => {
-		await updateSpacedRepetition(set, showSpacedOff);
+		await updateSpacedRep(set, showSpacedOff);
 		router.reload();
 	}, [set, showSpacedOff, router]);
 
@@ -449,8 +443,8 @@ const PlayingPage = ({set, user}: Props) => {
 
 			setIsComplete(() => true);
 
-			const {maxTime, minTime} = getTimeInterval(moveHistory.length);
-			const {timeTaken, timeWithMistakes} = getTimeTaken(initialPuzzleTimer);
+			const {maxTime, minTime} = getTime.interval(moveHistory.length);
+			const {timeTaken, timeWithMistakes} = getTime.taken(initialPuzzleTimer);
 			const currentGrade = getGrade({
 				didCheat: isSolutionClicked,
 				mistakes,
@@ -493,8 +487,8 @@ const PlayingPage = ({set, user}: Props) => {
 			moveHistory.length,
 			moveNumber,
 			puzzleIndex,
-			set.length,
 			puzzleItemList,
+			set.length,
 			set.spacedRepetition,
 			setIsComplete,
 			toggleAnimation,
@@ -636,7 +630,7 @@ const PlayingPage = ({set, user}: Props) => {
 					await router.push('/dashboard');
 				}}
 				onClick={async () => {
-					await activateSpacedRepetion(set);
+					await activateSpacedRep(set);
 					hideSpacedOn();
 					router.reload();
 				}}

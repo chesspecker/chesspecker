@@ -29,8 +29,18 @@ export const formattedDate = (date: Date): string =>
 /* eslint-disable-next-line no-promise-executor-return */
 export const sleep = async (ms: number) => new Promise(r => setTimeout(r, ms));
 
+export const INFINITY = Number.POSITIVE_INFINITY;
+
 export const reducer = (accumulator: number, current: number) =>
 	accumulator + current;
+
+export const summer = (arrays: number[][]): number[] =>
+	/* eslint-disable-next-line unicorn/no-array-reduce */
+	arrays.reduce<number[]>(
+		(acc: number[], array) => acc.map((sum, i) => sum + array[i]),
+		/* eslint-disable-next-line unicorn/no-new-array */
+		new Array(arrays[0].length).fill(0),
+	);
 
 export const classNames = (...classes: string[]) =>
 	classes.filter(Boolean).join(' ');
@@ -44,10 +54,6 @@ export const groupBy = <T>(array: T[], predicate: (v: T) => string) =>
 		(acc[predicate(value)] ||= []).push(value);
 		return acc;
 	}, {});
-
-export const fetcher = async <T>(url: string): Promise<T> =>
-	/* eslint-disable-next-line @typescript-eslint/no-unsafe-return */
-	fetch(url).then(async response => response.json());
 
 export const failWrapper =
 	(response: NextApiResponse<ErrorData>) =>

@@ -2,27 +2,23 @@
 /* eslint-disable unicorn/no-array-callback-reference */
 import {GetServerSideProps} from 'next';
 import {ReactElement, useCallback, useState} from 'react';
-import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
 import {NextSeo} from 'next-seo';
 import dynamic from 'next/dynamic';
-import type {SetData} from '@/api/set/[id]';
 import Layout from '@/layouts/main';
 import {
 	getCurrentRunStats,
 	getOverviewStats,
 	getProgressStats,
-	ViewData,
 } from '@/lib/view';
 import useModal from '@/hooks/use-modal';
-import {
-	activateSpacedRepetion,
-	turnOffSpacedRepetition,
-} from '@/lib/spaced-repetition';
+import {activateSpacedRep, deactivateSpacedRep} from '@/lib/spaced-repetition';
 import {PuzzleItem} from '@/models/puzzle-item';
 import {PuzzleSet} from '@/models/puzzle-set';
-import {classNames, fetcher, reducer} from '@/lib/utils';
+import {reducer} from '@/lib/utils';
+import Block from '@/components/view/block';
+import {get_} from '@/lib/api-helpers';
 
 const ModalSpacedOn = dynamic(
 	async () => import('@/components/play/modal-spaced-on'),
@@ -31,68 +27,6 @@ const ModalSpacedOff = dynamic(
 	async () => import('@/components/play/modal-spaced-off'),
 );
 const EditModal = dynamic(async () => import('@/components/view/edit-modal'));
-
-const Block = ({
-	title,
-	stat,
-	type,
-	change,
-	Icon,
-	hasChange,
-}: ViewData): JSX.Element => {
-	const Element = ({changeElement}: {changeElement?: any}) => (
-		<div className='m-3 flex min-h-[10rem] min-w-[20rem] flex-auto flex-col items-center px-4 py-5 overflow-hidden bg-sky-700 dark:bg-white rounded-lg shadow sm:pt-6 sm:px-6'>
-			<h3 className='text-sm font-medium text-center text-white dark:text-gray-500'>
-				{title}
-			</h3>
-
-			<div className='flex items-center justify-center w-full h-full'>
-				{Icon && (
-					<div className='p-3 mr-2 bg-white rounded-md dark:bg-sky-700'>
-						<Icon
-							className='w-6 h-6 text-sky-700 dark:text-white'
-							aria-hidden='true'
-						/>
-					</div>
-				)}
-				<p className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
-					{stat}
-				</p>
-				{changeElement}
-			</div>
-		</div>
-	);
-
-	if (!hasChange) return <Element />;
-
-	const changeElement = (
-		<p
-			className={classNames(
-				type === 'up'
-					? 'text-green-400 dark:text-green-600'
-					: 'text-red-400 dark:text-red-500',
-				'ml-2 flex items-baseline text-sm font-semibold',
-			)}
-		>
-			{type === 'up' ? (
-				<ArrowSmUpIcon
-					className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
-					aria-hidden='true'
-				/>
-			) : (
-				<ArrowSmDownIcon
-					className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
-					aria-hidden='true'
-				/>
-			)}
-			<span className='sr-only'>
-				{type === 'up' ? 'Increased' : 'Decreased'} by
-			</span>
-			{change}
-		</p>
-	);
-	return <Element changeElement={changeElement} />;
-};
 
 const getClasses = (grade: number) => {
 	const base = 'h-5 w-10 cursor-pointer rounded-sm mb-1';
@@ -147,7 +81,7 @@ const ViewingPage = ({set}: Props) => {
 							hide={hide}
 							onClick={async event => {
 								if (event) event.stopPropagation();
-								await turnOffSpacedRepetition(set);
+								await deactivateSpacedRep(set);
 								hide();
 								router.reload();
 							}}
@@ -160,7 +94,7 @@ const ViewingPage = ({set}: Props) => {
 							}}
 							onClick={async (event?: React.MouseEvent<HTMLButtonElement>) => {
 								if (event) event.stopPropagation();
-								await activateSpacedRepetion(set);
+								await activateSpacedRep(set);
 								hide();
 								router.reload();
 							}}
@@ -256,7 +190,7 @@ export const getServerSideProps: GetServerSideProps = async ({req, params}) => {
 	if (!id) return {notFound: true};
 	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 	const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
-	const response = await fetcher<SetData>(`${baseUrl}/api/set/${id}`);
+	const response = await get_.set(id, baseUrl);
 	if (!response?.success) return {notFound: true};
 	return {props: {set: response.data}};
 };

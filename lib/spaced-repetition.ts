@@ -1,4 +1,4 @@
-import {update as update_} from './play';
+import {update_} from './api-helpers';
 import {PuzzleSet} from '@/models/puzzle-set';
 
 const getTerminatedUpdate = () => ({
@@ -60,7 +60,7 @@ const getActivatedUpdate = (puzzleSet: PuzzleSet) => {
 /**
  * Handle spaced-repetition.
  */
-export const updateSpacedRepetition = async (
+export const updateSpacedRep = async (
 	set: PuzzleSet,
 	showSpacedOff: () => void,
 ) => {
@@ -81,12 +81,12 @@ export const updateSpacedRepetition = async (
 	await update_.set(set._id.toString(), update).catch(console.error);
 };
 
-export const activateSpacedRepetion = async (set: PuzzleSet) => {
+export const activateSpacedRep = async (set: PuzzleSet) => {
 	const update = getActivatedUpdate(set);
 	await update_.set(set._id.toString(), update).catch(console.error);
 };
 
-export const turnOffSpacedRepetition = async (set: PuzzleSet) => {
+export const deactivateSpacedRep = async (set: PuzzleSet) => {
 	const update = getTerminatedUpdate();
 	await update_.set(set._id.toString(), update).catch(console.error);
 };

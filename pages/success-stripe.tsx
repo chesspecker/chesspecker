@@ -2,8 +2,6 @@ import {ReactElement} from 'react';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
 import {GetServerSidePropsContext, Redirect} from 'next';
-import {UserData} from './api/user';
-import {SessionData} from './api/checkout-sessions/[id]';
 import Layout from '@/layouts/login';
 import {Button, ButtonLink} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
@@ -11,8 +9,9 @@ import useEffectAsync from '@/hooks/use-effect-async';
 import {AchivementsArgs} from '@/types/models';
 import {User} from '@/models/user';
 import {checkForAchievement} from '@/lib/achievements';
-import {fetcher, formattedDate} from '@/lib/utils';
+import {formattedDate} from '@/lib/utils';
 import {withSessionSsr} from '@/lib/session';
+import {get_, update_} from '@/lib/api-helpers';
 
 type Props = {
 	user: User;
@@ -21,19 +20,16 @@ type Props = {
 
 const SuccessPage = ({user, sessionId}: Props) => {
 	useEffectAsync(async () => {
-		const data = await fetcher<SessionData>(
-			`/api/checkout-sessions/${sessionId}`,
-		);
-		if (!data.success) return;
-		await fetch(`/api/user/${user._id.toString()}`, {
-			method: 'PUT',
-			body: JSON.stringify({
-				$set: {
-					isSponsor: true,
-					stripeId: data.data?.customer,
-				},
-			}),
-		});
+		const response = await get_.session(sessionId);
+		if (!response.success) return;
+		const id = user._id.toString();
+		const data = {
+			$set: {
+				isSponsor: true,
+				stripeId: response.data?.customer,
+			},
+		};
+		await update_.user(id, data);
 	}, []);
 
 	const handleClick = async () => {
@@ -93,7 +89,7 @@ export const getServerSideProps = withSessionSsr(
 
 		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
 		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
-		const response = await fetcher<UserData>(`${baseUrl}/api/user/${userID}`);
+		const response = await get_.user(userID, baseUrl);
 		if (!response?.success) return {redirect};
 
 		const sessionId = query?.session_id as string;

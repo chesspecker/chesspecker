@@ -1,19 +1,18 @@
 import {ReactElement, useState} from 'react';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
-import {UserData} from './api/user';
 import Layout from '@/layouts/login';
 import {Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {fetcher} from '@/lib/utils';
 import {User} from '@/models/user';
+import {getUser} from '@/lib/api-helpers';
 
 const IndexPage = () => {
 	const [user, setUser] = useState<User>();
 
 	useEffectAsync(async () => {
-		const response = await fetcher<UserData>('/api/user');
+		const response = await getUser();
 		if (response.success) setUser(() => response.data);
 	}, []);
 

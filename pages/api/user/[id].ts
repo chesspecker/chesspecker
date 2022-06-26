@@ -85,6 +85,7 @@ const put_ = async (
 			return;
 		}
 
+		response.setHeader('Cache-Control', 's-maxage=5, stale-while-revalidate');
 		response.json({success: true, data});
 	} catch (error: unknown) {
 		fail((error as Error).message);

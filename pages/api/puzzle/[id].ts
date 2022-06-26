@@ -28,6 +28,10 @@ const get_ = async (
 			return;
 		}
 
+		response.setHeader(
+			'Cache-Control',
+			's-maxage=3600, stale-while-revalidate',
+		);
 		response.json({success: true, data: puzzle});
 	} catch (error: unknown) {
 		fail((error as Error).message);
