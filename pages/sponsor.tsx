@@ -1,19 +1,18 @@
 import process from 'process';
 import Stripe from 'stripe';
 import type {ReactElement} from 'react';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import Modal from 'react-pure-modal';
 import {useRouter} from 'next/router';
 import {NextSeo} from 'next-seo';
-import type {SubscriptionData} from '@/api/subscription/[id]';
 import type {CheckoutRequestBody, CheckoutData} from '@/api/subscription/index';
 import useModal from '@/hooks/use-modal';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
-import useUser from '@/hooks/use-user';
 import getStripe from '@/lib/get-stripe';
 import {User} from '@/models/user';
 import useEffectAsync from '@/hooks/use-effect-async';
+import {getUser, get_} from '@/lib/api-helpers';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
@@ -117,11 +116,8 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 	);
 };
 
-const ManageSponsor = ({
-	subscription,
-}: {
-	subscription: Stripe.Subscription | undefined;
-}) => {
+type ManageSponsorProps = {subscription?: Stripe.Subscription};
+const ManageSponsor = ({subscription}: ManageSponsorProps) => {
 	const router = useRouter();
 	const cancelSubscription = async () => {
 		if (!subscription?.id) return;
@@ -150,23 +146,19 @@ const ManageSponsor = ({
 };
 
 const SponsorPage = () => {
-	const data = useUser();
 	const [user, setUser] = useState<User>();
 	const [subscription, setSubscription] = useState<Stripe.Subscription>();
 
-	useEffect(() => {
-		if (!data) return;
-		setUser(data.user);
-	}, [data]);
-
 	useEffectAsync(async () => {
+		const response = await getUser();
+		if (!response.success) return;
+		const user = response.data;
+		setUser(() => user);
+
 		if (!user?.isSponsor || !user?.stripeId) return;
-		const result = await fetch(`/api/subscription/${user.stripeId}`).then(
-			async response => response.json() as Promise<SubscriptionData>,
-		);
-		if (!result.success) return;
-		setSubscription(result.data);
-	}, [user]);
+		const sub = await get_.subscription(user.stripeId);
+		if (sub.success) setSubscription(() => sub.data);
+	}, []);
 
 	const handleClick = async (priceId: string) => {
 		const body: CheckoutRequestBody = {stripePriceId: priceId};

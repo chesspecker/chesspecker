@@ -6,19 +6,19 @@ import Layout from '@/layouts/main';
 import {achievements, achievementsCategorys} from '@/data/achievements';
 import type {AchievementInterface} from '@/types/models';
 import {User} from '@/models/user';
-import useUser from '@/hooks/use-user';
+import {getUser} from '@/lib/api-helpers';
+import useEffectAsync from '@/hooks/use-effect-async';
 
 const Card = dynamic(async () => import('@/components/card-achievement'));
 const Achievements = () => {
-	const data = useUser();
 	const [user, setUser] = useState<User>();
 	const [achievementsList, setList] = useState<AchievementInterface[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
-	useEffect(() => {
-		if (!data) return;
-		setUser(data.user);
-	}, [data]);
+	useEffectAsync(async () => {
+		const response = await getUser();
+		if (response.success) setUser(() => response.data);
+	}, []);
 
 	useEffect(() => {
 		if (!user) return;

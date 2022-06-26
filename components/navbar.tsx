@@ -1,13 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {LogoutIcon, MoonIcon, SunIcon} from '@heroicons/react/solid';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {useAtom} from 'jotai';
 import Burger from './mobile-assets/burger';
 import logo from '@/public/images/logo.svg';
-import useUser from '@/hooks/use-user';
 import {User} from '@/models/user';
 import {darkModeµ} from '@/lib/atoms';
+import {getUser} from '@/lib/api-helpers';
+import useEffectAsync from '@/hooks/use-effect-async';
 
 export const BtnToggle = () => {
 	const [darkMode, setDarkMode] = useAtom(darkModeµ);
@@ -39,12 +40,11 @@ export const BtnToggle = () => {
 
 const Navbar = () => {
 	const [user, setUser] = useState<User>();
-	const data = useUser();
 
-	useEffect(() => {
-		if (!data) return;
-		setUser(data.user);
-	}, [data]);
+	useEffectAsync(async () => {
+		const response = await getUser();
+		if (response.success) setUser(() => response.data);
+	}, []);
 
 	return (
 		<>

@@ -1,5 +1,5 @@
 import {ArrowSmDownIcon, ArrowSmUpIcon} from '@heroicons/react/solid';
-import {parseGrade} from '@/lib/view';
+import {parseGrade} from '@/lib/grades';
 
 const classNames = (...classes: string[]) => classes.filter(Boolean).join(' ');
 

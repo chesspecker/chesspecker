@@ -69,7 +69,7 @@ export const getServerSideProps = withSessionSsr(
 		const responseUser = await get_.user(userID, baseUrl);
 		if (!responseUser?.success) return {redirect};
 
-		const responseSet = await get_.set(userID, baseUrl);
+		const responseSet = await get_.setByUser(userID, baseUrl);
 		const puzzleSets = responseSet?.success ? responseSet.data : [];
 
 		return {

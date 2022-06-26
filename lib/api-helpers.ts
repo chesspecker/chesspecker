@@ -9,6 +9,7 @@ import type {UserData} from '@/api/user/[id]';
 import {ThemeItem} from '@/models/theme';
 import {PuzzleSetArrayData} from '@/pages/api/setBy/[user]';
 import {SessionData} from '@/pages/api/checkout-sessions/[id]';
+import {SubscriptionData} from '@/pages/api/subscription/[id]';
 
 const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 	fetch(`${baseUrl}/api/puzzle/${id}`).then(async response => response.json());
@@ -24,6 +25,9 @@ export const getUser = async (baseUrl = ''): Promise<UserData> =>
 
 const getSession = async (id: string): Promise<SessionData> =>
 	fetch(`/api/checkout-sessions/${id}`).then(async response => response.json());
+
+const getSubscription = async (id: string): Promise<SubscriptionData> =>
+	fetch(`/api/subscription/${id}`).then(async response => response.json());
 
 const getSetByUser = async (
 	user: string,
@@ -81,6 +85,7 @@ export const get_ = {
 	setByUser: getSetByUser,
 	user: getUserById,
 	session: getSession,
+	subscription: getSubscription,
 };
 
 export const update_ = {
