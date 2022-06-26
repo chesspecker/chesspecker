@@ -155,8 +155,10 @@ const ViewingPage = ({set}: Props) => {
 					) : (
 						<ModalSpacedOn
 							isOpen={isOpen}
-							hide={hide}
-							onClick={async event => {
+							hide={async () => {
+								hide();
+							}}
+							onClick={async (event?: React.MouseEvent<HTMLButtonElement>) => {
 								if (event) event.stopPropagation();
 								await activateSpacedRepetion(set);
 								hide();
@@ -229,9 +231,9 @@ const ViewingPage = ({set}: Props) => {
 					</div>
 				)}
 
-				{set?.currentTime > 0 && (
+				{set?.cycles > 0 && (
 					<div className='flex-wrap w-full mt-4'>
-						<h2 className='mb-4 h2'>All puzzles</h2>
+						<h2 className='mb-4 h2'>Average grade for each puzzle</h2>
 						<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
 							{set.puzzles.map(puzzle => (
 								<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />

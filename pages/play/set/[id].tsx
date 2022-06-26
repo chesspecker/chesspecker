@@ -631,7 +631,10 @@ const PlayingPage = ({set, user}: Props) => {
 			<ModalSpacedEnd isOpen={isOpenSpacedOff} hide={hideSpacedOff} />
 			<ModalSpacedOn
 				isOpen={isOpenSpacedOn}
-				hide={hideSpacedOn}
+				hide={async () => {
+					hideSpacedOn();
+					await router.push('/dashboard');
+				}}
 				onClick={async () => {
 					await activateSpacedRepetion(set);
 					hideSpacedOn();

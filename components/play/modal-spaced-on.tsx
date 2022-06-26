@@ -6,9 +6,9 @@ import GenericModal from '@/components/modal';
 type Props = {
 	onClick: (event?: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
 	isOpen: boolean;
-	hide: () => void;
+	hide: (event?: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
 };
-const ModalSpacedOn = ({onClick, isOpen = false, hide}: Props) => {
+const ModalSpacedOn = ({onClick, hide, isOpen = false}: Props) => {
 	const [progress, setProgress] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
 
