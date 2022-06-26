@@ -17,7 +17,7 @@ const Modal = dynamic(async () => import('@/components/modal-achievement'));
 
 type Props = {
 	user: User;
-	puzzleSets?: PuzzleSet[];
+	puzzleSets: PuzzleSet[];
 };
 
 const DashbaordPage = ({user, puzzleSets}: Props) => {
@@ -76,7 +76,7 @@ export const getServerSideProps = withSessionSsr(
 			`${baseUrl}/api/setBy/${userID}`,
 		);
 
-		const puzzleSets = responseSet?.success ? responseSet.data : undefined;
+		const puzzleSets = responseSet?.success ? responseSet.data : [];
 
 		return {
 			props: {

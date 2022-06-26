@@ -68,7 +68,7 @@ const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
 );
 
 type Props = {
-	puzzleSets?: PuzzleSet[];
+	puzzleSets: PuzzleSet[];
 };
 
 const PuzzleSetMap = ({puzzleSets}: Props) => {
