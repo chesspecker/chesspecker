@@ -10,14 +10,7 @@ const nextConfig = {
 	experimental: {
 		outputStandalone: true,
 	},
-	webpackDevMiddleware: config => {
-		config.watchOptions = {
-			poll: 1000,
-			aggregateTimeout: 300,
-		};
-		return config;
-	},
-	webpack: (config, {dev, isServer}) => {
+	webpack: config => {
 		config.module.rules.push({
 			test: /\.(ogg|mp3|wav|mpe?g)$/i,
 			use: [
@@ -29,17 +22,6 @@ const nextConfig = {
 				},
 			],
 		});
-
-		/* FIXME: preact compat issue with react 18 https://github.com/preactjs/preact/pull/3568
-		// Replace React with Preact only in client production build
-		if (!dev && !isServer) {
-			Object.assign(config.resolve.alias, {
-				react: 'preact/compat',
-				'react-dom/test-utils': 'preact/test-utils',
-				'react-dom': 'preact/compat',
-			});
-		} */
-
 		config.optimization.minimize = false;
 		return config;
 	},

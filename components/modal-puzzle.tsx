@@ -11,14 +11,27 @@ type Props = {
 	/* eslint-disable-next-line react/boolean-prop-naming */
 	showModal: boolean;
 	setShowModal: Dispatch<SetStateAction<boolean>>;
+	random?: Puzzle['PuzzleId'];
 };
 const ModalPuzzle = ({
 	showModal,
 	stat,
 	setShowModal,
 	puzzle,
+	random,
 }: Props): JSX.Element => {
 	const router = useRouter();
+
+	const handleReload = () => {
+		setShowModal(() => false);
+		router.reload();
+	};
+
+	const handleRandom = async () => {
+		setShowModal(() => false);
+		await router.push(`/play/puzzle/${random ?? 'qbsiJ'}`);
+	};
+
 	return (
 		<Transition
 			as={Fragment}
@@ -58,26 +71,11 @@ const ModalPuzzle = ({
 					</p>
 				</Transition.Child>
 				<div className='w-1/3 mt-4'>
-					<Button
-						className='mb-4'
-						onClick={() => {
-							setShowModal(() => false);
-							router.reload();
-						}}
-					>
-						PLAY AGAIN ⚔️
-					</Button>
+					<Button onClick={handleReload}>PLAY IT AGAIN ⚔️</Button>
+					<Button onClick={handleRandom}>PLAY RANDOM PUZZLE 🧨</Button>
 					<ButtonLink href={`https://lichess.org/training/${puzzle.PuzzleId}`}>
 						VIEW ON LICHESS
 					</ButtonLink>
-					<Button
-						onClick={async () => {
-							setShowModal(() => false);
-							router.back();
-						}}
-					>
-						GO BACK 🧨
-					</Button>
 				</div>
 			</div>
 		</Transition>

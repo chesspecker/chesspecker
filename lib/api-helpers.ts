@@ -35,6 +35,9 @@ const getSetByUser = async (
 ): Promise<PuzzleSetArrayData> =>
 	fetch(`${baseUrl}/api/setBy/${user}`).then(async response => response.json());
 
+const getPuzzleRandomly = async (): Promise<PuzzleData> =>
+	fetch('/api/puzzle/random').then(async response => response.json());
+
 const updatePuzzle = async (
 	setId: string,
 	puzzleId: string,
@@ -81,6 +84,7 @@ const updateUser = async (
 
 export const get_ = {
 	puzzle: getPuzzleById,
+	randomePuzzle: getPuzzleRandomly,
 	set: getSetById,
 	setByUser: getSetByUser,
 	user: getUserById,
