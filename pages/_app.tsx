@@ -26,41 +26,7 @@ const CustomApp = ({
 	Component,
 	pageProps: {session, ...pageProps},
 }: AppPropsWithLayout) => {
-	const router = useRouter();
-	const [loading, setLoading] = useState<boolean>(false);
-
-	useEffect(() => {
-		const setTrue = () => {
-			setLoading(() => true);
-		};
-
-		const setFalse = () => {
-			setLoading(() => false);
-		};
-
-		router.events.on('routeChangeStart', setTrue);
-		router.events.on('routeChangeComplete', setFalse);
-
-		return () => {
-			router.events.off('routeChangeStart', setTrue);
-			router.events.off('routeChangeComplete', setFalse);
-		};
-	}, [router.events]);
-
-	useEffectAsync(async () => {
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker
-				.getRegistrations()
-				.then(async registrations => {
-					for (const registration of registrations) {
-						/* eslint-disable-next-line no-await-in-loop */
-						await registration.unregister();
-					}
-				})
-				.catch(console.error);
-		}
-	}, []);
-
+	const [loading, setLoading] = useState(false);
 	const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
 
 	return getLayout(
