@@ -30,6 +30,7 @@ const nextConfig = {
 			],
 		});
 
+		/* FIXME: preact compat issue with react 18 https://github.com/preactjs/preact/pull/3568
 		// Replace React with Preact only in client production build
 		if (!dev && !isServer) {
 			Object.assign(config.resolve.alias, {
@@ -37,7 +38,7 @@ const nextConfig = {
 				'react-dom/test-utils': 'preact/test-utils',
 				'react-dom': 'preact/compat',
 			});
-		}
+		} */
 
 		config.optimization.minimize = false;
 		return config;
