@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import type {NextApiHandler} from 'next/types';
-import {db} from '@/config';
+import {DATABASE_URL} from '@/config';
 
 const withMongoRoute =
 	(handler: NextApiHandler) =>
@@ -11,7 +11,7 @@ const withMongoRoute =
 			return;
 		}
 
-		await mongoose.connect(db.url!);
+		await mongoose.connect(DATABASE_URL!);
 		await handler(request, response);
 	};
 

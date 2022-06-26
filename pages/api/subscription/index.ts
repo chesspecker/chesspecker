@@ -1,14 +1,12 @@
-import process from 'process';
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
-import {origin} from '@/config';
+import {ORIGIN, STRIPE_PUBLISHABLE} from '@/config';
 import {ErrorData, SuccessData} from '@/types/data';
 import {failWrapper} from '@/lib/utils';
 
-const key = process.env.STRIPE_SECRET_KEY!;
-const stripe = new Stripe(key, {apiVersion: '2020-08-27'});
+const stripe = new Stripe(STRIPE_PUBLISHABLE!, {apiVersion: '2020-08-27'});
 
 export type CheckoutData = SuccessData<Stripe.Checkout.Session> | ErrorData;
 
@@ -35,8 +33,8 @@ const post_ = async (
 		line_items: [{price: stripePriceId, quantity: 1}],
 		payment_method_types: ['card'],
 		mode: 'subscription',
-		success_url: `${origin}/success-stripe?session_id={CHECKOUT_SESSION_ID}`,
-		cancel_url: `${origin}/cancel`,
+		success_url: `${ORIGIN}/success-stripe?session_id={CHECKOUT_SESSION_ID}`,
+		cancel_url: `${ORIGIN}/cancel`,
 	};
 
 	if (customer) parameters.customer = customer;

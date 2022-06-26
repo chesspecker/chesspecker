@@ -1,5 +1,5 @@
 import {LichessToken, LichessUser} from '@/types/lichess';
-import {lichess, origin} from '@/config';
+import {LICHESS_CONFIG, ORIGIN} from '@/config';
 
 const getAccount = async (
 	accessToken: LichessToken['access_token'],
@@ -21,8 +21,8 @@ const getToken = async (
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
 			grant_type: 'authorization_code',
-			redirect_uri: `${origin}/api/auth/lichess/callback`,
-			client_id: lichess.clientId,
+			redirect_uri: `${ORIGIN}/api/auth/lichess/callback`,
+			client_id: LICHESS_CONFIG.clientId,
 			code: authCode,
 			code_verifier: verifier,
 		}),

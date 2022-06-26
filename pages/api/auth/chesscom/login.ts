@@ -2,7 +2,7 @@ import {createHash, randomBytes} from 'crypto';
 import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import {nanoid} from 'nanoid';
-import {chesscom, origin} from '@/config';
+import {CHESSCOM_CONFIG, ORIGIN} from '@/config';
 import {withSessionRoute} from '@/lib/session';
 import {failWrapper} from '@/lib/utils';
 
@@ -32,7 +32,7 @@ const loginRoute = async (
 	}
 
 	if (request.session.userID) {
-		response.redirect(303, `${origin}/success-login`);
+		response.redirect(303, `${ORIGIN}/success-login`);
 		return;
 	}
 
@@ -50,8 +50,8 @@ const loginRoute = async (
 
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',
-		client_id: chesscom.clientId!,
-		redirect_uri: `${origin}/api/auth/chesscom/callback`,
+		client_id: CHESSCOM_CONFIG.clientId!,
+		redirect_uri: `${ORIGIN}/api/auth/chesscom/callback`,
 		scope: 'openid profile',
 		state,
 		code_challenge_method: 'S256',

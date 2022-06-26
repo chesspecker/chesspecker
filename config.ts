@@ -1,37 +1,23 @@
 import {env} from 'process';
 
-export const db = {
-	url: env.DB_URL,
-};
+export const DATABASE_URL = env.DB_URL;
 
-export const redisConfig = {
-	uri: env.REDIS_URI,
-};
+export const STRIPE_PUBLISHABLE = env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+export const STRIPE_SECRET = env.STRIPE_SECRET_KEY;
 
-export const stripeConfig = {
-	publishableKey: env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-	secretKey: env.STRIPE_SECRET_KEY,
-};
+export const COOKIE_PASSWORD = env.SECRET_COOKIE_PASSWORD;
 
-export const lichess = {
+export const LICHESS_CONFIG = {
 	clientId: env.LICHESS_CLIENT_ID,
 	clientSecret: env.LICHESS_CLIENT_SECRET,
 	token: env.LICHESS_TOKEN,
 };
 
-export const chesscom = {
+export const CHESSCOM_CONFIG = {
 	clientId: env.CHESSCOM_CLIENT_ID,
 };
 
-export const config = {
-	port: env.APP_PORT ?? 8000,
-	frontPort: env.FRONT_PORT ?? 3000,
-	status: env.NODE_ENV,
-};
-
-export const origin =
+export const ORIGIN =
 	env.NODE_ENV === 'production'
 		? 'https://www.chesspecker.com'
 		: `http://localhost:3000`;
-
-export const cookiePassword = env.SECRET_COOKIE_PASSWORD;

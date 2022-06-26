@@ -1,4 +1,3 @@
-import process from 'process';
 import Stripe from 'stripe';
 import type {ReactElement} from 'react';
 import {useState} from 'react';
@@ -13,6 +12,7 @@ import getStripe from '@/lib/get-stripe';
 import {User} from '@/models/user';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {getUser, get_} from '@/lib/api-helpers';
+import {STRIPE_PUBLISHABLE} from '@/config';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
@@ -171,8 +171,7 @@ const SponsorPage = () => {
 
 		if (result.success) {
 			const {id: sessionId} = result.data;
-			const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
-			const stripe = await getStripe(key);
+			const stripe = await getStripe(STRIPE_PUBLISHABLE!);
 			if (!stripe) return;
 			const {error} = await stripe.redirectToCheckout({sessionId});
 			if (error) console.error(error);

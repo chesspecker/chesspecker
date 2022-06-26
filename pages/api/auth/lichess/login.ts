@@ -1,7 +1,7 @@
 import {createHash, randomBytes} from 'crypto';
 import withMongoRoute from 'providers/mongoose';
 import type {NextApiRequest, NextApiResponse} from 'next';
-import {lichess, origin} from '@/config';
+import {LICHESS_CONFIG, ORIGIN} from '@/config';
 import {withSessionRoute} from '@/lib/session';
 import type {ErrorData} from '@/types/data';
 import {failWrapper} from '@/lib/utils';
@@ -31,7 +31,7 @@ const loginRoute = async (
 	}
 
 	if (request.session.userID) {
-		response.redirect(303, `${origin}/success-login`);
+		response.redirect(303, `${ORIGIN}/success-login`);
 		return;
 	}
 
@@ -47,8 +47,8 @@ const loginRoute = async (
 
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',
-		client_id: lichess.clientId!,
-		redirect_uri: `${origin}/api/auth/lichess/callback`,
+		client_id: LICHESS_CONFIG.clientId!,
+		redirect_uri: `${ORIGIN}/api/auth/lichess/callback`,
 		scope: 'preference:read',
 		code_challenge_method: 'S256',
 		code_challenge: challenge,

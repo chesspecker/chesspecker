@@ -2,7 +2,7 @@ import {withSessionRoute} from 'lib/session';
 import withMongoRoute from 'providers/mongoose';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import UserModel from '@/models/user';
-import {origin} from '@/config';
+import {ORIGIN} from '@/config';
 import getLichess from '@/lib/get-lichess';
 import {createLichessUser} from '@/controllers/create-user';
 import {failWrapper} from '@/lib/utils';
@@ -42,7 +42,7 @@ const callback = async (
 		request.session.userID = user._id.toString();
 		request.session.username = user.username;
 		await request.session.save();
-		response.redirect(302, `${origin}/success-login`);
+		response.redirect(302, `${ORIGIN}/success-login`);
 		return;
 	} catch (error: unknown) {
 		fail((error as Error).message);

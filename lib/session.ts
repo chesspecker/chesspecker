@@ -6,7 +6,7 @@ import {
 	NextApiHandler,
 } from 'next/types';
 import {withIronSessionApiRoute, withIronSessionSsr} from 'iron-session/next';
-import {cookiePassword} from '@/config';
+import {COOKIE_PASSWORD} from '@/config';
 
 declare module 'iron-session' {
 	interface IronSessionData {
@@ -21,7 +21,7 @@ declare module 'iron-session' {
 }
 
 export const sessionOptions: IronSessionOptions = {
-	password: cookiePassword!,
+	password: COOKIE_PASSWORD!,
 	cookieName: 'chesspecker',
 	cookieOptions: {
 		secure: process.env.NODE_ENV === 'production',

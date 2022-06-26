@@ -1,7 +1,7 @@
 import {withSessionRoute} from 'lib/session';
 import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
-import {origin} from '@/config';
+import {ORIGIN} from '@/config';
 import getChesscom from '@/lib/get-chesscom';
 import User from '@/models/user';
 import {createChesscomUser} from '@/controllers/create-user';
@@ -43,7 +43,7 @@ const callback = async (
 		request.session.userID = user._id.toString();
 		request.session.username = user.username;
 		await request.session.save();
-		response.redirect(302, `${origin}/success-login`);
+		response.redirect(302, `${ORIGIN}/success-login`);
 		return;
 	} catch (error: unknown) {
 		fail((error as Error).message);

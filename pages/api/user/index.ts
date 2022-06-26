@@ -5,7 +5,7 @@ import {createChesscomUser, createLichessUser} from '@/controllers/create-user';
 import {SuccessData, ErrorData} from '@/types/data';
 import {failWrapper} from '@/lib/utils';
 import UserModel, {User} from '@/models/user';
-import {origin} from '@/config';
+import {ORIGIN} from '@/config';
 
 export type UserData = SuccessData<User> | ErrorData;
 
@@ -16,7 +16,7 @@ const get_ = async (
 	const fail = failWrapper(response);
 	const {userID} = request.session;
 	if (!userID) {
-		response.redirect(302, `${origin}/logout`);
+		response.redirect(302, `${ORIGIN}/logout`);
 		return;
 	}
 

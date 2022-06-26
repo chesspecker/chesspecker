@@ -1,5 +1,5 @@
 import {ChesscomStats, ChesscomToken, ChesscomUser} from '@/types/chesscom';
-import {chesscom, origin} from '@/config';
+import {CHESSCOM_CONFIG, ORIGIN} from '@/config';
 
 const getStats = async (
 	accessToken: ChesscomToken['access_token'],
@@ -34,8 +34,8 @@ const getToken = async (
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
 			grant_type: 'authorization_code',
-			client_id: chesscom.clientId,
-			redirect_uri: `${origin}/api/auth/chesscom/callback`,
+			client_id: CHESSCOM_CONFIG.clientId,
+			redirect_uri: `${ORIGIN}/api/auth/chesscom/callback`,
 			code: authCode,
 			code_verifier: verifier,
 		}),
