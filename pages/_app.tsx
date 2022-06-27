@@ -7,7 +7,6 @@ import '@/styles/cg-pieces.css';
 import {ReactElement, ReactNode, useEffect, useState} from 'react';
 import type {NextPage} from 'next';
 import type {AppProps} from 'next/app';
-import {SWRConfig} from 'swr';
 import {useRouter} from 'next/router';
 import {DefaultSeo} from 'next-seo';
 import PlausibleProvider from 'next-plausible';
@@ -93,12 +92,10 @@ const CustomApp = ({
 				]}
 			/>
 
-			<SWRConfig>
-				<Loader isVisible={loading} />
-				<PlausibleProvider domain='chesspecker.com'>
-					<Component {...pageProps} />
-				</PlausibleProvider>
-			</SWRConfig>
+			<Loader isVisible={loading} />
+			<PlausibleProvider domain='chesspecker.com'>
+				<Component {...pageProps} />
+			</PlausibleProvider>
 		</>,
 	);
 };
