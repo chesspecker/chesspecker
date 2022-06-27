@@ -11,8 +11,10 @@ import {SWRConfig} from 'swr';
 import {useRouter} from 'next/router';
 import {DefaultSeo} from 'next-seo';
 import PlausibleProvider from 'next-plausible';
+import {I18nProvider} from 'next-rosetta';
 import Loader from '@/components/loader';
 import useEffectAsync from '@/hooks/use-effect-async';
+import {Locale} from '@/types/i18n';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -94,9 +96,11 @@ const CustomApp = ({
 			/>
 
 			<SWRConfig>
-				<Loader isVisible={loading} />
 				<PlausibleProvider domain='chesspecker.com'>
-					<Component {...pageProps} />
+					<Loader isVisible={loading} />
+					<I18nProvider table={pageProps.table as Locale}>
+						<Component {...pageProps} />
+					</I18nProvider>
 				</PlausibleProvider>
 			</SWRConfig>
 		</>,

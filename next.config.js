@@ -7,6 +7,10 @@ const nextConfig = {
 	images: {
 		domains: ['localhost'],
 	},
+	i18n: {
+		locales: ['en', 'fr'],
+		defaultLocale: 'en',
+	},
 	experimental: {
 		outputStandalone: true,
 	},
