@@ -1,8 +1,3 @@
-export interface Locale {
-	locale: string;
-	'success-login': {
-		hello: string;
-		welcome: string;
-		button: string;
-	};
-}
+import type {Locale} from '../i18n/en'
+
+export {Locale}

@@ -9,7 +9,6 @@ import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {User} from '@/models/user';
 import {getUser} from '@/lib/api-helpers';
-
 import type {Locale} from '@/types/i18n';
 
 const IndexPage = () => {

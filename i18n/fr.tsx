@@ -5,6 +5,18 @@ export const table: Locale = {
 	'success-login': {
 		hello: 'Salut {{username}} 👋',
 		welcome: 'Bienvenue sur chesspecker',
-		button: "LET'S GO! 🔥",
+		button: 'EN AVANT ! 🔥',
+	},
+	'404': {
+		title: 'Looks like you are lost...',
+		button: 'RETURN HOME',
+	},
+	'500': {
+		title: 'Looks like you are lost...',
+		button: 'RETURN HOME',
+	},
+	cancel: {
+		title: 'Looks like you are lost...',
+		button: 'RETURN HOME',
 	},
 };
