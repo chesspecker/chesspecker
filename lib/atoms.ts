@@ -26,6 +26,8 @@ export type Pieces = 'cburnett' | 'classic' | 'neo' | 'alpha' | 'bases';
 
 const board = atomWithStorage<Board>('cp-board', 'green');
 const pieces = atomWithStorage<Pieces>('cp-pieces', 'neo');
+export const themeµ = {board, pieces};
+
 const sound = atomWithStorage<boolean>('cp-sound', true);
 const animation = atomWithStorage<boolean>('cp-animation', true);
 const autoMove = atomWithStorage<boolean>('cp-automove', true);
@@ -45,8 +47,13 @@ export const playµ = {
 	isComplete,
 };
 
-export const orientationµ = atom<'white' | 'black'>('white');
-export const revertedµ = atom<boolean>(false);
+const color = atom<'white' | 'black'>('white');
+const reverted = atom<boolean>(false);
+
+export const orientationµ = {
+	color,
+	reverted,
+};
 
 export type Animation =
 	| ''
@@ -55,8 +62,5 @@ export type Animation =
 	| 'animate-finishMove';
 export const animationµ = atom<Animation>('');
 
-export const get_ = (value: string): any =>
-	JSON.parse(localStorage.getItem(value) ?? 'null');
-export const set_ = (key: string, value: any) => {
-	localStorage.setItem(key, JSON.stringify(value));
-};
+export const getStorage = <T>(value: string): T =>
+	JSON.parse(localStorage.getItem(value) ?? 'null') as T;
