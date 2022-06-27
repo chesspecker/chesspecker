@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root{
+	--bg-color: "<%= bg_color %>";
+	--main-color: "<%= main_color %>";
+	--sub-color: "<%= sub_color %>";
+}
+
+
+
+
 .h2 {
 	@apply text-3xl;
 }

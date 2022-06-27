@@ -11,6 +11,11 @@ module.exports = {
 	darkMode: 'class',
 	theme: {
 		extend: {
+			colors: {
+				bgColor: 'var(--bg-color)',
+				mainColor: 'var(--main-color)',
+				subColor: 'var(--sub-color)',
+			},
 			fontFamily: {
 				sans: ['"Merriweather Sans"', ...defaultTheme.fontFamily.sans],
 			},
