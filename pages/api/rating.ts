@@ -7,11 +7,11 @@ import getChesscom from '@/lib/get-chesscom';
 import {SuccessData, ErrorData} from '@/types/data';
 import {failWrapper} from '@/lib/utils';
 
-export type Data = SuccessData<number> | ErrorData;
+export type RatingData = SuccessData<number> | ErrorData;
 
 const getLichessRating = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<RatingData>,
 ) => {
 	const {lichessToken} = request.session;
 	if (!lichessToken) {
@@ -36,7 +36,7 @@ const getLichessRating = async (
 
 const getChesscomRating = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<RatingData>,
 ) => {
 	const {chesscomToken, username} = request.session;
 	if (!chesscomToken || !username) {
@@ -64,7 +64,7 @@ const getChesscomRating = async (
 
 const handler = async (
 	request: NextApiRequest,
-	response: NextApiResponse<Data>,
+	response: NextApiResponse<RatingData>,
 ) => {
 	const fail = failWrapper(response);
 	switch (request.method) {

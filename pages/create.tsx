@@ -31,12 +31,10 @@ const CreatePage = () => {
 		<>
 			<NextSeo title='♟ Create' />
 			<div className='flex flex-col items-center justify-center pt-32 pb-24'>
-				<h2 className='text-xl font-bold sm:text-3xl'>
-					Select one or more category to create your set!
-				</h2>
+				<h2 className='text-xl font-bold sm:text-3xl'>{t('create.title')}</h2>
 				<div className='fixed w-36 right-10 top-40'>
 					<Button className='flex justify-around' onClick={handleClick}>
-						<span>NEXT</span>
+						<span>{t('create.button')}</span>
 						<ArrowRightIcon className='w-5 h-5 my-auto ml-4 align-middle' />
 					</Button>
 				</div>

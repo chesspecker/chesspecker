@@ -64,10 +64,10 @@ const OptionsPage = () => {
 			<NextSeo title='⚙️ Options' />
 			<div className='flex flex-col items-center justify-center w-11/12 min-h-screen pt-32 pb-24 text-center'>
 				<div>
-					<h1 className='mb-8 text-3xl lg:text-5xl'>One last thing...</h1>
+					<h1 className='mb-8 text-3xl lg:text-5xl'>{t('options.title')}</h1>
 					<Alert type='error' isVisible={isOpen} message='Title is needed!' />
 					<div className='flex flex-col items-center justify-center w-5/6 mx-12'>
-						<OptionTextInput>Give your set a name</OptionTextInput>
+						<OptionTextInput />
 						<OptionDifficulty />
 						<OptionSize />
 						<div className='w-3/5 mt-20'>
@@ -84,10 +84,10 @@ const OptionsPage = () => {
 												layout='fill'
 											/>
 										</div>
-										Loading...
+										{t('options.button.loading')}
 									</>
 								) : (
-									`LET'S GO! 🎉`
+									t('options.button.base')
 								)}
 							</Button>
 						</div>
