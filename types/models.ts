@@ -31,3 +31,9 @@ export enum Difficulty {
 	harder = 'harder',
 	hardest = 'hardest',
 }
+
+export type Animation =
+	| ''
+	| 'animate-rightMove'
+	| 'animate-wrongMove'
+	| 'animate-finishMove';

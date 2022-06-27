@@ -1,7 +1,7 @@
 import {atom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
 import type {Category} from 'data/categories';
-import {Difficulty} from '@/types/models';
+import {Difficulty, Animation} from '@/types/models';
 
 export const darkModeµ = atomWithStorage<boolean>('cp-dark-mode', true);
 
@@ -55,11 +55,6 @@ export const orientationµ = {
 	reverted,
 };
 
-export type Animation =
-	| ''
-	| 'animate-rightMove'
-	| 'animate-wrongMove'
-	| 'animate-finishMove';
 export const animationµ = atom<Animation>('');
 
 export const getStorage = <T>(value: string): T =>
