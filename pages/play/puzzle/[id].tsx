@@ -11,14 +11,7 @@ import dynamic from 'next/dynamic';
 import {useSound} from 'use-sound';
 import {Puzzle} from '@/models/puzzle';
 import Layout from '@/layouts/main';
-import {
-	configµ,
-	orientationµ,
-	animationµ,
-	playµ,
-	Animation,
-	revertedµ,
-} from '@/lib/atoms';
+import {configµ, orientationµ, animationµ, playµ, Animation} from '@/lib/atoms';
 import MOVE from '@/sounds/Move.mp3';
 import CAPTURE from '@/sounds/Capture.mp3';
 import ERROR from '@/sounds/Error.mp3';
@@ -56,8 +49,8 @@ const PlayingPage = ({puzzle}: Props) => {
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
 
-	const [orientation, setOrientation] = useAtom(orientationµ);
-	const [isReverted] = useAtom(revertedµ);
+	const [orientation, setOrientation] = useAtom(orientationµ.color);
+	const [isReverted] = useAtom(orientationµ.reverted);
 	const [, setAnimation] = useAtom(animationµ);
 
 	const [chess, setChess] = useState<ChessInstance>(new Chess());

@@ -16,14 +16,7 @@ import GENERIC from '@/sounds/GenericNotify.mp3';
 import VICTORY from '@/sounds/Victory.mp3';
 import Layout from '@/layouts/main';
 import {sleep, sortBy} from '@/lib/utils';
-import {
-	configµ,
-	orientationµ,
-	animationµ,
-	playµ,
-	revertedµ,
-	Animation,
-} from '@/lib/atoms';
+import {configµ, orientationµ, animationµ, playµ, Animation} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
 import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
@@ -43,7 +36,6 @@ import {
 	getUpdateBody,
 	getColor,
 	getCurrentPuzzle,
-	updatePuzzleSolvedByCategories,
 } from '@/lib/play';
 import LeftBar, {Stat} from '@/components/play/left-bar';
 import Board from '@/components/play/board';
@@ -83,8 +75,8 @@ const PlayingPage = ({set, user}: Props) => {
 	const [isComplete, setIsComplete] = useAtom(playµ.isComplete);
 	const [completedPuzzles, setCompletedPuzzles] = useAtom(playµ.completed);
 
-	const [orientation, setOrientation] = useAtom(orientationµ);
-	const [isReverted] = useAtom(revertedµ);
+	const [orientation, setOrientation] = useAtom(orientationµ.color);
+	const [isReverted] = useAtom(orientationµ.reverted);
 	const [, setAnimation] = useAtom(animationµ);
 
 	const [chess, setChess] = useState<ChessInstance>(new Chess());
@@ -293,7 +285,7 @@ const PlayingPage = ({set, user}: Props) => {
 
 			updatePuzzleSet.$inc['puzzles.$.streak'] = currentGrade >= 5 ? 1 : 0;
 
-			const puzzleSolvedByCategories_ = updatePuzzleSolvedByCategories(
+			const puzzleSolvedByCategories_ = getUpdateBody.categories(
 				puzzleSolvedByCategories,
 				puzzle.Themes,
 			);

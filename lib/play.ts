@@ -206,4 +206,5 @@ export const getPuzzleSetUpdateBody = ({
 export const getUpdateBody = {
 	set: getFinishedSetUpdateBody,
 	puzzle: getPuzzleSetUpdateBody,
+	categories: updatePuzzleSolvedByCategories,
 };
