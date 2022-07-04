@@ -435,6 +435,7 @@ const PlayingPage = ({set, user}: Props) => {
 			}
 
 			setIsComplete(() => true);
+			setIsRunning(() => false);
 
 			const {maxTime, minTime} = getTime.interval(moveHistory.length);
 			const {timeTaken, timeWithMistakes} = getTime.taken(initialPuzzleTimer);
@@ -458,7 +459,6 @@ const PlayingPage = ({set, user}: Props) => {
 			const isSetComplete = completedPuzzles + 1 === set.length;
 			if (isSetComplete) {
 				if (!initialSetDate) return;
-				setIsRunning(() => false);
 				await updateSetInDb(initialSetDate);
 				await handleSetComplete();
 				return;
