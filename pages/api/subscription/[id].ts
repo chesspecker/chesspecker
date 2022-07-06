@@ -4,8 +4,8 @@ import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
 import {SuccessData, ErrorData} from '@/types/data';
 import {failWrapper} from '@/lib/utils';
-import {STRIPE_PUBLISHABLE} from '@/config';
 
+const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 const stripe = new Stripe(STRIPE_PUBLISHABLE!, {apiVersion: '2020-08-27'});
 
 export type SubscriptionData = SuccessData<Stripe.Subscription> | ErrorData;

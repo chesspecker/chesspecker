@@ -12,7 +12,8 @@ import getStripe from '@/lib/get-stripe';
 import {User} from '@/models/user';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {getUser, get_} from '@/lib/api-helpers';
-import {STRIPE_PUBLISHABLE} from '@/config';
+
+const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {

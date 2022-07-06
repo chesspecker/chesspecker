@@ -2,11 +2,12 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from 'providers/mongoose';
 import Stripe from 'stripe';
 import {withSessionRoute} from '@/lib/session';
-import {ORIGIN, STRIPE_PUBLISHABLE} from '@/config';
+import {ORIGIN} from '@/config';
 import {ErrorData, SuccessData} from '@/types/data';
 import {failWrapper} from '@/lib/utils';
 
-const stripe = new Stripe(STRIPE_PUBLISHABLE!, {apiVersion: '2020-08-27'});
+const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY!;
+const stripe = new Stripe(STRIPE_SECRET, {apiVersion: '2020-08-27'});
 
 export type CheckoutData = SuccessData<Stripe.Checkout.Session> | ErrorData;
 
