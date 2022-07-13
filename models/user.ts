@@ -1,8 +1,9 @@
-import {getModelForClass, prop, mongoose} from '@typegoose/typegoose';
+import {getModelForClass, prop, mongoose, index} from '@typegoose/typegoose';
 import {ThemeItem} from './theme';
 import {AchievementItem} from './achievement';
 import {Streak} from './streak';
 
+@index({id: 1}, {unique: true})
 export class User {
 	@prop()
 	public id!: string;

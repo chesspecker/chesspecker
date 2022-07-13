@@ -1,9 +1,10 @@
-import {getModelForClass, prop, mongoose} from '@typegoose/typegoose';
+import {getModelForClass, prop, mongoose, index} from '@typegoose/typegoose';
 import {User} from './user';
 import {PuzzleItem} from './puzzle-item';
 import type {Ref} from '@/types/ref';
 import {Difficulty} from '@/types/models';
 
+@index({user: 1}, {unique: true})
 export class PuzzleSet {
 	@prop({ref: () => User})
 	public user?: Ref<User>;

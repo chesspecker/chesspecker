@@ -1,5 +1,6 @@
-import {getModelForClass, prop, mongoose} from '@typegoose/typegoose';
+import {getModelForClass, prop, mongoose, index} from '@typegoose/typegoose';
 
+@index({PuzzleId: 1}, {unique: true})
 export class Puzzle {
 	@prop()
 	public PuzzleId!: string;
