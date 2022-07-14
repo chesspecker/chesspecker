@@ -19,14 +19,16 @@ export const resetStreakCount = (date: string) => ({
 	currentCount: 1,
 });
 
-/* eslint-disable-next-line no-return-assign */
 export const incrementStreakCount = (
 	currentStreak: Streak,
 	date: string,
 ): Streak => ({
-	...currentStreak,
+	startDate: currentStreak.startDate,
 	lastLoginDate: date,
-	currentCount: (currentStreak.currentCount += 1),
+	currentCount:
+		Number.parseInt(currentStreak.lastLoginDate.split('/')[1], 10) -
+		Number.parseInt(currentStreak.startDate.split('/')[1], 10) +
+		1,
 });
 
 export const updateStreak = async (
