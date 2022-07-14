@@ -13,7 +13,7 @@ import {User} from '@/models/user';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {getUser, get_} from '@/lib/api-helpers';
 
-const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
@@ -172,7 +172,7 @@ const SponsorPage = () => {
 
 		if (result.success) {
 			const {id: sessionId} = result.data;
-			const stripe = await getStripe(STRIPE_PUBLISHABLE!);
+			const stripe = await getStripe(STRIPE_PUBLISHABLE);
 			if (!stripe) return;
 			const {error} = await stripe.redirectToCheckout({sessionId});
 			if (error) console.error(error);

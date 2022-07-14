@@ -5,8 +5,8 @@ import {withSessionRoute} from '@/lib/session';
 import {failWrapper} from '@/lib/utils';
 import {ErrorData, SuccessData} from '@/types/data';
 
-const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-const stripe = new Stripe(STRIPE_PUBLISHABLE!, {apiVersion: '2020-08-27'});
+const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
+const stripe = new Stripe(STRIPE_PUBLISHABLE, {apiVersion: '2020-08-27'});
 
 export type SessionData = SuccessData<Stripe.Checkout.Session> | ErrorData;
 
