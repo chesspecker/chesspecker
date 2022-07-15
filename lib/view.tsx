@@ -37,6 +37,9 @@ export const ParseTime = ({time}: {time: number}): JSX.Element => {
 	);
 };
 
+const percentage = (value: number, value2: number) =>
+	((value / value2) * 100).toFixed(1);
+
 const getAverageGrade = (set: PuzzleSet): number => {
 	const grades = set.puzzles
 		.map(puzzle => puzzle.grades)
@@ -105,7 +108,10 @@ const timeLastOverFirst = (set: PuzzleSet): ViewData => {
 	result.stat = `${last}s / ${first}s`;
 	if (last !== first) {
 		result.hasChange = true;
-		result.change = last < first ? `${last - first}s` : `${last - first}s`;
+		result.change =
+			last < first
+				? `${percentage(last, first)}%`
+				: `${percentage(first, last)}%`;
 		result.type = last < first ? 'up' : 'down';
 	}
 
@@ -137,7 +143,9 @@ const timeLastOverAverage = (set: PuzzleSet): ViewData => {
 	if (last !== average) {
 		result.hasChange = true;
 		result.change =
-			last < average ? `${last - average}s` : `${last - average}s`;
+			last < average
+				? `${percentage(last, average)}%`
+				: `${percentage(average, last)}%`;
 		result.type = last < average ? 'up' : 'down';
 	}
 
@@ -165,7 +173,8 @@ const timeLastOverBest = (set: PuzzleSet): ViewData => {
 	result.stat = `${last}s / ${best}s`;
 	if (last !== best) {
 		result.hasChange = true;
-		result.change = last < best ? `${last - best}s` : `${last - best}s`;
+		result.change =
+			last < best ? `${percentage(last, best)}%` : `${percentage(best, last)}%`;
 		result.type = last < best ? 'up' : 'down';
 	}
 
@@ -308,8 +317,8 @@ const currentTime = (set: PuzzleSet): ViewData => {
 		result.hasChange = true;
 		result.change =
 			current < last
-				? `${(last - current).toFixed(1)}s`
-				: `${(last - current).toFixed(1)}s`;
+				? `${percentage(last, current)}%`
+				: `${percentage(current, last)}%`;
 		result.type = current < last ? 'up' : 'down';
 	}
 
