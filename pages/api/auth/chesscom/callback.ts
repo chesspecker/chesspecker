@@ -30,6 +30,7 @@ const callback = async (
 	try {
 		const {verifier} = request.session;
 		if (!verifier) throw new Error('No verifier');
+		if (!request.query.code) throw new Error('No code');
 		const chesscomToken = await getChesscom.token(request.query.code, verifier);
 		const oauthToken = chesscomToken.access_token;
 
