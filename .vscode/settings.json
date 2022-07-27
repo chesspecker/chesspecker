@@ -1,0 +1,10 @@
+{
+	"conventionalCommits.scopes": [
+		"dashboard",
+		"play page",
+		"view page",
+		"database",
+		"backend",
+		"github"
+	]
+}
