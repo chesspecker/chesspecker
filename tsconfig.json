@@ -36,7 +36,7 @@
 			"@/controllers/*": ["src/controllers/*"],
 			"@/models/*": ["src/models/*"],
 			"@/sounds/*": ["public/sounds/*"],
-			"@/config": ["config"]
+			"@/config": ["src/env/config"]
 		}
 	},
 	"include": [
