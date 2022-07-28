@@ -1,10 +1,14 @@
 {
-	"conventionalCommits.scopes": [
-		"dashboard",
-		"play page",
-		"view page",
-		"database",
-		"backend",
-		"github"
-	]
+  "conventionalCommits.scopes": [
+    "dashboard",
+    "play page",
+    "view page",
+    "database",
+    "backend",
+    "github"
+  ],
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  }
 }
