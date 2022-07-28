@@ -1,13 +1,13 @@
-export interface ChesscomToken {
+export type ChesscomToken = {
 	access_token: string;
 	id_token: string;
 	token_type: 'Bearer';
 	expires_in: number;
 	scope: string;
 	refresh_token: string;
-}
+};
 
-export interface ChesscomUser {
+export type ChesscomUser = {
 	'@id': string; // The location of this profile (always self-referencing)
 	url: string; // The chess.com user's profile page (the username is displayed with the original letter case)
 	username: string; // The username of this player
@@ -24,9 +24,9 @@ export interface ChesscomUser {
 	is_streamer: boolean; // If the member is a Chess.com streamer
 	twitch_url: string;
 	fide: number; // FIDE rating
-}
+};
 
-interface ChesscomStatItem {
+type ChesscomStatItem = {
 	last?: {
 		// The current stats
 		date: number; // Timestamp of the last rated game finished
@@ -54,6 +54,6 @@ interface ChesscomStatItem {
 		points: number; // Total number of points earned in tournaments
 		highest_finish: number; // Best tournament place
 	};
-}
+};
 
 export type ChesscomStats = Record<string, ChesscomStatItem>;

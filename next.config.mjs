@@ -15,4 +15,15 @@ function defineNextConfig(config) {
 export default defineNextConfig({
 	reactStrictMode: true,
 	swcMinify: true,
+	webpack: config => {
+		config.module.rules.push({
+			test: /\.mp3$/,
+			use: [
+				{
+					loader: 'url-loader',
+				},
+			],
+		});
+		return config;
+	},
 });

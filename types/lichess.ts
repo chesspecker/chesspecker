@@ -1,8 +1,8 @@
-export interface LichessToken {
+export type LichessToken = {
 	token_type: 'Bearer';
 	access_token: string;
 	expires_in: number;
-}
+};
 
 export type Perfs = {
 	games: number;
@@ -12,7 +12,7 @@ export type Perfs = {
 	prov: boolean;
 };
 
-export interface LichessUser {
+export type LichessUser = {
 	id: string;
 	username: string;
 	online: boolean;
@@ -91,4 +91,4 @@ export interface LichessUser {
 	following: boolean;
 	blocking: boolean;
 	followsYou: boolean;
-}
+};

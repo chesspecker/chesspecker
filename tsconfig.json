@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "es5",
 		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": false,
+		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
@@ -13,31 +13,38 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"jsx": "preserve",
+		"incremental": true,
+		"noUncheckedIndexedAccess": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"baseUrl": ".",
 		"paths": {
-			"@/components/*": ["components/*"],
-			"@/hooks/*": ["hooks/*"],
-			"@/layouts/*": ["layouts/*"],
-			"@/lib/*": ["lib/*"],
-			"@/pages/*": ["pages/*"],
-			"@/api/*": ["pages/api/*"],
+			"@/components/*": ["src/components/*"],
+			"@/hooks/*": ["src/hooks/*"],
+			"@/layouts/*": ["src/layouts/*"],
+			"@/lib/*": ["src/lib/*"],
+			"@/pages/*": ["src/pages/*"],
+			"@/api/*": ["src/pages/api/*"],
 			"@/public/*": ["public/*"],
-			"@/interfaces/*": ["interfaces/*"],
+			"@/providers/*": ["src/providers/*"],
 			"@/styles/*": ["styles/*"],
 			"@/data/*": ["data/*"],
 			"@/types/*": ["types/*"],
 			"@/services/*": ["services/*"],
 			"@/context/*": ["context/*"],
 			"@/middlewares/*": ["middlewares/*"],
-			"@/controllers/*": ["controllers/*"],
-			"@/models/*": ["models/*"],
+			"@/controllers/*": ["src/controllers/*"],
+			"@/models/*": ["src/models/*"],
 			"@/sounds/*": ["public/sounds/*"],
 			"@/config": ["config"]
-		},
-		"incremental": true
+		}
 	},
-	"include": ["next-env.d.ts", "additional.d.ts", "**/*.ts", "**/*.tsx"],
-	"exclude": ["node_modules", ".next"]
+	"include": [
+		"next-env.d.ts",
+		"additional.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"**/*.js"
+	],
+	"exclude": ["node_modules"]
 }

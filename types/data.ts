@@ -1,9 +1,9 @@
-export interface ErrorData {
+export type ErrorData = {
 	success: false;
 	error: string;
-}
+};
 
-export interface SuccessData<T> {
+export type SuccessData<T> = {
 	success: true;
 	data: T;
-}
+};

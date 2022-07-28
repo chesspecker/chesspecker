@@ -1,6 +1,6 @@
+import {getRandomInt} from '@/lib/utils';
 import {AchievementInterface, AchivementsArgs} from '@/types/models';
 import THEMES from '@/data/themes';
-import {getRandomInt} from '@/lib/utils';
 
 const ONE_MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000;
 

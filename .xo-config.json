@@ -1,13 +1,16 @@
 {
 	"prettier": true,
 	"extends": ["xo-nextjs"],
-	"ignores": [".github"],
+	"ignores": [".github", ".node_modules", "*.cjs", "*.mjs"],
 	"env": "browser",
 	"rules": {
 		"@typescript-eslint/triple-slash-reference": "off",
 		"import/extensions": "off",
-		"node/prefer-global/process": "warn",
-		"node/file-extension-in-import": "off",
+		"unicorn/prefer-node-protocol": "off",
+		"n/prefer-global/process": "off",
+		"n/file-extension-in-import": "off",
+		"@typescript-eslint/naming-convention": "off",
+		"@typescript-eslint/ban-types": "warn",
 		"react/prop-types": "warn"
 	}
 }
