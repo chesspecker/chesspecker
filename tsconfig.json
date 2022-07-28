@@ -27,7 +27,7 @@
 			"@/api/*": ["src/pages/api/*"],
 			"@/public/*": ["public/*"],
 			"@/providers/*": ["src/providers/*"],
-			"@/styles/*": ["styles/*"],
+			"@/styles/*": ["src/styles/*"],
 			"@/data/*": ["data/*"],
 			"@/types/*": ["types/*"],
 			"@/services/*": ["services/*"],
