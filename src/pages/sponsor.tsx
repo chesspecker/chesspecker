@@ -34,7 +34,7 @@ const RemoveModal = ({onClick}: Props) => {
 					</p>
 					<iframe
 						allowFullScreen
-						sandbox=''
+						sandbox='allow-scripts'
 						src='https://giphy.com/embed/CT5Ye7uVJLFtu'
 						width='480'
 						height='163'
@@ -72,7 +72,7 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 				</p>
 				<iframe
 					allowFullScreen
-					sandbox=''
+					sandbox='allow-scripts'
 					src='https://giphy.com/embed/lCbSAbRrFEfkY'
 					width='480'
 					height='372'
