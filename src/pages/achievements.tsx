@@ -13,7 +13,6 @@ const Card = dynamic(async () => import('@/components/card-achievement'));
 const Achievements = () => {
 	const [user, setUser] = useState<User>();
 	const [achievList, setAchievList] = useState<AchievementInterface[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
 
 	useEffectAsync(async () => {
 		const response = await getUser();
@@ -22,26 +21,17 @@ const Achievements = () => {
 
 	useEffect(() => {
 		if (!user) return;
-		const validated = user.validatedAchievements;
-		setAchievList(() => {
-			const array: AchievementInterface[] = [];
-			for (const item of validated) {
-				const result = achievements.find(
-					achivement => achivement.id === item.id,
-				);
-				if (result) array.push();
-			}
-
-			return array;
-		});
-
-		setIsLoading(() => false);
+		setAchievList(
+			() =>
+				user.validatedAchievements.map(item =>
+					achievements.find(achivement => achivement.id === item.id),
+				) as AchievementInterface[],
+		);
 	}, [user]);
 
 	const checkIfWon = (achievement: AchievementInterface) =>
 		achievList.some(achievement_ => achievement_.id === achievement?.id);
 
-	if (isLoading) return null;
 	return (
 		<>
 			<NextSeo title='♟ Achievements' />
