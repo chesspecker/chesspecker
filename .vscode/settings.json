@@ -1,10 +1,11 @@
 {
   "conventionalCommits.scopes": [
-    "dashboard",
-    "play page",
-    "view page",
-    "database",
+    "frontend",
     "backend",
+    "dashboard",
+    "play",
+    "view",
+    "database",
     "github"
   ],
   "search.exclude": {
