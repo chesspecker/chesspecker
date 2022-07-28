@@ -63,7 +63,7 @@ const ViewingPage = ({set}: Props) => {
 	return (
 		<>
 			<NextSeo title='📊 View' />
-			<div className='flex flex-col w-screen min-h-screen px-2 pt-32 pb-24 m-0 sm:px-12'>
+			<div className='flex flex-col w-screen min-h-screen px-2 pt-12 md:pt-32 pb-24 m-0 sm:px-12'>
 				<div>
 					<div className='flex items-center '>
 						<h1 className='py-5 mt-8 mr-4 font-sans text-3xl font-bold md:text-5xl'>

@@ -35,7 +35,7 @@ const Achievements = () => {
 	return (
 		<>
 			<NextSeo title='♟ Achievements' />
-			<div className='flex flex-col items-center justify-center min-h-screen pt-32 pb-24'>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-12 md:pt-32 pb-24'>
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
 					Achievements
 				</h1>

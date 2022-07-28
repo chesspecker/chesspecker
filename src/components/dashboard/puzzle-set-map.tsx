@@ -37,13 +37,13 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	};
 
 	return (
-		<div className='flex flex-col w-64 h-64 p-4 m-2 overflow-hidden border-2 border-sky-800 dark:border-white rounded-xl'>
-			<div className='flex justify-end w-full'>
+		<div className='flex flex-col w-64 h-52 p-4 m-2 overflow-hidden border-4 border-sky-800 dark:border-white rounded-xl'>
+			<div className='flex flex-row justify-between w-full'>
+				<h3 className='mx-4 mt-0 mb-4 text-2xl font-medium'>
+					{set.title.length > 10 ? set.title.slice(0, 9) + ' ...' : set.title}
+				</h3>
 				<RemoveModal onClick={removeSet} />
 			</div>
-			<h3 className='mx-4 mt-0 mb-4 text-2xl font-medium'>
-				{set.title.length > 12 ? set.title.slice(0, 11) + ' ...' : set.title}
-			</h3>
 			<div className='m-2'>
 				<Button onClick={onPlayClick}>PLAY ⚔️</Button>
 			</div>
@@ -59,11 +59,9 @@ type EmptyComponentProps = {
 	text: JSX.Element;
 };
 const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
-	<div className='relative flex flex-col w-64 h-64 p-4 m-4 overflow-hidden rounded-xl'>
-		<div className='absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full text-3xl font-medium bg-transparent border-2 shadow-md cursor-pointer dark:bg-white border-sky-800 dark:border-transparent bg-opacity-60 text-sky-800 backdrop-blur-xl backdrop-filter rounded-xl'>
-			{image}
-			{text}
-		</div>
+	<div className='flex justify-center flex-col items-center w-full h-full cursor-pointer text-sky-800 p-4'>
+		{image}
+		{text}
 	</div>
 );
 
@@ -78,7 +76,7 @@ const PuzzleSetMap = ({puzzleSets}: Props) => {
 				<PuzzleSetComponent key={set._id.toString()} set={set} />
 			))}
 			<Link href='/create'>
-				<a>
+				<a className='flex flex-col w-64 h-52 m-2 overflow-hidden border-4 bg-white border-sky-800 dark:border-white rounded-xl'>
 					<EmptyPuzzleSetComponent
 						image={<Image src={plus as string} />}
 						text={<p className='mt-4'>Create a set</p>}

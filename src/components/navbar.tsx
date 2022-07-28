@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {LogoutIcon, MoonIcon, SunIcon} from '@heroicons/react/solid';
+import {MoonIcon, SunIcon} from '@heroicons/react/solid';
 import {useState} from 'react';
 import {useAtom} from 'jotai';
 import Burger from './mobile-assets/burger';
@@ -15,7 +15,7 @@ export const BtnToggle = () => {
 
 	return (
 		<button
-			className='flex items-center justify-center pl-2 transition-all'
+			className='flex items-center justify-center pl-4 transition-all'
 			aria-label='Toggle Dark Mode'
 			type='button'
 		>
@@ -57,7 +57,7 @@ const Navbar = () => {
 								<div className='m-2 max-w-[3.5rem]'>
 									<Image src={logo as string} />
 								</div>
-								<p className='self-center hidden ml-1 mr-4 text-sm sm:block md:text-lg'>
+								<p className='self-center hidden ml-1 mr-4 text-md sm:block md:text-lg'>
 									— Chesspecker
 								</p>
 							</div>
@@ -74,10 +74,7 @@ const Navbar = () => {
 						</Link>
 
 						<Link href='/api/auth/logout'>
-							<a className='flex'>
-								<LogoutIcon className='w-3 h-3 mt-1 mr-2 md:h-5 md:w-5' />
-								Logout
-							</a>
+							<a className='flex'>logout</a>
 						</Link>
 						<BtnToggle />
 					</div>

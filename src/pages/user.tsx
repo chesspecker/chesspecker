@@ -35,9 +35,9 @@ const UserPage = () => {
 	return (
 		<>
 			<NextSeo title='♟ Profile' />
-			<div className='flex flex-col w-screen min-h-screen px-10 pt-32 pb-24'>
+			<div className='flex flex-col w-screen min-h-screen px-10 pt-12 md:pt-32 pb-24'>
 				<div className='flex flex-wrap items-center'>
-					<p className='mr-5 text-6xl'>{user?.username}</p>
+					<p className='mr-5 text-4xl md:text-6xl mb-2'>{user?.username}</p>
 					{user?.isSponsor ? (
 						<>
 							<p className='mr-2'>Official Sponsor</p>
@@ -57,7 +57,7 @@ const UserPage = () => {
 						</Link>
 					)}
 
-					<div className='md:ml-2'>
+					<div className='mt-2 md:ml-2'>
 						<Link href='/achievements'>
 							<a>
 								<Button>See all achievements</Button>
@@ -66,7 +66,7 @@ const UserPage = () => {
 					</div>
 				</div>
 
-				<div className='m-2 mt-6 min-h-[5rem] p-2'>
+				<div className='m-2 mt-2 md:mt-4 min-h-[5rem]'>
 					<p className='text-xl'>My badges</p>
 					<div className='flex items-center justify-center w-full'>
 						<div className='flex items-center justify-center w-full max-w-screen-xl'>

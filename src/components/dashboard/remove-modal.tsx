@@ -11,7 +11,7 @@ const RemoveModal = ({onClick}: Props) => {
 		<>
 			<button
 				type='button'
-				className='bg-transparent cursor-pointer'
+				className='flex bg-transparent cursor-pointer'
 				onClick={toggle}
 			>
 				<TrashIcon className='w-5 h-5' />

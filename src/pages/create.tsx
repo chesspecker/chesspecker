@@ -25,7 +25,7 @@ const CreatePage = () => {
 	return (
 		<>
 			<NextSeo title='♟ Create' />
-			<div className='flex flex-col items-center justify-center pt-32 pb-24'>
+			<div className='flex flex-col items-center justify-center pt-12 md:pt-32 pb-24 mx-4'>
 				<h2 className='text-xl font-bold sm:text-3xl'>
 					Select one or more category to create your set!
 				</h2>

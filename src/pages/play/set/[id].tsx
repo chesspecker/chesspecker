@@ -629,7 +629,7 @@ const PlayingPage = ({set, user}: Props) => {
 					router.reload();
 				}}
 			/>
-			<div className='flex flex-col justify-start w-screen min-h-screen pt-32 pb-24 m-0 text-slate-800'>
+			<div className='flex flex-col justify-start w-screen min-h-screen pt-12 md:pt-32 pb-24 m-0 text-slate-800'>
 				<div className='flex flex-row justify-center gap-2'>
 					{hasClock && (
 						<Timer

@@ -19,12 +19,12 @@ const IndexPage = () => {
 	return (
 		<>
 			<NextSeo title='🎉 Success' />
-			<div className='flex flex-col items-center justify-center h-screen m-0 '>
+			<div className='flex flex-col items-center justify-center h-screen m-0'>
 				{useConffeti()}
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
 					Hello {user?.username} 👋 <br /> Welcome to chesspecker
 				</h1>
-				<div className='w-full mx-0 my-3 text-center '>
+				<div className='w-4/5 mx-0 my-3 text-center'>
 					<Link href='/dashboard'>
 						<a>
 							<Button className='py-4'>LET&apos;S GO! 🔥</Button>
