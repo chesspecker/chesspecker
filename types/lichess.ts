@@ -92,3 +92,10 @@ export type LichessUser = {
 	blocking: boolean;
 	followsYou: boolean;
 };
+
+export type Activity = Array<{
+	id: string;
+	date: number;
+	win: boolean;
+	puzzleRating: number;
+}>;
