@@ -5,6 +5,7 @@ import {create} from '@/controllers/create-set';
 import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
 import {failWrapper} from '@/lib/utils';
 import type {SuccessData, ErrorData} from '@/types/data';
+import {ORIGIN} from '@/config';
 
 export type PuzzleSetData = SuccessData<PuzzleSet> | ErrorData;
 export type PuzzleSetArrayData = SuccessData<PuzzleSet[]> | ErrorData;
@@ -16,7 +17,7 @@ const get_ = async (
 	const fail = failWrapper(response);
 	const {userID} = request.session;
 	if (!userID) {
-		response.redirect(302, `${origin}/logout`);
+		response.redirect(302, `${ORIGIN}/api/auth/logout`);
 		return;
 	}
 
@@ -40,7 +41,7 @@ const post_ = async (
 	const fail = failWrapper(response);
 	const {userID} = request.session;
 	if (!userID) {
-		response.redirect(302, `${origin}/logout`);
+		response.redirect(302, `${ORIGIN}/api/auth/logout`);
 		return;
 	}
 

@@ -49,7 +49,7 @@ const loginRoute = async (
 		response_type: 'code',
 		client_id: LICHESS_CONFIG.clientId,
 		redirect_uri: `${ORIGIN}/api/auth/lichess/callback`,
-		scope: 'preference:read',
+		scope: 'preference:read puzzle:read',
 		code_challenge_method: 'S256',
 		code_challenge: challenge,
 	}).toString();

@@ -6,6 +6,7 @@ import getChesscom from '@/lib/get-chesscom';
 import {failWrapper} from '@/lib/utils';
 import {Perfs} from '@/types/lichess';
 import {SuccessData, ErrorData} from '@/types/data';
+import {ORIGIN} from '@/config';
 
 export type Data = SuccessData<number> | ErrorData;
 
@@ -15,7 +16,7 @@ const getLichessRating = async (
 ) => {
 	const {lichessToken} = request.session;
 	if (!lichessToken) {
-		response.redirect(302, `${origin}/logout`);
+		response.redirect(302, `${ORIGIN}/api/auth/logout`);
 		return;
 	}
 
@@ -40,7 +41,7 @@ const getChesscomRating = async (
 ) => {
 	const {chesscomToken, username} = request.session;
 	if (!chesscomToken || !username) {
-		response.redirect(302, `${origin}/logout`);
+		response.redirect(302, `${ORIGIN}/api/auth/logout`);
 		return;
 	}
 
@@ -70,7 +71,7 @@ const handler = async (
 	switch (request.method) {
 		case 'GET':
 			if (!request?.session?.userID) {
-				response.redirect(302, `${origin}/logout`);
+				response.redirect(302, `${ORIGIN}/api/auth/logout`);
 				return;
 			}
 

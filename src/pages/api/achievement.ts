@@ -4,6 +4,7 @@ import {withSessionRoute} from '@/lib/session';
 import UserModel, {User} from '@/models/user';
 import {failWrapper} from '@/lib/utils';
 import {SuccessData, ErrorData} from '@/types/data';
+import {ORIGIN} from '@/config';
 
 export type AchievementData = SuccessData<User> | ErrorData;
 
@@ -20,7 +21,7 @@ const put_ = async (
 ) => {
 	const {userID} = request.session;
 	if (!userID) {
-		response.redirect(302, `${origin}/logout`);
+		response.redirect(302, `${ORIGIN}/api/auth/logout`);
 		return;
 	}
 
@@ -62,7 +63,7 @@ const post_ = async (
 ) => {
 	const {userID} = request.session;
 	if (!userID) {
-		response.redirect(302, `${origin}/logout`);
+		response.redirect(302, `${ORIGIN}/api/auth/logout`);
 		return;
 	}
 

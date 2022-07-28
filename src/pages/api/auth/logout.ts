@@ -9,18 +9,12 @@ const logoutRoute = (
 	response: NextApiResponse<ErrorData>,
 ) => {
 	const fail = failWrapper(response);
-	if (request.method !== 'GET') {
-		fail('Method not allowed', 405);
-		return;
-	}
-
 	try {
 		request.session.destroy();
 	} catch (error: unknown) {
 		fail((error as Error).message, 500);
 		return;
 	}
-
 	response.redirect(302, ORIGIN);
 };
 

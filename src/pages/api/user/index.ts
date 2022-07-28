@@ -16,7 +16,7 @@ const get_ = async (
 	const fail = failWrapper(response);
 	const {userID} = request.session;
 	if (!userID) {
-		response.redirect(302, `${ORIGIN}/logout`);
+		response.redirect(302, `${ORIGIN}/api/auth/logout`);
 		return;
 	}
 
