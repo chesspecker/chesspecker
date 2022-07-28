@@ -39,9 +39,11 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	return (
 		<div className='flex flex-col w-64 h-52 p-4 m-2 overflow-hidden border-4 border-sky-800 dark:border-white rounded-xl'>
 			<div className='flex flex-row justify-between w-full'>
-			{set.title &&(	<h3 className='mx-4 mt-0 mb-4 text-2xl font-medium'>
-					{set.title.length > 10 ? set.title.slice(0, 9) + ' ...' : set.title}
-				</h3>)}
+				{set.title && (
+					<h3 className='mx-4 mt-0 mb-4 text-2xl font-medium'>
+						{set.title.length > 10 ? set.title.slice(0, 9) + ' ...' : set.title}
+					</h3>
+				)}
 				<RemoveModal onClick={removeSet} />
 			</div>
 			<div className='m-2'>

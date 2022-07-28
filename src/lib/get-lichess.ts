@@ -24,14 +24,20 @@ const getActivity = async (
 				Authorization: `Bearer ${accessToken}`,
 				Accept: 'application/x-ndjson',
 			},
-		}).then(responseStream => {
-			if (responseStream.status === 429) throw new Error('Too many requests');
-			if (!responseStream?.body) return;
-			responseStream.body
-				.pipe(ndjson.parse())
-				.on('data', onMessage)
-				.on('end', onComplete);
-		});
+		})
+			.then(responseStream => {
+				if (responseStream.status === 429) throw new Error('Too many requests');
+				if (!responseStream?.body) return;
+				responseStream.body
+					.pipe(ndjson.parse())
+					.on('data', onMessage)
+					.on('end', onComplete);
+			})
+			.catch((error: unknown) => {
+				const error_ = error as Error;
+				console.error(error_);
+				throw error_;
+			});
 	});
 
 const getAccount = async (

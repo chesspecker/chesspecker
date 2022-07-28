@@ -1,11 +1,11 @@
 import {ReactElement, useState} from 'react';
 import {NextSeo} from 'next-seo';
+import {useRouter} from 'next/router';
+import {ResponseData} from './api/failed';
 import Layout from '@/layouts/main';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {ResponseData} from './api/failed';
 import {Activity} from '@/types/lichess';
 import {Button} from '@/components/button';
-import {useRouter} from 'next/router';
 
 const OptionsPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -16,7 +16,7 @@ const OptionsPage = () => {
 	useEffectAsync(async () => {
 		try {
 			const response = await fetch('/api/failed').then(
-				async res => res.json() as Promise<ResponseData>,
+				async response => response.json() as Promise<ResponseData>,
 			);
 
 			setIsLoading(() => false);
@@ -26,9 +26,8 @@ const OptionsPage = () => {
 				return;
 			}
 
-			const failed = response.data.activity.filter(item => item.win === false);
+			const failed = response.data.activity.filter(item => !item.win);
 			if (failed.length === 0) return;
-			console.log('failed', failed);
 			setFailed(failed);
 		} catch (error: unknown) {
 			const error_ = error as Error;

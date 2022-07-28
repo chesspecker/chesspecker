@@ -15,6 +15,7 @@ const logoutRoute = (
 		fail((error as Error).message, 500);
 		return;
 	}
+
 	response.redirect(302, ORIGIN);
 };
 

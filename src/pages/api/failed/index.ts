@@ -26,7 +26,6 @@ const get_ = async (
 		.activity(request.session.lichessToken!)
 		.catch(error => {
 			fail(error.message, error.statusCode);
-			return;
 		});
 
 	if (activity) {
@@ -35,10 +34,7 @@ const get_ = async (
 	}
 };
 
-const post_ = async (
-	request: NextApiRequest,
-	response: NextApiResponse<any>,
-) => {
+const post_ = async (request: NextApiRequest, response: NextApiResponse) => {
 	const fail = failWrapper(response);
 	const {userID} = request.session;
 	if (!userID) {
@@ -58,7 +54,8 @@ const post_ = async (
 		if (data === 'timeout') throw new Error('Timed out');
 	};
 
-	const body = JSON.parse(request.body);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const body: {activity: Activity; name: string} = JSON.parse(request.body);
 	try {
 		if (!userID) throw new Error('Missing user id');
 		const creation = create(userID, body.activity, {title: body.name});
