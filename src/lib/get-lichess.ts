@@ -1,9 +1,7 @@
 import ndjson from 'ndjson';
-import fetch from '@vercel/fetch';
+import fetch from 'node-fetch';
 import {Activity, LichessToken, LichessUser} from '@/types/lichess';
 import {LICHESS_CONFIG, ORIGIN} from '@/config';
-
-const fetcher = fetch();
 
 const getActivity = async (
 	accessToken: LichessToken['access_token'],
@@ -19,7 +17,7 @@ const getActivity = async (
 			resolve(result);
 		};
 
-		fetcher('https://lichess.org/api/puzzle/activity?max=300', {
+		fetch('https://lichess.org/api/puzzle/activity?max=300', {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 				Accept: 'application/x-ndjson',
@@ -43,7 +41,7 @@ const getActivity = async (
 const getAccount = async (
 	accessToken: LichessToken['access_token'],
 ): Promise<LichessUser> =>
-	fetcher('https://lichess.org/api/account', {
+	fetch('https://lichess.org/api/account', {
 		headers: {Authorization: `Bearer ${accessToken}`},
 	})
 		.then(async response => response.json() as Promise<LichessUser>)
@@ -57,7 +55,7 @@ const getToken = async (
 	authCode: string,
 	verifier: string,
 ): Promise<LichessToken> =>
-	fetcher('https://lichess.org/api/token', {
+	fetch('https://lichess.org/api/token', {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
