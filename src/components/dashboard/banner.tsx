@@ -4,10 +4,10 @@ import Link from 'next/link';
 
 type Props = {
 	children: React.ReactNode;
-	setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+	handleCloseBanner: ()=> void;
 };
 
-const Banner = ({children, setIsVisible}: Props) => {
+const Banner = ({children, handleCloseBanner}: Props) => {
 	return (
 		<div className='w-full absolute top-24 left-0 '>
 			<div className='bg-sky-600 w-full block'>
@@ -27,7 +27,6 @@ const Banner = ({children, setIsVisible}: Props) => {
 						<div className='order-3 mt-2 flex-shrink-0 w-full sm:order-2 sm:mt-0 sm:w-auto'>
 							<Link href='/sponsor'>
 								<a
-									href='#'
 									className='flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-sky-600 bg-white hover:bg-sky-50'
 								>
 									Learn more
@@ -39,7 +38,7 @@ const Banner = ({children, setIsVisible}: Props) => {
 								type='button'
 								className='-mr-1 flex p-2 rounded-md hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2'
 								onClick={() => {
-									setIsVisible(() => false);
+									handleCloseBanner()
 								}}
 							>
 								<span className='sr-only'>Dismiss</span>

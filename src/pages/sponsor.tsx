@@ -63,12 +63,14 @@ const BecomeSponsor = ({handleClick}: PageProps) => {
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
 					Become sponsor
 				</h1>
-				<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
-					This website is free and ads-less and we are having fun coding it.
-					<br />
-					However, it still has a cost. Become a sponsor today to help us paying
-					server costs.
-					<br /> It will also unlock a great badge! 🎉
+				<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl max-w-md lg:max-w-3xl'>
+					⚠️ Since last year more than 22k people used our website. However we
+					cannot maintain the website: our monthly server fees are now above 60
+					euros. For many this is not huge, but for two students, it is. We have
+					never used ads on the site and never will. Today we are asking for
+					your help. If we don't have enough subscriptions to cover these costs
+					we will be forced to put an end to this project at the end of the
+					month...
 				</p>
 				<iframe
 					allowFullScreen

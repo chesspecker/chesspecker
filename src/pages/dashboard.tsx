@@ -10,6 +10,7 @@ import {AchievementItem} from '@/models/achievement';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
 import {PuzzleSet} from '@/models/puzzle-set';
 import {get_} from '@/lib/api-helpers';
+import {Banner} from '@/components/dashboard/banner';
 
 const Modal = dynamic(async () => import('@/components/modal-achievement'));
 
@@ -19,6 +20,12 @@ type Props = {
 };
 
 const DashbaordPage = ({user, puzzleSets}: Props) => {
+	const [isBannerOpen, setIsBannerOpen] = useState(true);
+
+	const handleCloseBanner = () => {
+		setIsBannerOpen(() => false);
+	};
+
 	const [achievList, setAchievList] = useState<AchievementItem[]>(
 		user.validatedAchievements.filter(achievement => !achievement.claimed),
 	);
@@ -43,7 +50,12 @@ const DashbaordPage = ({user, puzzleSets}: Props) => {
 				currentAchievementItem={achievList[0]!}
 				handleClick={updateValidatedAchievement}
 			/>
-			<div className='flex flex-col items-center justify-center min-h-screen pt-12 md:pt-24 pb-20 relative  '>
+			<div className='flex flex-col items-center justify-center min-h-screen pt-12 md:pt-24 pb-20 relative'>
+				{isBannerOpen && (
+					<Banner handleCloseBanner={handleCloseBanner}>
+						⚠️ Chesspecker may shut down!
+					</Banner>
+				)}
 				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>
