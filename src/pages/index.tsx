@@ -1,11 +1,10 @@
-import type {ReactElement} from 'react';
-import Image from 'next/image.js';
-import {GetServerSidePropsContext, Redirect} from 'next';
-import {NextSeo} from 'next-seo';
-import Link from 'next/link';
+import {Button} from '@/components/button';
 import Layout from '@/layouts/login';
 import {withSessionSsr} from '@/lib/session';
-import {Button} from '@/components/button';
+import {GetServerSidePropsContext, Redirect} from 'next';
+import {NextSeo} from 'next-seo';
+import Image from 'next/image.js';
+import type {ReactElement} from 'react';
 
 const IndexPage = () => (
 	<>
@@ -17,17 +16,15 @@ const IndexPage = () => (
 				width='160px'
 				height='160px'
 			/>
-			<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
-				Happy to see you
-				<br />
-				newcomer 👋
-			</h1>
-			<div className='w-full mx-0 my-3 text-center '>
-				<Link href='/api/auth/lichess/login'>
-					<a>
-						<Button className='py-4'>SIGN IN WITH LICHESS</Button>
-					</a>
-				</Link>
+			<div className='mx-0 w-full justify-center max-w-md'>
+				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
+					Chesspecker is currently out of service.
+				</h1>
+			</div>
+			<div className='w-full mx-auto my-3 text-center justify-center items-center flex flex-col gap-8'>
+				<a href='https://discord.com/invite/qDftJZBBHa' target='_blank'>
+					<Button className='py-4 items-center min-w-full'>GET INVOLVED</Button>
+				</a>
 			</div>
 		</div>
 	</>
