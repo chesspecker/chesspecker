@@ -30,8 +30,8 @@ const ModalSpacedOn = ({onClick, hide, isOpen = false}: Props) => {
 			hide={hide}
 			isOpen={isOpen}
 		>
-			<div className='w-full mt-2'>
-				<p className='text-sm text-gray-500 leading-5'>
+			<div className='mt-2 w-full'>
+				<p className='text-sm leading-5 text-gray-500'>
 					Congrats on finishing the first step of your journey. You can now
 					choose to activate the spaced-repetition mode for this set. Instead of
 					playing every puzzle, you will be facing the puzzle you had
@@ -39,21 +39,21 @@ const ModalSpacedOn = ({onClick, hide, isOpen = false}: Props) => {
 				</p>
 			</div>
 			<div className='mt-4'>
-				<div className='flex justify-start w-full'>
+				<div className='flex w-full justify-start'>
 					{isLoading ? (
 						<ProgressBar title='Loading...' progress={progress} />
 					) : (
 						<>
 							<Button
 								type='button'
-								className='inline-flex justify-center px-4 py-2 mr-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+								className='mr-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
 								onClick={hide}
 							>
 								No thanks
 							</Button>
 							<Button
 								type='button'
-								className='inline-flex justify-center px-4 py-2 ml-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+								className='ml-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
 								onClick={wrapOnClick}
 							>
 								Activate

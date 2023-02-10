@@ -20,4 +20,4 @@ export const CHESSCOM_CONFIG = {
 export const ORIGIN =
 	env.NODE_ENV === 'production'
 		? 'https://www.chesspecker.com'
-		: `http://localhost:3000`;
+		: 'http://localhost:3000';

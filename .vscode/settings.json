@@ -1,15 +1,37 @@
 {
-  "conventionalCommits.scopes": [
-    "frontend",
-    "backend",
-    "dashboard",
-    "play",
-    "view",
-    "database",
-    "github"
-  ],
-  "search.exclude": {
-    "**/.yarn": true,
-    "**/.pnp.*": true
-  }
+	"typescript.preferences.importModuleSpecifier": "non-relative",
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[typescriptreact][typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"tailwindCSS.includeLanguages": {
+		"typescript": "javascript",
+		"typescriptreact": "javascript"
+	},
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": [
+		"source.addMissingImports",
+		"source.fixAll.eslint"
+	],
+	"conventionalCommits.scopes": [
+		"frontend",
+		"backend",
+		"dashboard",
+		"play",
+		"view",
+		"database",
+		"github"
+	],
+	"search.exclude": {
+		"**/.yarn": true,
+		"**/.lock": true,
+		"**/.pnp.*": true
+	},
+	"eslint.packageManager": "yarn",
+	"eslint.probe": [
+		"javascript",
+		"javascriptreact",
+		"typescript",
+		"typescriptreact"
+	]
 }

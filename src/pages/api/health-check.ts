@@ -1,5 +1,5 @@
-import {uptime} from 'process';
-import {NextApiRequest, NextApiResponse} from 'next';
+import {uptime} from 'node:os';
+import type {NextApiRequest, NextApiResponse} from 'next';
 
 export type ResponseData = {uptime: number; message: string; timestamp: number};
 

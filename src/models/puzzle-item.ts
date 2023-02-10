@@ -1,4 +1,5 @@
-import {mongoose, prop} from '@typegoose/typegoose';
+import type {mongoose} from '@typegoose/typegoose';
+import {prop} from '@typegoose/typegoose';
 
 export class PuzzleItem {
 	@prop()

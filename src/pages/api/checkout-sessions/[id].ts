@@ -1,9 +1,9 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import Stripe from 'stripe';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {failWrapper} from '@/lib/utils';
-import {ErrorData, SuccessData} from '@/types/data';
+import type {ErrorData, SuccessData} from '@/types/data';
 
 const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
 const stripe = new Stripe(STRIPE_PUBLISHABLE, {apiVersion: '2020-08-27'});
@@ -15,7 +15,7 @@ const getStripeSession = async (
 	response: NextApiResponse<SessionData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing id', 400);
 		return;
@@ -35,10 +35,13 @@ const handler = async (
 	response: NextApiResponse<SessionData>,
 ) => {
 	switch (request.method) {
-		case 'GET':
+		case 'GET': {
 			return getStripeSession(request, response);
-		default:
+		}
+
+		default: {
 			failWrapper(response)('Method not allowed', 405);
+		}
 	}
 };
 

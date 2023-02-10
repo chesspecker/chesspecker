@@ -1,4 +1,4 @@
-const parseGrade: Record<number, string> = {
+const parseGrade: {[key: number]: string} = {
 	0: 'F',
 	1: 'E',
 	2: 'D',

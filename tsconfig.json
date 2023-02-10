@@ -17,24 +17,21 @@
 		"noUncheckedIndexedAccess": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
 		"baseUrl": ".",
 		"paths": {
-			"@/components/*": ["src/components/*"],
-			"@/hooks/*": ["src/hooks/*"],
-			"@/layouts/*": ["src/layouts/*"],
-			"@/lib/*": ["src/lib/*"],
-			"@/pages/*": ["src/pages/*"],
+			"@/*": ["./src/*"],
 			"@/api/*": ["src/pages/api/*"],
 			"@/public/*": ["public/*"],
-			"@/providers/*": ["src/providers/*"],
-			"@/styles/*": ["src/styles/*"],
 			"@/data/*": ["data/*"],
 			"@/types/*": ["types/*"],
 			"@/services/*": ["services/*"],
 			"@/context/*": ["context/*"],
 			"@/middlewares/*": ["middlewares/*"],
-			"@/controllers/*": ["src/controllers/*"],
-			"@/models/*": ["src/models/*"],
 			"@/sounds/*": ["public/sounds/*"],
 			"@/config": ["src/env/config"]
 		}

@@ -12,11 +12,9 @@
 
 #### Discord
 
-Join us to discuss issues and ideas: on [discord.](https://discord.com/invite/qDftJZBBHa) 
-
+Join us to discuss issues and ideas: on [discord.](https://discord.com/invite/qDftJZBBHa)
 
 ### Run in local
-
 
 Create a new .env file
 
@@ -41,8 +39,8 @@ Navigate to http://localhost:3000
 
 And happy coding!
 
-
 When you're done
+
 ```
 docker-compose down
 ```

@@ -1,9 +1,10 @@
 import React, {useEffect, useRef, useState, memo, useMemo} from 'react';
 import {Chessground as nativeChessground} from 'chessground';
-import {Config} from 'chessground/config';
-import {Api} from 'chessground/api';
+import type {Config} from 'chessground/config';
+import type {Api} from 'chessground/api';
 import {useAtom} from 'jotai';
-import {animationµ, Board, configµ, getStorage, Pieces} from '@/lib/atoms';
+import type {Board, Pieces} from '@/lib/atoms';
+import {animationµ, configµ, getStorage} from '@/lib/atoms';
 
 type Props = {
 	config?: Partial<Config>;
@@ -45,7 +46,7 @@ const Chessground = ({config = {}}: Props) => {
 		<div className='w-full'>
 			<div className={mainStyle}>
 				<div className={themeStyle}>
-					<div ref={ref} className='table w-full h-full' />
+					<div ref={ref} className='table h-full w-full' />
 				</div>
 			</div>
 		</div>

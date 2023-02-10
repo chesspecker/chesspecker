@@ -1,6 +1,6 @@
 import process from 'process';
 import type {IronSessionOptions} from 'iron-session';
-import {
+import type {
 	GetServerSidePropsContext,
 	GetServerSidePropsResult,
 	NextApiHandler,
@@ -35,7 +35,7 @@ export const withSessionRoute = (handler: NextApiHandler) =>
 
 // Theses types are compatible with InferGetStaticPropsType https://nextjs.org/docs/basic-features/data-fetching#typescript-use-getstaticprops
 export function withSessionSsr<
-	P extends Record<string, unknown> = Record<string, unknown>,
+	P extends {[key: string]: unknown} = {[key: string]: unknown},
 >(
 	handler: (
 		context: GetServerSidePropsContext,

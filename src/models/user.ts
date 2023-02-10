@@ -1,4 +1,5 @@
-import {getModelForClass, prop, mongoose, index} from '@typegoose/typegoose';
+import type {mongoose} from '@typegoose/typegoose';
+import {getModelForClass, prop, index} from '@typegoose/typegoose';
 import {ThemeItem} from './theme';
 import {AchievementItem} from './achievement';
 import {Streak} from './streak';

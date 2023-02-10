@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react';
 import {NextSeo} from 'next-seo';
 import dynamic from 'next/dynamic';
 import Layout from '@/layouts/main';
-import {User} from '@/models/user';
+import type {User} from '@/models/user';
 import {getUser} from '@/lib/api-helpers';
 import useEffectAsync from '@/hooks/use-effect-async';
 import type {AchievementInterface} from '@/types/models';
@@ -35,38 +35,36 @@ const Achievements = () => {
 	return (
 		<>
 			<NextSeo title='♟ Achievements' />
-			<div className='flex flex-col items-center justify-center min-h-screen pt-12 md:pt-32 pb-24'>
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
+			<div className='flex min-h-screen flex-col items-center justify-center pt-12 pb-24 md:pt-32'>
+				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold sm:text-4xl md:text-5xl'>
 					Achievements
 				</h1>
-				{achievementsCategorys.map(category => {
-					return (
-						<div key={category.name as React.Key}>
-							<h1 className='px-5 mx-auto mt-8 font-sans text-xl font-bold text-center sm:text-2xl md:text-3xl'>
-								{category.name}
-							</h1>
-							<h2 className='p-5 mx-auto mb-6 font-sans text-lg font-bold text-center sm:text-lg md:text-xl'>
-								{category.description}
-							</h2>
-							<div className='flex items-center justify-center w-full'>
-								<div className='flex items-center justify-center w-full max-w-screen-xl'>
-									<div className='flex flex-wrap items-center justify-center max-w-5xl'>
-										{achievements.map(
-											achievement =>
-												achievement.category === category.name && (
-													<Card
-														key={achievement.id}
-														achievement={achievement}
-														isClaimed={checkIfWon(achievement)}
-													/>
-												),
-										)}
-									</div>
+				{achievementsCategorys.map(category => (
+					<div key={category.name as React.Key}>
+						<h1 className='mx-auto mt-8 px-5 text-center font-sans text-xl font-bold sm:text-2xl md:text-3xl'>
+							{category.name}
+						</h1>
+						<h2 className='mx-auto mb-6 p-5 text-center font-sans text-lg font-bold sm:text-lg md:text-xl'>
+							{category.description}
+						</h2>
+						<div className='flex w-full items-center justify-center'>
+							<div className='flex w-full max-w-screen-xl items-center justify-center'>
+								<div className='flex max-w-5xl flex-wrap items-center justify-center'>
+									{achievements.map(
+										achievement =>
+											achievement.category === category.name && (
+												<Card
+													key={achievement.id}
+													achievement={achievement}
+													isClaimed={checkIfWon(achievement)}
+												/>
+											),
+									)}
 								</div>
 							</div>
 						</div>
-					);
-				})}
+					</div>
+				))}
 			</div>
 		</>
 	);

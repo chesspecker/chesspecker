@@ -1,17 +1,17 @@
-import {ReactElement} from 'react';
+import type {ReactElement} from 'react';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
-import {GetServerSidePropsContext, Redirect} from 'next';
+import type {GetServerSidePropsContext, Redirect} from 'next';
 import Layout from '@/layouts/login';
 import {Button, ButtonLink} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {User} from '@/models/user';
+import type {User} from '@/models/user';
 import {checkForAchievement} from '@/lib/achievements';
 import {formattedDate} from '@/lib/utils';
 import {withSessionSsr} from '@/lib/session';
 import {get_, update_} from '@/lib/api-helpers';
-import {AchivementsArgs} from '@/types/models';
+import type {AchivementsArgs} from '@/types/models';
 
 type Props = {
 	user: User;
@@ -55,15 +55,15 @@ const SuccessPage = ({user, sessionId}: Props) => {
 	return (
 		<>
 			<NextSeo title='🎉 Success' />
-			<div className='flex flex-col items-center justify-center min-h-screen pt-12 md:pt-24 pb-20'>
+			<div className='flex min-h-screen flex-col items-center justify-center pt-12 pb-20 md:pt-24'>
 				{useConffeti()}
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
+				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold'>
 					Thanks for helping chesspecker grow!
 				</h1>
 				<p className='mx-2 text-center'>
 					Join us on Discord to share your ideas and desires for Chesspecker 🎉
 				</p>
-				<div className='flex flex-col items-center justify-center w-full mx-0 my-3 text-center'>
+				<div className='mx-0 my-3 flex w-full flex-col items-center justify-center text-center'>
 					<ButtonLink href='https://discord.gg/qDftJZBBHa'>
 						JOIN DISCORD! 🔥
 					</ButtonLink>

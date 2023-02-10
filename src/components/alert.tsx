@@ -6,10 +6,10 @@ import {
 } from '@heroicons/react/solid';
 
 const icons = {
-	error: <XCircleIcon className='w-5 h-5 text-red-400' />,
-	success: <CheckCircleIcon className='w-5 h-5 text-green-400' />,
-	info: <InformationCircleIcon className='w-5 h-5 text-blue-400' />,
-	warning: <ExclamationIcon className='w-5 h-5 text-yellow-400' />,
+	error: <XCircleIcon className='h-5 w-5 text-red-400' />,
+	success: <CheckCircleIcon className='h-5 w-5 text-green-400' />,
+	info: <InformationCircleIcon className='h-5 w-5 text-blue-400' />,
+	warning: <ExclamationIcon className='h-5 w-5 text-yellow-400' />,
 };
 
 const colors = {
@@ -48,7 +48,7 @@ const Alert = ({type, message, isVisible}: Props) => {
 			className={`rounded-md border-l-4 ${colors[type].border} ${colors[type].bg} my-4 p-4`}
 		>
 			<div className='flex'>
-				<div className='flex-shrink-0'>{icons[type]}</div>
+				<div className='shrink-0'>{icons[type]}</div>
 				<div className='ml-3'>
 					<p className={`text-sm ${colors[type].text}`}>{message}</p>
 				</div>

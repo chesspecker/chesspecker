@@ -1,8 +1,9 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import type {UpdateQuery} from 'mongoose';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
-import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleSet} from '@/models/puzzle-set';
+import PuzzleSetModel from '@/models/puzzle-set';
 import {failWrapper} from '@/lib/utils';
 import type {SuccessData, ErrorData} from '@/types/data';
 
@@ -13,7 +14,7 @@ const get_ = async (
 	response: NextApiResponse<SetData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing id', 400);
 		return;
@@ -37,7 +38,7 @@ const delete_ = async (
 	response: NextApiResponse<SetData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing id', 400);
 		return;
@@ -63,7 +64,7 @@ const put_ = async (
 	response: NextApiResponse<SetData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing id', 400);
 		return;
@@ -97,21 +98,25 @@ const handler = async (
 	response: NextApiResponse<SetData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'GET':
+		case 'GET': {
 			await get_(request, response);
 			break;
+		}
 
-		case 'DELETE':
+		case 'DELETE': {
 			await delete_(request, response);
 			break;
+		}
 
-		case 'PUT':
+		case 'PUT': {
 			await put_(request, response);
 			break;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed', 405);
 			break;
+		}
 	}
 };
 

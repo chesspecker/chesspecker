@@ -12,7 +12,7 @@ const LoginLayout = ({children}: {children: React.ReactNode}) => {
 
 	return (
 		<main className={` ${darkMode ? 'dark' : ''}`}>
-			<div className='relative flex flex-col items-center justify-between h-full min-h-screen overflow-y-scroll font-sans dark:text-white text-sky-900 disable-scrollbars bg-gradient-to-t dark:from-slate-900 from-white to-white dark:to-sky-700'>
+			<div className='relative flex h-full min-h-screen flex-col items-center justify-between overflow-y-scroll bg-gradient-to-t from-white to-white font-sans text-sky-900 disable-scrollbars dark:from-slate-900 dark:to-sky-700 dark:text-white'>
 				{children}
 			</div>
 		</main>

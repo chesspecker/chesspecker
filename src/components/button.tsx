@@ -13,11 +13,9 @@ const defaultClasses =
 
 export const Button = ({children, onClick, type, className}: ButtonProps) => (
 	<button
-		className={overrideTailwindClasses(
-			`${defaultClasses} ${className ? className : ''}`,
-		)}
+		className={overrideTailwindClasses(`${defaultClasses} ${className || ''}`)}
 		/* eslint-disable-next-line react/button-has-type */
-		type={type ? type : 'button'}
+		type={type || 'button'}
 		onClick={onClick}
 	>
 		{children}
@@ -41,10 +39,10 @@ export const ButtonLink = ({
 		<a target='_blank'>
 			<button
 				className={overrideTailwindClasses(
-					`${defaultClasses} ${className ? className : ''}`,
+					`${defaultClasses} ${className || ''}`,
 				)}
 				/* eslint-disable-next-line react/button-has-type */
-				type={type ? type : 'button'}
+				type={type || 'button'}
 			>
 				{children}
 			</button>

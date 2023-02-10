@@ -1,7 +1,8 @@
-import UserModel, {User} from '@/models/user';
+import type {User} from '@/models/user';
+import UserModel from '@/models/user';
 import {formattedDate} from '@/lib/utils';
-import {LichessUser} from '@/types/lichess';
-import {ChesscomUser} from '@/types/chesscom';
+import type {LichessUser} from '@/types/lichess';
+import type {ChesscomUser} from '@/types/chesscom';
 
 export const createChesscomUser = async (chUser: ChesscomUser) => {
 	const parameters: Partial<User> = {

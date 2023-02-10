@@ -12,7 +12,7 @@ import OptionTextInput from '@/components/options/text-input';
 import OptionSize from '@/components/options/size';
 import OptionDifficulty from '@/components/options/level';
 import useModal from '@/hooks/use-modal';
-import {Options} from '@/controllers/create-set';
+import type {Options} from '@/controllers/create-set';
 import type {Difficulty} from '@/types/models';
 import loading from '@/public/images/spinner.svg';
 
@@ -46,7 +46,7 @@ const OptionsPage = () => {
 			themeArray,
 			averageRating: rating,
 		};
-		return fetch(`/api/set`, {
+		return fetch('/api/set', {
 			method: 'POST',
 			body: JSON.stringify(options),
 		})
@@ -57,22 +57,22 @@ const OptionsPage = () => {
 	return (
 		<>
 			<NextSeo title='⚙️ Options' />
-			<div className='flex flex-col items-center justify-center w-11/12 min-h-screen pt-12 md:pt-32 pb-24 text-center'>
+			<div className='flex min-h-screen w-11/12 flex-col items-center justify-center pt-12 pb-24 text-center md:pt-32'>
 				<div>
 					<h1 className='mb-8 text-3xl lg:text-5xl'>One last thing...</h1>
 					<Alert type='error' isVisible={isOpen} message='Title is needed!' />
-					<div className='flex flex-col items-center justify-center w-5/6 mx-12'>
+					<div className='mx-12 flex w-5/6 flex-col items-center justify-center'>
 						<OptionTextInput>Give your set a name</OptionTextInput>
 						<OptionDifficulty />
 						<OptionSize />
-						<div className='w-3/5 mt-20'>
+						<div className='mt-20 w-3/5'>
 							<Button
-								className='flex h-14 flex-row items-center justify-center font-sky-700 font-bold cursor-default hover:bg-white'
+								className='font-sky-700 flex h-14 cursor-default flex-row items-center justify-center font-bold hover:bg-white'
 								onClick={validate}
 							>
 								{isDisabled ? (
 									<>
-										<div className='relative mr-3 h-9 w-9 animate-spin visible'>
+										<div className='visible relative mr-3 h-9 w-9 animate-spin'>
 											<Image
 												src={loading as string}
 												objectFit='contain'
@@ -82,7 +82,7 @@ const OptionsPage = () => {
 										Loading...
 									</>
 								) : (
-									`LET'S GO! 🎉`
+									"LET'S GO! 🎉"
 								)}
 							</Button>
 						</div>

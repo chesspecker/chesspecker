@@ -3,7 +3,7 @@ import {useAtom} from 'jotai';
 import * as ChessJS from 'chess.js';
 import {Button, ButtonLink} from '../../button';
 import {configµ, playµ} from '@/lib/atoms';
-import {Puzzle} from '@/models/puzzle';
+import type {Puzzle} from '@/models/puzzle';
 
 const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 type Props = {answer: string; fen: string; puzzle: Puzzle};
@@ -39,9 +39,7 @@ const Solution = ({answer, fen, puzzle}: Props) => {
 		);
 
 	if (isSolutionClicked)
-		return (
-			<span className={disabledClasses}>{solution ? solution : answer}</span>
-		);
+		return <span className={disabledClasses}>{solution || answer}</span>;
 
 	return (
 		<Button

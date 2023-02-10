@@ -1,6 +1,4 @@
-/* eslint-disable unicorn/no-array-reduce */
-/* eslint-disable unicorn/no-array-callback-reference */
-import {SVGProps} from 'react';
+import type {SVGProps} from 'react';
 import {
 	ClockIcon,
 	LibraryIcon,
@@ -12,7 +10,7 @@ import {
 } from '@heroicons/react/solid';
 import {INFINITY, reducer, summer} from './utils';
 import useClock from '@/hooks/use-clock';
-import {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleSet} from '@/models/puzzle-set';
 import {parseGrade} from '@/lib/grades';
 
 export type ViewData = {
@@ -28,7 +26,7 @@ export type ViewData = {
 export const ParseTime = ({time}: {time: number}): JSX.Element => {
 	const [days, hours, minutes, seconds] = useClock(time);
 	return (
-		<span className='text-2xl font-semibold text-white dark:text-gray-900 justify-self-center'>
+		<span className='justify-self-center text-2xl font-semibold text-white dark:text-gray-900'>
 			{days !== 0 && `${days} days `}
 			{hours !== 0 && `${hours} hours `}
 			{minutes !== 0 && `${minutes} minutes `}

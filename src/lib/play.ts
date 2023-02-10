@@ -1,10 +1,11 @@
-import {ChessInstance, SQUARES} from 'chess.js';
+import type {ChessInstance} from 'chess.js';
+import {SQUARES} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {groupBy} from './utils';
-import {PuzzleItem} from '@/models/puzzle-item';
+import type {PuzzleItem} from '@/models/puzzle-item';
 import type {PuzzleData} from '@/pages/api/puzzle/[id]';
-import {ThemeItem} from '@/models/theme';
-import {Puzzle} from '@/models/puzzle';
+import type {ThemeItem} from '@/models/theme';
+import type {Puzzle} from '@/models/puzzle';
 
 const getTimeTaken = (initialTime: number, mistakes = 0) => {
 	const timeTaken_ = (Date.now() - initialTime) / 1000;
@@ -183,25 +184,22 @@ export const getPuzzleSetUpdateBody = ({
 	currentTime,
 	mistakes,
 	timeTaken,
-}: PropsPuzzleSetUpdate) => {
-	const updatePuzzleSet = {
-		$inc: {
-			'puzzles.$.count': 1,
-			'puzzles.$.streak': 0,
-			currentTime,
-			progress: 1,
-		},
-		$push: {
-			'puzzles.$.mistakes': mistakes,
-			'puzzles.$.timeTaken': timeTaken,
-			'puzzles.$.grades': currentGrade,
-		},
-		$set: {
-			'puzzles.$.played': true,
-		},
-	};
-	return updatePuzzleSet;
-};
+}: PropsPuzzleSetUpdate) => ({
+	$inc: {
+		'puzzles.$.count': 1,
+		'puzzles.$.streak': 0,
+		currentTime,
+		progress: 1,
+	},
+	$push: {
+		'puzzles.$.mistakes': mistakes,
+		'puzzles.$.timeTaken': timeTaken,
+		'puzzles.$.grades': currentGrade,
+	},
+	$set: {
+		'puzzles.$.played': true,
+	},
+});
 
 export const getUpdateBody = {
 	set: getFinishedSetUpdateBody,

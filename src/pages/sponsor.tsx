@@ -1,4 +1,4 @@
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
 import type {ReactElement} from 'react';
 import {useState} from 'react';
 import Modal from 'react-pure-modal';
@@ -12,7 +12,7 @@ import useModal from '@/hooks/use-modal';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import getStripe from '@/lib/get-stripe';
-import {User} from '@/models/user';
+import type {User} from '@/models/user';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {getUser, get_} from '@/lib/api-helpers';
 
@@ -23,7 +23,7 @@ const RemoveModal = ({onClick}: Props) => {
 	const {isOpen, hide, toggle} = useModal(false);
 	return (
 		<>
-			<Button className='max-w-lg mx-2' onClick={toggle}>
+			<Button className='mx-2 max-w-lg' onClick={toggle}>
 				cancel 😥
 			</Button>
 
@@ -42,8 +42,8 @@ const RemoveModal = ({onClick}: Props) => {
 						className='giphy-embed'
 					/>
 
-					<div className='p-2 m-2'>
-						<Button className='px-8 my-2' onClick={onClick}>
+					<div className='m-2 p-2'>
+						<Button className='my-2 px-8' onClick={onClick}>
 							Yes
 						</Button>
 						<Button onClick={hide}>No</Button>
@@ -55,74 +55,71 @@ const RemoveModal = ({onClick}: Props) => {
 };
 
 type PageProps = {handleClick: (string: string) => void};
-const BecomeSponsor = ({handleClick}: PageProps) => {
-	return (
-		<>
-			<NextSeo title='👑 Sponsor' />
-			<div className='flex flex-col items-center justify-center min-h-screen pt-12 md:pt-24 pb-40'>
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
-					Become sponsor
-				</h1>
-				<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl max-w-md lg:max-w-3xl'>
-					⚠️ Since last year more than 22k people used our website. However we
-					cannot maintain the website: our monthly server fees are now above 60
-					euros. For many this is not huge, but for two students, it is. We have
-					never used ads on the site and never will. Today we are asking for
-					your help. If we don't have enough subscriptions to cover these costs
-					we will be forced to put an end to this project at the end of the
-					month...
-				</p>
-				<iframe
-					allowFullScreen
-					sandbox='allow-scripts'
-					src='https://giphy.com/embed/lCbSAbRrFEfkY'
-					width='480'
-					height='372'
-					frameBorder='0'
-					className='giphy-embed'
-				/>
-				<p className='w-11/12 mb-6 text-2xl text-center mt-7 md:text-2xl'>
-					How much does it cost? Just about a small coffee per month!
-				</p>
+const BecomeSponsor = ({handleClick}: PageProps) => (
+	<>
+		<NextSeo title='👑 Sponsor' />
+		<div className='flex min-h-screen flex-col items-center justify-center pt-12 pb-40 md:pt-24'>
+			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold'>
+				Become sponsor
+			</h1>
+			<p className='mb-6 w-11/12 max-w-md text-center text-2xl md:text-2xl lg:max-w-3xl'>
+				⚠️ Since last year more than 22k people used our website. However we
+				cannot maintain the website: our monthly server fees are now above 60
+				euros. For many this is not huge, but for two students, it is. We have
+				never used ads on the site and never will. Today we are asking for your
+				help. If we don't have enough subscriptions to cover these costs we will
+				be forced to put an end to this project at the end of the month...
+			</p>
+			<iframe
+				allowFullScreen
+				sandbox='allow-scripts'
+				src='https://giphy.com/embed/lCbSAbRrFEfkY'
+				width='480'
+				height='372'
+				frameBorder='0'
+				className='giphy-embed'
+			/>
+			<p className='mb-6 mt-7 w-11/12 text-center text-2xl md:text-2xl'>
+				How much does it cost? Just about a small coffee per month!
+			</p>
 
-				<div className='flex flex-col w-2/3 lg:flex-row'>
-					<Button
-						className='m-2'
-						onClick={() => {
-							handleClick('price_1L5Q2vGL9hdiIkISCVM9RbKS');
-						}}
-					>
-						☕️ 1€
-					</Button>
-					<Button
-						className='m-2'
-						onClick={() => {
-							handleClick('price_1KxCYVGL9hdiIkISDFBzzU6Z');
-						}}
-					>
-						☕️☕️ 3€
-					</Button>
-					<Button
-						className='m-2'
-						onClick={() => {
-							handleClick('price_1KxCa8GL9hdiIkISXvkAuA4F');
-						}}
-					>
-						☕️☕️☕️ 5€
-					</Button>
-					<Button
-						className='m-2'
-						onClick={() => {
-							handleClick('price_1KxCafGL9hdiIkISewaLCtNO');
-						}}
-					>
-						🛢 15€
-					</Button>
-				</div>
+			<div className='flex w-2/3 flex-col lg:flex-row'>
+				<Button
+					className='m-2'
+					onClick={() => {
+						handleClick('price_1L5Q2vGL9hdiIkISCVM9RbKS');
+					}}
+				>
+					☕️ 1€
+				</Button>
+				<Button
+					className='m-2'
+					onClick={() => {
+						handleClick('price_1KxCYVGL9hdiIkISDFBzzU6Z');
+					}}
+				>
+					☕️☕️ 3€
+				</Button>
+				<Button
+					className='m-2'
+					onClick={() => {
+						handleClick('price_1KxCa8GL9hdiIkISXvkAuA4F');
+					}}
+				>
+					☕️☕️☕️ 5€
+				</Button>
+				<Button
+					className='m-2'
+					onClick={() => {
+						handleClick('price_1KxCafGL9hdiIkISewaLCtNO');
+					}}
+				>
+					🛢 15€
+				</Button>
 			</div>
-		</>
-	);
-};
+		</div>
+	</>
+);
 
 type ManageSponsorProps = {subscription?: Stripe.Subscription};
 const ManageSponsor = ({subscription}: ManageSponsorProps) => {
@@ -136,11 +133,11 @@ const ManageSponsor = ({subscription}: ManageSponsorProps) => {
 	return (
 		<>
 			<NextSeo title='👑 Sponsor' />
-			<div className='flex flex-col items-center justify-center min-h-screen pt-24 pb-20 '>
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center '>
+			<div className='flex min-h-screen flex-col items-center justify-center pt-24 pb-20 '>
+				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold '>
 					Manage sponsorship
 				</h1>
-				<p className='w-11/12 mb-6 text-2xl text-center md:text-2xl'>
+				<p className='mb-6 w-11/12 text-center text-2xl md:text-2xl'>
 					Thank you for supporting us.
 				</p>
 				<p className='pb-6 '>{`Your actual subscription is ${

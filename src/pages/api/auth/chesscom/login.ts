@@ -1,20 +1,18 @@
 import {createHash, randomBytes} from 'crypto';
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import {nanoid} from 'nanoid';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {failWrapper} from '@/lib/utils';
 import {CHESSCOM_CONFIG, ORIGIN} from '@/config';
 
-// eslint-disable-next-line n/prefer-global/buffer
 const base64URLEncode = (buffer_: Buffer): string =>
 	buffer_
 		.toString('base64')
 		.replace(/\+/g, '-')
 		.replace(/\//g, '_')
-		.replace(/=/g, '');
+		.replace(/[=]/g, '');
 
-// eslint-disable-next-line n/prefer-global/buffer
 const sha256 = (string_: string): Buffer =>
 	createHash('sha256').update(string_).digest();
 const createVerifier = (): string => base64URLEncode(randomBytes(32));

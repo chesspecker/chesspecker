@@ -1,11 +1,12 @@
-import {ReactElement, useState} from 'react';
+import type {ReactElement} from 'react';
+import {useState} from 'react';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
 import Layout from '@/layouts/login';
 import {Button} from '@/components/button';
 import useConffeti from '@/hooks/use-conffeti';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {User} from '@/models/user';
+import type {User} from '@/models/user';
 import {getUser} from '@/lib/api-helpers';
 
 const IndexPage = () => {
@@ -19,12 +20,12 @@ const IndexPage = () => {
 	return (
 		<>
 			<NextSeo title='🎉 Success' />
-			<div className='flex flex-col items-center justify-center h-screen m-0'>
+			<div className='m-0 flex h-screen flex-col items-center justify-center'>
 				{useConffeti()}
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center'>
+				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold'>
 					Hello {user?.username} 👋 <br /> Welcome to chesspecker
 				</h1>
-				<div className='w-4/5 mx-0 my-3 text-center'>
+				<div className='mx-0 my-3 w-4/5 text-center'>
 					<Link href='/dashboard'>
 						<a>
 							<Button className='py-4'>LET&apos;S GO! 🔥</Button>

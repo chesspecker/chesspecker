@@ -10,8 +10,8 @@
  */
 
 import type {UpdateQuery} from 'mongoose';
-import {User} from '@/models/user';
-import {Streak} from '@/models/streak';
+import type {User} from '@/models/user';
+import type {Streak} from '@/models/streak';
 
 export const resetStreakCount = (date: string) => ({
 	startDate: date,
@@ -50,8 +50,10 @@ export const shouldIncrementOrResetStreakCount = (
 	currentDate: string,
 	lastLoginDate: string,
 ) => {
-	// We get 11/5/2021
-	// so to get 5, we split on / and get the second item
+	/*
+	 * We get 11/5/2021
+	 * so to get 5, we split on / and get the second item
+	 */
 	const difference =
 		Number.parseInt(currentDate.split('/')[1]!, 10) -
 		Number.parseInt(lastLoginDate.split('/')[1]!, 10);
@@ -72,8 +74,10 @@ export const shouldIncrementOrResetStreakCount = (
 		};
 	}
 
-	// Otherwise they logged in after a day, which would
-	// break the streak
+	/*
+	 * Otherwise they logged in after a day, which would
+	 * break the streak
+	 */
 	return {
 		shouldIncrement: false,
 		shouldReset: true,

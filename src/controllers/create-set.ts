@@ -1,11 +1,12 @@
-/* eslint-disable unicorn/no-array-callback-reference,
-unicorn/no-array-method-this-argument */
-import {mongoose} from '@typegoose/typegoose';
+import type {mongoose} from '@typegoose/typegoose';
 import {safeZero, shuffle} from '@/lib/utils';
-import PuzzleModel, {Puzzle} from '@/models/puzzle';
-import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
-import UserModel, {User} from '@/models/user';
-import {Theme} from '@/data/themes';
+import type {Puzzle} from '@/models/puzzle';
+import PuzzleModel from '@/models/puzzle';
+import type {PuzzleSet} from '@/models/puzzle-set';
+import PuzzleSetModel from '@/models/puzzle-set';
+import type {User} from '@/models/user';
+import UserModel from '@/models/user';
+import type {Theme} from '@/data/themes';
 import {Difficulty} from '@/types/models';
 
 export type Options = {
@@ -21,20 +22,25 @@ const rating = (
 	averageRating = 1500,
 ): [number, number] => {
 	switch (level) {
-		case 'easiest':
+		case 'easiest': {
 			return [safeZero(averageRating - 600), safeZero(averageRating - 500)];
+		}
 
-		case 'easier':
+		case 'easier': {
 			return [safeZero(averageRating - 300), safeZero(averageRating - 200)];
+		}
 
-		case 'harder':
+		case 'harder': {
 			return [averageRating + 200, averageRating + 300];
+		}
 
-		case 'hardest':
+		case 'hardest': {
 			return [averageRating + 500, averageRating + 600];
+		}
 
-		default:
+		default: {
 			return [averageRating - 50, averageRating + 50];
+		}
 	}
 };
 

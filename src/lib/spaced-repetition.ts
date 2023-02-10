@@ -1,5 +1,5 @@
 import {update_} from './api-helpers';
-import {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleSet} from '@/models/puzzle-set';
 import {PuzzleItem} from '@/models/puzzle-item';
 
 const getTerminatedUpdate = () => ({
@@ -16,7 +16,7 @@ const getTerminatedUpdate = () => ({
 
 const getActivatedUpdate = (puzzleSet: PuzzleSet) => {
 	const puzzleOrder = [];
-	const chunks: Record<number, number> = {};
+	const chunks: {[key: number]: number} = {};
 	for (let i = 0; i <= 6; i++) chunks[i] = puzzleSet.length * i + 1;
 	for (let index = 0; index < puzzleSet.length; index++) {
 		if (!puzzleSet.puzzles[index]) continue;
@@ -28,25 +28,25 @@ const getActivatedUpdate = (puzzleSet: PuzzleSet) => {
 	}
 
 	// prettier-ignore
-	const update = [
+	return [
 		{
-			'$set': {
+			$set: {
 				progress: 0,
 				spacedRepetition: true,
 				puzzles: {
-					'$map': {
+					$map: {
 						input: {
-							'$range': [0, '$length'],
+							$range: [0, '$length'],
 						},
-						in: {
-							'$mergeObjects': [
+						'in': {
+							$mergeObjects: [
 								{
-									'$arrayElemAt': ['$puzzles', '$$this'],
+									$arrayElemAt: ['$puzzles', '$$this'],
 								},
 								{
 									played: false,
 									order: {
-										'$arrayElemAt': [puzzleOrder, '$$this'],
+										$arrayElemAt: [puzzleOrder, '$$this'],
 									},
 								},
 							],
@@ -56,8 +56,6 @@ const getActivatedUpdate = (puzzleSet: PuzzleSet) => {
 			},
 		},
 	];
-
-	return update;
 };
 
 /**

@@ -1,14 +1,14 @@
 import type {ReactElement} from 'react';
 import {useState} from 'react';
-import {GetServerSidePropsContext, Redirect} from 'next';
+import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import dynamic from 'next/dynamic';
 import Layout from '@/layouts/main';
-import {User} from '@/models/user';
+import type {User} from '@/models/user';
 import {withSessionSsr} from '@/lib/session';
-import {AchievementItem} from '@/models/achievement';
+import type {AchievementItem} from '@/models/achievement';
 import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
-import {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleSet} from '@/models/puzzle-set';
 import {get_} from '@/lib/api-helpers';
 import {Banner} from '@/components/dashboard/banner';
 
@@ -33,7 +33,7 @@ const DashbaordPage = ({user, puzzleSets}: Props) => {
 
 	const updateValidatedAchievement = async (achievementId: string) => {
 		setShowModal(() => false);
-		await fetch(`/api/achievement`, {
+		await fetch('/api/achievement', {
 			method: 'PUT',
 			body: JSON.stringify({achievementId, claimed: true}),
 		});
@@ -50,13 +50,13 @@ const DashbaordPage = ({user, puzzleSets}: Props) => {
 				currentAchievementItem={achievList[0]!}
 				handleClick={updateValidatedAchievement}
 			/>
-			<div className='flex flex-col items-center justify-center min-h-screen pt-12 md:pt-24 pb-20 relative'>
+			<div className='relative flex min-h-screen flex-col items-center justify-center pt-12 pb-20 md:pt-24'>
 				{isBannerOpen && (
 					<Banner handleCloseBanner={handleCloseBanner}>
 						⚠️ Chesspecker may shut down!
 					</Banner>
 				)}
-				<h1 className='p-5 mx-auto mt-8 mb-6 font-sans text-3xl font-bold text-center sm:text-4xl md:text-5xl'>
+				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>
 

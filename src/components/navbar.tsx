@@ -4,7 +4,7 @@ import {MoonIcon, SunIcon} from '@heroicons/react/solid';
 import {useState} from 'react';
 import {useAtom} from 'jotai';
 import Burger from './mobile-assets/burger';
-import {User} from '@/models/user';
+import type {User} from '@/models/user';
 import {darkModeµ} from '@/lib/atoms';
 import {getUser} from '@/lib/api-helpers';
 import useEffectAsync from '@/hooks/use-effect-async';
@@ -21,14 +21,14 @@ export const BtnToggle = () => {
 		>
 			{darkMode ? (
 				<SunIcon
-					className='w-5 h-5 text-yellow-400'
+					className='h-5 w-5 text-yellow-400'
 					onClick={() => {
 						setDarkMode(() => false);
 					}}
 				/>
 			) : (
 				<MoonIcon
-					className='w-5 h-5 text-yellow-400'
+					className='h-5 w-5 text-yellow-400'
 					onClick={() => {
 						setDarkMode(() => true);
 					}}
@@ -49,7 +49,7 @@ const Navbar = () => {
 	return (
 		<>
 			<Burger />
-			<div className='fixed top-0 z-10 items-center justify-between hidden w-full font-sans bg-white shadow sm:flex dark:bg-sky-700 sm:visible'>
+			<div className='fixed top-0 z-10 hidden w-full items-center justify-between bg-white font-sans shadow dark:bg-sky-700 sm:visible sm:flex'>
 				<div className='flex cursor-pointer'>
 					<Link href='/dashboard'>
 						<a>
@@ -57,17 +57,17 @@ const Navbar = () => {
 								<div className='m-2 max-w-[3.5rem]'>
 									<Image src={logo as string} />
 								</div>
-								<p className='self-center hidden ml-1 mr-4 text-md sm:block md:text-lg'>
+								<p className='text-md ml-1 mr-4 hidden self-center sm:block md:text-lg'>
 									— Chesspecker
 								</p>
 							</div>
 						</a>
 					</Link>
 				</div>
-				<div className='self-center mr-8 text-lg '>
+				<div className='mr-8 self-center text-lg '>
 					<div className='flex'>
 						<Link href='/user'>
-							<a className='flex items-center justify-center mr-5'>
+							<a className='mr-5 flex items-center justify-center'>
 								{user?.isSponsor && <span>👑&nbsp;</span>}
 								{user?.username}
 							</a>

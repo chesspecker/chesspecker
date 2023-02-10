@@ -1,6 +1,6 @@
 import ndjson from 'ndjson';
 import fetch from 'node-fetch';
-import {Activity, LichessToken, LichessUser} from '@/types/lichess';
+import type {Activity, LichessToken, LichessUser} from '@/types/lichess';
 import {LICHESS_CONFIG, ORIGIN} from '@/config';
 
 const getActivity = async (

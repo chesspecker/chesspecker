@@ -37,7 +37,6 @@ export const reducer = (
 ) => (accumulator && current ? accumulator + current : 0);
 
 export const summer = (arrays: number[][]): number[] =>
-	/* eslint-disable-next-line unicorn/no-array-reduce */
 	arrays.reduce<number[]>(
 		(acc: number[], array) => acc.map((sum, i) => sum + array[i]!),
 		/* eslint-disable-next-line unicorn/no-new-array */
@@ -51,8 +50,7 @@ export const getRandomInt = (max: number): number =>
 	Math.floor(Math.random() * max);
 
 export const groupBy = <T>(array: T[], predicate: (v: T) => string) =>
-	/* eslint-disable-next-line unicorn/no-array-reduce */
-	array.reduce<Record<string, T[]>>((acc, value) => {
+	array.reduce<{[key: string]: T[]}>((acc, value) => {
 		(acc[predicate(value)] ||= []).push(value);
 		return acc;
 	}, {});

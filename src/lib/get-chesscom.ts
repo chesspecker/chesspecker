@@ -1,4 +1,8 @@
-import {ChesscomStats, ChesscomToken, ChesscomUser} from '@/types/chesscom';
+import type {
+	ChesscomStats,
+	ChesscomToken,
+	ChesscomUser,
+} from '@/types/chesscom';
 import {CHESSCOM_CONFIG, ORIGIN} from '@/config';
 
 const getStats = async (

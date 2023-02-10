@@ -1,8 +1,9 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {create} from '@/controllers/create-set';
-import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleSet} from '@/models/puzzle-set';
+import PuzzleSetModel from '@/models/puzzle-set';
 import {failWrapper} from '@/lib/utils';
 import type {SuccessData, ErrorData} from '@/types/data';
 import {ORIGIN} from '@/config';
@@ -75,16 +76,19 @@ const handler = async (
 	response: NextApiResponse<PuzzleSetData | PuzzleSetArrayData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'GET':
+		case 'GET': {
 			await get_(request, response);
 			return;
+		}
 
-		case 'POST':
+		case 'POST': {
 			await post_(request, response);
 			return;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed');
+		}
 	}
 };
 

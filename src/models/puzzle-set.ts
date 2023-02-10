@@ -1,7 +1,8 @@
-import {getModelForClass, prop, mongoose, index} from '@typegoose/typegoose';
+import type {mongoose} from '@typegoose/typegoose';
+import {getModelForClass, prop, index} from '@typegoose/typegoose';
 import {User} from './user';
 import {PuzzleItem} from './puzzle-item';
-import type {Ref} from '@/types/ref';
+import {Ref} from '@/types/ref';
 import {Difficulty} from '@/types/models';
 
 @index({user: 1}, {unique: true})

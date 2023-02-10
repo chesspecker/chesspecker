@@ -1,10 +1,10 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import Stripe from 'stripe';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {failWrapper} from '@/lib/utils';
 import {ORIGIN} from '@/config';
-import {ErrorData, SuccessData} from '@/types/data';
+import type {ErrorData, SuccessData} from '@/types/data';
 
 const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY!;
 const stripe = new Stripe(STRIPE_SECRET, {apiVersion: '2020-08-27'});
@@ -55,12 +55,14 @@ const handler = async (
 	response: NextApiResponse<CheckoutData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'POST':
+		case 'POST': {
 			await post_(request, response);
 			return;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed', 405);
+		}
 	}
 };
 

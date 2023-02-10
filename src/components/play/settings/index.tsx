@@ -15,13 +15,13 @@ const Settings = () => {
 		<>
 			<button
 				type='button'
-				className='bg-transparent cursor-pointer'
+				className='cursor-pointer bg-transparent'
 				onClick={toggle}
 			>
-				<CogIcon className='w-5 h-5' />
+				<CogIcon className='h-5 w-5' />
 			</button>
 			<GenericModal title='Settings' hide={hide} isOpen={isOpen}>
-				<div className='grid items-center grid-cols-2 gap-3 mt-5 text-sm'>
+				<div className='mt-5 grid grid-cols-2 items-center gap-3 text-sm'>
 					<BoardSettings />
 					<PiecesSettings />
 					<AutoMoveSettings />

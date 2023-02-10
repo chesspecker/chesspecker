@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
 import Card from '@/components/card-achievement';
-import {User} from '@/models/user';
+import type {User} from '@/models/user';
 import useEffectAsync from '@/hooks/use-effect-async';
 import {getUser} from '@/lib/api-helpers';
 import type {AchievementInterface} from '@/types/models';
@@ -35,9 +35,9 @@ const UserPage = () => {
 	return (
 		<>
 			<NextSeo title='♟ Profile' />
-			<div className='flex flex-col w-screen min-h-screen px-10 pt-12 md:pt-32 pb-24'>
+			<div className='flex min-h-screen w-screen flex-col px-10 pt-12 pb-24 md:pt-32'>
 				<div className='flex flex-wrap items-center'>
-					<p className='mr-5 text-4xl md:text-6xl mb-2'>{user?.username}</p>
+					<p className='mr-5 mb-2 text-4xl md:text-6xl'>{user?.username}</p>
 					{user?.isSponsor ? (
 						<>
 							<p className='mr-2'>Official Sponsor</p>
@@ -66,12 +66,12 @@ const UserPage = () => {
 					</div>
 				</div>
 
-				<div className='m-2 mt-2 md:mt-4 min-h-[5rem]'>
+				<div className='m-2 min-h-[5rem] md:mt-4'>
 					<p className='text-xl'>My badges</p>
-					<div className='flex items-center justify-center w-full'>
-						<div className='flex items-center justify-center w-full max-w-screen-xl'>
+					<div className='flex w-full items-center justify-center'>
+						<div className='flex w-full max-w-screen-xl items-center justify-center'>
 							{!isLoading && (
-								<div className='flex flex-wrap items-center justify-center w-full'>
+								<div className='flex w-full flex-wrap items-center justify-center'>
 									{achievList.length === 0 && (
 										<p className='text-center'>
 											You don&apos;t have any achievement yet

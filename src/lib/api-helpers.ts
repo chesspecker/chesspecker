@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import {UpdateQuery} from 'mongoose';
-import {PuzzleItem} from '@/models/puzzle-item';
-import {PuzzleSet} from '@/models/puzzle-set';
-import {User} from '@/models/user';
+import type {UpdateQuery} from 'mongoose';
+import type {PuzzleItem} from '@/models/puzzle-item';
+import type {PuzzleSet} from '@/models/puzzle-set';
+import type {User} from '@/models/user';
 import type {PuzzleData, PuzzleSetData} from '@/pages/api/puzzle/[id]';
 import type {SetData} from '@/pages/api/set/[id]';
 import type {UserData} from '@/pages/api/user/[id]';
-import {ThemeItem} from '@/models/theme';
-import {PuzzleSetArrayData} from '@/pages/api/setBy/[user]';
-import {SessionData} from '@/pages/api/checkout-sessions/[id]';
-import {SubscriptionData} from '@/pages/api/subscription/[id]';
+import type {ThemeItem} from '@/models/theme';
+import type {PuzzleSetArrayData} from '@/pages/api/setBy/[user]';
+import type {SessionData} from '@/pages/api/checkout-sessions/[id]';
+import type {SubscriptionData} from '@/pages/api/subscription/[id]';
 
 const getPuzzleById = async (id: string, baseUrl = ''): Promise<PuzzleData> =>
 	fetch(`${baseUrl}/api/puzzle/${id}`).then(async response => response.json());
@@ -62,7 +62,7 @@ export type UpdateUser =
 			$inc: {
 				totalPuzzleSolved: number;
 				totalTimePlayed: number;
-				puzzleSolvedByCategories?: Record<number, ThemeItem>;
+				puzzleSolvedByCategories?: {[key: number]: ThemeItem};
 			};
 	  }
 	| {

@@ -5,12 +5,12 @@ import {
 	shouldIncrementOrResetStreakCount,
 	updateStreak,
 } from './streak';
-import {AchievementItem} from '@/models/achievement';
-import {Streak} from '@/models/streak';
-import {UserData} from '@/pages/api/user';
-import {User} from '@/models/user';
-import {Puzzle} from '@/models/puzzle';
-import {ThemeItem} from '@/models/theme';
+import type {AchievementItem} from '@/models/achievement';
+import type {Streak} from '@/models/streak';
+import type {UserData} from '@/pages/api/user';
+import type {User} from '@/models/user';
+import type {Puzzle} from '@/models/puzzle';
+import type {ThemeItem} from '@/models/theme';
 import type {AchievementInterface, AchivementsArgs} from '@/types/models';
 import {achievements} from '@/data/achievements';
 
@@ -29,7 +29,7 @@ export const checkForAchievement = async (
 		if (list.map(item => item.id).includes(achievement.id)) continue;
 		if (!achievement.isValidated(args)) continue;
 		promises.push(
-			fetch(`/api/achievement`, {
+			fetch('/api/achievement', {
 				method: 'POST',
 				body: JSON.stringify({achievementId: achievement.id}),
 			}),

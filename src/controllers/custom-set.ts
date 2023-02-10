@@ -1,10 +1,12 @@
-/* eslint-disable unicorn/no-array-callback-reference */
 import {shuffle} from '@/lib/utils';
-import PuzzleModel, {Puzzle} from '@/models/puzzle';
-import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
-import UserModel, {User} from '@/models/user';
-import {Activity} from '@/types/lichess';
-import {Difficulty} from '@/types/models';
+import type {Puzzle} from '@/models/puzzle';
+import PuzzleModel from '@/models/puzzle';
+import type {PuzzleSet} from '@/models/puzzle-set';
+import PuzzleSetModel from '@/models/puzzle-set';
+import type {User} from '@/models/user';
+import UserModel from '@/models/user';
+import type {Activity} from '@/types/lichess';
+import type {Difficulty} from '@/types/models';
 
 const nonNullable = <T>(value: T): value is NonNullable<T> =>
 	value !== null && value !== undefined;
@@ -34,9 +36,9 @@ export const create = async (
 			rating: doc.Rating,
 		}));
 
-	const puzzlesArray = list.map(async puzzle => {
-		return PuzzleModel.findOne({PuzzleId: puzzle.id}).lean().exec();
-	});
+	const puzzlesArray = list.map(async puzzle =>
+		PuzzleModel.findOne({PuzzleId: puzzle.id}).lean().exec(),
+	);
 
 	const unshuffledPuzzles = await Promise.all(puzzlesArray);
 	if (unshuffledPuzzles.length === 0) throw new Error('No puzzles found');

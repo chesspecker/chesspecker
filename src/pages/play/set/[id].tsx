@@ -1,6 +1,7 @@
-import {useState, useEffect, useCallback, ReactElement} from 'react';
+import type {ReactElement} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import * as ChessJS from 'chess.js';
-import {ChessInstance, Square, ShortMove} from 'chess.js';
+import type {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
@@ -17,12 +18,12 @@ import useKeyPress from '@/hooks/use-key-press';
 import {Button} from '@/components/button';
 import {checkForAchievement, getCheckAchivementBody} from '@/lib/achievements';
 import {withSessionSsr} from '@/lib/session';
-import {PreviousPuzzle} from '@/components/play/bottom-bar/history';
+import type {PreviousPuzzle} from '@/components/play/bottom-bar/history';
 import {activateSpacedRep, updateSpacedRep} from '@/lib/spaced-repetition';
-import {User} from '@/models/user';
-import {Puzzle} from '@/models/puzzle';
-import {PuzzleSet} from '@/models/puzzle-set';
-import {PuzzleItem} from '@/models/puzzle-item';
+import type {User} from '@/models/user';
+import type {Puzzle} from '@/models/puzzle';
+import type {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleItem} from '@/models/puzzle-item';
 import {get_, update_} from '@/lib/api-helpers';
 import {getGrade} from '@/lib/grades';
 import {
@@ -32,13 +33,14 @@ import {
 	getColor,
 	getCurrentPuzzle,
 } from '@/lib/play';
-import LeftBar, {Stat} from '@/components/play/left-bar';
+import type {Stat} from '@/components/play/left-bar';
+import LeftBar from '@/components/play/left-bar';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
 import Timer from '@/components/play/timer';
 import BottomBar from '@/components/play/bottom-bar';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {Animation} from '@/types/models';
+import type {Animation} from '@/types/models';
 import VICTORY from '@/sounds/Victory.mp3';
 import GENERIC from '@/sounds/GenericNotify.mp3';
 import ERROR from '@/sounds/Error.mp3';
@@ -629,7 +631,7 @@ const PlayingPage = ({set, user}: Props) => {
 					router.reload();
 				}}
 			/>
-			<div className='flex flex-col justify-start w-screen min-h-screen pt-12 md:pt-32 pb-24 m-0 text-slate-800'>
+			<div className='m-0 flex min-h-screen w-screen flex-col justify-start pt-12 pb-24 text-slate-800 md:pt-32'>
 				<div className='flex flex-row justify-center gap-2'>
 					{hasClock && (
 						<Timer
@@ -640,15 +642,15 @@ const PlayingPage = ({set, user}: Props) => {
 					)}
 					<Link href='/dashboard'>
 						<a>
-							<Button className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'>
+							<Button className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8'>
 								LEAVE 🧨
 							</Button>
 						</a>
 					</Link>
 				</div>
-				<div className='flex flex-col items-center justify-center w-full md:flex-row'>
+				<div className='flex w-full flex-col items-center justify-center md:flex-row'>
 					<LeftBar stat={leftBarStat} />
-					<div className='max-w-[33rem] w-11/12 md:w-full flex-auto'>
+					<div className='w-11/12 max-w-[33rem] flex-auto md:w-full'>
 						<Board
 							config={{
 								...config,

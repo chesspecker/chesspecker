@@ -21,7 +21,7 @@ const useTimer = (initialTime = 0) => {
 	const toggleTimer = useCallback((value?: boolean) => {
 		setTimer(timer => ({
 			...timer,
-			isRunning: value ? value : !timer.isRunning,
+			isRunning: value || !timer.isRunning,
 		}));
 	}, []);
 

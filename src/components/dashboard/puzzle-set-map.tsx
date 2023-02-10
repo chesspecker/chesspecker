@@ -4,7 +4,7 @@ import Image from 'next/image';
 import {useRouter} from 'next/router';
 import {useSound} from 'use-sound';
 import {Button} from '@/components/button';
-import {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleSet} from '@/models/puzzle-set';
 import RemoveModal from '@/components/dashboard/remove-modal';
 import plus from '@/public/images/plus.svg';
 import GENERIC from '@/sounds/GenericNotify.mp3';
@@ -37,8 +37,8 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	};
 
 	return (
-		<div className='flex flex-col w-64 h-52 p-4 m-2 overflow-hidden border-4 border-sky-800 dark:border-white rounded-xl'>
-			<div className='flex flex-row justify-between w-full'>
+		<div className='m-2 flex h-52 w-64 flex-col overflow-hidden rounded-xl border-4 border-sky-800 p-4 dark:border-white'>
+			<div className='flex w-full flex-row justify-between'>
 				{set.title && (
 					<h3 className='mx-4 mt-0 mb-4 text-2xl font-medium'>
 						{set.title.length > 10 ? set.title.slice(0, 9) + ' ...' : set.title}
@@ -61,7 +61,7 @@ type EmptyComponentProps = {
 	text: JSX.Element;
 };
 const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
-	<div className='flex justify-center flex-col items-center w-full h-full cursor-pointer text-sky-800 p-4'>
+	<div className='flex h-full w-full cursor-pointer flex-col items-center justify-center p-4 text-sky-800'>
 		{image}
 		{text}
 	</div>
@@ -71,22 +71,20 @@ type Props = {
 	puzzleSets: PuzzleSet[];
 };
 
-const PuzzleSetMap = ({puzzleSets}: Props) => {
-	return (
-		<div className='flex flex-wrap items-center justify-center'>
-			{puzzleSets?.map(set => (
-				<PuzzleSetComponent key={set._id.toString()} set={set} />
-			))}
-			<Link href='/create'>
-				<a className='flex flex-col w-64 h-52 m-2 overflow-hidden border-4 bg-white border-sky-800 dark:border-white rounded-xl'>
-					<EmptyPuzzleSetComponent
-						image={<Image src={plus as string} />}
-						text={<p className='mt-4'>Create a set</p>}
-					/>
-				</a>
-			</Link>
-		</div>
-	);
-};
+const PuzzleSetMap = ({puzzleSets}: Props) => (
+	<div className='flex flex-wrap items-center justify-center'>
+		{puzzleSets?.map(set => (
+			<PuzzleSetComponent key={set._id.toString()} set={set} />
+		))}
+		<Link href='/create'>
+			<a className='m-2 flex h-52 w-64 flex-col overflow-hidden rounded-xl border-4 border-sky-800 bg-white dark:border-white'>
+				<EmptyPuzzleSetComponent
+					image={<Image src={plus as string} />}
+					text={<p className='mt-4'>Create a set</p>}
+				/>
+			</a>
+		</Link>
+	</div>
+);
 
 export default PuzzleSetMap;

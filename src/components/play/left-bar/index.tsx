@@ -15,20 +15,20 @@ type Props = {
 };
 
 const getGradeColor = (grade: number) => {
-	if (grade < 3) return `text-red-500`;
-	if (grade < 5) return `text-orange-500`;
-	if (grade < 7) return `text-green-500`;
+	if (grade < 3) return 'text-red-500';
+	if (grade < 5) return 'text-orange-500';
+	if (grade < 7) return 'text-green-500';
 };
 
 const LeftBar = ({stat}: Props) => {
 	if (!stat)
-		return <div className='hidden w-36 px-2.5 md:mx-2 md:invisible md:block' />;
+		return <div className='hidden w-36 px-2.5 md:invisible md:mx-2 md:block' />;
 	const {currentGrade, timeCurrent, gradeLast, timeLast} = stat;
 	const gradeDiff = gradeLast ? currentGrade - gradeLast : 0;
 	const timeDiff = timeLast ? timeCurrent - timeLast : 0;
 
 	return (
-		<div className='text-md mx-auto hidden md:block h-fit w-36 cursor-default rounded-md border border-transparent bg-slate-800 dark:bg-white py-2 px-2.5 text-center font-sans font-bold leading-8 text-white dark:text-sky-800 shadow-sm backdrop-blur-lg backdrop-filter md:mx-2'>
+		<div className='text-md mx-auto hidden h-fit w-36 cursor-default rounded-md border border-transparent bg-slate-800 py-2 px-2.5 text-center font-sans font-bold leading-8 text-white shadow-sm backdrop-blur-lg dark:bg-white dark:text-sky-800 md:mx-2 md:block'>
 			<span>Last puzzle: </span>
 			<span>
 				grade:{' '}
@@ -48,12 +48,12 @@ const LeftBar = ({stat}: Props) => {
 				>
 					{gradeDiff > 0 ? (
 						<ArrowSmUpIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
+							className='h-5 w-5 shrink-0 self-center text-green-400 dark:text-green-500'
 							aria-hidden='true'
 						/>
 					) : (
 						<ArrowSmDownIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
+							className='h-5 w-5 shrink-0 self-center text-red-400 dark:text-red-500'
 							aria-hidden='true'
 						/>
 					)}
@@ -78,12 +78,12 @@ const LeftBar = ({stat}: Props) => {
 				>
 					{timeDiff < 0 ? (
 						<ArrowSmUpIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-green-400 dark:text-green-500'
+							className='h-5 w-5 shrink-0 self-center text-green-400 dark:text-green-500'
 							aria-hidden='true'
 						/>
 					) : (
 						<ArrowSmDownIcon
-							className='self-center flex-shrink-0 w-5 h-5 text-red-400 dark:text-red-500'
+							className='h-5 w-5 shrink-0 self-center text-red-400 dark:text-red-500'
 							aria-hidden='true'
 						/>
 					)}

@@ -1,10 +1,11 @@
-import {ReactElement, useState} from 'react';
+import type {ReactElement} from 'react';
+import {useState} from 'react';
 import {NextSeo} from 'next-seo';
 import {useRouter} from 'next/router';
-import {ResponseData} from './api/failed';
+import type {ResponseData} from './api/failed';
 import Layout from '@/layouts/main';
 import useEffectAsync from '@/hooks/use-effect-async';
-import {Activity} from '@/types/lichess';
+import type {Activity} from '@/types/lichess';
 import {Button} from '@/components/button';
 
 const OptionsPage = () => {
@@ -50,7 +51,7 @@ const OptionsPage = () => {
 	return (
 		<>
 			<NextSeo title='♟ Create' />
-			<div className='flex flex-col items-center justify-center w-11/12 min-h-screen pt-12 md:pt-32 pb-24 text-center'>
+			<div className='flex min-h-screen w-11/12 flex-col items-center justify-center pt-12 pb-24 text-center md:pt-32'>
 				<div>
 					{isLoading && (
 						<h1 className='mb-8 text-3xl lg:text-5xl'>Looking for puzzles…</h1>

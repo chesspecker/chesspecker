@@ -1,9 +1,10 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
-import UserModel, {User} from '@/models/user';
+import type {User} from '@/models/user';
+import UserModel from '@/models/user';
 import {failWrapper} from '@/lib/utils';
-import {SuccessData, ErrorData} from '@/types/data';
+import type {SuccessData, ErrorData} from '@/types/data';
 import {ORIGIN} from '@/config';
 
 export type AchievementData = SuccessData<User> | ErrorData;
@@ -109,16 +110,19 @@ const handler = async (
 	response: NextApiResponse<AchievementData>,
 ) => {
 	switch (request.method) {
-		case 'POST':
+		case 'POST': {
 			await post_(request, response);
 			return;
+		}
 
-		case 'PUT':
+		case 'PUT': {
 			await put_(request, response);
 			return;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed', 405);
+		}
 	}
 };
 

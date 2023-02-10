@@ -1,5 +1,6 @@
 import {useAtom} from 'jotai';
-import {Pieces, configµ} from '@/lib/atoms';
+import type {Pieces} from '@/lib/atoms';
+import {configµ} from '@/lib/atoms';
 
 const PiecesSettings = () => {
 	const [pieces, setPieces] = useAtom(configµ.pieces);

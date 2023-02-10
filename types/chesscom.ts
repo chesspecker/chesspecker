@@ -56,4 +56,4 @@ type ChesscomStatItem = {
 	};
 };
 
-export type ChesscomStats = Record<string, ChesscomStatItem>;
+export type ChesscomStats = {[key: string]: ChesscomStatItem};

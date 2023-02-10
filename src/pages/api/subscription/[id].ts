@@ -1,9 +1,9 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import Stripe from 'stripe';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {failWrapper} from '@/lib/utils';
-import {SuccessData, ErrorData} from '@/types/data';
+import type {SuccessData, ErrorData} from '@/types/data';
 
 const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!;
 const stripe = new Stripe(STRIPE_PUBLISHABLE, {apiVersion: '2020-08-27'});
@@ -15,7 +15,7 @@ const get_ = async (
 	response: NextApiResponse<SubscriptionData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing id', 400);
 		return;
@@ -60,7 +60,7 @@ const delete_ = async (
 	response: NextApiResponse<SubscriptionData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing id', 400);
 		return;
@@ -82,20 +82,24 @@ const handler = async (
 	response: NextApiResponse<SubscriptionData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'GET':
+		case 'GET': {
 			await get_(request, response);
 			return;
+		}
 
-		case 'PUT':
+		case 'PUT': {
 			await put_(request, response);
 			return;
+		}
 
-		case 'DELETE':
+		case 'DELETE': {
 			await delete_(request, response);
 			return;
+		}
 
-		default:
+		default: {
 			response.status(405).json({success: false, error: 'Method not allowed'});
+		}
 	}
 };
 

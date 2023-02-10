@@ -16,16 +16,14 @@ const getClasses = (grade: number) => {
 	if (grade < 7) return `${base} bg-green-500`;
 };
 
-const History = ({puzzles}: HistoryProps) => {
-	return (
-		<div className='flex flex-row flex-wrap w-full gap-1'>
-			{puzzles.map(puzzle => (
-				<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
-					<a className={getClasses(puzzle.grade)} />
-				</Link>
-			))}
-		</div>
-	);
-};
+const History = ({puzzles}: HistoryProps) => (
+	<div className='flex w-full flex-row flex-wrap gap-1'>
+		{puzzles.map(puzzle => (
+			<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
+				<a className={getClasses(puzzle.grade)} />
+			</Link>
+		))}
+	</div>
+);
 
 export default History;

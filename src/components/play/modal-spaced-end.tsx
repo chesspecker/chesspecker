@@ -15,16 +15,16 @@ const ModalSpacedEnd = ({isOpen = false, hide}: Props) => {
 			hide={hide}
 			isOpen={isOpen}
 		>
-			<div className='w-full mt-2'>
+			<div className='mt-2 w-full'>
 				<p className='text-sm text-gray-500'>
 					Congrats you finished this set with spaced repetition mode.
 				</p>
 			</div>
 			<div className='mt-4'>
-				<div className='flex justify-start w-full'>
+				<div className='flex w-full justify-start'>
 					<Button
 						type='button'
-						className='inline-flex justify-center px-4 py-2 mr-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+						className='mr-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
 						onClick={async () => {
 							hide();
 							return router.push('/dashboard');
@@ -34,7 +34,7 @@ const ModalSpacedEnd = ({isOpen = false, hide}: Props) => {
 					</Button>
 					<Button
 						type='button'
-						className='inline-flex justify-center px-4 py-2 ml-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+						className='ml-2 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
 						onClick={() => {
 							router.reload();
 						}}

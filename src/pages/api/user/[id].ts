@@ -2,9 +2,10 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import type {UpdateQuery} from 'mongoose';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
-import UserModel, {User} from '@/models/user';
+import type {User} from '@/models/user';
+import UserModel from '@/models/user';
 import {failWrapper} from '@/lib/utils';
-import {SuccessData, ErrorData} from '@/types/data';
+import type {SuccessData, ErrorData} from '@/types/data';
 
 export type UserData = SuccessData<User> | ErrorData;
 
@@ -13,7 +14,7 @@ const get_ = async (
 	response: NextApiResponse<UserData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing user id', 400);
 		return;
@@ -37,7 +38,7 @@ const delete_ = async (
 	response: NextApiResponse<UserData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing user id', 400);
 		return;
@@ -61,7 +62,7 @@ const put_ = async (
 	response: NextApiResponse<UserData>,
 ) => {
 	const fail = failWrapper(response);
-	const {id} = request.query as Record<string, string>;
+	const {id} = request.query as {[key: string]: string};
 	if (!id) {
 		fail('Missing user id', 400);
 		return;
@@ -97,20 +98,24 @@ const handler = async (
 	response: NextApiResponse<UserData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'GET':
+		case 'GET': {
 			await get_(request, response);
 			break;
+		}
 
-		case 'DELETE':
+		case 'DELETE': {
 			await delete_(request, response);
 			break;
+		}
 
-		case 'PUT':
+		case 'PUT': {
 			await put_(request, response);
 			break;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed', 405);
+		}
 	}
 };
 

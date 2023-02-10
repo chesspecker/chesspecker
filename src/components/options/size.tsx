@@ -9,9 +9,9 @@ const OptionSize = () => {
 	};
 
 	return (
-		<div className='flex flex-col w-full my-8 md:flex-row'>
-			<div className='flex flex-col justify-center w-full md:flex-row md:justify-between'>
-				<label htmlFor='number_game' className='self-center m-0 mr-4 text-2xl'>
+		<div className='my-8 flex w-full flex-col md:flex-row'>
+			<div className='flex w-full flex-col justify-center md:flex-row md:justify-between'>
+				<label htmlFor='number_game' className='m-0 mr-4 self-center text-2xl'>
 					Number of puzzles
 					<br />
 					<span className='text-lg italic'>({size})</span>

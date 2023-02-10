@@ -1,7 +1,6 @@
-/* eslint-disable unicorn/no-array-reduce */
-/* eslint-disable unicorn/no-array-callback-reference */
-import {GetServerSideProps} from 'next';
-import {ReactElement, useCallback, useState} from 'react';
+import type {GetServerSideProps} from 'next';
+import type {ReactElement} from 'react';
+import {useCallback, useState} from 'react';
 import {useRouter} from 'next/router';
 import Link from 'next/link';
 import {NextSeo} from 'next-seo';
@@ -14,8 +13,8 @@ import {
 } from '@/lib/view';
 import useModal from '@/hooks/use-modal';
 import {activateSpacedRep, deactivateSpacedRep} from '@/lib/spaced-repetition';
-import {PuzzleItem} from '@/models/puzzle-item';
-import {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleItem} from '@/models/puzzle-item';
+import type {PuzzleSet} from '@/models/puzzle-set';
 import {reducer} from '@/lib/utils';
 import Block from '@/components/view/block';
 import {get_} from '@/lib/api-helpers';
@@ -63,10 +62,10 @@ const ViewingPage = ({set}: Props) => {
 	return (
 		<>
 			<NextSeo title='📊 View' />
-			<div className='flex flex-col w-screen min-h-screen px-2 pt-12 md:pt-32 pb-24 m-0 sm:px-12'>
+			<div className='m-0 flex min-h-screen w-screen flex-col px-2 pt-12 pb-24 sm:px-12 md:pt-32'>
 				<div>
 					<div className='flex items-center '>
-						<h1 className='py-5 mt-8 mr-4 font-sans text-3xl font-bold md:text-5xl'>
+						<h1 className='mt-8 mr-4 py-5 font-sans text-3xl font-bold md:text-5xl'>
 							{set.title}
 						</h1>
 						<EditModal
@@ -102,7 +101,7 @@ const ViewingPage = ({set}: Props) => {
 					)}
 
 					<button
-						className='p-4 mb-6 text-gray-100 rounded-lg cursor-pointer no-wrap w-fit disabled:cursor-not-allowed disabled:bg-slate-400 disabled:dark:bg-slate-500 disabled:text-slate-200 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 dark:text-sky-600 hover:bg-sky-600 hover:dark:text-sky-800 disabled:hover:dark:text-slate-200 bg-sky-700 dark:bg-gray-100 dark:hover:bg-gray-200'
+						className='no-wrap mb-6 w-fit cursor-pointer rounded-lg bg-sky-700 p-4 text-gray-100 hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-slate-400 disabled:text-slate-200 dark:bg-gray-100 dark:text-sky-600 dark:hover:bg-gray-200 hover:dark:text-sky-800 disabled:dark:bg-slate-500 dark:disabled:text-slate-200 hover:disabled:dark:text-slate-200 disabled:hover:dark:text-slate-200'
 						disabled={set.cycles < 1 && !set.spacedRepetition}
 						type='button'
 						onClick={toggle}
@@ -116,7 +115,7 @@ const ViewingPage = ({set}: Props) => {
 										: set.spacedRepetition
 										? 'bg-green-500'
 										: 'bg-red-500'
-								} text-white py-2 px-4 rounded-full ml-3`}
+								} ml-3 rounded-full py-2 px-4 text-white`}
 							>
 								{set.spacedRepetition ? 'on' : 'off'}
 							</span>
@@ -125,9 +124,9 @@ const ViewingPage = ({set}: Props) => {
 				</div>
 
 				{set?.cycles >= 1 && (
-					<div className='w-full mt-4'>
+					<div className='mt-4 w-full'>
 						<h2 className='h2'>Set overview</h2>
-						<div className='flex flex-wrap w-full mt-4'>
+						<div className='mt-4 flex w-full flex-wrap'>
 							{getOverviewStats(set).map(stat => (
 								<Block key={stat.title} {...stat} />
 							))}
@@ -137,16 +136,16 @@ const ViewingPage = ({set}: Props) => {
 
 				{set?.cycles < 2 && set?.currentTime === 0 && (
 					<div className='w-full'>
-						<p className='p-5 mt-8 mb-6 font-sans text-xl font-bold md:text-3xl'>
+						<p className='mt-8 mb-6 p-5 font-sans text-xl font-bold md:text-3xl'>
 							No data yet, start playing!
 						</p>
 					</div>
 				)}
 
 				{set?.cycles >= 2 && (
-					<div className='w-full mt-4'>
+					<div className='mt-4 w-full'>
 						<h2 className='h2'>Global progress</h2>
-						<div className='flex flex-wrap w-full mt-4'>
+						<div className='mt-4 flex w-full flex-wrap'>
 							{getProgressStats(set).map(stat => (
 								<Block key={stat.title} {...stat} />
 							))}
@@ -155,9 +154,9 @@ const ViewingPage = ({set}: Props) => {
 				)}
 
 				{set?.currentTime > 0 && (
-					<div className='flex-wrap w-full mt-4'>
+					<div className='mt-4 w-full flex-wrap'>
 						<h2 className='h2'>Current run</h2>
-						<div className='flex flex-wrap justify-around w-full mt-4'>
+						<div className='mt-4 flex w-full flex-wrap justify-around'>
 							{getCurrentRunStats(set).map(stat => (
 								<Block key={stat.title} {...stat} />
 							))}
@@ -166,9 +165,9 @@ const ViewingPage = ({set}: Props) => {
 				)}
 
 				{set?.cycles > 0 && (
-					<div className='flex-wrap w-full mt-4'>
-						<h2 className='mb-4 h2'>Average grade for each puzzle</h2>
-						<div className='flex flex-row flex-wrap w-full gap-2 mb-4'>
+					<div className='mt-4 w-full flex-wrap'>
+						<h2 className='h2 mb-4'>Average grade for each puzzle</h2>
+						<div className='mb-4 flex w-full flex-row flex-wrap gap-2'>
 							{set.puzzles.map(puzzle => (
 								<PuzzleComponent key={puzzle.PuzzleId} {...puzzle} />
 							))}

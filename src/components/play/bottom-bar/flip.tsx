@@ -14,10 +14,10 @@ const Flip = () => {
 	return (
 		<button
 			type='button'
-			className='bg-transparent cursor-pointer'
+			className='cursor-pointer bg-transparent'
 			onClick={handleClick}
 		>
-			<RefreshIcon className='w-5 h-5' />
+			<RefreshIcon className='h-5 w-5' />
 		</button>
 	);
 };

@@ -9,7 +9,7 @@ const SoundSettings = () => {
 			<div className='flex'>
 				<input
 					type='checkbox'
-					className='border border-gray-300 rounded'
+					className='rounded border border-gray-300'
 					defaultChecked={sound}
 					onChange={() => {
 						setSound((state: boolean) => !state);

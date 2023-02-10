@@ -1,11 +1,11 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {failWrapper} from '@/lib/utils';
 import getLichess from '@/lib/get-lichess';
-import {ErrorData, SuccessData} from '@/types/data';
-import {Activity} from '@/types/lichess';
-import {PuzzleSet} from '@/models/puzzle-set';
+import type {ErrorData, SuccessData} from '@/types/data';
+import type {Activity} from '@/types/lichess';
+import type {PuzzleSet} from '@/models/puzzle-set';
 import {create} from '@/controllers/custom-set';
 import {ORIGIN} from '@/config';
 
@@ -74,16 +74,19 @@ const handler = async (
 	response: NextApiResponse<ResponseData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'GET':
+		case 'GET': {
 			await get_(request, response);
 			return;
+		}
 
-		case 'POST':
+		case 'POST': {
 			await post_(request, response);
 			return;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed');
+		}
 	}
 };
 

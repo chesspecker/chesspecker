@@ -1,7 +1,8 @@
 import {atom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
 import type {Category} from 'data/categories';
-import {Difficulty, Animation} from '@/types/models';
+import type {Animation} from '@/types/models';
+import {Difficulty} from '@/types/models';
 
 export const darkModeµ = atomWithStorage<boolean>('cp-dark-mode', true);
 

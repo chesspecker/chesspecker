@@ -1,11 +1,11 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import getLichess from '@/lib/get-lichess';
 import getChesscom from '@/lib/get-chesscom';
 import {failWrapper} from '@/lib/utils';
-import {Perfs} from '@/types/lichess';
-import {SuccessData, ErrorData} from '@/types/data';
+import type {Perfs} from '@/types/lichess';
+import type {SuccessData, ErrorData} from '@/types/data';
 import {ORIGIN} from '@/config';
 
 export type Data = SuccessData<number> | ErrorData;
@@ -69,7 +69,7 @@ const handler = async (
 ) => {
 	const fail = failWrapper(response);
 	switch (request.method) {
-		case 'GET':
+		case 'GET': {
 			if (!request?.session?.userID) {
 				response.redirect(302, `${ORIGIN}/api/auth/logout`);
 				return;
@@ -87,9 +87,11 @@ const handler = async (
 
 			fail('Session error', 500);
 			break;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed', 405);
+		}
 	}
 };
 

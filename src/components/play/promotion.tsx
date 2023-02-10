@@ -1,5 +1,5 @@
-import {ShortMove} from 'chess.js';
-import {Color} from 'chessground/types';
+import type {ShortMove} from 'chess.js';
+import type {Color} from 'chessground/types';
 import {useAtom} from 'jotai';
 import {memo, Fragment} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
@@ -15,7 +15,7 @@ const SelectPiece = ({color, handleClick, role}: PieceProps) => {
 	const [pieces] = useAtom(configµ.pieces);
 	return (
 		<div
-			className='border border-gray-300 rounded edit-square'
+			className='edit-square rounded border border-gray-300'
 			onClick={handleClick}
 		>
 			<div className={`promotion-piece ${pieces} ${role} ${color}`} />
@@ -51,7 +51,7 @@ const Promotion = ({isOpen, hide, onPromote, color = 'white'}: Props) => {
 				</Transition.Child>
 
 				<div className='fixed inset-0 overflow-y-auto'>
-					<div className='flex items-center justify-center min-h-full p-4 text-center'>
+					<div className='flex min-h-full items-center justify-center p-4 text-center'>
 						<Transition.Child
 							as={Fragment}
 							enter='ease-out duration-300'
@@ -61,7 +61,7 @@ const Promotion = ({isOpen, hide, onPromote, color = 'white'}: Props) => {
 							leaveFrom='opacity-100 scale-100'
 							leaveTo='opacity-0 scale-95'
 						>
-							<Dialog.Panel className='w-full max-w-md p-2 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl promote rounded-2xl flex justify-center gap-2 py-1.5'>
+							<Dialog.Panel className='promote flex w-full max-w-md justify-center gap-2 overflow-hidden rounded-2xl bg-white p-2 py-1.5 text-left align-middle shadow-xl transition-all'>
 								<SelectPiece
 									color={color}
 									role='queen'

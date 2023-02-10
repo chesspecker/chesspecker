@@ -24,7 +24,7 @@ const callback = async (
 		return;
 	}
 
-	const {code} = request.query as Record<string, string>;
+	const {code} = request.query as {[key: string]: string};
 	if (!code) {
 		fail('No code found');
 		return;

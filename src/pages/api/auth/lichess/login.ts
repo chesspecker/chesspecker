@@ -6,7 +6,6 @@ import {failWrapper} from '@/lib/utils';
 import {LICHESS_CONFIG, ORIGIN} from '@/config';
 import type {ErrorData} from '@/types/data';
 
-// eslint-disable-next-line n/prefer-global/buffer
 const base64URLEncode = (buffer_: Buffer): string =>
 	buffer_
 		.toString('base64')
@@ -14,7 +13,6 @@ const base64URLEncode = (buffer_: Buffer): string =>
 		.replace(/\//g, '_')
 		.replace(/=/g, '');
 
-// eslint-disable-next-line n/prefer-global/buffer
 const sha256 = (string_: string): Buffer =>
 	createHash('sha256').update(string_).digest();
 const createVerifier = (): string => base64URLEncode(randomBytes(32));

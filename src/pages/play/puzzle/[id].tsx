@@ -1,6 +1,7 @@
-import {useState, useEffect, useCallback, ReactElement} from 'react';
+import type {ReactElement} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import * as ChessJS from 'chess.js';
-import {ChessInstance, Square, ShortMove} from 'chess.js';
+import type {ChessInstance, Square, ShortMove} from 'chess.js';
 import type {Config} from 'chessground/config';
 import {useAtom} from 'jotai';
 import {useRouter} from 'next/router';
@@ -9,7 +10,7 @@ import {NextSeo} from 'next-seo';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {useSound} from 'use-sound';
-import {Puzzle} from '@/models/puzzle';
+import type {Puzzle} from '@/models/puzzle';
 import Layout from '@/layouts/main';
 import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
 import useModal from '@/hooks/use-modal';
@@ -29,7 +30,7 @@ import GENERIC from '@/sounds/GenericNotify.mp3';
 import ERROR from '@/sounds/Error.mp3';
 import CAPTURE from '@/sounds/Capture.mp3';
 import MOVE from '@/sounds/Move.mp3';
-import {Animation} from '@/types/models';
+import type {Animation} from '@/types/models';
 
 const Timer = dynamic(async () => import('@/components/play/timer'));
 const ModalPuzzle = dynamic(async () => import('@/components/modal-puzzle'));
@@ -359,20 +360,20 @@ const PlayingPage = ({puzzle}: Props) => {
 				setShowModal={setShowCompletionModal}
 				random={random}
 			/>
-			<div className='flex flex-col justify-center w-screen min-h-screen pt-12 md:pt-32 pb-24 m-0 text-slate-800'>
+			<div className='m-0 flex min-h-screen w-screen flex-col justify-center pt-12 pb-24 text-slate-800 md:pt-32'>
 				<div className='flex flex-row justify-center gap-2'>
 					<Timer value={0} mistakes={mistakes} isRunning={isRunning} />
 					<Link href='/dashboard'>
 						<a>
-							<Button className='items-center my-2 leading-8 bg-gray-800 rounded-md w-36'>
+							<Button className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8'>
 								LEAVE 🧨
 							</Button>
 						</a>
 					</Link>
 				</div>
-				<div className='flex flex-col items-center justify-center w-full md:flex-row'>
+				<div className='flex w-full flex-col items-center justify-center md:flex-row'>
 					<div className='hidden w-36 md:invisible md:block' />
-					<div className='max-w-[33rem] w-11/12 md:w-full flex-auto'>
+					<div className='w-11/12 max-w-[33rem] flex-auto md:w-full'>
 						<Board
 							config={{
 								...config,
@@ -388,7 +389,7 @@ const PlayingPage = ({puzzle}: Props) => {
 						<BottomBar puzzles={[]} />
 					</div>
 
-					<div className='flex flex-row justify-center w-5/6 md:w-fit md:flex-col'>
+					<div className='flex w-5/6 flex-row justify-center md:w-fit md:flex-col'>
 						<div className='mt-2'>
 							<Solution
 								answer={moveHistory[moveNumber]!}

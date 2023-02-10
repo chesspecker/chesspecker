@@ -1,5 +1,6 @@
 import {PencilIcon} from '@heroicons/react/solid';
-import {Dispatch, memo, SetStateAction} from 'react';
+import type {Dispatch, SetStateAction} from 'react';
+import {memo} from 'react';
 import useModal from '@/hooks/use-modal';
 import {Button} from '@/components/button';
 import GenericModal from '@/components/modal';
@@ -19,17 +20,17 @@ const EditModal = ({setTitle, setSetTitle, onValidate}: Props) => {
 		<>
 			<button
 				type='button'
-				className='dark:bg-white bg-sky-700 flex items-center justify-center w-min h-min rounded-full p-1 cursor-pointer'
+				className='flex h-min w-min cursor-pointer items-center justify-center rounded-full bg-sky-700 p-1 dark:bg-white'
 				onClick={toggle}
 			>
-				<PencilIcon className='w-5 h-5 dark:text-sky-700 text-white' />
+				<PencilIcon className='h-5 w-5 text-white dark:text-sky-700' />
 			</button>
 
 			<GenericModal title='Edit set name' isOpen={isOpen} hide={hide}>
-				<div className='flex flex-col items-center justify-center w-full pb-4 my-8 overflow-hidden text-left md:flex-row'>
+				<div className='my-8 flex w-full flex-col items-center justify-center overflow-hidden pb-4 text-left md:flex-row'>
 					<input
 						id='title'
-						className='bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white'
+						className='w-full appearance-none rounded border-2 border-gray-200 bg-gray-200 py-2 px-4 leading-tight text-gray-700 focus:bg-white focus:outline-none'
 						type='text'
 						value={setTitle}
 						placeholder='ex: Road to 2300 elo :)'
@@ -38,7 +39,7 @@ const EditModal = ({setTitle, setSetTitle, onValidate}: Props) => {
 						}}
 					/>
 				</div>
-				<div className='p-2 m-2'>
+				<div className='m-2 p-2'>
 					<Button className={defaultClasses} onClick={onValidate}>
 						Save
 					</Button>

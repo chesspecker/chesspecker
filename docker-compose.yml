@@ -12,7 +12,7 @@ services:
       - /app/node_modules
       - /app/.next
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - mongo
 
@@ -23,4 +23,4 @@ services:
     volumes:
       - ./dump:/dump
     ports:
-      - "27017:27017"
+      - '27017:27017'

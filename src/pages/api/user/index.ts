@@ -3,8 +3,9 @@ import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
 import {createChesscomUser, createLichessUser} from '@/controllers/create-user';
 import {failWrapper} from '@/lib/utils';
-import UserModel, {User} from '@/models/user';
-import {SuccessData, ErrorData} from '@/types/data';
+import type {User} from '@/models/user';
+import UserModel from '@/models/user';
+import type {SuccessData, ErrorData} from '@/types/data';
 import {ORIGIN} from '@/config';
 
 export type UserData = SuccessData<User> | ErrorData;
@@ -61,16 +62,19 @@ const handler = async (
 	response: NextApiResponse<UserData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'GET':
+		case 'GET': {
 			await get_(request, response);
 			break;
+		}
 
-		case 'POST':
+		case 'POST': {
 			await post_(request, response);
 			break;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed', 405);
+		}
 	}
 };
 

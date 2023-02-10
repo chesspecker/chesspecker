@@ -1,6 +1,6 @@
-import {Stripe, loadStripe} from '@stripe/stripe-js';
+import type {Stripe} from '@stripe/stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 let stripePromise: Promise<Stripe | null>;
 const getStripe = async (key: string) => {
 	if (await stripePromise) return stripePromise;

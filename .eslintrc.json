@@ -1,0 +1,8 @@
+{
+	"extends": "@pnxdxt/eslint-config",
+	"settings": {
+		"tailwindcss": {
+			"config": "tailwind.config.cjs"
+		}
+	}
+}

@@ -1,7 +1,8 @@
-import {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiRequest, NextApiResponse} from 'next';
 import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
-import PuzzleSetModel, {PuzzleSet} from '@/models/puzzle-set';
+import type {PuzzleSet} from '@/models/puzzle-set';
+import PuzzleSetModel from '@/models/puzzle-set';
 import {failWrapper} from '@/lib/utils';
 import type {SuccessData, ErrorData} from '@/types/data';
 
@@ -12,7 +13,7 @@ const get_ = async (
 	response: NextApiResponse<PuzzleSetArrayData>,
 ) => {
 	const fail = failWrapper(response);
-	const {user} = request.query as Record<string, string>;
+	const {user} = request.query as {[key: string]: string};
 	if (!user) {
 		fail('Missing id', 400);
 		return;
@@ -36,13 +37,15 @@ const handler = async (
 	response: NextApiResponse<PuzzleSetArrayData>,
 ) => {
 	switch (request.method?.toUpperCase()) {
-		case 'GET':
+		case 'GET': {
 			await get_(request, response);
 			break;
+		}
 
-		default:
+		default: {
 			failWrapper(response)('Method not allowed', 405);
 			break;
+		}
 	}
 };
 
