@@ -4,7 +4,7 @@ import {PuzzleItem} from './puzzle-item';
 import type {Ref} from '@/types/ref';
 import {Difficulty} from '@/types/models';
 
-@index({user: 1}, {unique: true})
+@index({user: 1})
 export class PuzzleSet {
 	@prop({ref: () => User})
 	public user?: Ref<User>;
