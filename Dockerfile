@@ -18,6 +18,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV development
 ENV PORT 3000
 
+RUN yarn install
+
 RUN yarn run build
 
 CMD ["yarn", "dev"]
