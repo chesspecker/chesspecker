@@ -1,15 +1,15 @@
 import {
-	ExclamationIcon,
+	ExclamationTriangleIcon,
 	InformationCircleIcon,
 	CheckCircleIcon,
 	XCircleIcon,
-} from '@heroicons/react/solid';
+} from '@heroicons/react/24/solid';
 
 const icons = {
 	error: <XCircleIcon className='h-5 w-5 text-red-400' />,
 	success: <CheckCircleIcon className='h-5 w-5 text-green-400' />,
 	info: <InformationCircleIcon className='h-5 w-5 text-blue-400' />,
-	warning: <ExclamationIcon className='h-5 w-5 text-yellow-400' />,
+	warning: <ExclamationTriangleIcon className='h-5 w-5 text-yellow-400' />,
 };
 
 const colors = {
@@ -41,7 +41,7 @@ type Props = {
 	isVisible: boolean;
 };
 
-const Alert = ({type, message, isVisible}: Props) => {
+export const Alert = ({type, message, isVisible}: Props) => {
 	if (!isVisible) return null;
 	return (
 		<div
@@ -56,5 +56,3 @@ const Alert = ({type, message, isVisible}: Props) => {
 		</div>
 	);
 };
-
-export default Alert;

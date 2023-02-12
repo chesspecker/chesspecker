@@ -1,18 +1,14 @@
+import type {AppProps, AppType} from 'next/app';
 import '@/styles/globals.css';
 import '@/styles/modal.css';
 import '@/styles/cg-base.css';
 import '@/styles/cg-chess.css';
 import '@/styles/cg-board.css';
 import '@/styles/cg-pieces.css';
-import type {ReactElement, ReactNode} from 'react';
-import {useEffect, useState} from 'react';
 import type {NextPage} from 'next';
-import type {AppProps} from 'next/app';
-import {useRouter} from 'next/router';
+import type {ReactElement, ReactNode} from 'react';
 import {DefaultSeo} from 'next-seo';
-import PlausibleProvider from 'next-plausible';
-import Loader from '@/components/loader';
-import useEffectAsync from '@/hooks/use-effect-async';
+import {api} from '@/utils/api';
 
 type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactNode;
@@ -22,47 +18,8 @@ type AppPropsWithLayout = AppProps & {
 	Component: NextPageWithLayout;
 };
 
-const CustomApp = ({
-	Component,
-	pageProps: {session, ...pageProps},
-}: AppPropsWithLayout) => {
-	const router = useRouter();
-	const [loading, setLoading] = useState<boolean>(false);
-
-	useEffect(() => {
-		const setTrue = () => {
-			setLoading(() => true);
-		};
-
-		const setFalse = () => {
-			setLoading(() => false);
-		};
-
-		router.events.on('routeChangeStart', setTrue);
-		router.events.on('routeChangeComplete', setFalse);
-
-		return () => {
-			router.events.off('routeChangeStart', setTrue);
-			router.events.off('routeChangeComplete', setFalse);
-		};
-	}, [router.events]);
-
-	useEffectAsync(async () => {
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker
-				.getRegistrations()
-				.then(async registrations => {
-					for (const registration of registrations) {
-						/* eslint-disable-next-line no-await-in-loop */
-						await registration.unregister();
-					}
-				})
-				.catch(console.error);
-		}
-	}, []);
-
+const MyApp = ({Component, pageProps}: AppPropsWithLayout) => {
 	const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
-
 	return getLayout(
 		<>
 			<DefaultSeo
@@ -93,12 +50,9 @@ const CustomApp = ({
 				]}
 			/>
 
-			<Loader isVisible={loading} />
-			<PlausibleProvider domain='chesspecker.com'>
-				<Component {...pageProps} />
-			</PlausibleProvider>
+			<Component {...pageProps} />
 		</>,
 	);
 };
 
-export default CustomApp;
+export default api.withTRPC(MyApp as AppType);

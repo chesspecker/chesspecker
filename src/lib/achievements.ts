@@ -1,22 +1,16 @@
-import {formattedDate} from './utils';
-import {
-	incrementStreakCount,
-	resetStreakCount,
-	shouldIncrementOrResetStreakCount,
-	updateStreak,
-} from './streak';
-import type {AchievementItem} from '@/models/achievement';
-import type {Streak} from '@/models/streak';
-import type {UserData} from '@/pages/api/user';
-import type {User} from '@/models/user';
-import type {Puzzle} from '@/models/puzzle';
-import type {ThemeItem} from '@/models/theme';
-import type {AchievementInterface, AchivementsArgs} from '@/types/models';
+import type {
+	AchievementItem,
+	User,
+	Puzzle,
+	ThemeItem,
+	Streak,
+} from '@prisma/client';
 import {achievements} from '@/data/achievements';
+import type {AchivementsArgs, AchievementInterface} from '@/types/achievements';
 
 export const checkForAchievement = async (
 	args: AchivementsArgs,
-): Promise<AchievementInterface[] | void> => {
+): Promise<AchievementInterface[] | undefined> => {
 	const response = await fetch('/api/user').then(
 		async reponse => reponse.json() as Promise<UserData>,
 	);

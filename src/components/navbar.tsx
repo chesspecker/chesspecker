@@ -1,87 +1,50 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {MoonIcon, SunIcon} from '@heroicons/react/solid';
-import {useState} from 'react';
-import {useAtom} from 'jotai';
-import Burger from './mobile-assets/burger';
-import type {User} from '@/models/user';
-import {darkModeµ} from '@/lib/atoms';
-import {getUser} from '@/lib/api-helpers';
-import useEffectAsync from '@/hooks/use-effect-async';
-import logo from '@/public/images/logo.svg';
+import {Burger} from '@/components/mobile/burger';
+import {api} from '@/utils/api';
 
-export const BtnToggle = () => {
-	const [darkMode, setDarkMode] = useAtom(darkModeµ);
-
-	return (
-		<button
-			className='flex items-center justify-center pl-4 transition-all'
-			aria-label='Toggle Dark Mode'
-			type='button'
-		>
-			{darkMode ? (
-				<SunIcon
-					className='h-5 w-5 text-yellow-400'
-					onClick={() => {
-						setDarkMode(() => false);
-					}}
-				/>
-			) : (
-				<MoonIcon
-					className='h-5 w-5 text-yellow-400'
-					onClick={() => {
-						setDarkMode(() => true);
-					}}
-				/>
-			)}
-		</button>
-	);
-};
-
-const Navbar = () => {
-	const [user, setUser] = useState<User>();
-
-	useEffectAsync(async () => {
-		const response = await getUser();
-		if (response.success) setUser(() => response.data);
-	}, []);
-
+export const Navbar = () => {
+	const {data: user} = api.user.getCurrent.useQuery();
 	return (
 		<>
 			<Burger />
-			<div className='fixed top-0 z-10 hidden w-full items-center justify-between bg-white font-sans shadow dark:bg-sky-700 sm:visible sm:flex'>
+			<div className='fixed top-0 z-10 hidden h-16 w-full items-center justify-between bg-sky-700 font-sans shadow sm:visible sm:flex'>
 				<div className='flex cursor-pointer'>
 					<Link href='/dashboard'>
-						<a>
-							<div className='flex'>
-								<div className='m-2 max-w-[3.5rem]'>
-									<Image src={logo as string} />
-								</div>
-								<p className='text-md ml-1 mr-4 hidden self-center sm:block md:text-lg'>
-									— Chesspecker
-								</p>
+						<div className='flex'>
+							<div className='relative m-2 h-12 w-12'>
+								<Image
+									fill
+									src='/images/logo.svg'
+									alt='logo'
+									className='object-contain'
+								/>
 							</div>
-						</a>
+							<p className='ml-1 mr-4 hidden self-center sm:block md:text-lg'>
+								— Chesspecker
+							</p>
+						</div>
 					</Link>
 				</div>
 				<div className='mr-8 self-center text-lg '>
 					<div className='flex'>
 						<Link href='/user'>
-							<a className='mr-5 flex items-center justify-center'>
-								{user?.isSponsor && <span>👑&nbsp;</span>}
+							<p className='mr-5 flex items-center justify-center'>
+								{user?.isSponsor && (
+									<span role='img' aria-label='crown'>
+										👑 &nbsp;
+									</span>
+								)}
 								{user?.username}
-							</a>
+							</p>
 						</Link>
 
 						<Link href='/api/auth/logout'>
-							<a className='flex'>logout</a>
+							<p className='flex'>logout</p>
 						</Link>
-						<BtnToggle />
 					</div>
 				</div>
 			</div>
 		</>
 	);
 };
-
-export default Navbar;

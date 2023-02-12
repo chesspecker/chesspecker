@@ -1,6 +1,6 @@
 import {memo, useEffect} from 'react';
-import useClock from '@/hooks/use-clock';
-import useTimer from '@/hooks/use-timer';
+import {useClock} from '@/hooks/use-clock';
+import {useTimer} from '@/hooks/use-timer';
 
 type Props = {
 	value: number;
@@ -10,7 +10,8 @@ type Props = {
 
 const Timer = ({value, mistakes, isRunning}: Props) => {
 	const {timer, updateTimer, toggleTimer} = useTimer(value);
-	const [days, hours, minutes, seconds] = useClock(timer.value + mistakes * 3);
+	const {clock} = useClock(timer.value + mistakes * 3);
+	const [days, hours, minutes, seconds] = clock;
 
 	useEffect(() => {
 		toggleTimer(isRunning);
@@ -31,4 +32,5 @@ const Timer = ({value, mistakes, isRunning}: Props) => {
 	);
 };
 
+// eslint-disable-next-line import/no-default-export
 export default memo(Timer);

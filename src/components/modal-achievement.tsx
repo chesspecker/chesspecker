@@ -1,11 +1,11 @@
 import {useState, Fragment} from 'react';
 import {Transition} from '@headlessui/react';
-import useEffectAsync from '@/hooks/use-effect-async';
+import type {AchievementItem} from '@prisma/client';
 import {Button} from '@/components/button';
 import Card from '@/components/card-achievement';
-import type {AchievementItem} from '@/models/achievement';
+import {useEffectAsync} from '@/hooks/use-effect-async';
 import {achievements as achievementsList} from '@/data/achievements';
-import type {AchievementInterface} from '@/types/models';
+import type {AchievementInterface} from '@/types/achievements';
 
 type Props = {
 	/* eslint-disable-next-line react/boolean-prop-naming */
@@ -14,13 +14,13 @@ type Props = {
 	handleClick: (id: string) => void;
 };
 
-const Modal = ({
+export const Modal = ({
 	showModal,
 	currentAchievementItem,
 	handleClick,
 }: Props): JSX.Element | null => {
 	const [achievement, setAchievement] = useState<AchievementInterface>();
-	useEffectAsync(async () => {
+	useEffectAsync(() => {
 		if (!currentAchievementItem) return;
 		const array = achievementsList.find(
 			item => item.id === currentAchievementItem.id,
@@ -77,5 +77,3 @@ const Modal = ({
 		</Transition>
 	);
 };
-
-export default Modal;

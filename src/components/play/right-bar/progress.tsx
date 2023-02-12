@@ -1,5 +1,5 @@
 import {useAtom} from 'jotai';
-import {playµ} from '@/lib/atoms';
+import {playµ} from '@/atoms/play';
 
 type Props = {hasSpacedRepetition: boolean};
 const Progress = ({hasSpacedRepetition}: Props) => {

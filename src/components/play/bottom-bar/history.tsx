@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export type PreviousPuzzle = {
 	grade: number;
-	PuzzleId: string;
+	lichessId: string;
 };
 
 type HistoryProps = {
@@ -16,14 +16,12 @@ const getClasses = (grade: number) => {
 	if (grade < 7) return `${base} bg-green-500`;
 };
 
-const History = ({puzzles}: HistoryProps) => (
+export const History = ({puzzles}: HistoryProps) => (
 	<div className='flex w-full flex-row flex-wrap gap-1'>
 		{puzzles.map(puzzle => (
-			<Link key={puzzle.PuzzleId} href={`/play/puzzle/${puzzle.PuzzleId}`}>
+			<Link key={puzzle.lichessId} href={`/play/puzzle/${puzzle.lichessId}`}>
 				<a className={getClasses(puzzle.grade)} />
 			</Link>
 		))}
 	</div>
 );
-
-export default History;

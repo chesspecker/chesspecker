@@ -1,8 +1,8 @@
-import {TrashIcon} from '@heroicons/react/solid';
+import {TrashIcon} from '@heroicons/react/24/solid';
 import {memo} from 'react';
-import useModal from '@/hooks/use-modal';
 import {Button} from '@/components/button';
 import GenericModal from '@/components/modal';
+import {useModal} from '@/hooks/use-modal';
 
 type Props = {onClick: () => Promise<void>};
 const RemoveModal = ({onClick}: Props) => {
@@ -43,4 +43,5 @@ const RemoveModal = ({onClick}: Props) => {
 	);
 };
 
+// eslint-disable-next-line import/no-default-export
 export default memo(RemoveModal);

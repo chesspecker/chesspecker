@@ -1,49 +1,35 @@
-import type {GetServerSidePropsContext, Redirect} from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 import {NextSeo} from 'next-seo';
-import Image from 'next/image.js';
 import type {ReactElement} from 'react';
-import {withSessionSsr} from '@/lib/session';
-import Layout from '@/layouts/login';
 import {Button} from '@/components/button';
+import {LoginLayout} from '@/layouts/login';
 
-const IndexPage = () => (
+const Home = () => (
 	<>
 		<NextSeo title='⚔️ Welcome' />
-		<div className='m-0 flex h-screen flex-col items-center justify-center '>
+		<div className='m-0 flex h-screen flex-col items-center justify-center'>
 			<Image
 				className='mx-auto mt-8 block h-40 w-40'
 				src='/images/logo.svg'
-				width='160px'
-				height='160px'
+				width='160'
+				height='160'
+				alt='Chesspecker Logo'
 			/>
-			<div className='mx-0 w-full max-w-md justify-center'>
-				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold'>
-					Chesspecker is currently out of service.
-				</h1>
-			</div>
-			<div className='mx-auto my-3 flex w-full flex-col items-center justify-center gap-8 text-center'>
-				<a
-					href='https://discord.com/invite/qDftJZBBHa'
-					target='_blank'
-					rel='noreferrer'
-				>
-					<Button className='min-w-full items-center py-4'>GET INVOLVED</Button>
-				</a>
+			<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold'>
+				Happy to see you
+				<br />
+				newcomer 👋
+			</h1>
+			<div className='mx-0 my-3 w-full text-center '>
+				<Link href='/api/auth/login'>
+					<Button className='py-4'>SIGN IN WITH LICHESS</Button>
+				</Link>
 			</div>
 		</div>
 	</>
 );
 
-IndexPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
-export default IndexPage;
+Home.getLayout = (page: ReactElement) => <LoginLayout>{page}</LoginLayout>;
 
-export const getServerSideProps = withSessionSsr(
-	async ({req}: GetServerSidePropsContext) => {
-		if (req?.session?.userID) {
-			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
-			return {redirect};
-		}
-
-		return {props: {}};
-	},
-);
+export default Home;

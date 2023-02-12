@@ -1,6 +1,7 @@
 import {useAtom} from 'jotai';
 import {Button} from '../../button';
-import {configµ, playµ} from '@/lib/atoms';
+import {configµ} from '@/atoms/chessground';
+import {playµ} from '@/atoms/play';
 
 type Props = {
 	changePuzzle: () => void;

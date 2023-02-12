@@ -1,9 +1,9 @@
 import Confetti from 'react-confetti';
-import useWindowSize from './use-window-size';
+import {useWindowSize} from '@/hooks/use-window-size';
 
-export default function useConfetti() {
+export const useConfetti = () => {
 	const {width, height} = useWindowSize();
 	return (
 		<Confetti width={width} height={height} recycle={false} gravity={0.05} />
 	);
-}
+};

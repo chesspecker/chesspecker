@@ -6,25 +6,26 @@ import type {
 	NextApiHandler,
 } from 'next/types';
 import {withIronSessionApiRoute, withIronSessionSsr} from 'iron-session/next';
-import {COOKIE_PASSWORD} from '@/config';
+import type {User} from '@prisma/client';
+import {env} from '@/env.mjs';
 
 declare module 'iron-session' {
 	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 	interface IronSessionData {
 		verifier?: string;
 		lichessToken?: string;
-		chesscomToken?: string;
-		userID?: string;
+		user: User;
+		userId?: string;
 		username?: string;
-		type: 'lichess' | 'chesscom';
 		state?: string;
 	}
 }
 
 export const sessionOptions: IronSessionOptions = {
-	password: COOKIE_PASSWORD,
+	password: env.COOKIE_PASSWORD,
 	cookieName: 'chesspecker',
 	cookieOptions: {
+		// eslint-disable-next-line no-process-env
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: undefined,
 	},
@@ -34,12 +35,8 @@ export const withSessionRoute = (handler: NextApiHandler) =>
 	withIronSessionApiRoute(handler, sessionOptions);
 
 // Theses types are compatible with InferGetStaticPropsType https://nextjs.org/docs/basic-features/data-fetching#typescript-use-getstaticprops
-export function withSessionSsr<
-	P extends {[key: string]: unknown} = {[key: string]: unknown},
->(
+export const withSessionSsr = <P extends {[key: string]: unknown}>(
 	handler: (
 		context: GetServerSidePropsContext,
 	) => GetServerSidePropsResult<P> | Promise<GetServerSidePropsResult<P>>,
-) {
-	return withIronSessionSsr(handler, sessionOptions);
-}
+) => withIronSessionSsr(handler, sessionOptions);

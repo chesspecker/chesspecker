@@ -1,8 +1,8 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {withSessionRoute} from '@/lib/session';
-import {failWrapper} from '@/lib/utils';
-import {ORIGIN} from '@/config';
+import {failWrapper} from '@/lib/fail-wrapper';
 import type {ErrorData} from '@/types/data';
+import {env} from '@/env.mjs';
 
 const logoutRoute = (
 	request: NextApiRequest,
@@ -16,7 +16,7 @@ const logoutRoute = (
 		return;
 	}
 
-	response.redirect(302, ORIGIN);
+	response.redirect(302, env.ORIGIN);
 };
 
 export default withSessionRoute(logoutRoute);

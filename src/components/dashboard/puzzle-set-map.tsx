@@ -3,10 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {useRouter} from 'next/router';
 import {useSound} from 'use-sound';
+import type {PuzzleSet} from '@prisma/client';
 import {Button} from '@/components/button';
-import type {PuzzleSet} from '@/models/puzzle-set';
 import RemoveModal from '@/components/dashboard/remove-modal';
-import plus from '@/public/images/plus.svg';
 import GENERIC from '@/sounds/GenericNotify.mp3';
 
 type PropsComponent = {
@@ -17,7 +16,7 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 	const [playGeneric] = useSound(GENERIC, {volume: 0.1});
 	const router = useRouter();
 	const removeSet = async () =>
-		fetch(`/api/set/${set._id.toString()}`, {method: 'DELETE'})
+		fetch(`/api/set/${set.id}`, {method: 'DELETE'})
 			.then(() => {
 				router.reload();
 			})
@@ -27,13 +26,13 @@ const PuzzleSetComponent = ({set}: PropsComponent) => {
 		event.preventDefault();
 		event.stopPropagation();
 		playGeneric();
-		await router.push(`/play/set/${set._id.toString()}`);
+		await router.push(`/play/set/${set.id}`);
 	};
 
 	const onViewClick = async (event: MouseEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
-		await router.push(`/view/${set._id.toString()}`);
+		await router.push(`/view/${set.id}`);
 	};
 
 	return (
@@ -62,7 +61,7 @@ type EmptyComponentProps = {
 };
 const EmptyPuzzleSetComponent = ({image, text}: EmptyComponentProps) => (
 	<div className='flex h-full w-full cursor-pointer flex-col items-center justify-center p-4 text-sky-800'>
-		{image}
+		<div className='relative h-20 w-20'>{image}</div>
 		{text}
 	</div>
 );
@@ -71,20 +70,25 @@ type Props = {
 	puzzleSets: PuzzleSet[];
 };
 
-const PuzzleSetMap = ({puzzleSets}: Props) => (
+export const PuzzleSetMap = ({puzzleSets}: Props) => (
 	<div className='flex flex-wrap items-center justify-center'>
 		{puzzleSets?.map(set => (
-			<PuzzleSetComponent key={set._id.toString()} set={set} />
+			<PuzzleSetComponent key={set.id} set={set} />
 		))}
 		<Link href='/create'>
-			<a className='m-2 flex h-52 w-64 flex-col overflow-hidden rounded-xl border-4 border-sky-800 bg-white dark:border-white'>
+			<div className='m-2 flex h-52 w-64 flex-col overflow-hidden rounded-xl border-4 border-sky-800 bg-white dark:border-white'>
 				<EmptyPuzzleSetComponent
-					image={<Image src={plus as string} />}
+					image={
+						<Image
+							fill
+							src='/images/plus.svg'
+							className='object-contain'
+							alt='create'
+						/>
+					}
 					text={<p className='mt-4'>Create a set</p>}
 				/>
-			</a>
+			</div>
 		</Link>
 	</div>
 );
-
-export default PuzzleSetMap;

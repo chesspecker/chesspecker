@@ -5,33 +5,44 @@ import {useRouter} from 'next/router';
 import Image from 'next/image';
 import {NextSeo} from 'next-seo';
 import dynamic from 'next/dynamic';
-import {optionsµ, ratingAtom} from '@/lib/atoms';
-import Layout from '@/layouts/main';
+import type {Difficulty} from '@prisma/client';
 import {Button} from '@/components/button';
-import OptionTextInput from '@/components/options/text-input';
-import OptionSize from '@/components/options/size';
-import OptionDifficulty from '@/components/options/level';
-import useModal from '@/hooks/use-modal';
-import type {Options} from '@/controllers/create-set';
-import type {Difficulty} from '@/types/models';
+import {OptionTextInput} from '@/components/options/text-input';
+import {OptionSize} from '@/components/options/size';
+import {OptionLevel} from '@/components/options/level';
+import {useModal} from '@/hooks/use-modal';
 import loading from '@/public/images/spinner.svg';
+import {Layout} from '@/layouts/main';
+import {
+	optionsLevelAtom,
+	optionsSizeAtom,
+	optionsTitleAtom,
+} from '@/atoms/options';
+import {api} from '@/utils/api';
+import type {CreateSetParams} from '@/types/create-set-params';
 
-const Alert = dynamic(async () => import('@/components/alert'));
+const Alert = dynamic(async () =>
+	import('@/components/alert').then(module => module.Alert),
+);
 
 const OptionsPage = () => {
 	const router = useRouter();
 	const [isDisabled, setIsDisabled] = useState(false);
-	const [title] = useAtom<string>(optionsµ.title);
-	const [size] = useAtom<number>(optionsµ.size);
-	const [level] = useAtom<Difficulty>(optionsµ.level);
-	const [rating] = useAtom(ratingAtom);
+	const [title] = useAtom<string>(optionsTitleAtom);
+	const [size] = useAtom<number>(optionsSizeAtom);
+	const [level] = useAtom<Difficulty>(optionsLevelAtom);
 	const {isOpen, show} = useModal(false);
+
+	const createSet = api.puzzleSet.create.useMutation();
+
+	const {data} = api.rating.get.useQuery();
+	const rating = data ?? 1500;
 
 	const themeArray = router.query.category
 		? (JSON.parse(router.query.category as string) as string[])
 		: ['healthyMix'];
 
-	const validate = async () => {
+	const validate = () => {
 		if (isDisabled) return;
 		if (title === '') {
 			show();
@@ -39,20 +50,21 @@ const OptionsPage = () => {
 		}
 
 		setIsDisabled(() => true);
-		const options: Options = {
+		const options: CreateSetParams = {
 			title,
 			size,
 			level,
 			themeArray,
 			averageRating: rating,
 		};
-		return fetch('/api/set', {
-			method: 'POST',
-			body: JSON.stringify(options),
-		})
-			.then(async () => router.push('/dashboard'))
-			.catch(console.error);
+
+		createSet.mutate(options);
 	};
+
+	if (createSet.isSuccess) {
+		router.push('/dashboard').catch(console.error);
+		return null;
+	}
 
 	return (
 		<>
@@ -63,21 +75,17 @@ const OptionsPage = () => {
 					<Alert type='error' isVisible={isOpen} message='Title is needed!' />
 					<div className='mx-12 flex w-5/6 flex-col items-center justify-center'>
 						<OptionTextInput>Give your set a name</OptionTextInput>
-						<OptionDifficulty />
+						<OptionLevel />
 						<OptionSize />
 						<div className='mt-20 w-3/5'>
 							<Button
-								className='font-sky-700 flex h-14 cursor-default flex-row items-center justify-center font-bold hover:bg-white'
+								className='flex h-14 cursor-default flex-row items-center justify-center font-bold hover:bg-white'
 								onClick={validate}
 							>
-								{isDisabled ? (
+								{createSet.isLoading ? (
 									<>
 										<div className='visible relative mr-3 h-9 w-9 animate-spin'>
-											<Image
-												src={loading as string}
-												objectFit='contain'
-												layout='fill'
-											/>
+											<Image fill src={loading as string} alt='Loading...' />
 										</div>
 										Loading...
 									</>

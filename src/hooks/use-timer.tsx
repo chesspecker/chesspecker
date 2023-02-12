@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react';
 
-const useTimer = (initialTime = 0) => {
+export const useTimer = (initialTime = 0) => {
 	const [timer, setTimer] = useState({value: initialTime, isRunning: true});
 	/**
 	 * Setup timer.
@@ -21,7 +21,7 @@ const useTimer = (initialTime = 0) => {
 	const toggleTimer = useCallback((value?: boolean) => {
 		setTimer(timer => ({
 			...timer,
-			isRunning: value || !timer.isRunning,
+			isRunning: value ?? !timer.isRunning,
 		}));
 	}, []);
 
@@ -31,5 +31,3 @@ const useTimer = (initialTime = 0) => {
 
 	return {timer, updateTimer, isTimerOn: timer.isRunning, toggleTimer};
 };
-
-export default useTimer;

@@ -1,20 +1,14 @@
-import {useAtom} from 'jotai';
+import type {Difficulty} from '@prisma/client';
+import {useSetAtom} from 'jotai';
 import type {ChangeEvent} from 'react';
-import {optionsµ, ratingAtom} from '@/lib/atoms';
-import useEffectAsync from '@/hooks/use-effect-async';
-import type {Data} from '@/pages/api/rating';
-import {safeZero} from '@/lib/utils';
-import type {Difficulty} from '@/types/models';
+import {safeZero} from '@/utils/safe-zero';
+import {optionsLevelAtom} from '@/atoms/options';
+import {api} from '@/utils/api';
 
-const OptionLevel = () => {
-	const [, setLevel] = useAtom(optionsµ.level);
-	const [rating, setRating] = useAtom(ratingAtom);
-	useEffectAsync(async () => {
-		const result = await fetch('/api/rating').then(
-			async response => response.json() as Promise<Data>,
-		);
-		if (result.success) setRating(() => result.data);
-	}, []);
+export const OptionLevel = () => {
+	const setLevel = useSetAtom(optionsLevelAtom);
+	const {data} = api.rating.get.useQuery();
+	const rating = data ?? 1500;
 
 	const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		setLevel(() => event.target.value as Difficulty);
@@ -53,5 +47,3 @@ const OptionLevel = () => {
 		</div>
 	);
 };
-
-export default OptionLevel;

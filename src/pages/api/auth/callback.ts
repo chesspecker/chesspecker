@@ -1,12 +1,11 @@
+/* eslint-disable no-param-reassign */
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {withSessionRoute} from '@/lib/session';
-import withMongoRoute from '@/providers/mongoose';
-import UserModel from '@/models/user';
-import getLichess from '@/lib/get-lichess';
-import {createLichessUser} from '@/controllers/create-user';
-import {failWrapper} from '@/lib/utils';
-import {ORIGIN} from '@/config';
+import {failWrapper} from '@/lib/fail-wrapper';
+import {prisma} from '@/server/db';
 import type {ErrorData} from '@/types/data';
+import {getLichess} from '@/lib/get-lichess';
+import {env} from '@/env.mjs';
 
 const callback = async (
 	request: NextApiRequest,
@@ -33,20 +32,34 @@ const callback = async (
 	try {
 		const {access_token: oauthToken} = await getLichess.token(code, verifier);
 		const lichessUser = await getLichess.account(oauthToken);
-		if (!lichessUser) throw new Error('User login failed');
+		if (!lichessUser?.id) throw new Error('User login failed');
 
-		let user = await UserModel.findOne({id: lichessUser.id}).lean().exec();
-		if (!user) user = await createLichessUser(lichessUser);
-		request.session.type = 'lichess';
+		const user = await prisma.user.upsert({
+			where: {lichessId: lichessUser.id},
+			update: {},
+			create: {
+				lichessId: lichessUser.id,
+				username: lichessUser.username,
+				streak: {
+					create: {
+						startDate: new Date(),
+						lastLoginDate: new Date(),
+					},
+				},
+			},
+		});
+
+		request.session.userId = user?.id;
 		request.session.lichessToken = oauthToken;
-		request.session.userID = user._id.toString();
+		request.session.user = user;
 		request.session.username = user.username;
 		await request.session.save();
-		response.redirect(302, `${ORIGIN}/success-login`);
+
+		response.redirect(302, `${env.ORIGIN}/success-login`);
 		return;
 	} catch (error: unknown) {
 		fail((error as Error).message);
 	}
 };
 
-export default withMongoRoute(withSessionRoute(callback));
+export default withSessionRoute(callback);

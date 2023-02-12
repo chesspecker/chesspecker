@@ -1,32 +1,38 @@
 import {memo} from 'react';
 import type {Config} from 'chessground/config';
-import type {ShortMove} from 'chess.js';
+import type {Move} from 'chess.js';
 import type {Color} from 'chessground/types';
-import WithoutSsr from '../without-ssr';
-import Chessboard from './chessboard';
+import dynamic from 'next/dynamic';
 import Promotion from './promotion';
+
+const Chessboard = dynamic(async () => import('./chessboard'), {
+	ssr: false,
+});
 
 type Props = {
 	config?: Partial<Config>;
 	isOpen: boolean;
 	hide: () => void;
-	onPromote: (piece: ShortMove['promotion']) => void | Promise<void>;
+	onPromote: (piece: Move['promotion']) => void | Promise<void>;
 	color: Color;
 };
 
-const Board = ({config, isOpen, hide, color, onPromote}: Props) => (
-	<>
-		<WithoutSsr>
+const Board = ({config, isOpen, hide, color, onPromote}: Props) => {
+	if (typeof window === 'undefined') return null;
+
+	return (
+		<>
 			<Chessboard config={config} />
-		</WithoutSsr>
 
-		<Promotion
-			isOpen={isOpen}
-			hide={hide}
-			color={color}
-			onPromote={onPromote}
-		/>
-	</>
-);
+			<Promotion
+				isOpen={isOpen}
+				hide={hide}
+				color={color}
+				onPromote={onPromote}
+			/>
+		</>
+	);
+};
 
+// eslint-disable-next-line import/no-default-export
 export default memo(Board);

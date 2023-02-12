@@ -53,18 +53,22 @@ module.exports = {
 			const newUtilities = {
 				'.safe-top': {
 					paddingTop: 'constant(safe-area-inset-top)',
+					// @ts-ignore
 					paddingTop: 'env(safe-area-inset-top)',
 				},
 				'.safe-left': {
 					paddingLeft: 'constant(safe-area-inset-left)',
+					// @ts-ignore
 					paddingLeft: 'env(safe-area-inset-left)',
 				},
 				'.safe-right': {
 					paddingRight: 'constant(safe-area-inset-right)',
+					// @ts-ignore
 					paddingRight: 'env(safe-area-inset-right)',
 				},
 				'.safe-bottom': {
 					paddingBottom: 'constant(safe-area-inset-bottom)',
+					// @ts-ignore
 					paddingBottom: 'env(safe-area-inset-bottom)',
 				},
 				'.disable-scrollbars': {

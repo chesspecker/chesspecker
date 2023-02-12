@@ -3,7 +3,7 @@ export type Category = {
 	id: string;
 };
 
-const categories: Category[] = [
+export const CATEGORIES: Category[] = [
 	{name: 'Recommended', id: '1'},
 	{name: 'Phases', id: '2'},
 	{name: 'Motifs', id: '3'},
@@ -14,5 +14,3 @@ const categories: Category[] = [
 	{name: 'Lengths', id: '8'},
 	{name: 'Origin', id: '9'},
 ];
-
-export default categories;

@@ -40,7 +40,7 @@ const Document = () => (
 				rel='stylesheet'
 			/>
 		</Head>
-		<body className='min-w-screen min-h-screen bg-sky-700 '>
+		<body className='min-h-screen bg-sky-700'>
 			<Main />
 			<NextScript />
 		</body>

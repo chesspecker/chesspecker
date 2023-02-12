@@ -3,33 +3,28 @@ import {useState} from 'react';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import dynamic from 'next/dynamic';
-import Layout from '@/layouts/main';
-import type {User} from '@/models/user';
+import type {User, PuzzleSet, AchievementItem} from '@prisma/client';
+import {Layout} from '@/layouts/main';
 import {withSessionSsr} from '@/lib/session';
-import type {AchievementItem} from '@/models/achievement';
-import PuzzleSetMap from '@/components/dashboard/puzzle-set-map';
-import type {PuzzleSet} from '@/models/puzzle-set';
-import {get_} from '@/lib/api-helpers';
-import {Banner} from '@/components/dashboard/banner';
+import {PuzzleSetMap} from '@/components/dashboard/puzzle-set-map';
+import {prisma} from '@/server/db';
 
-const Modal = dynamic(async () => import('@/components/modal-achievement'));
+const Modal = dynamic(async () =>
+	import('@/components/modal-achievement').then(module => module.Modal),
+);
 
 type Props = {
-	user: User;
-	puzzleSets: PuzzleSet[];
+	user: User & {
+		puzzleSets: PuzzleSet[];
+		validatedAchievements: AchievementItem[];
+	};
 };
 
-const DashbaordPage = ({user, puzzleSets}: Props) => {
-	const [isBannerOpen, setIsBannerOpen] = useState(true);
-
-	const handleCloseBanner = () => {
-		setIsBannerOpen(() => false);
-	};
-
+const DashbaordPage = ({user}: Props) => {
 	const [achievList, setAchievList] = useState<AchievementItem[]>(
-		user.validatedAchievements.filter(achievement => !achievement.claimed),
+		user?.validatedAchievements.filter(achievement => !achievement.claimed),
 	);
-	const [showModal, setShowModal] = useState(achievList.length > 0);
+	const [showModal, setShowModal] = useState(achievList?.length > 0);
 
 	const updateValidatedAchievement = async (achievementId: string) => {
 		setShowModal(() => false);
@@ -47,20 +42,15 @@ const DashbaordPage = ({user, puzzleSets}: Props) => {
 			<NextSeo title='♟ Dashboard' />
 			<Modal
 				showModal={showModal}
-				currentAchievementItem={achievList[0]!}
+				currentAchievementItem={achievList?.[0]}
 				handleClick={updateValidatedAchievement}
 			/>
 			<div className='relative flex min-h-screen flex-col items-center justify-center pt-12 pb-20 md:pt-24'>
-				{isBannerOpen && (
-					<Banner handleCloseBanner={handleCloseBanner}>
-						⚠️ Chesspecker may shut down!
-					</Banner>
-				)}
 				<h1 className='mx-auto mt-8 mb-6 p-5 text-center font-sans text-3xl font-bold sm:text-4xl md:text-5xl'>
 					Here are your sets!
 				</h1>
 
-				<PuzzleSetMap puzzleSets={puzzleSets} />
+				<PuzzleSetMap puzzleSets={user?.puzzleSets} />
 			</div>
 		</>
 	);
@@ -71,23 +61,25 @@ export default DashbaordPage;
 
 export const getServerSideProps = withSessionSsr(
 	async ({req}: GetServerSidePropsContext) => {
-		const userID = req.session?.userID;
+		const userId = req.session?.userId;
 		const redirect: Redirect = {statusCode: 303, destination: '/'};
-		if (!userID) return {redirect};
+		if (!userId) return {redirect};
 
-		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
+		const user = await prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+			include: {
+				validatedAchievements: true,
+				puzzleSets: true,
+			},
+		});
 
-		const responseUser = await get_.user(userID, baseUrl);
-		if (!responseUser?.success) return {redirect};
-
-		const responseSet = await get_.setByUser(userID, baseUrl);
-		const puzzleSets = responseSet?.success ? responseSet.data : [];
+		if (!user) return {redirect};
 
 		return {
 			props: {
-				user: responseUser.data,
-				puzzleSets,
+				user,
 			},
 		};
 	},

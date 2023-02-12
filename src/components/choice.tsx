@@ -1,35 +1,36 @@
 import {useAtom} from 'jotai';
-import {selectedAtom} from '@/lib/atoms';
 import type {Theme} from '@/data/themes';
+import {selectedCategoriesAtom} from '@/atoms/selected-categories';
+import {cn} from '@/utils/cn';
 
 type Props = {
 	theme: Theme;
 };
 
-const Choice = ({theme}: Props) => {
-	const [selectedState, setSelectedState] = useAtom(selectedAtom);
+export const Choice = ({theme}: Props) => {
+	const [selectedState, setSelectedState] = useAtom(selectedCategoriesAtom);
 	const isSelected = selectedState.includes(theme.id);
 
-	const isDisabled = (): boolean => {
-		if (selectedState.includes('healthyMix')) return true;
-		if (theme.id === 'healthyMix' && selectedState.length > 0) return true;
-		if (selectedState.length >= 3) return true;
-		return false;
-	};
+	const isDisabled = (): boolean =>
+		!!(
+			selectedState.includes('healthyMix') ||
+			(theme.id === 'healthyMix' && selectedState.length > 0) ||
+			selectedState.length >= 3
+		);
 
 	const getBorderColor = (): string => {
 		if (isDisabled() && !isSelected) return 'border-gray-700';
-		return 'border-sky-700 dark:border-white';
+		return 'border-white';
 	};
 
 	const getTextColor = (): string => {
-		if (isSelected) return 'text-white dark:text-sky-700';
+		if (isSelected) return 'text-sky-700';
 		if (isDisabled()) return 'text-gray-400';
 		return '';
 	};
 
 	const getBgColor = (): string => {
-		if (isSelected) return 'bg-sky-700 dark:bg-white';
+		if (isSelected) return 'bg-white';
 		if (isDisabled()) return 'bg-gray-700';
 		return '';
 	};
@@ -51,18 +52,23 @@ const Choice = ({theme}: Props) => {
 	};
 
 	return (
+		// eslint-disable-next-line jsx-a11y/click-events-have-key-events
 		<div
-			className={`m-4 h-fit w-64 ${getCursor()} flex-wrap rounded-lg border-2 ${getBorderColor()} ${getBgColor()}`}
+			className={cn(
+				'm-4 h-fit w-64',
+				getCursor(),
+				'flex-wrap rounded-lg border-2',
+				getBorderColor(),
+				getBgColor(),
+			)}
 			onClick={handleClick}
 		>
-			<h4 className={`m-4 text-xl font-semibold ${getTextColor()}`}>
+			<h4 className={cn('m-4 text-xl font-semibold', getTextColor())}>
 				{theme.title}
 			</h4>
-			<p className={`m-4 text-lg font-medium ${getTextColor()}`}>
+			<p className={cn('m-4 text-lg font-medium', getTextColor())}>
 				{theme.description}
 			</p>
 		</div>
 	);
 };
-
-export default Choice;

@@ -1,11 +1,7 @@
-import type {ChessInstance} from 'chess.js';
+import type {ThemeItem, PuzzleItem, Puzzle} from '@prisma/client';
+import type {Chess} from 'chess.js';
 import {SQUARES} from 'chess.js';
 import type {Config} from 'chessground/config';
-import {groupBy} from './utils';
-import type {PuzzleItem} from '@/models/puzzle-item';
-import type {PuzzleData} from '@/pages/api/puzzle/[id]';
-import type {ThemeItem} from '@/models/theme';
-import type {Puzzle} from '@/models/puzzle';
 
 const getTimeTaken = (initialTime: number, mistakes = 0) => {
 	const timeTaken_ = (Date.now() - initialTime) / 1000;
@@ -41,9 +37,7 @@ export const getThemes = ({userThemes, newThemes}: ThemesArgs) => {
 export const getColor = (string_: 'w' | 'b') =>
 	string_ === 'w' ? 'white' : 'black';
 
-export const getMovable = (
-	chess: ChessInstance,
-): Partial<Config['movable']> => {
+export const getMovable = (chess: Chess): Partial<Config['movable']> => {
 	const dests = new Map();
 	for (const square of SQUARES) {
 		const ms = chess.moves({square, verbose: true});

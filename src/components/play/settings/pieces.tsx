@@ -1,8 +1,8 @@
 import {useAtom} from 'jotai';
-import type {Pieces} from '@/lib/atoms';
-import {configµ} from '@/lib/atoms';
+import {configµ} from '@/atoms/chessground';
+import type {Pieces} from '@/types/chessground';
 
-const PiecesSettings = () => {
+export const PiecesSettings = () => {
 	const [pieces, setPieces] = useAtom(configµ.pieces);
 	return (
 		<>
@@ -24,5 +24,3 @@ const PiecesSettings = () => {
 		</>
 	);
 };
-
-export default PiecesSettings;

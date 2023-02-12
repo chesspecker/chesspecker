@@ -1,6 +1,6 @@
-import {getRandomInt} from '@/lib/utils';
-import {AchievementInterface, AchivementsArgs} from '@/types/models';
-import THEMES from '@/data/themes';
+import {THEMES} from '@/data/themes';
+import type {AchievementInterface, AchivementsArgs} from '@/types/achievements';
+import {getRandomInt} from '@/utils/random';
 
 const ONE_MONTH_IN_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -39,6 +39,7 @@ export const achievements: AchievementInterface[] = [
 		id: 'pizza',
 		name: 'Pizza',
 		description: 'Great, you won a slice of pizza...',
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 42,
 		image: '/images/achievements/pizza.png',
 		category: 'random',
@@ -47,6 +48,7 @@ export const achievements: AchievementInterface[] = [
 		id: 'plunger',
 		name: 'Toilet plunger',
 		description: 'Great, you won a toilet plunger...',
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		isValidated: (_args: AchivementsArgs) => getRandomInt(5000) === 666,
 		image: '/images/achievements/plunger.png',
 		category: 'random',
@@ -215,7 +217,9 @@ for (const theme of THEMES) {
 			name: `NM of ${theme.title}`,
 			description: `Your are now a National Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count > 500),
+				args.themes.some(
+					themeItem => themeItem.name === theme.id && themeItem.count > 500,
+				),
 			image: '/images/achievements/shield-0.png',
 			category: 'type',
 		},
@@ -224,7 +228,9 @@ for (const theme of THEMES) {
 			name: `IM of ${theme.title}`,
 			description: `Your are now a International Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count > 1500),
+				args.themes.some(
+					themeItem => themeItem.name === theme.id && themeItem.count > 1500,
+				),
 			image: '/images/achievements/shield-1.png',
 			category: 'type',
 		},
@@ -233,7 +239,9 @@ for (const theme of THEMES) {
 			name: `GM of ${theme.title}`,
 			description: `Your are now a Grand Master of ${theme.title}`,
 			isValidated: (args: AchivementsArgs) =>
-				args.themes.some(t => t.title === theme.id && t.count > 3000),
+				args.themes.some(
+					themeItem => themeItem.name === theme.id && themeItem.count > 3000,
+				),
 			image: '/images/achievements/shield-2.png',
 			category: 'type',
 		},

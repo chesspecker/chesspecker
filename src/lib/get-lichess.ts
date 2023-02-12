@@ -1,7 +1,7 @@
 import ndjson from 'ndjson';
 import fetch from 'node-fetch';
-import type {Activity, LichessToken, LichessUser} from '@/types/lichess';
-import {LICHESS_CONFIG, ORIGIN} from '@/config';
+import type {LichessToken, Activity, LichessUser} from '@/types/lichess';
+import {env} from '@/env.mjs';
 
 const getActivity = async (
 	accessToken: LichessToken['access_token'],
@@ -60,8 +60,8 @@ const getToken = async (
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({
 			grant_type: 'authorization_code',
-			redirect_uri: `${ORIGIN}/api/auth/lichess/callback`,
-			client_id: LICHESS_CONFIG.clientId,
+			redirect_uri: `${env.ORIGIN}/api/auth/callback`,
+			client_id: env.LICHESS_CLIENT_ID,
 			code: authCode,
 			code_verifier: verifier,
 		}),
@@ -73,10 +73,8 @@ const getToken = async (
 			throw error_;
 		});
 
-const getLichess = {
+export const getLichess = {
 	account: getAccount,
 	activity: getActivity,
 	token: getToken,
 };
-
-export default getLichess;

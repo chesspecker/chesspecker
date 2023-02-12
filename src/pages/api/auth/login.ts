@@ -1,16 +1,17 @@
+/* eslint-disable no-param-reassign */
 import {createHash, randomBytes} from 'crypto';
 import type {NextApiRequest, NextApiResponse} from 'next';
-import withMongoRoute from '@/providers/mongoose';
 import {withSessionRoute} from '@/lib/session';
-import {failWrapper} from '@/lib/utils';
-import {LICHESS_CONFIG, ORIGIN} from '@/config';
+import {env} from '@/env.mjs';
 import type {ErrorData} from '@/types/data';
+import {failWrapper} from '@/lib/fail-wrapper';
 
 const base64URLEncode = (buffer_: Buffer): string =>
 	buffer_
 		.toString('base64')
 		.replace(/\+/g, '-')
 		.replace(/\//g, '_')
+		// eslint-disable-next-line no-div-regex
 		.replace(/=/g, '');
 
 const sha256 = (string_: string): Buffer =>
@@ -28,8 +29,8 @@ const loginRoute = async (
 		return;
 	}
 
-	if (request.session.userID) {
-		response.redirect(303, `${ORIGIN}/success-login`);
+	if (request.session.userId) {
+		response.redirect(303, `${env.ORIGIN}/success-login`);
 		return;
 	}
 
@@ -45,8 +46,8 @@ const loginRoute = async (
 
 	const linkParameters = new URLSearchParams({
 		response_type: 'code',
-		client_id: LICHESS_CONFIG.clientId,
-		redirect_uri: `${ORIGIN}/api/auth/lichess/callback`,
+		client_id: env.LICHESS_CLIENT_ID,
+		redirect_uri: `${env.ORIGIN}/api/auth/callback`,
 		scope: 'preference:read puzzle:read',
 		code_challenge_method: 'S256',
 		code_challenge: challenge,
@@ -55,4 +56,4 @@ const loginRoute = async (
 	response.redirect(302, `https://lichess.org/oauth?${linkParameters}`);
 };
 
-export default withMongoRoute(withSessionRoute(loginRoute));
+export default withSessionRoute(loginRoute);

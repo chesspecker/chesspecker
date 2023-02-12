@@ -1,13 +1,13 @@
-import {CogIcon} from '@heroicons/react/solid';
+import {CogIcon} from '@heroicons/react/24/solid';
 import {memo} from 'react';
-import AutoMoveSettings from './auto-move';
-import BoardSettings from './board';
-import PiecesSettings from './pieces';
-import SoundSettings from './sound';
-import ClockSettings from './clock';
-import AnimationsSettings from './animations';
 import GenericModal from '@/components/modal';
-import useModal from '@/hooks/use-modal';
+import {useModal} from '@/hooks/use-modal';
+import {BoardSettings} from '@/components/play/settings/board';
+import {PiecesSettings} from '@/components/play/settings/pieces';
+import {SoundSettings} from '@/components/play/settings/sound';
+import {AnimationsSettings} from '@/components/play/settings/animations';
+import {AutoMoveSettings} from '@/components/play/settings/auto-move';
+import {ClockSettings} from '@/components/play/settings/clock';
 
 const Settings = () => {
 	const {isOpen, hide, toggle} = useModal(false);
@@ -34,4 +34,5 @@ const Settings = () => {
 	);
 };
 
+// eslint-disable-next-line import/no-default-export
 export default memo(Settings);

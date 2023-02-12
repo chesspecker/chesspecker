@@ -1,51 +1,59 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-lines */
 import type {ReactElement} from 'react';
-import {useState, useEffect, useCallback} from 'react';
-import * as ChessJS from 'chess.js';
-import type {ChessInstance, Square, ShortMove} from 'chess.js';
+import {useState, useEffect, useCallback, useRef} from 'react';
+import type {Move, Square} from 'chess.js';
+import {Chess} from 'chess.js';
 import type {Config} from 'chessground/config';
-import {useAtom} from 'jotai';
+import {useAtom, useSetAtom} from 'jotai';
 import {useRouter} from 'next/router';
 import type {GetServerSidePropsContext, Redirect} from 'next';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {useSound} from 'use-sound';
-import Layout from '@/layouts/main';
-import {sleep, sortBy} from '@/lib/utils';
-import {configµ, orientationµ, animationµ, playµ} from '@/lib/atoms';
-import useModal from '@/hooks/use-modal';
-import useKeyPress from '@/hooks/use-key-press';
+import type {
+	PuzzleSet,
+	User,
+	PuzzleItem,
+	Puzzle,
+	ThemeItem,
+	Theme,
+} from '@prisma/client';
+import type {Animation} from '@/types/animation';
 import {Button} from '@/components/button';
-import {checkForAchievement, getCheckAchivementBody} from '@/lib/achievements';
 import {withSessionSsr} from '@/lib/session';
 import type {PreviousPuzzle} from '@/components/play/bottom-bar/history';
-import {activateSpacedRep, updateSpacedRep} from '@/lib/spaced-repetition';
-import type {User} from '@/models/user';
-import type {Puzzle} from '@/models/puzzle';
-import type {PuzzleSet} from '@/models/puzzle-set';
-import type {PuzzleItem} from '@/models/puzzle-item';
-import {get_, update_} from '@/lib/api-helpers';
 import {getGrade} from '@/lib/grades';
-import {
-	getMovable,
-	getTime,
-	getUpdateBody,
-	getColor,
-	getCurrentPuzzle,
-} from '@/lib/play';
 import type {Stat} from '@/components/play/left-bar';
 import LeftBar from '@/components/play/left-bar';
 import Board from '@/components/play/board';
 import RightBar from '@/components/play/right-bar';
 import Timer from '@/components/play/timer';
 import BottomBar from '@/components/play/bottom-bar';
-import useEffectAsync from '@/hooks/use-effect-async';
-import type {Animation} from '@/types/models';
 import VICTORY from '@/sounds/Victory.mp3';
 import GENERIC from '@/sounds/GenericNotify.mp3';
 import ERROR from '@/sounds/Error.mp3';
 import CAPTURE from '@/sounds/Capture.mp3';
 import MOVE from '@/sounds/Move.mp3';
+import {configµ} from '@/atoms/chessground';
+import {useEffectAsync} from '@/hooks/use-effect-async';
+import {useModal} from '@/hooks/use-modal';
+import {Layout} from '@/layouts/main';
+import {prisma} from '@/server/db';
+import {animationµ, orientationµ, playµ} from '@/atoms/play';
+import {useKeyPress} from '@/hooks/use-key-press';
+import {
+	getCurrentPuzzle,
+	getColor,
+	getMovable,
+	getUpdateBody,
+	getTime,
+} from '@/lib/play';
+import {sortBy} from '@/utils/sort-by';
+import {api} from '@/utils/api';
+import {getCheckAchivementBody, checkForAchievement} from '@/lib/achievements';
 
 const Notification = dynamic(async () => import('@/components/notification'));
 const ModalSpacedOn = dynamic(
@@ -55,10 +63,20 @@ const ModalSpacedEnd = dynamic(
 	async () => import('@/components/play/modal-spaced-end'),
 );
 
-const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
+type Props = {
+	user?: User & {
+		puzzleSolvedByCategories: ThemeItem[];
+	};
+	puzzleSet: PuzzleSet & {
+		puzzles: Array<
+			PuzzleItem & {
+				themes: Theme[];
+			}
+		>;
+	};
+};
 
-type Props = {set: PuzzleSet; user: User};
-const PlayingPage = ({set, user}: Props) => {
+const PlayingPage = ({user, puzzleSet}: Props) => {
 	const [playMove] = useSound(MOVE);
 	const [playCapture] = useSound(CAPTURE);
 	const [playError] = useSound(ERROR);
@@ -74,7 +92,7 @@ const PlayingPage = ({set, user}: Props) => {
 
 	const [isSolutionClicked, setIsSolutionClicked] = useAtom(playµ.solution);
 	const [initialPuzzleTimer, setInitialPuzzleTimer] = useAtom(playµ.timer);
-	const [, setTotalPuzzles] = useAtom(playµ.totalPuzzles);
+	const setTotalPuzzles = useSetAtom(playµ.totalPuzzles);
 	const [isComplete, setIsComplete] = useAtom(playµ.isComplete);
 	const [completedPuzzles, setCompletedPuzzles] = useAtom(playµ.completed);
 
@@ -82,10 +100,10 @@ const PlayingPage = ({set, user}: Props) => {
 	const [isReverted] = useAtom(orientationµ.reverted);
 	const [, setAnimation] = useAtom(animationµ);
 
-	const [chess, setChess] = useState<ChessInstance>(new Chess());
+	const [chess, setChess] = useState<Chess>(new Chess());
 	const [config, setConfig] = useState<Partial<Config>>();
-	const [puzzleItemList, setPuzzleItemList] = useState<PuzzleItem[]>([]);
 	const [puzzle, setPuzzle] = useState<Puzzle>();
+
 	const [nextPuzzle, setNextPuzzle] = useState<Puzzle>();
 	const [puzzleIndex, setPuzzleIndex] = useState(0);
 	const [moveNumber, setMoveNumber] = useState(0);
@@ -93,22 +111,25 @@ const PlayingPage = ({set, user}: Props) => {
 	const [previousPuzzle, setPreviousPuzzle] = useState<PreviousPuzzle[]>([]);
 	const [totalMistakes, setTotalMistakes] = useState(0);
 	const [mistakes, setMistakes] = useState(0);
-	const [initialSetDate, setInitialSetDate] = useState<number>();
+	const initialSetDate = useRef<number>(Date.now());
 	const [isRunning, setIsRunning] = useState(false);
 	const [pendingMove, setPendingMove] = useState<Square[]>([]);
 	const [leftBarStat, setLeftBarStat] = useState<Stat>();
 	const [streakData, setStreakData] = useState({mistakes: 0, time: 0});
 
+	const set = useRef(null);
+	const puzzleItemList = useRef<PuzzleItem[]>(null);
+	const [puzzleId, setPuzzleId] = useState(null);
 	const [showNotification, setShowNotification] = useState(false);
 	const [notificationData, setNotificationData] = useState({
 		message: '',
 		url: '',
 	});
 	const [totalPuzzleSolved, setTotalPuzzleSolved] = useState(
-		user.totalPuzzleSolved,
+		user?.totalPuzzleSolved,
 	);
 	const [puzzleSolvedByCategories, setPuzzleSolvedByCategories] = useState(
-		user.puzzleSolvedByCategories,
+		user?.puzzleSolvedByCategories,
 	);
 	const {
 		isOpen: isOpenPromotion,
@@ -140,15 +161,8 @@ const PlayingPage = ({set, user}: Props) => {
 	 * Extract the list of puzzles.
 	 */
 	useEffect(() => {
-		setCompletedPuzzles(() => set.progress);
-		setTotalPuzzles(() => set.length);
-		setInitialSetDate(() => Date.now());
-		setPuzzleItemList(() =>
-			sortBy(
-				set.puzzles.filter(p => !p.played),
-				'order',
-			),
-		);
+		setCompletedPuzzles(() => set.current.progress);
+		setTotalPuzzles(() => set.current.length);
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, []);
 
@@ -175,9 +189,9 @@ const PlayingPage = ({set, user}: Props) => {
 	 */
 	useEffect(() => {
 		if (!puzzle) return;
-		const chess = new Chess(puzzle.FEN);
+		const chess = new Chess(puzzle.fen);
 		setChess(() => chess);
-		setMoveHistory(() => puzzle.Moves.split(' '));
+		setMoveHistory(() => puzzle.moves);
 		setMoveNumber(() => 0);
 		setIsComplete(() => false);
 		setPendingMove(() => []);
@@ -191,7 +205,7 @@ const PlayingPage = ({set, user}: Props) => {
 
 		const config: Partial<Config> = {
 			fen: chess.fen(),
-			check: chess.in_check(),
+			check: chess.isCheck(),
 			animation: {enabled: true, duration: 50},
 			turnColor: getColor(chess.turn()),
 			lastMove: [],
@@ -209,7 +223,7 @@ const PlayingPage = ({set, user}: Props) => {
 	}, [puzzle]);
 
 	const handleCheckAchievements = useCallback(
-		async ({
+		({
 			streakMistakes_,
 			streakTime_,
 		}: {
@@ -251,29 +265,22 @@ const PlayingPage = ({set, user}: Props) => {
 		],
 	);
 
-	const updateBoard = useCallback(
-		(from: Square, to: Square, chess: ChessJS.ChessInstance) => {
-			setConfig(config => ({
-				...config,
-				fen: chess.fen(),
-				check: chess.in_check(),
-				movable: getMovable(chess),
-				turnColor: getColor(chess.turn()),
-				lastMove: [from, to],
-			}));
-		},
-		[],
-	);
+	const updateBoard = useCallback((from: Square, to: Square, chess: Chess) => {
+		setConfig(config => ({
+			...config,
+			fen: chess.fen(),
+			check: chess.inCheck(),
+			movable: getMovable(chess),
+			turnColor: getColor(chess.turn()),
+			lastMove: [from, to],
+		}));
+	}, []);
 
 	/**
 	 * Push the data of the current puzzle when complete.
 	 */
 	const updatePuzzleInDb = useCallback(
-		async (
-			currentGrade: number,
-			timeTaken: number,
-			timeWithMistakes: number,
-		) => {
+		(currentGrade: number, timeTaken: number, timeWithMistakes: number) => {
 			if (!puzzle || !user) return;
 			const streakMistakes_ = mistakes === 0 ? streakData.mistakes + 1 : 0;
 			const streakTime_ = timeTaken < 5 ? streakData.time + 1 : 0;
@@ -290,7 +297,7 @@ const PlayingPage = ({set, user}: Props) => {
 
 			const puzzleSolvedByCategories_ = getUpdateBody.categories(
 				puzzleSolvedByCategories,
-				puzzle.Themes,
+				puzzle.themes,
 			);
 
 			const updateUser = {
@@ -300,15 +307,14 @@ const PlayingPage = ({set, user}: Props) => {
 
 			setPuzzleSolvedByCategories(() => puzzleSolvedByCategories_);
 			setTotalPuzzleSolved(previous => previous + 1);
-
+			handleCheckAchievements({streakMistakes_, streakTime_});
 			Promise.all([
 				update_.puzzle(
-					set._id.toString(),
-					puzzleItemList[puzzleIndex]!._id.toString(),
+					set.current.id,
+					puzzleItemList[puzzleIndex]!.id,
 					updatePuzzleSet,
 				),
-				update_.user(user._id.toString(), updateUser),
-				handleCheckAchievements({streakMistakes_, streakTime_}),
+				update_.user(user.id, updateUser),
 			]).catch(console.error);
 		},
 		[
@@ -318,7 +324,7 @@ const PlayingPage = ({set, user}: Props) => {
 			puzzleIndex,
 			puzzleItemList,
 			puzzleSolvedByCategories,
-			set._id,
+			set.current?.id,
 			streakData.mistakes,
 			streakData.time,
 			user,
@@ -331,14 +337,14 @@ const PlayingPage = ({set, user}: Props) => {
 	const updateSetInDb = useCallback(
 		async (initialSetDate: number) => {
 			const {timeTaken} = getTime.taken(initialSetDate);
-			const totalTimeTaken = timeTaken + set.currentTime;
+			const totalTimeTaken = timeTaken + set.current.currentTime;
 			const update = getUpdateBody.set({timeTaken: totalTimeTaken});
-			await update_.set(set._id.toString(), update).catch(console.error);
+			await update_.set(set.current.id, update).catch(console.error);
 		},
-		[set._id, set.currentTime],
+		[set.current?.id, set.current?.currentTime],
 	);
 
-	const handleSetComplete = useCallback(async () => {
+	const handleSetComplete = useCallback(() => {
 		if (hasSound) playVictory();
 		showSpacedOn();
 	}, [hasSound, playVictory, showSpacedOn]);
@@ -373,7 +379,7 @@ const PlayingPage = ({set, user}: Props) => {
 				...previous,
 				{
 					grade: currentGrade,
-					PuzzleId: puzzleItem.PuzzleId,
+					lichessId: puzzleItem.lichessId,
 				},
 			]);
 
@@ -403,7 +409,7 @@ const PlayingPage = ({set, user}: Props) => {
 	const computerMove = useCallback(
 		async (moveNumber: number) => {
 			if (!chess || !moveHistory[moveNumber]) return;
-			const move = chess.move(moveHistory[moveNumber]!, {sloppy: true});
+			const move = chess.move(moveHistory[moveNumber]!);
 			if (!move) return;
 			await sleep(300);
 			updateBoard(move.from, move.to, chess);
@@ -415,14 +421,14 @@ const PlayingPage = ({set, user}: Props) => {
 	);
 
 	const checkIsMoveCorrect = useCallback(
-		(move: ChessJS.Move, chess: ChessJS.ChessInstance) =>
+		(move: Move, chess: Chess) =>
 			`${move.from}${move.to}` === moveHistory[moveNumber] ||
-			chess.in_checkmate(),
+			chess.isCheckmate(),
 		[moveHistory, moveNumber],
 	);
 
 	const handleRightMove = useCallback(
-		async (from: Square, to: Square, chess: ChessJS.ChessInstance) => {
+		async (from: Square, to: Square, chess: Chess) => {
 			updateBoard(from, to, chess);
 			const currentMoveNumber = moveNumber + 1;
 			setMoveNumber(previousMove => previousMove + 1);
@@ -453,13 +459,13 @@ const PlayingPage = ({set, user}: Props) => {
 
 			await updatePuzzleInDb(currentGrade, timeTaken, timeWithMistakes);
 
-			if (set.spacedRepetition) {
+			if (set.current.spacedRepetition) {
 				const isChunkComplete = completedPuzzles + 1 >= 20;
 				if (isChunkComplete) await handleChunkComplete();
 				return;
 			}
 
-			const isSetComplete = completedPuzzles + 1 === set.length;
+			const isSetComplete = completedPuzzles + 1 === set.current.length;
 			if (isSetComplete) {
 				if (!initialSetDate) return;
 				await updateSetInDb(initialSetDate);
@@ -484,8 +490,8 @@ const PlayingPage = ({set, user}: Props) => {
 			moveNumber,
 			puzzleIndex,
 			puzzleItemList,
-			set.length,
-			set.spacedRepetition,
+			set.current?.length,
+			set.current?.spacedRepetition,
 			setIsComplete,
 			toggleAnimation,
 			updateBoard,
@@ -495,7 +501,7 @@ const PlayingPage = ({set, user}: Props) => {
 	);
 
 	const handleWrongMove = useCallback(
-		(chess: ChessJS.ChessInstance) => {
+		(chess: Chess) => {
 			chess.undo();
 			setMistakes(previous => previous + 1);
 			setTotalMistakes(previous => previous + 1);
@@ -507,7 +513,7 @@ const PlayingPage = ({set, user}: Props) => {
 	);
 
 	const checkIsPromotion = useCallback(
-		(from: Square, to: Square, moves: ChessJS.Move[]): boolean => {
+		(from: Square, to: Square, moves: Move[]): boolean => {
 			for (const move of moves)
 				if (move.from === from && move.to === to && move.flags.includes('p'))
 					return true;
@@ -562,11 +568,11 @@ const PlayingPage = ({set, user}: Props) => {
 	 * Handle promotions via chessground.
 	 */
 	const handlePromotion = useCallback(
-		async (piece: ShortMove['promotion']) => {
+		async (piece: Move['promotion']) => {
 			const from = pendingMove[0]!;
 			const to = pendingMove[1]!;
 			const isRightMove =
-				piece === moveHistory[moveNumber]!.slice(-1) || chess.in_checkmate();
+				piece === moveHistory[moveNumber]!.slice(-1) || chess.isCheckmate();
 			const move = chess.move({from, to, promotion: piece});
 			if (move === null) return;
 
@@ -635,17 +641,15 @@ const PlayingPage = ({set, user}: Props) => {
 				<div className='flex flex-row justify-center gap-2'>
 					{hasClock && (
 						<Timer
-							value={set.currentTime}
+							value={set.current?.currentTime}
 							mistakes={totalMistakes}
 							isRunning={isRunning}
 						/>
 					)}
 					<Link href='/dashboard'>
-						<a>
-							<Button className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8'>
-								LEAVE 🧨
-							</Button>
-						</a>
+						<Button className='my-2 w-36 items-center rounded-md bg-gray-800 leading-8'>
+							LEAVE 🧨
+						</Button>
 					</Link>
 				</div>
 				<div className='flex w-full flex-col items-center justify-center md:flex-row'>
@@ -669,7 +673,7 @@ const PlayingPage = ({set, user}: Props) => {
 					<RightBar
 						fen={chess.fen()}
 						puzzle={puzzle}
-						hasSpacedRepetition={set.spacedRepetition}
+						hasSpacedRepetition={set.current?.spacedRepetition}
 						answer={moveHistory[moveNumber]!}
 						changePuzzle={changePuzzle}
 						launchTimer={launchTimer}
@@ -691,8 +695,8 @@ export default PlayingPage;
 
 export const getServerSideProps = withSessionSsr(
 	async ({params, req}: GetServerSidePropsContext) => {
-		const {userID} = req.session;
-		if (!userID) {
+		const {userId} = req.session;
+		if (!userId) {
 			const redirect: Redirect = {statusCode: 303, destination: '/'};
 			return {redirect};
 		}
@@ -703,19 +707,26 @@ export const getServerSideProps = withSessionSsr(
 			return {redirect};
 		}
 
-		const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-		const baseUrl = req ? `${protocol}://${req.headers.host!}` : '';
+		const puzzleSet = await prisma.puzzleSet
+			.findUnique({
+				where: {id},
+			})
+			.catch(console.error);
 
-		const setResponse = await get_.set(id, baseUrl);
-		if (!setResponse.success) return {notFound: true};
-		if (setResponse.data.user?.toString() !== userID) {
-			const redirect: Redirect = {statusCode: 303, destination: '/dashboard'};
+		const user = await prisma.user
+			.findUnique({
+				where: {id: userId},
+				include: {
+					puzzleSolvedByCategories: true,
+				},
+			})
+			.catch(console.error);
+
+		if (!puzzleSet || !user) {
+			const redirect: Redirect = {statusCode: 303, destination: '/'};
 			return {redirect};
 		}
 
-		const userResponse = await get_.user(userID, baseUrl);
-		if (!userResponse.success) return {notFound: true};
-
-		return {props: {set: setResponse.data, user: userResponse.data}};
+		return {props: {user, puzzleSet}};
 	},
 );

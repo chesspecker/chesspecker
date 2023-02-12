@@ -1,9 +1,9 @@
-import type {ShortMove} from 'chess.js';
+import type {Move} from 'chess.js';
 import type {Color} from 'chessground/types';
 import {useAtom} from 'jotai';
 import {memo, Fragment} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
-import {configµ} from '@/lib/atoms';
+import {configµ} from '@/atoms/chessground';
 
 type PieceProps = {
 	color: Color;
@@ -26,11 +26,11 @@ const SelectPiece = ({color, handleClick, role}: PieceProps) => {
 type Props = {
 	isOpen: boolean;
 	hide: () => void;
-	onPromote: (piece: ShortMove['promotion']) => void | Promise<void>;
+	onPromote: (piece: Move['promotion']) => void | Promise<void>;
 	color: Color;
 };
 const Promotion = ({isOpen, hide, onPromote, color = 'white'}: Props) => {
-	const promoteTo = async (piece: ShortMove['promotion']) => {
+	const promoteTo = async (piece: Move['promotion']) => {
 		await onPromote(piece);
 		hide();
 	};

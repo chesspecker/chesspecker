@@ -1,4 +1,6 @@
-import {Category} from '@/data/categories';
+/* eslint-disable sonarjs/no-duplicate-string */
+/* eslint-disable max-lines */
+import type {Category} from '@/data/categories';
 
 export type Theme = {
 	title: string;
@@ -7,7 +9,7 @@ export type Theme = {
 	category: Category;
 };
 
-const themes: Theme[] = [
+export const THEMES: Theme[] = [
 	{
 		title: 'Advanced pawn',
 		id: 'advancedPawn',
@@ -409,5 +411,3 @@ const themes: Theme[] = [
 		category: {name: 'Recommended', id: '1'},
 	},
 ];
-
-export default themes;

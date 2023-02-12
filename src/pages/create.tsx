@@ -1,20 +1,20 @@
 import {useAtom} from 'jotai';
 import type {ReactElement} from 'react';
 import {useRouter} from 'next/router';
-import {ArrowRightIcon} from '@heroicons/react/solid';
+import {ArrowRightIcon} from '@heroicons/react/24/solid';
 import {NextSeo} from 'next-seo';
-import Layout from '@/layouts/main';
 import {Button} from '@/components/button';
-import Choice from '@/components/choice';
-import {selectedAtom} from '@/lib/atoms';
-import CATEGORIES from '@/data/categories';
-import THEMES from '@/data/themes';
+import {Choice} from '@/components/choice';
 import type {Category} from '@/data/categories';
+import {CATEGORIES} from '@/data/categories';
 import type {Theme} from '@/data/themes';
+import {THEMES} from '@/data/themes';
+import {Layout} from '@/layouts/main';
+import {selectedCategoriesAtom} from '@/atoms/selected-categories';
 
 const CreatePage = () => {
 	const router = useRouter();
-	const [choices] = useAtom(selectedAtom);
+	const [choices] = useAtom(selectedCategoriesAtom);
 
 	const handleClick = async () => {
 		const list = choices.length === 0 ? ['healthyMix'] : choices;
@@ -35,7 +35,7 @@ const CreatePage = () => {
 						<ArrowRightIcon className='my-auto ml-4 h-5 w-5 align-middle' />
 					</Button>
 				</div>
-				<div className='jus flex flex-col'>
+				<div className='flex flex-col'>
 					{CATEGORIES.map((category: Category) => (
 						<div key={category.id}>
 							<h3 className='mx-2 mt-4 mb-3 pb-8 text-3xl'>{category.name}</h3>

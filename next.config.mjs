@@ -1,16 +1,13 @@
-/**
- * Don't be scared of the generics here.
- * All they do is to give us autocompletion when using this.
- *
- * @template {import('next').NextConfig} T
- * @param {T} config - A generic parameter that flows through to the return type
- * @constraint {{import('next').NextConfig}}
- */
-function defineNextConfig(config) {
-	return config;
-}
+// @ts-check
 
-export default defineNextConfig({
+/**
+ * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
+ * This is especially useful for Docker builds.
+ */
+!process.env.SKIP_ENV_VALIDATION && (await import('./src/env.mjs'));
+
+/** @type {import("next").NextConfig} */
+const config = {
 	reactStrictMode: true,
 	swcMinify: true,
 	poweredByHeader: false,
@@ -20,6 +17,16 @@ export default defineNextConfig({
 	images: {
 		domains: ['s3-alpha-sig.figma.com'],
 		formats: ['image/avif', 'image/webp'],
+	},
+	experimental: {
+		swcPlugins: [
+			[
+				'next-superjson-plugin',
+				{
+					excluded: [],
+				},
+			],
+		],
 	},
 	webpack: config => {
 		config.module.rules.push({
@@ -32,4 +39,9 @@ export default defineNextConfig({
 		});
 		return config;
 	},
-});
+	i18n: {
+		locales: ['en'],
+		defaultLocale: 'en',
+	},
+};
+export default config;

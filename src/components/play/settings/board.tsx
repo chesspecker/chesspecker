@@ -1,8 +1,8 @@
 import {useAtom} from 'jotai';
-import type {Board} from '@/lib/atoms';
-import {configµ} from '@/lib/atoms';
+import {configµ} from '@/atoms/chessground';
+import type {Board} from '@/types/chessground';
 
-const BoardSettings = () => {
+export const BoardSettings = () => {
 	const [board, setBoard] = useAtom(configµ.board);
 	return (
 		<>
@@ -24,5 +24,3 @@ const BoardSettings = () => {
 		</>
 	);
 };
-
-export default BoardSettings;

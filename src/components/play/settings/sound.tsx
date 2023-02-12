@@ -1,7 +1,7 @@
 import {useAtom} from 'jotai';
-import {configµ} from '@/lib/atoms';
+import {configµ} from '@/atoms/chessground';
 
-const SoundSettings = () => {
+export const SoundSettings = () => {
 	const [sound, setSound] = useAtom(configµ.sound);
 	return (
 		<>
@@ -19,5 +19,3 @@ const SoundSettings = () => {
 		</>
 	);
 };
-
-export default SoundSettings;

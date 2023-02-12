@@ -2,10 +2,10 @@ import {useEffect} from 'react';
 
 type Props = {
 	targetKey: string;
-	fn: () => Promise<any> | void;
+	fn: () => Promise<any> | any;
 };
 
-const useKeyPress = ({targetKey, fn}: Props) => {
+export const useKeyPress = ({targetKey, fn}: Props) => {
 	useEffect(() => {
 		const handleKeyPress = async ({key}: {key: string}) => {
 			if (key === targetKey) await fn();
@@ -18,5 +18,3 @@ const useKeyPress = ({targetKey, fn}: Props) => {
 		/* eslint-disable-next-line react-hooks/exhaustive-deps */
 	}, []);
 };
-
-export default useKeyPress;

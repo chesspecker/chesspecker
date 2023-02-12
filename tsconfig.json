@@ -1,8 +1,9 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es2017",
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
+		"checkJs": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
@@ -17,23 +18,13 @@
 		"noUncheckedIndexedAccess": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
 			"@/api/*": ["src/pages/api/*"],
 			"@/public/*": ["public/*"],
-			"@/data/*": ["data/*"],
-			"@/types/*": ["types/*"],
-			"@/services/*": ["services/*"],
-			"@/context/*": ["context/*"],
 			"@/middlewares/*": ["middlewares/*"],
-			"@/sounds/*": ["public/sounds/*"],
-			"@/config": ["src/env/config"]
+			"@/sounds/*": ["public/sounds/*"]
 		}
 	},
 	"include": [
@@ -41,7 +32,8 @@
 		"additional.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
-		"**/*.js"
+		"**/*.cjs",
+		"**/*.mjs"
 	],
 	"exclude": ["node_modules"]
 }

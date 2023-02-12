@@ -3,8 +3,11 @@ import {Chessground as nativeChessground} from 'chessground';
 import type {Config} from 'chessground/config';
 import type {Api} from 'chessground/api';
 import {useAtom} from 'jotai';
-import type {Board, Pieces} from '@/lib/atoms';
-import {animationµ, configµ, getStorage} from '@/lib/atoms';
+import type {Pieces} from 'chessground/types';
+import {configµ} from '@/atoms/chessground';
+import {animationµ} from '@/atoms/play';
+import type {Board} from '@/types/chessground';
+import {getStorage} from '@/utils/get-storage';
 
 type Props = {
 	config?: Partial<Config>;
@@ -53,4 +56,5 @@ const Chessground = ({config = {}}: Props) => {
 	);
 };
 
+// eslint-disable-next-line import/no-default-export
 export default memo(Chessground);

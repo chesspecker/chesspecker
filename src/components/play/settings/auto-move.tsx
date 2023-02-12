@@ -1,7 +1,7 @@
 import {useAtom} from 'jotai';
-import {configµ} from '@/lib/atoms';
+import {configµ} from '@/atoms/chessground';
 
-const AutoMoveSettings = () => {
+export const AutoMoveSettings = () => {
 	const [autoMove, setAutoMove] = useAtom(configµ.autoMove);
 	return (
 		<>
@@ -19,5 +19,3 @@ const AutoMoveSettings = () => {
 		</>
 	);
 };
-
-export default AutoMoveSettings;

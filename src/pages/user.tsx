@@ -1,67 +1,51 @@
 import type {ReactElement} from 'react';
-import {useState, useEffect} from 'react';
 import {NextSeo} from 'next-seo';
 import Link from 'next/link';
-import Layout from '@/layouts/main';
+import type {AchievementItem, User} from '@prisma/client';
+import type {GetServerSidePropsContext, Redirect} from 'next';
 import {Button} from '@/components/button';
 import Card from '@/components/card-achievement';
-import type {User} from '@/models/user';
-import useEffectAsync from '@/hooks/use-effect-async';
-import {getUser} from '@/lib/api-helpers';
-import type {AchievementInterface} from '@/types/models';
 import {achievements} from '@/data/achievements';
+import {Layout} from '@/layouts/main';
+import type {AchievementInterface} from '@/types/achievements';
+import {withSessionSsr} from '@/lib/session';
+import {prisma} from '@/server/db';
 
-const UserPage = () => {
-	const [achievList, setAchievList] = useState<AchievementInterface[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [user, setUser] = useState<User>();
+type Props = {
+	user: User & {
+		validatedAchievements: AchievementItem[];
+	};
+};
 
-	useEffectAsync(async () => {
-		const response = await getUser();
-		if (response.success) setUser(() => response.data);
-	}, []);
-
-	useEffect(() => {
-		if (!user) return;
-
-		const badges = user.validatedAchievements.map(item =>
-			achievements.find(achievement => item.id === achievement.id),
-		) as AchievementInterface[];
-
-		setAchievList(() => badges);
-		setIsLoading(() => false);
-	}, [user]);
+const UserPage = ({user}: Props) => {
+	const badges = user?.validatedAchievements.map(item =>
+		achievements.find(achievement => item.id === achievement.id),
+	) as AchievementInterface[];
 
 	return (
 		<>
 			<NextSeo title='♟ Profile' />
 			<div className='flex min-h-screen w-screen flex-col px-10 pt-12 pb-24 md:pt-32'>
 				<div className='flex flex-wrap items-center'>
-					<p className='mr-5 mb-2 text-4xl md:text-6xl'>{user?.username}</p>
+					<p className='mr-5 mb-1 text-4xl md:text-6xl'>{user?.username}</p>
 					{user?.isSponsor ? (
 						<>
 							<p className='mr-2'>Official Sponsor</p>
 							<div>
 								<Link href='/sponsor'>
-									<a>
-										<Button>Manage subscription</Button>
-									</a>
+									<Button>Manage subscription</Button>
 								</Link>
 							</div>
 						</>
 					) : (
 						<Link href='/sponsor'>
-							<a>
-								<Button>Become sponsor</Button>
-							</a>
+							<Button>Become sponsor</Button>
 						</Link>
 					)}
 
-					<div className='mt-2 md:ml-2'>
+					<div className='md:ml-2'>
 						<Link href='/achievements'>
-							<a>
-								<Button>See all achievements</Button>
-							</a>
+							<Button>See all achievements</Button>
 						</Link>
 					</div>
 				</div>
@@ -70,19 +54,17 @@ const UserPage = () => {
 					<p className='text-xl'>My badges</p>
 					<div className='flex w-full items-center justify-center'>
 						<div className='flex w-full max-w-screen-xl items-center justify-center'>
-							{!isLoading && (
-								<div className='flex w-full flex-wrap items-center justify-center'>
-									{achievList.length === 0 && (
-										<p className='text-center'>
-											You don&apos;t have any achievement yet
-										</p>
-									)}
-									{achievList.length > 0 &&
-										achievList.map(achievement => (
-											<Card key={achievement.id} achievement={achievement} />
-										))}
-								</div>
-							)}
+							<div className='flex w-full flex-wrap items-center justify-center'>
+								{badges?.length === 0 && (
+									<p className='text-center'>
+										You don&apos;t have any achievement yet
+									</p>
+								)}
+								{badges?.length > 0 &&
+									badges.map(achievement => (
+										<Card key={achievement.id} achievement={achievement} />
+									))}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -94,3 +76,24 @@ const UserPage = () => {
 
 UserPage.getLayout = (page: ReactElement) => <Layout>{page}</Layout>;
 export default UserPage;
+
+export const getServerSideProps = withSessionSsr(
+	async ({req}: GetServerSidePropsContext) => {
+		const userId = req.session?.userId;
+		const redirect: Redirect = {statusCode: 303, destination: '/'};
+		if (!userId) return {redirect};
+
+		const user = await prisma.user.findUnique({
+			where: {id: userId},
+			include: {validatedAchievements: true},
+		});
+
+		if (!user) return {redirect};
+
+		return {
+			props: {
+				user,
+			},
+		};
+	},
+);

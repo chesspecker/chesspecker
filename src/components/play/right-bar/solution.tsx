@@ -1,11 +1,11 @@
 import {memo, useEffect, useState} from 'react';
 import {useAtom} from 'jotai';
-import * as ChessJS from 'chess.js';
+import {Chess} from 'chess.js';
+import type {Puzzle} from '@prisma/client';
 import {Button, ButtonLink} from '../../button';
-import {configµ, playµ} from '@/lib/atoms';
-import type {Puzzle} from '@/models/puzzle';
+import {configµ} from '@/atoms/chessground';
+import {playµ} from '@/atoms/play';
 
-const Chess = typeof ChessJS === 'function' ? ChessJS : ChessJS.Chess;
 type Props = {answer: string; fen: string; puzzle: Puzzle};
 
 const defaultClasses =
@@ -22,7 +22,7 @@ const Solution = ({answer, fen, puzzle}: Props) => {
 		if (!fen) return;
 		setSolution(() => {
 			const chess = new Chess(fen);
-			const move = chess.move(answer, {sloppy: true});
+			const move = chess.move(answer);
 			if (move) return move.san;
 			return '';
 		});
@@ -32,7 +32,7 @@ const Solution = ({answer, fen, puzzle}: Props) => {
 		return (
 			<ButtonLink
 				className={disabledClasses}
-				href={`https://lichess.org/training/${puzzle.PuzzleId}`}
+				href={`https://lichess.org/training/${puzzle.lichessId}`}
 			>
 				SEE IN LICHESS
 			</ButtonLink>
@@ -53,4 +53,5 @@ const Solution = ({answer, fen, puzzle}: Props) => {
 	);
 };
 
+// eslint-disable-next-line import/no-default-export
 export default memo(Solution);

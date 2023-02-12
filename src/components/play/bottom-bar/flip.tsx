@@ -1,7 +1,7 @@
-import {RefreshIcon} from '@heroicons/react/solid';
+import {ArrowPathIcon} from '@heroicons/react/24/solid';
 import {useAtom} from 'jotai';
 import {memo} from 'react';
-import {orientationµ} from '@/lib/atoms';
+import {orientationµ} from '@/atoms/play';
 
 const Flip = () => {
 	const [, setOrientation] = useAtom(orientationµ.color);
@@ -17,9 +17,10 @@ const Flip = () => {
 			className='cursor-pointer bg-transparent'
 			onClick={handleClick}
 		>
-			<RefreshIcon className='h-5 w-5' />
+			<ArrowPathIcon className='h-5 w-5' />
 		</button>
 	);
 };
 
+// eslint-disable-next-line import/no-default-export
 export default memo(Flip);
