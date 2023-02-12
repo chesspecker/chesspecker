@@ -22,5 +22,6 @@ services:
     restart: always
     volumes:
       - ./dump:/dump
+      - ./mongodb:/data/db
     ports:
       - "27017:27017"
