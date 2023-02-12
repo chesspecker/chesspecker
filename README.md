@@ -12,7 +12,8 @@
 
 #### Discord
 
-Join us to discuss issues and ideas: on [discord.](https://discord.com/invite/qDftJZBBHa)
+Join us to discuss issues and ideas: on
+[discord.](https://discord.com/invite/qDftJZBBHa)
 
 ### Run in local
 
