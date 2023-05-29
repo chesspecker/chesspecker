@@ -5,6 +5,7 @@ import '@/styles/cg-board.css';
 import '@/styles/cg-pieces.css';
 import {Poppins} from 'next/font/google';
 import {ClerkProvider} from '@clerk/nextjs';
+import {Analytics} from '@vercel/analytics/react';
 
 const fontPoppins = Poppins({
 	subsets: ['latin'],
@@ -27,6 +28,7 @@ const RootLayout = ({children}: {children: React.ReactNode}) => {
 				lang='en'
 				className={`h-full min-w-[360px] scroll-smooth bg-white ${fontPoppins.variable}`}
 			>
+				<Analytics />
 				<body className='min-h-screen antialiased'>
 					<main className='flex h-full min-h-screen w-full flex-1 flex-col items-center justify-center bg-white text-center text-black font-poppins'>
 						{children}

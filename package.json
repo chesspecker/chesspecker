@@ -1,12 +1,14 @@
 {
 	"name": "chesspecker",
-	"version": "0.1.0",
+	"version": "3.0.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build": "prisma generate && next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"lint:fix": "next lint --fix",
+		"postinstall": "prisma generate"
 	},
 	"dependencies": {
 		"@clerk/nextjs": "^4.19.0",
@@ -15,6 +17,7 @@
 		"@types/node": "20.2.5",
 		"@types/react": "18.2.7",
 		"@types/react-dom": "18.2.4",
+		"@vercel/analytics": "^1.0.1",
 		"autoprefixer": "10.4.14",
 		"chess.js": "1.0.0-beta.6",
 		"chessground": "^8.3.7",
