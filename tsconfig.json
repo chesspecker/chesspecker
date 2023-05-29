@@ -1,9 +1,8 @@
 {
 	"compilerOptions": {
-		"target": "es2017",
+		"target": "es5",
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
-		"checkJs": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
@@ -15,25 +14,9 @@
 		"isolatedModules": true,
 		"jsx": "preserve",
 		"incremental": true,
-		"noUncheckedIndexedAccess": true,
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"baseUrl": ".",
-		"paths": {
-			"@/*": ["./src/*"],
-			"@/api/*": ["src/pages/api/*"],
-			"@/public/*": ["public/*"],
-			"@/middlewares/*": ["middlewares/*"],
-			"@/sounds/*": ["public/sounds/*"]
-		}
+		"plugins": [{"name": "next"}],
+		"paths": {"@/*": ["./src/*"]}
 	},
-	"include": [
-		"next-env.d.ts",
-		"additional.d.ts",
-		"**/*.ts",
-		"**/*.tsx",
-		"**/*.cjs",
-		"**/*.mjs"
-	],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]
 }

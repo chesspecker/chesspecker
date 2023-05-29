@@ -1,37 +1,32 @@
 {
-	"typescript.preferences.importModuleSpecifier": "non-relative",
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"[typescriptreact][typescript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"tailwindCSS.includeLanguages": {
-		"typescript": "javascript",
-		"typescriptreact": "javascript"
+	"[typescriptreact][typescript][javascript][javascriptreact]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
 	},
 	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": [
 		"source.addMissingImports",
 		"source.fixAll.eslint"
 	],
-	"conventionalCommits.scopes": [
-		"frontend",
-		"backend",
-		"dashboard",
-		"play",
-		"view",
-		"database",
-		"github"
-	],
-	"search.exclude": {
-		"**/.yarn": true,
-		"**/.lock": true,
-		"**/.pnp.*": true
-	},
-	"eslint.packageManager": "yarn",
-	"eslint.probe": [
+	"eslint.validate": [
 		"javascript",
 		"javascriptreact",
 		"typescript",
 		"typescriptreact"
-	]
+	],
+	"files.exclude": {
+		"**/node_modules": false,
+		"node_modules": true,
+		"*[!test]**/node_modules": true
+	},
+	"search.exclude": {
+		"pnpm-lock.yaml": true,
+		"yarn.lock": true,
+		"**/.yarn": true,
+		"**/.pnp.*": true
+	},
+	"typescript.preferences.importModuleSpecifier": "non-relative",
+	"typescript.surveys.enabled": false,
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"typescript.tsdk": "node_modules/.pnpm/typescript@5.0.4/node_modules/typescript/lib"
 }

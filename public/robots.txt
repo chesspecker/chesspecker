@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://www.chesspecker.com
-
-# Sitemaps
-Sitemap: https://www.chesspecker.com/sitemap.xml

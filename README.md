@@ -1,47 +1,34 @@
-<h1 align="center">
-	<br>
-	<img width="300" src="./public/images/chesspecker-logo.png" alt="chesspecker logo">
-	<br>
-	<br>
-	<br>
-</h1>
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-> chesspecker, open-source app to practice chess!
+## Getting Started
 
-[![LINTER](https://github.com/chesspecker/chesspecker/actions/workflows/lint.yml/badge.svg)](https://github.com/chesspecker/chesspecker/actions/workflows/lint.yml)
+First, run the development server:
 
-#### Discord
-
-Join us to discuss issues and ideas: on
-[discord.](https://discord.com/invite/qDftJZBBHa)
-
-### Run in local
-
-Create a new .env file
-
-```
-cp .env.example .env
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
 ```
 
-After launching docker on your machine, build the images with:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```
-docker-compose up -d --build
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Finally, connect to the docker container and populate the database:
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-```
-docker exec -it mongo /bin/sh
-mongorestore dump --gzip
-```
+## Learn More
 
-Navigate to http://localhost:3000
+To learn more about Next.js, take a look at the following resources:
 
-And happy coding!
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-When you're done
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-```
-docker-compose down
-```
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

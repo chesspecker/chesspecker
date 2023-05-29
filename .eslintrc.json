@@ -1,8 +1,3 @@
 {
-	"extends": "@pnxdxt/eslint-config",
-	"settings": {
-		"tailwindcss": {
-			"config": "tailwind.config.cjs"
-		}
-	}
+  "extends": "next/core-web-vitals"
 }
